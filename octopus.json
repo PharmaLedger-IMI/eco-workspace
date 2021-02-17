@@ -98,16 +98,6 @@
       ]
     },
     {
-      "name": "themes/blue-fluorite-theme",
-      "src": "",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd themes/blue-fluorite-theme && npm install"
-        }
-      ]
-    },
-    {
       "name": "dossier-explorer-ssapp",
       "src": "https://github.com/PrivateSky/dossier-explorer-ssapp.git",
       "actions": [
@@ -119,16 +109,6 @@
         {
           "type": "execute",
           "cmd": "cd dossier-explorer-ssapp && npm install"
-        }
-      ]
-    },
-    {
-      "name": "eco-ssapp",
-      "src": "",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd eco-ssapp && npm install"
         }
       ]
     },
@@ -149,6 +129,26 @@
     }
   ],
   "build": [
+    {
+      "name": "eco-ssapp",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd eco-ssapp && npm install"
+        }
+      ]
+    },
+    {
+      "name": "themes/blue-fluorite-theme",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd themes/blue-fluorite-theme && npm install"
+        }
+      ]
+    },
     {
       "name": "cardinal-wallet-build",
       "src": "",
