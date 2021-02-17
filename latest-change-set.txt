@@ -1,9 +1,6 @@
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
     added tir.addDomainsInBDNS and tir.updateDBNS
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    rollback for patient information button and layout
-    refactor getKeySSI to getKeySSIAsString
-    refactor getKeySSI to getKeySSIAsString
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
@@ -12,67 +9,24 @@
     refactor getKeySSI to getKeySSIAsString
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    Added project description in readme
-    renamed build*SSI to buildTemplate*SSI for clarity
-    add new functionality - edit batch
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
     added tir.addDomainsInBDNS and tir.updateDBNS
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    rollback for patient information button and layout
     refactor getKeySSI to getKeySSIAsString
     refactor getKeySSI to getKeySSIAsString
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    rollback for patient information button and layout
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
     refactor getKeySSI to getKeySSIAsString
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    Added project description in readme
-    renamed build*SSI to buildTemplate*SSI for clarity
-    add new functionality - edit batch
+    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
+    refactor getKeySSI to getKeySSIAsString
+    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
+    refactor getKeySSI to getKeySSIAsString
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
     added tir.addDomainsInBDNS and tir.updateDBNS
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    rollback for patient information button and layout
-    refactor getKeySSI to getKeySSIAsString
-    refactor getKeySSI to getKeySSIAsString
-    refactor getKeySSI to getKeySSIAsString
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    rollback for patient information button and layout
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
     refactor getKeySSI to getKeySSIAsString
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    Added project description in readme
-    renamed build*SSI to buildTemplate*SSI for clarity
-    add new functionality - edit batch
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    added tir.addDomainsInBDNS and tir.updateDBNS
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    rollback for patient information button and layout
     refactor getKeySSI to getKeySSIAsString
-    refactor getKeySSI to getKeySSIAsString
-    refactor getKeySSI to getKeySSIAsString
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    rollback for patient information button and layout
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    refactor getKeySSI to getKeySSIAsString
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
-    Added project description in readme
-    renamed build*SSI to buildTemplate*SSI for clarity
-    add new functionality - edit batch

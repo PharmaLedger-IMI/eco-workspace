@@ -5,7 +5,6 @@ menu-wallet-prototype
 leaflet-ssapp
 apihub-root/leaflet-wallet/loader
 apihub-root/dsu-fabric-wallet/loader
-themes
 dossier-explorer-wallet-prototype
 apihub-root/dsu-fabric
 apihub-root/dsu-explorer/loader
@@ -20,3 +19,5 @@ dsu-fabric-ssapp
 node_modules
 package-lock.json
 env.json.devel
+.prettierrc
+.prettierignore
