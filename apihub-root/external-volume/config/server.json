@@ -1,6 +1,9 @@
 {
   "port": 8080,
   "storage": "../apihub-root",
+  "logging": {
+    "enabled": true
+  },
   "preventRateLimit": true,
   "enableRequestLogger": true,
   "activeEndpoints": [
@@ -19,9 +22,6 @@
   "endpointsConfig": {
     "bricking": {
       "domains": {
-        "epi": {
-          "path": "/external-volume/domains/epi/brick-storage"
-        },
         "default": {
           "path": "/internal-volume/domains/default/brick-storage"
         },

@@ -1,6 +1,6 @@
 export default {
   appName: 'eco-wallet',
-  vault: 'browser',
+  vault: 'server',
   agent: 'browser',
   system: 'any',
   browser: 'any',

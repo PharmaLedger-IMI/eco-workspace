@@ -132,9 +132,7 @@
           "cmd": "cd apihub-root/eco-wallet/loader && npm install"
         }
       ]
-    }
-  ],
-  "build": [
+    },
     {
       "name": "themes/blue-fluorite-theme",
       "src": "",
@@ -154,7 +152,9 @@
           "cmd": "cd eco-ssapp && npm install"
         }
       ]
-    },
+    }
+  ],
+  "build": [
     {
       "name": "cardinal-wallet-build",
       "src": "",
