@@ -122,5 +122,5 @@ psk-label.success.small label {
 }
 
 .bpd-input psk-label {
-    display: none;
+    font-size: 20px;
 }
