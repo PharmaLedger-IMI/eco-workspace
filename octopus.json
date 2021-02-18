@@ -136,9 +136,7 @@
           "cmd": "cd themes/blue-fluorite-theme && npm install"
         }
       ]
-    }
-  ],
-  "build": [
+    },
     {
       "name": "eco-ssapp",
       "src": "",
@@ -148,7 +146,9 @@
           "cmd": "cd eco-ssapp && npm install"
         }
       ]
-    },
+    }
+  ],
+  "build": [
     {
       "name": "cardinal-wallet-build",
       "src": "",
