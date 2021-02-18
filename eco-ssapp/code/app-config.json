@@ -24,39 +24,12 @@
                 "pageSrc": "home.html"
             },
             {
-                "name": "Create Organization",
-                "path": "/organization/create",
+                "name": "Create Trial",
+                "path": "/create-trial",
                 "icon": "fa-cog",
-                "pageSrc": "edit-organization.html"
-            },
-            {
-                "name": "Edit Organization",
-                "path": "/organization/edit",
-                "icon": "fa-cog",
-                "pageSrc": "edit-organization.html",
-                "indexed": false
-            },
-            {
-                "name": "Manage Clusters",
-                "path": "/cluster/index",
-                "icon": "fa-cog",
-                "pageSrc": "clusters/index.html",
-                "indexed": false
-            },
-            {
-                "name": "Edit Cluster",
-                "path": "/cluster/edit",
-                "icon": "fa-cog",
-                "pageSrc": "clusters/edit.html",
-                "indexed": false
-            },
-            {
-                "name": "Create Cluster",
-                "path": "/cluster/create",
-                "icon": "fa-cog",
-                "pageSrc": "clusters/edit.html",
-                "indexed": false
+                "pageSrc": "create-trial.html"
             }
+
         ]
     }
 }

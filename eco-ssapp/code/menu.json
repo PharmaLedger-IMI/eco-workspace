@@ -12,6 +12,11 @@
       "path": "/home",
       "icon": "fa-home",
       "pageSrc": "home.html"
+    },
+    {
+      "name": "Create trial",
+      "tags": "create-trial",
+      "indexed": false
     }
   ]
 }
