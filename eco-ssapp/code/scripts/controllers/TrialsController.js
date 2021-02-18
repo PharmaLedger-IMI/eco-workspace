@@ -52,6 +52,10 @@ export default class TrialsController extends ContainerController {
             //bind
             this.setModel(data);
         });
+
+        this.on('openFeedback', (evt) => {
+            this.feedbackEmitter = evt.detail;
+        });
     }
 
 
@@ -59,6 +63,9 @@ export default class TrialsController extends ContainerController {
     _attachHandlerTrialCreate (){
         this.on('trial:create', (event) => {
 
+            if(this.__displayErrorMessages(event)){
+                return;
+            }
             let trialObject = {
                 name: this.model.name.value,
                 consentName: this.model.consentName.value,
@@ -75,6 +82,29 @@ export default class TrialsController extends ContainerController {
             
             });
         });
+    }
+
+    __displayErrorMessages = (event) => {
+        debugger;
+        return this.__displayErrorRequiredField(event, 'name', this.model.name.value) ||
+            this.__displayErrorRequiredField(event, 'version', this.model.version.value) ||
+              this.__displayErrorRequiredField(event, 'consentName', this.model.consentName.value) ;
+    }
+
+    __displayErrorRequiredField(event, fieldName, field) {
+        if (field === undefined || field === null || field.length === 0) {
+            this._emitFeedback(event, fieldName.toUpperCase() + " field is required.", "alert-danger")
+            return true;
+        }
+        return false;
+    }
+
+    _emitFeedback(event, message, alertType) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        if (typeof this.feedbackEmitter === 'function') {
+            this.feedbackEmitter(message, "Validation", alertType)
+        }
     }
 
 }
