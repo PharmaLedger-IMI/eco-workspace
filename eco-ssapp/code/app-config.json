@@ -1,0 +1,62 @@
+{
+    "theme":"default",
+    "appVersion":"1.0.0",
+    "basePagesUrl": "/pages/",
+    "profile": {
+        "username": "SSapp",
+        "email": "your-email@domain.com",
+        "avatar": "/resources/images/cardinal.png"
+    },
+    "menu": {
+        "defaultMenuConfig": {
+            "icon": "fa-bars",
+            "type": "route",
+            "component": "psk-page-loader",
+            "exact": false,
+            "indexed": true,
+            "404": "/pages/404.html",
+            "historyType": "browser"
+        },
+        "pages": [{
+                "name": "Home",
+                "path": "/home",
+                "icon": "fa-home",
+                "pageSrc": "home.html"
+            },
+            {
+                "name": "Create Organization",
+                "path": "/organization/create",
+                "icon": "fa-cog",
+                "pageSrc": "edit-organization.html"
+            },
+            {
+                "name": "Edit Organization",
+                "path": "/organization/edit",
+                "icon": "fa-cog",
+                "pageSrc": "edit-organization.html",
+                "indexed": false
+            },
+            {
+                "name": "Manage Clusters",
+                "path": "/cluster/index",
+                "icon": "fa-cog",
+                "pageSrc": "clusters/index.html",
+                "indexed": false
+            },
+            {
+                "name": "Edit Cluster",
+                "path": "/cluster/edit",
+                "icon": "fa-cog",
+                "pageSrc": "clusters/edit.html",
+                "indexed": false
+            },
+            {
+                "name": "Create Cluster",
+                "path": "/cluster/create",
+                "icon": "fa-cog",
+                "pageSrc": "clusters/edit.html",
+                "indexed": false
+            }
+        ]
+    }
+}
