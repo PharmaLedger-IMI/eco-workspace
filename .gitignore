@@ -4,6 +4,7 @@ privatesky
 menu-wallet-prototype
 dossier-explorer-wallet-prototype
 apihub-root/eco-wallet/loader
+apihub-root/dsu-explorer/loader
 apihub-root/internal-volume/domains
 apihub-root/external-volume/domains
 dossier-explorer-ssapp

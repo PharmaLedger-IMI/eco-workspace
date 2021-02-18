@@ -4,9 +4,10 @@
   "description": "SSApp Template",
   "main": "index.js",
   "scripts": {
-    "prebuild": "node ./node_modules/octopus/scripts/run prebuild devmode",
-    "build": "node ./node_modules/octopus/scripts/buildDossier",
-    "postbuild": "node ./node_modules/octopus/scripts/run postbuild devmode",
+    "postinstall": "node ./node_modules/octopus/scripts/run",
+    "prebuild": "node ./node_modules/octopus/scripts/run prebuild",
+    "build": "node ./node_modules/octopus/scripts/buildDossier ./bin/build.file --domain=traceability",
+    "postbuild": "node ./node_modules/octopus/scripts/run postbuild",
     "update": "npm install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -126,6 +126,16 @@
           "cmd": "cd apihub-root/eco-wallet/loader && npm install"
         }
       ]
+    },
+    {
+      "name": "themes/blue-fluorite-theme",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd themes/blue-fluorite-theme && npm install"
+        }
+      ]
     }
   ],
   "build": [
@@ -136,16 +146,6 @@
         {
           "type": "execute",
           "cmd": "cd eco-ssapp && npm install"
-        }
-      ]
-    },
-    {
-      "name": "themes/blue-fluorite-theme",
-      "src": "",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd themes/blue-fluorite-theme && npm install"
         }
       ]
     },
