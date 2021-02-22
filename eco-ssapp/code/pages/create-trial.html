@@ -6,7 +6,13 @@
         <psk-text-input class="bpd-input" view-model="@consentName"></psk-text-input>
         <psk-text-input class="bpd-input" view-model="@version"></psk-text-input>
         <psk-checkbox view-model="status"></psk-checkbox>
+
+       <div>
+        <psk-files-chooser view-model="@filesChooser" event-name="trial:addEconsent">
+        </psk-files-chooser>
+
         <psk-button event-name="trial:create">Create</psk-button>
+       </div>
     </div>
         <psk-list-feedbacks>
         </psk-list-feedbacks>

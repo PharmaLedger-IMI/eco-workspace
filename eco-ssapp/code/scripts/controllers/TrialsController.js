@@ -1,5 +1,6 @@
 import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
-import TrialService from "./services/TrialService.js";
+import TrialService from "../services/TrialService.js";
+
 
 const initModel = {
     title: 'Create Trial',
@@ -31,27 +32,37 @@ const initModel = {
         checkedValue: 1,
         uncheckedValue: 0,
         value: ''
+    },
+    filesChooser: {
+        label: "Select files",
+
+        listFiles: true,
+        filesAppend: true,
+        files: []
     }
 
 }
 
 export default class TrialsController extends ContainerController {
+
+    uid='';
     constructor(element, history) {
         super(element, history);
 
         this.setModel(JSON.parse(JSON.stringify(initModel)));
 
         this._attachHandlerTrialCreate();
+        this._attachHandlerChooseEconsent();
 
         this.TrialService = new TrialService(this.DSUStorage);
-        this.TrialService.getTrial((err, data) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            //bind
-            this.setModel(data);
-        });
+        // this.TrialService.getTrial((err, data) => {
+        //     if (err) {
+        //         console.log(err);
+        //         return;
+        //     }
+        //     //bind
+        //     this.setModel(data);
+        // });
 
         this.on('openFeedback', (evt) => {
             this.feedbackEmitter = evt.detail;
@@ -79,13 +90,30 @@ export default class TrialsController extends ContainerController {
                     return;
                 }
                 console.log("Trial saved" +updTrial.uid);
-            
+                this.uid = updTrial.uid;
+
+
+            });
+        });
+    }
+
+
+    _attachHandlerChooseEconsent (){
+        this.on('trial:addEconsent', (event) => {
+        console.log(event);
+        this.TrialService.saveEconsentFile( event.data ,(err, updTrial) => {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                console.log("Trial updated" +updTrial.uid);
+                this.uid = updTrial.uid;
             });
         });
     }
 
     __displayErrorMessages = (event) => {
-        debugger;
+
         return this.__displayErrorRequiredField(event, 'name', this.model.name.value) ||
             this.__displayErrorRequiredField(event, 'version', this.model.version.value) ||
               this.__displayErrorRequiredField(event, 'consentName', this.model.consentName.value) ;

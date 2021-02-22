@@ -1,4 +1,4 @@
-import TrialModel from '../../models/TrialModel.js';
+import TrialModel from '../models/TrialModel.js';
 
 export default class TrialService {
 
@@ -72,9 +72,22 @@ export default class TrialService {
             }
             data.KeySSI = keySSI;
             data.uid = keySSI;
-            this.updateTrial(data, callback);
         })
     }
+
+    saveEconsentFile (file,callback){
+        debugger;
+        this.DSUStorage.uploadFile(this.SERVICE_PATH,file,  undefined,(err, keySSI) => {
+            if (err)
+            {
+                callback(err,undefined);
+                return;
+            }
+            console.log("The econsent file is saved  ");
+        })
+    }
+
+
     mountTrial(keySSI, callback){
         this.DSUStorage.call('mount',this.SERVICE_PATH, keySSI, (err) =>{
             if (err)
@@ -104,6 +117,7 @@ export default class TrialService {
             }
             callback(undefined, data);
         })
+        this.DSUStorage.save
     }
 
     unmountTrial(orgUid, callback) {
