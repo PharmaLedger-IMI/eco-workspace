@@ -1,5 +1,6 @@
 import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
 import TrialService from "../services/TrialService.js";
+import EconsentService from "../services/EconsentService.js";
 
 
 const initModel = {
@@ -39,13 +40,30 @@ const initModel = {
         listFiles: true,
         filesAppend: true,
         files: []
-    }
+    },
+    site: {
+        name: 'site',
+        label: 'Site',
+        required: true,
+        placeholder: 'Site',
+        value: ''
+    },
+
+    hcp: {
+        name: 'hcp',
+        label: 'hcp',
+        required: true,
+        placeholder: 'Hcp',
+        value: ''
+    },
 
 }
 
 export default class TrialsController extends ContainerController {
 
     uid='';
+    file= undefined;
+
     constructor(element, history) {
         super(element, history);
 
@@ -63,6 +81,7 @@ export default class TrialsController extends ContainerController {
         //     //bind
         //     this.setModel(data);
         // });
+        this.EconsentService = new EconsentService(this.DSUStorage);
 
         this.on('openFeedback', (evt) => {
             this.feedbackEmitter = evt.detail;
@@ -85,14 +104,17 @@ export default class TrialsController extends ContainerController {
             }
 
             this.TrialService.saveTrial( trialObject,(err, updTrial) => {
+                debugger;
                 if (err) {
+                    debugger;
                     console.log(err);
                     return;
                 }
+                debugger;
                 console.log("Trial saved" +updTrial.uid);
                 this.uid = updTrial.uid;
 
-
+                this.__saveEconsentFile();
             });
         });
     }
@@ -100,15 +122,22 @@ export default class TrialsController extends ContainerController {
 
     _attachHandlerChooseEconsent (){
         this.on('trial:addEconsent', (event) => {
-        console.log(event);
-        this.TrialService.saveEconsentFile( event.data ,(err, updTrial) => {
-                if (err) {
-                    console.log(err);
-                    return;
-                }
-                console.log("Trial updated" +updTrial.uid);
-                this.uid = updTrial.uid;
-            });
+
+        debugger
+        if (event.data)
+            this.file= event.data;
+
+        });
+    }
+
+    __saveEconsentFile (){
+        this.EconsentService.saveEconsent( this.uid, this.file ,(err, updTrial) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            console.log("Trial updated" +updTrial.uid);
+            this.uid = updTrial.uid;
         });
     }
 
