@@ -146,6 +146,16 @@
           "cmd": "cd eco-ssapp && npm install"
         }
       ]
+    },
+    {
+      "name": "hco-ssapp",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd hco-ssapp && npm install"
+        }
+      ]
     }
   ],
   "build": [
@@ -250,6 +260,24 @@
       ]
     },
     {
+      "name": "hco-wallet_bind_to_menu-wallet-prototype",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd menu-wallet-prototype && npm run build"
+        },
+        {
+          "type": "copy",
+          "src": "./menu-wallet-prototype/seed",
+          "target": "./apihub-root/hco-wallet/wallet-patch/seed",
+          "options": {
+            "overwrite": true
+          }
+        }
+      ]
+    },
+    {
       "name": "eco-wallet_bind_to_eco-ssapp",
       "src": "",
       "actions": [
@@ -268,6 +296,28 @@
         {
           "type": "execute",
           "cmd": "echo Use this folder template in order to customize the application instance by adding configuration, pages etc. > ./apihub-root/eco-wallet/apps-patch/eco-ssapp/readme"
+        }
+      ]
+    },
+    {
+      "name": "hco-wallet_bind_to_hco-ssapp",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd hco-ssapp && npm run build"
+        },
+        {
+          "type": "copy",
+          "src": "./hco-ssapp/seed",
+          "target": "./apihub-root/hco-wallet/apps-patch/hco-ssapp/seed",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "execute",
+          "cmd": "echo Use this folder template in order to customize the application instance by adding configuration, pages etc. > ./apihub-root/hco-wallet/apps-patch/hco-ssapp/readme"
         }
       ]
     }
