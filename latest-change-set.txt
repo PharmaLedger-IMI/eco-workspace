@@ -120,3 +120,17 @@
     removed obsolete functions from use
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
     removed obsolete functions from use
+    prepare new ssapp for hco
+    Update test.yml
+    extra info added into the landing page
+    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
+    prepare new ssapp for hco
+    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
+    prepare new ssapp for hco
+    prepare new ssapp for hco
+    Update test.yml
+    extra info added into the landing page
+    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
+    prepare new ssapp for hco
+    replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
+    prepare new ssapp for hco

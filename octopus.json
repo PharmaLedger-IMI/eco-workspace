@@ -138,6 +138,16 @@
       ]
     },
     {
+      "name": "themes/patient-theme",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd themes/patient-theme && npm install"
+        }
+      ]
+    },
+    {
       "name": "eco-ssapp",
       "src": "",
       "actions": [
@@ -154,6 +164,16 @@
         {
           "type": "execute",
           "cmd": "cd hco-ssapp && npm install"
+        }
+      ]
+    },
+    {
+      "name": "patient-ssapp",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd patient-ssapp && npm install"
         }
       ]
     }
@@ -176,6 +196,16 @@
         {
           "type": "execute",
           "cmd": "cd themes/blue-fluorite-theme && npm run build-dossier"
+        }
+      ]
+    },
+    {
+      "name": "patient-theme-wallet-build",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd themes/patient-theme && npm run build-dossier"
         }
       ]
     },
@@ -278,6 +308,24 @@
       ]
     },
     {
+      "name": "patient-wallet_bind_to_menu-wallet-prototype",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd menu-wallet-prototype && npm run build"
+        },
+        {
+          "type": "copy",
+          "src": "./menu-wallet-prototype/seed",
+          "target": "./apihub-root/patient-wallet/wallet-patch/seed",
+          "options": {
+            "overwrite": true
+          }
+        }
+      ]
+    },
+    {
       "name": "eco-wallet_bind_to_eco-ssapp",
       "src": "",
       "actions": [
@@ -318,6 +366,28 @@
         {
           "type": "execute",
           "cmd": "echo Use this folder template in order to customize the application instance by adding configuration, pages etc. > ./apihub-root/hco-wallet/apps-patch/hco-ssapp/readme"
+        }
+      ]
+    },
+    {
+      "name": "patient-wallet_bind_to_patient-ssapp",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd patient-ssapp && npm run build"
+        },
+        {
+          "type": "copy",
+          "src": "./patient-ssapp/seed",
+          "target": "./apihub-root/patient-wallet/apps-patch/patient-ssapp/seed",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "execute",
+          "cmd": "echo Use this folder template in order to customize the application instance by adding configuration, pages etc. > ./apihub-root/patient-wallet/apps-patch/patient-ssapp/readme"
         }
       ]
     }
