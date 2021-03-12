@@ -1,10 +1,36 @@
 <psk-page title="Home">
     <psk-container controller-name="HomeController">
 
+        <psk-label class="" label="E-Consent"/>
+
 
 
         <psk-card class="bpd-dashboard">
-            <psk-label class="bpd-dashboard-title" label="Home"/>
+            <psk-label class="bpd-dashboard-title" label="Reminders "/>
+            <div class="bpd-buttons-row bpd-wide-cards">
+
+
+
+                <psk-button class="bpd-organization-card" event-name="home:patient">
+
+                    <psk-label class="trial-card-label" label="Lorem ipsum dolor sit amet, consectetur adipiscing elit."/>
+
+                </psk-button>
+
+
+                <psk-button class="bpd-organization-card" event-name="home:patient">
+                    <psk-label class="trial-card-label" label="Lorem ipsum dolor sit amet, consectetur adipiscing elit."/>
+                </psk-button>
+
+                <psk-button class="bpd-organization-card" event-name="home:patient">
+                    <psk-label class="trial-card-label" label="Lorem ipsum dolor sit amet, consectetur adipiscing elit."/>
+                </psk-button>
+
+            </div>
+        </psk-card>
+
+        <psk-card class="bpd-dashboard">
+            <psk-label class="bpd-dashboard-title" label="Trials"/>
             <div class="bpd-buttons-row bpd-wide-cards">
 
 
@@ -13,9 +39,29 @@
                     <div class="bpd-organization-card-content">
                         <psk-icon icon="users" color="rgb(255, 255, 255)"></psk-icon>
                     </div>
-                    <psk-label class="bpd-organization-card-label" label="Patient Data "/>
+                    <psk-label class="trial-card-label" label="Trial Name "/>
+                    <psk-label class="trial-card-label" label="Start Date "/>
+                    <psk-label class="trial-card-label" label="Site "/>
                 </psk-button>
 
+
+                <psk-button class="bpd-organization-card" event-name="home:patient">
+                    <div class="bpd-organization-card-content">
+                        <psk-icon icon="users" color="rgb(255, 255, 255)"></psk-icon>
+                    </div>
+                    <psk-label class="bpd-organization-card-label" label="Trial Name "/>
+                    <psk-label class="bpd-organization-card-label" label="Start Date "/>
+                    <psk-label class="bpd-organization-card-label" label="Site "/>
+                </psk-button>
+
+                <psk-button class="bpd-organization-card" event-name="home:patient">
+                    <div class="bpd-organization-card-content">
+                        <psk-icon icon="users" color="rgb(255, 255, 255)"></psk-icon>
+                    </div>
+                    <psk-label class="bpd-organization-card-label" label="Trial Name "/>
+                    <psk-label class="bpd-organization-card-label" label="Start Date "/>
+                    <psk-label class="bpd-organization-card-label" label="Site "/>
+                </psk-button>
 
             </div>
         </psk-card>

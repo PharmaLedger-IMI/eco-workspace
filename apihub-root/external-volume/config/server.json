@@ -16,8 +16,10 @@
     "bricksFabric",
     "bricking",
     "anchoring",
+    "eco-adaptor",
     "debugLogger",
     "staticServer"
+
   ],
   "endpointsConfig": {
     "bricking": {
@@ -77,8 +79,20 @@
           }
         }
       }
+    },
+    "eco-adaptor": {
+      "module": "./../../eco-adaptor",
+      "domainStrategies": {
+        "default": {
+          "type": "EcoAdaptor",
+          "option": {
+            "endpoint": "http://127.0.0.1:1000/adaptor"
+          }
+        }
+      }
     }
   },
+
   "enableAuthorisation": false,
   "enableLocalhostAuthorization": false,
   "skipAuthorisation": [

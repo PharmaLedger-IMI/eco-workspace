@@ -115,6 +115,13 @@ psk-label.success.small label {
     font-weight: 100;
 }
 
+.trial-card-label {
+    font-size: 15px;
+    font-family: sans-serif;
+    font-weight: 100;
+    color: white;
+}
+
 .bpd-modal-title {
     color: black !important;
     font-size: 22px;
