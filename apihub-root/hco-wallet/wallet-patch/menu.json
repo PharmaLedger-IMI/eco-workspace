@@ -9,7 +9,16 @@
   },
   "pages": [
     {
-      "name": "home"
+      "name": "HOME"
+    },
+    {
+      "name": "TRIALS"
+    },
+    {
+      "name": "PATIENTS"
+    },
+    {
+      "name": "NOTIFICATIONS"
     }
   ]
 }
