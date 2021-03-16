@@ -15,6 +15,14 @@
     padding: 15px 10px;
 }
 
+:host(.site-controls) {
+
+    border-radius: 20px;
+   padding-left: 10px;
+    padding-bottom: 3px;
+    padding-top: 3px;
+}
+
 :host(.smallTopPadding) {
     padding-top: 20px;
 }
