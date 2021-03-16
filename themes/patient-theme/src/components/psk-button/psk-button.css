@@ -103,7 +103,6 @@ psk-button.fullWidth button {
 
 .ed-button {
     text-align: center;
-
 }
 
 .ed-button button {
@@ -112,6 +111,25 @@ psk-button.fullWidth button {
     border-radius: 20px !important;
     height: 45px;
     font-weight: bold;
+}
+
+.patient-general-button {
+    text-align: left;
+}
+
+.patient-general-button button {
+    background-color: #00345b !important;
+    border: #00345b !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    height: 45px;
+    font-weight: bold;
+    text-align: left;
+    font-size: 22px;
+    color: white;
+    width: 100%;
+    border-top: 1px solid white !important;
+    padding-left: 30px !important;
 }
 
 .log-out-button {

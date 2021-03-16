@@ -26,7 +26,6 @@ export default class SitesTestController extends ContainerController {
             const id = event.data;
 
             this.History.navigateToPageByTag('site', id);
-            debugger;
             console.log("click on site");
         });
     }

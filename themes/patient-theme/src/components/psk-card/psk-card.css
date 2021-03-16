@@ -275,3 +275,10 @@ ol > li::before {
     text-align: center;
     font-size: 0 !important;
 }
+
+.patient-button-row .psk-card{
+    display: block;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
