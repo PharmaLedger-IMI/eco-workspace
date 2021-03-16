@@ -7,6 +7,6 @@
         "avatar": "/assets/images/dossier-explorer.png"
     },
     "modals": {
-
+        "trialDetails": "modals/trial-details-modal.html"
     }
 }

@@ -17,6 +17,14 @@
       "name": "Create trial",
       "tags": "create-trial",
       "indexed": false
+    },
+    {
+      "name": "Trial Details ",
+      "path": "/trial/details",
+      "icon": "fa-cog",
+      "tags": "trial-details",
+      "pageSrc": "trial-details-modal.html",
+      "indexed": false
     }
   ]
 }

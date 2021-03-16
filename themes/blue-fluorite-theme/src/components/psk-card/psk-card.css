@@ -270,6 +270,15 @@ psk-card.item-identifier psk-label label {
     margin-right: 30px;
     margin-bottom: 20px;
     background-color: #00345b;
+
+}
+
+.trial-home-card {
+    display: flex;
+    margin-right: 30px;
+    margin-bottom: 20px;
+    width: 30%;
+    background-color: #00345b;
 }
 
 .bpd-organization-box,
