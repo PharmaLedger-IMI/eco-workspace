@@ -12,12 +12,14 @@ export default class DummyDataService {
         {id: 3, name: "site 78", phone: "074328959743", address: "lorem ipsum", email: "fsd@fds.com"}
     ];
 
-    getSites() {
-        return this.sites;
+    getSites(callback) {
+        callback(undefined, this.sites)
+        return;
     }
 
-    getSite(id) {
-        return this.sites.find(site => site.id === id);
+    getSite(id, callback) {
+        callback(undefined, this.sites.find(site => site.id === id));
+        return;
     }
 
     getTrials() {

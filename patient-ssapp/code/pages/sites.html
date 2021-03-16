@@ -1,0 +1,54 @@
+<psk-example class="mobile-example">
+    <psk-mobile class="noPadding background" disable-header>
+        <psk-container controller-name="SitesTestController">
+            <div class="header-row">
+                <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
+                <psk-label class="scan-error-title" label="Sites"></psk-label>
+            </div>
+            <hr/>
+            <psk-layout align-items="center" class="coloredBackground">
+
+                <psk-layout-item class="ediary-default-bottom">
+                    <psk-label class="ediary-user-name-title" label="Sites"></psk-label>
+
+                    <psk-for-each data-view-model="sites">
+                        <psk-layout row-gap="10%" class="ed-controls">
+                            <psk-layout-item>
+                                <psk-button class="invisible-button black-blue-text" event-name="sites:details"
+                                            event-data="@id">
+                                    <psk-card>
+
+                                        <div >
+                                            <psk-label class="site-list-title" label="@name"></psk-label>
+                                            <psk-label class="site-list-second"
+                                                       label="@address"></psk-label>
+                                        </div>
+
+                                        <div class="label_and_image_site">
+                                            <psk-img src="assets/images/at.png"
+                                                     height='15'
+                                                     width='15'></psk-img>
+                                            <psk-label class="site-list-second"
+                                                       label="@email"></psk-label>
+                                        </div>
+                                        <div class="label_and_image_site">
+                                            <psk-img src="assets/images/phone.png"
+                                                     height='15'
+                                                     width='15'></psk-img>
+                                            <psk-label class="site-list-second"
+                                                       label="@phone"></psk-label>
+                                        </div>
+                                        </div>
+                                    </psk-card>
+                                </psk-button>
+                            </psk-layout-item>
+
+                        </psk-layout>
+                        <hr />
+                    </psk-for-each>
+                </psk-layout-item>
+                </hr>
+            </psk-layout>
+        </psk-container>
+    </psk-mobile>
+</psk-example>

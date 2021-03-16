@@ -6,6 +6,7 @@ export default class HomeController extends ContainerController {
         this._attachHandlerEconsent();
         this._attachHandlerIotQuestionarie();
         this._attachHandlerEDiary();
+        this._attachHandlerSites();
     }
 
     _attachHandlerEconsent(){
@@ -25,6 +26,12 @@ export default class HomeController extends ContainerController {
     _attachHandlerEDiary(){
         this.on('home:ediary', (event) => {
             this.History.navigateToPageByTag('ediary');
+        });
+    }
+
+    _attachHandlerSites(){
+        this.on('home:sites', (event) => {
+            this.History.navigateToPageByTag('sites');
         });
     }
 }

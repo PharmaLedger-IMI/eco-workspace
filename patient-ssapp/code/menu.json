@@ -31,6 +31,20 @@
       "icon": "fa-home",
       "pageSrc": "ediary.html",
       "tags": "ediary"
+    },
+    {
+      "name": "Sites",
+      "path": "/sites",
+      "icon": "fa-home",
+      "pageSrc": "sites.html",
+      "tags": "sites"
+    },
+    {
+      "name": "Site",
+      "path": "/site",
+      "icon": "fa-home",
+      "pageSrc": "site.html",
+      "tags": "site"
     }
   ]
 }

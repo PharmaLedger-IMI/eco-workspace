@@ -102,7 +102,22 @@ psk-label{
     font-weight: bold;
     font-size: 18px;
 }
+.site-list-title {
+    font-weight: bold;
+    font-size: 18px;
+    margin: 0 ;
+}
+.site-list-second{
+    font-size: 14px;
+    margin-top: 3px;
+    margin-bottom: 0px;
 
+}
+
+.site-list-second label {
+    padding: 0 !important;
+
+}
 
 .ediary-user-name-title {
     margin-top: 3%;
