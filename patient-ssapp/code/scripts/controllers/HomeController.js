@@ -1,25 +1,28 @@
 import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
+import TrialDataService from "./services/TrialDataService.js";
 
 export default class HomeController extends ContainerController {
     constructor(element, history) {
         super(element, history);
-        this._attachHandlerEconsent();
-        this._attachHandlerIotQuestionarie();
+
+        this.setModel({});
+
+        this.TrialDataService = new TrialDataService(this.DSUStorage);
+        this.TrialDataService.getTrials((err, data) => {
+            if(err) {
+                return console.log(err);
+            }
+            this.model.trials = data;
+        })
+
+        this._attachHandlerTrialClick();
         this._attachHandlerEDiary();
         this._attachHandlerSites();
     }
 
-    _attachHandlerEconsent(){
-        this.on('home:econsent', (event) => {
-            console.log ("Button pressed");
-            //this.History.navigateToPageByTag('econsent');
-        });
-    }
-
-    _attachHandlerIotQuestionarie(){
-        this.on('home:questionnaire', (event) => {
-            console.log ("Button 2 pressed");
-            //this.History.navigateToPageByTag('questionnaire');
+    _attachHandlerTrialClick(){
+        this.on('home:trial-details', (event) => {
+            this.History.navigateToPageByTag('trial', event.data);
         });
     }
 

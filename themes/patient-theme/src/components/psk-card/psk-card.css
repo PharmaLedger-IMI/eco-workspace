@@ -232,8 +232,6 @@ ol > li::before {
     justify-content: space-between;
 }
 
-
-
 .ed-control-line-father hr {
     background-color: white;
     color: white;
@@ -241,6 +239,15 @@ ol > li::before {
 
 .ed-control-line-left {
     width: 40%;
+}
+
+.visit-card .psk-card .card-body {
+    padding: 0;
+    margin-bottom: 10px;
+}
+
+.visit-card .psk-card .card-body div {
+    padding: 0;
 }
 
 .label_site_right {
@@ -274,4 +281,11 @@ ol > li::before {
 .double-button .psk-card .card-body {
     text-align: center;
     font-size: 0 !important;
+}
+
+.patient-button-row .psk-card{
+    display: block;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 }

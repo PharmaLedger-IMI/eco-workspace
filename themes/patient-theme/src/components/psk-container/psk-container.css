@@ -4,15 +4,42 @@ psk-container.pdfViewer .content {
 
 .header-row {
     display: flex;
+    height: 50px;
 }
 
 .subheader {
-
     height: 40px;
     width: 100%;
     background-color: #00345b;
 }
 
+.padding-sides {
+    padding: 20px;
+}
+
+.dispay-flex {
+    display: flex;
+}
+
+.justify-content-space-between {
+    justify-content: space-between;
+}
+
+.padding-top {
+    padding: 15px 0;
+}
+
+.date-div {
+    margin-bottom: 20px;
+}
+
+.date-div .left-image {
+    margin-right: 15px;
+}
+
+.date-div .right-text {
+    padding-top: 15px;
+}
 
 .ed-avatar-bordered-image {
     background-color: white;
