@@ -1,6 +1,6 @@
 import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
 import EDiaryService from "./services/EDiaryService.js";
-import DummyDataService from "./services/DummyDataService.js";
+import TrialDataService from "./services/TrialDataService.js";
 
 const initModel = {}
 
@@ -9,19 +9,14 @@ export default class SiteController extends ContainerController {
         super(element, history);
         this.setModel({});
         let receivedParam = this.History.getState();
-        this.DummyDataService = new DummyDataService(this.DSUStorage);
-        console.log(receivedParam);
-        this.DummyDataService.getSite(receivedParam,(err, data) => {
+        this.TrialDataService = new TrialDataService(this.DSUStorage);
+        this.TrialDataService.getSite(receivedParam,(err, data) => {
             if (err) {
                 console.log(err);
                 return;
             }
             this.model.site = JSON.parse(JSON.stringify(data));
         });
-
-
     }
-
-
 
 }

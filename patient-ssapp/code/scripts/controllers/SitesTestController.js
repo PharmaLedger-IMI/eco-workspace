@@ -1,6 +1,6 @@
 import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
 import EDiaryService from "./services/EDiaryService.js";
-import DummyDataService from "./services/DummyDataService.js";
+import TrialDataService from "./services/TrialDataService.js";
 
 const initModel = {}
 
@@ -8,7 +8,7 @@ export default class SitesTestController extends ContainerController {
     constructor(element, history) {
         super(element, history);
         this.setModel({});
-        this.DummyDataService = new DummyDataService(this.DSUStorage);
+        this.DummyDataService = new TrialDataService(this.DSUStorage);
         this.DummyDataService.getSites((err, data) => {
             if (err) {
                 console.log(err);
@@ -21,12 +21,8 @@ export default class SitesTestController extends ContainerController {
     }
 
     _attachHandlerSiteDetails() {
-
         this.on('sites:details', (event) => {
-            const id = event.data;
-
-            this.History.navigateToPageByTag('site', id);
-            console.log("click on site");
+            this.History.navigateToPageByTag('site', event.data);
         });
     }
 

@@ -45,6 +45,13 @@
       "icon": "fa-home",
       "pageSrc": "site.html",
       "tags": "site"
+    },
+    {
+      "name": "Trial",
+      "path": "/trial",
+      "icon": "fa-home",
+      "pageSrc": "trial.html",
+      "tags": "trial"
     }
   ]
 }

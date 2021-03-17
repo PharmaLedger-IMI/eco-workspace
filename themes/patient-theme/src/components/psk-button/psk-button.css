@@ -155,6 +155,12 @@ psk-button.fullWidth button {
     width: 100%;
 }
 
+.notification-button {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+}
+
 .invisible-button {
     font-size: 0 !important;
 }
@@ -204,4 +210,10 @@ psk-button.fullWidth button {
 .ed-faded button {
     box-shadow: none !important;
     background-color: #D0D0D0 !important;
+}
+
+.full-width-button {
+    position: absolute;
+    bottom: 10px;
+    padding-left: 25%;
 }
