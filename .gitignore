@@ -7,6 +7,7 @@ apihub-root/eco-wallet/loader
 apihub-root/dsu-explorer/loader
 apihub-root/patient-wallet/loader
 apihub-root/hco-wallet/loader
+apihub-root/sponsor-wallet/loader
 apihub-root/internal-volume/domains
 apihub-root/external-volume/domains
 dossier-explorer-ssapp

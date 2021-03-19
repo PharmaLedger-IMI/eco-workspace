@@ -134,3 +134,61 @@
     prepare new ssapp for hco
     replaced bin/build and bin/build-dossier with the buildDossier script provided by octopus
     prepare new ssapp for hco
+    psk-layout modification regarding updating state
+    Update test.yml
+    extra info added into the landing page
+    install default marketplace applications using seedSSI
+    removed obsolete functions from use
+    landingApp null check before accessing name
+    removed obsolete functions from use
+    removed obsolete functions from use
+    removed obsolete functions from use
+    psk-layout modification regarding updating state
+    Update test.yml
+    extra info added into the landing page
+    install default marketplace applications using seedSSI
+    removed obsolete functions from use
+    landingApp null check before accessing name
+    removed obsolete functions from use
+    removed obsolete functions from use
+    removed obsolete functions from use
+    removed obsolete functions from use
+    psk-layout modification regarding updating state
+    Update test.yml
+    extra info added into the landing page
+    install default marketplace applications using seedSSI
+    removed obsolete functions from use
+    landingApp null check before accessing name
+    removed obsolete functions from use
+    removed obsolete functions from use
+    removed obsolete functions from use
+    removed obsolete functions from use
+    psk-layout modification regarding updating state
+    Update test.yml
+    extra info added into the landing page
+    install default marketplace applications using seedSSI
+    removed obsolete functions from use
+    landingApp null check before accessing name
+    removed obsolete functions from use
+    removed obsolete functions from use
+    removed obsolete functions from use
+    psk-layout modification regarding updating state
+    Update test.yml
+    extra info added into the landing page
+    install default marketplace applications using seedSSI
+    removed obsolete functions from use
+    landingApp null check before accessing name
+    removed obsolete functions from use
+    removed obsolete functions from use
+    removed obsolete functions from use
+    removed obsolete functions from use
+    psk-layout modification regarding updating state
+    Update test.yml
+    extra info added into the landing page
+    install default marketplace applications using seedSSI
+    removed obsolete functions from use
+    landingApp null check before accessing name
+    removed obsolete functions from use
+    removed obsolete functions from use
+    removed obsolete functions from use
+    removed obsolete functions from use

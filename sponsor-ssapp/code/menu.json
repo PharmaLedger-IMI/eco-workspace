@@ -1,0 +1,36 @@
+{
+  "defaultMenuConfig": {
+    "icon": "fa-bars",
+    "type": "route",
+    "component": "psk-page-loader",
+    "exact": true,
+    "404": "/pages/404.html"
+  },
+  "pages": [
+    {
+      "name": "Trials",
+      "tags": "trials",
+      "icon": "fa-question-circle"
+    },
+    {
+      "name": "Sites",
+      "tags": "sites"
+    },
+    {
+      "name": "Health Care Practitioners",
+      "tags": "health-care-practitioners"
+    },
+    {
+      "name": "Notifications",
+      "tags": "notifications"
+    },
+    {
+      "name": "Trial Protocols",
+      "tags": "trial protocols"
+    },
+    {
+      "name": "My Account",
+      "tags": "My Account"
+    }
+  ]
+}

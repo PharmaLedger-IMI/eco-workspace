@@ -1,0 +1,38 @@
+:host {
+  width: 100%;
+}
+
+.navbar {
+  max-width: 250px !important;
+}
+
+.navbar.navbar-dark {
+  padding: 0;
+  position: static;
+}
+
+.navbar-brand {
+  display: none;
+}
+
+.navbar-toggler {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 10px 8px 0 0;
+  border: none;
+  color: #fff;
+}
+
+/* docs demo */
+
+:host(.demo) {
+  display: block;
+  /* background-color: #4c71dd; */
+}
+
+:host(.demo) ::slotted(*) {
+  color: #ffffff;
+  padding: 1em 1em 0.5em 1em;
+  background-color: #354f9b50;
+}
