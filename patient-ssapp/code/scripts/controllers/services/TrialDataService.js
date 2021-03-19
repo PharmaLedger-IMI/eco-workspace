@@ -1,5 +1,3 @@
-import TrialModel from '../../models/EDIaryModel.js';
-
 export default class TrialDataService {
 
     constructor(DSUStorage) {
@@ -70,14 +68,16 @@ export default class TrialDataService {
             hcp: "01/05/2021",
             phone: "074328959743",
             address: "lorem ipsum",
-            email: "fsd@fds.com"},
+            email: "fsd@fds.com"
+        },
         {
             id: 2,
             name: "site 45",
             hcp: "01/05/2021",
             phone: "074328959743",
             address: "lorem ipsum",
-            email: "fsd@fds.com"},
+            email: "fsd@fds.com"
+        },
         {
             id: 3,
             name: "site 78",
@@ -92,26 +92,56 @@ export default class TrialDataService {
         {
             id: 1,
             name: "site 12",
-            phone: "074328959743",
-            address: "lorem ipsum",
-            email: "fsd@fds.com",
+            version: 1,
+            file: 'something',
+            documentDate: "01/05/2021",
+            providedDate: "06/08/2021",
+            hcpDate: "16/25/2022",
             signed: true
         },
         {
             id: 2,
             name: "site 45",
-            phone: "074328959743",
-            address: "lorem ipsum",
-            email: "fsd@fds.com",
+            version: 2,
+            file: 'something',
+            documentDate: "01/05/2021",
+            providedDate: "06/08/2021",
+            hcpDate: "16/25/2022",
             signed: false
         },
         {
             id: 3,
             name: "site 78",
-            phone: "074328959743",
-            address: "lorem ipsum",
-            email: "fsd@fds.com",
+            version: 4,
+            file: 'something',
+            documentDate: "01/05/2021",
+            providedDate: "06/08/2021",
+            hcpDate: "16/25/2022",
             signed: true
+        }
+    ];
+
+    notifications = [
+        {
+            id: 1,
+            name: "Status update",
+            startDate: "01/05/2021",
+            details: "lorem ipsum lorem ipsum lorem ipsum lorem",
+            type: 'econsent'
+        },
+        {
+            id: 2,
+            name: "Dr responded to question",
+            startDate: "01/05/2021",
+            details: "lorem ipsum lorem ipsum lorem ipsum lorem",
+            type: 'question'
+        },
+        {
+            id: 3,
+            name: "New trial will start soon",
+            startDate: "01/05/2021",
+            details: "lorem ipsum lorem ipsum lorem ipsum lorem",
+            type: 'trial'
         }
     ];
 
@@ -138,6 +168,10 @@ export default class TrialDataService {
         });
     }
 
+    getNotifications(callback) {
+        callback(undefined, this.notifications);
+    }
+
     getSites(callback) {
         callback(undefined, this.sites);
     }
@@ -151,7 +185,7 @@ export default class TrialDataService {
         let auxTrials = []
 
         let getFullTrials = (trial) => {
-            if(trial === undefined) {
+            if (trial === undefined) {
                 return callback(undefined, auxTrials);
             }
             this.getTrial(trial.id, (err, data) => {
@@ -160,7 +194,7 @@ export default class TrialDataService {
             });
         }
 
-        if(trialsCopy.length === 0) {
+        if (trialsCopy.length === 0) {
             return callback(undefined, []);
         }
         getFullTrials(trialsCopy.shift());

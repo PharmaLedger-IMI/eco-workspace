@@ -7,7 +7,6 @@ export default class TrialController extends ContainerController {
 
         this.setModel({});
         let receivedParam = this.History.getState();
-        console.log('TrialController', receivedParam);
 
         this.TrialDataService = new TrialDataService(this.DSUStorage);
         this.TrialDataService.getTrial(receivedParam, (err, data) => {

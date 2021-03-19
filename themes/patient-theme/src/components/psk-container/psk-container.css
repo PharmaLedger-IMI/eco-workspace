@@ -20,6 +20,17 @@ psk-container.pdfViewer .content {
 .dispay-flex {
     display: flex;
 }
+.dispay-flex  {
+    display: flex;
+}
+
+.margin-left-10 {
+    margin-left: 10px;
+}
+
+.margin-top-10 {
+    margin-top: 10px;
+}
 
 .justify-content-space-between {
     justify-content: space-between;
@@ -35,6 +46,10 @@ psk-container.pdfViewer .content {
 
 .date-div .left-image {
     margin-right: 15px;
+}
+
+.date-div .left-image.padding-image {
+    padding-top: 25px;
 }
 
 .date-div .right-text {

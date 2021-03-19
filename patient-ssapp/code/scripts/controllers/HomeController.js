@@ -18,6 +18,7 @@ export default class HomeController extends ContainerController {
         this._attachHandlerTrialClick();
         this._attachHandlerEDiary();
         this._attachHandlerSites();
+        this._attachHandlerNotifications();
     }
 
     _attachHandlerTrialClick(){
@@ -35,6 +36,12 @@ export default class HomeController extends ContainerController {
     _attachHandlerSites(){
         this.on('home:sites', (event) => {
             this.History.navigateToPageByTag('sites');
+        });
+    }
+
+    _attachHandlerNotifications(){
+        this.on('home:notifications', (event) => {
+            this.History.navigateToPageByTag('notifications');
         });
     }
 }
