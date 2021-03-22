@@ -7,14 +7,14 @@
 
 .side-menu-logo {
   width: 100%;
-  /* height: 100%; */
   margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* .page-title {
-  display: none !important;
-  background-color: #00345b !important;
-} */
+@media only screen and (max-width: 960px) {
+  .side-menu-logo {
+    display: none;
+  }
+}

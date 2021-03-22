@@ -10,27 +10,37 @@
     {
       "name": "Trials",
       "tags": "trials",
-      "icon": "fa-question-circle"
+      "icon": "fa-heartbeat fa-lg"
     },
     {
       "name": "Sites",
-      "tags": "sites"
+      "tags": "sites",
+      "icon": "fa-hospital-o fa-lg"
     },
     {
-      "name": "Health Care Practitioners",
-      "tags": "health-care-practitioners"
+      "name": "Practitioners",
+      "tags": "practitioners",
+      "icon": "fa-user-md fa-lg"
     },
     {
       "name": "Notifications",
-      "tags": "notifications"
+      "tags": "notifications",
+      "icon": "fa-bell-o fa-lg"
     },
     {
       "name": "Trial Protocols",
-      "tags": "trial protocols"
+      "tags": "trial protocols",
+      "icon": "fa-check-square-o fa-lg"
     },
     {
       "name": "My Account",
-      "tags": "My Account"
+      "tags": "my account",
+      "icon": "fa-user fa-lg"
+    },
+    {
+      "name": "trial",
+      "tags": "trial",
+      "indexed": false
     }
   ]
 }

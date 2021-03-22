@@ -1,10 +1,82 @@
 import ContainerController from '../../cardinal/controllers/base-controllers/ContainerController.js';
-import ListTrialsService from '../services/ListTrialsService.js';
+import TrialsService from '../services/TrialsService.js';
 
 export default class DebugLogController extends ContainerController {
   statusesArray = ['Approved', 'Pending', 'Rejected'];
+  itemsPerPageArray = [5, 10, 15, 20, 30];
 
-  countries = {
+  headers = [
+    {
+      column: 'id',
+      label: 'Id',
+      notSortable: false,
+      type: 'number',
+      asc: null,
+      desc: null,
+    },
+    {
+      column: 'name',
+      label: 'Trial Name',
+      notSortable: false,
+      type: 'string',
+      asc: null,
+      desc: null,
+    },
+    {
+      column: 'progress',
+      label: 'Progress',
+      notSortable: false,
+      type: 'number',
+      asc: null,
+      desc: null,
+    },
+    {
+      column: 'status',
+      label: 'EC Status',
+      notSortable: false,
+      type: 'string',
+      asc: null,
+      desc: null,
+    },
+    {
+      column: 'enrolled',
+      label: 'Enrolled',
+      notSortable: false,
+      type: 'number',
+      asc: null,
+      desc: null,
+    },
+    {
+      column: 'total',
+      label: 'Total',
+      notSortable: false,
+      type: 'number',
+      asc: null,
+      desc: null,
+    },
+    {
+      column: 'countries',
+      label: 'Countries',
+      notSortable: false,
+      desc: null,
+    },
+    {
+      column: 'started',
+      label: 'Started',
+      notSortable: false,
+      type: 'date',
+      asc: null,
+      desc: null,
+    },
+    {
+      column: null,
+      label: 'View',
+      notSortable: true,
+      desc: null,
+    },
+  ];
+
+  countriesModel = {
     label: 'Select country',
     placeholder: 'Please select an option',
     required: false,
@@ -30,10 +102,30 @@ export default class DebugLogController extends ContainerController {
 
   trials = null;
 
+  pagination = {
+    previous: false,
+    next: false,
+    items: null,
+    pages: {
+      options: [],
+    },
+    slicedPages: null,
+    currentPage: 0,
+    itemsPerPage: 10,
+    totalPages: null,
+    itemsPerPageOptions: {
+      options: this.itemsPerPageArray.map((x) => ({
+        label: x,
+        value: x,
+      })),
+    },
+  };
+
   constructor(element, history) {
     super(element, history);
+    this.history = history;
 
-    this.listTrialsService = new ListTrialsService();
+    this.trialsService = new TrialsService();
 
     this.trials = this.getTrials();
     const countries = [];
@@ -44,20 +136,61 @@ export default class DebugLogController extends ContainerController {
 
     this.setModel({
       statuses: this.statuses,
-      countries: { ...this.countries, options: countries.map((x) => ({ label: x, value: x })) },
+      countries: { ...this.countriesModel, options: countries.map((x) => ({ label: x, value: x })) },
+      search: this.search,
       trials: this.trials.map((trial) => ({
         ...trial,
         countries: trial.countries.join(),
         status: this.statusesArray[trial.status],
       })),
-      search: this.search,
+      pagination: this.pagination,
+      headers: this.headers,
     });
+
+    this.paginateTrials(this.model.trials);
 
     this.attachEvents();
   }
 
+  paginateTrials(trials, page = 1) {
+    const itemsPerPage = this.model.pagination.itemsPerPage;
+    const length = trials.length;
+    const numberOfPages = Math.ceil(length / itemsPerPage);
+    const pages = Array.from({ length: numberOfPages }, (_, i) => i + 1).map((x) => ({
+      label: x,
+      value: x,
+      active: page === x,
+    }));
+
+    this.model.pagination.previous = page > 1 && pages.length > 1 ? false : true;
+    this.model.pagination.next = page < pages.length && pages.length > 1 ? false : true;
+    this.model.pagination.items = trials.slice(itemsPerPage * (page - 1), itemsPerPage * page);
+    this.model.pagination.pages = {
+      ...this.model.pagination.pages,
+      options: pages.map((x) => ({
+        label: x.label,
+        value: x.value,
+      })),
+    };
+    this.model.pagination.slicedPages =
+      pages.length > 5 && page - 3 >= 0 && page + 3 <= pages.length
+        ? pages.slice(page - 3, page + 2)
+        : pages.length > 5 && page - 3 < 0
+        ? pages.slice(0, 5)
+        : pages.length > 5 && page + 3 > pages.length
+        ? pages.slice(pages.length - 5, pages.length)
+        : pages;
+    this.model.pagination.currentPage = page;
+    this.model.pagination.totalPages = pages.length;
+    // this.model.pagination.pages.value = page.toString();
+    console.log('TEST:', this.model.test, typeof this.model.test);
+
+    this.model.test = '8';
+    console.log('TEST:', this.model.test);
+  }
+
   getTrials() {
-    return this.listTrialsService.getTrials();
+    return this.trialsService.getTrials();
   }
 
   setTrialsModel(trials) {
@@ -67,11 +200,12 @@ export default class DebugLogController extends ContainerController {
       status: this.statusesArray[trial.status],
     }));
 
-    this.model.trials = [...model];
+    this.model.trials = model;
+    this.paginateTrials(model, 1);
+    this.model.headers = this.model.headers.map((x) => ({ ...x, asc: false, desc: false }));
   }
 
   filterData() {
-    console.log('filtering...:', this.selectedFilters);
     let result = this.trials;
 
     if (this.model.countries.value) {
@@ -83,24 +217,52 @@ export default class DebugLogController extends ContainerController {
     if (this.model.search.value && this.model.search.value !== '') {
       result = result.filter((x) => x.name.toUpperCase().includes(this.model.search.value.toUpperCase()));
     }
+
     this.setTrialsModel(result);
+  }
+
+  sortColumn(column) {
+    if (column || this.model.headers.some((x) => x.asc || x.desc)) {
+      if (!column) column = this.model.headers.find((x) => x.asc || x.desc).column;
+      const headers = this.model.headers;
+      const selectedColumn = headers.find((x) => x.column === column);
+      const idx = headers.indexOf(selectedColumn);
+      console.log('INDEX:', idx);
+      if (headers[idx].notSortable) return;
+      if (headers[idx].asc || headers[idx].desc) {
+        this.model.trials.reverse();
+        this.paginateTrials(this.model.trials, this.model.pagination.currentPage);
+        this.model.headers = this.model.headers.map((x) => {
+          if (x.column !== column) {
+            return { ...x, asc: false, desc: false };
+          } else return { ...x, asc: !headers[idx].asc, desc: !headers[idx].desc };
+        });
+      } else {
+        this.model.trials = this.model.trials.sort((a, b) => (a[column] >= b[column] ? 1 : -1));
+        this.paginateTrials(this.model.trials, this.model.pagination.currentPage);
+        this.model.headers = this.model.headers.map((x) => {
+          if (x.column !== column) {
+            return { ...x, asc: false, desc: false };
+          } else return { ...x, asc: true, desc: false };
+        });
+      }
+    } else {
+      this.model.headers = this.model.headers.map((x) => ({ ...x, asc: false, desc: false }));
+    }
   }
 
   attachEvents() {
     this.model.addExpression(
-      'trialArrayLoaded',
-      () => {
-        return typeof this.model.logs !== 'undefined';
-      },
-      'logs'
-    );
-
-    this.model.addExpression(
       'trialArrayNotEmpty',
       () => {
-        return typeof this.model.trials !== 'undefined' && this.model.trials.length > 0;
+        return (
+          this.model.pagination &&
+          this.model.pagination.items &&
+          Array.isArray(this.model.pagination.items) &&
+          this.model.pagination.items.length > 0
+        );
       },
-      'logs'
+      'trials'
     );
 
     this.on('add-trial', async (event) => {
@@ -109,8 +271,7 @@ export default class DebugLogController extends ContainerController {
     });
 
     this.on('view-trial', async (event) => {
-      console.log('viewing trial');
-      console.log(event);
+      this.History.navigateToPageByTag('trial', event.data);
     });
 
     this.on('filters-changed', async (event) => {
@@ -126,10 +287,42 @@ export default class DebugLogController extends ContainerController {
 
     const searchField = this.element.querySelector('#search-field');
     searchField.addEventListener('keydown', () => {
-      console.log('key pressed');
       setTimeout(() => {
         this.filterData();
       }, 300);
+    });
+
+    this.on('navigate-to-page', async (event) => {
+      event.preventDefault();
+      this.paginateTrials(this.model.trials, event.data.value ? parseInt(event.data.value) : event.data);
+    });
+
+    this.on('go-to-previous-page', async () => {
+      this.paginateTrials(this.model.trials, this.model.pagination.currentPage - 1);
+    });
+
+    this.on('go-to-next-page', async () => {
+      this.paginateTrials(this.model.trials, this.model.pagination.currentPage + 1);
+    });
+
+    this.on('go-to-last-page', async () => {
+      const length = this.model.trials.length;
+      const numberOfPages = Math.ceil(length / this.model.pagination.itemsPerPage);
+      this.paginateTrials(this.model.trials, numberOfPages);
+    });
+
+    this.on('go-to-first-page', async () => {
+      this.paginateTrials(this.model.trials, 1);
+    });
+
+    this.on('set-items-per-page', async (event) => {
+      console.log(event, event.data, typeof event.data);
+      this.model.pagination.itemsPerPage = parseInt(event.data.value);
+      this.paginateTrials(this.model.trials, 1);
+    });
+
+    this.on('sort-column', async (event) => {
+      this.sortColumn(event.data);
     });
   }
 }
