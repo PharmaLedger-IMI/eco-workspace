@@ -1,0 +1,15 @@
+<psk-container controller-name="WithdrawEconsent">
+    <psk-modal id="withdrawModal" class="mobile-modal" opened>
+        <psk-label slot="title" class="bpd-modal-title" label="Withdraw Econsent"></psk-label>
+
+        <div class="content">
+            <psk-label slot="title" class="bpd-modal-title" label="Are you sure you want to withdraw?"></psk-label>
+            <psk-textarea view-model="@reason"></psk-textarea>
+        </div>
+
+        <psk-card slot="footer" class="bpd-row bpd-creation-row">
+            <psk-button event-name="withdraw-on-click">Withdraw</psk-button>
+        </psk-card>
+
+    </psk-modal>
+</psk-container>

@@ -52,6 +52,20 @@
       "icon": "fa-home",
       "pageSrc": "trial.html",
       "tags": "trial"
+    },
+    {
+      "name": "Notification",
+      "path": "/notifications",
+      "icon": "fa-home",
+      "pageSrc": "notifications.html",
+      "tags": "notifications"
+    },
+    {
+      "name": "Econsent",
+      "path": "/econsent",
+      "icon": "fa-home",
+      "pageSrc": "econsent.html",
+      "tags": "econsent"
     }
   ]
 }

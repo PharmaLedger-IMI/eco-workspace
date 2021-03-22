@@ -73,3 +73,8 @@ div {
 .padding-top psk-link {
     padding-top: 20px;
 }
+
+.padding-top-35 psk-icon {
+    padding-top: 35px;
+    padding-left: 10px;
+}

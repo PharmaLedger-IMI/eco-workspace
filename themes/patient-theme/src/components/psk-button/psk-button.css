@@ -175,6 +175,13 @@ psk-button.fullWidth button {
     border: 0 !important;
 }
 
+.invisible-button.gray-and-black button{
+    color: black !important;
+    border: 1px solid gray !important;
+    padding: 5px 10px !important;
+    display: flex !important;
+}
+
 .black-blue-text button {
     color: #00345B !important;
 }
@@ -214,6 +221,10 @@ psk-button.fullWidth button {
 
 .full-width-button {
     position: absolute;
-    bottom: 10px;
-    padding-left: 25%;
+    padding-left: 20%;
+    width: 80%;
+}
+
+.full-width-button button{
+    text-align: center;
 }
