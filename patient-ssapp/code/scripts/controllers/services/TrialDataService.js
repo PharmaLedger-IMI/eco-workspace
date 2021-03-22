@@ -1,192 +1,62 @@
+import Constants from "../Constants.js";
+
 export default class TrialDataService {
 
     constructor(DSUStorage) {
         this.DSUStorage = DSUStorage;
     }
 
-    trials = [
-        {
-            id: 1,
-            name: "trial name 1",
-            startDate: "01/05/2021",
-            details: "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
-            siteId: 1,
-            econsentId: 1,
-            visits: [
-                {
-                    id: 1,
-                    date: "01/05/2021"
-                },
-                {
-                    id: 2,
-                    date: "05/05/2021"
-                }
-            ]
-        },
-        {
-            id: 2,
-            name: "trial name 2",
-            startDate: "01/05/2021",
-            details: "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
-            siteId: 2,
-            econsentId: 3,
-            visits: [
-                {
-                    id: 3,
-                    date: "01/05/2021"
-                },
-                {
-                    id: 4,
-                    date: "05/05/2021"
-                }
-            ]
-        },
-        {
-            id: 3,
-            name: "trial name 3",
-            startDate: "01/05/2021",
-            details: "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
-            siteId: 3,
-            econsentId: 2,
-            visits: [
-                {
-                    id: 5,
-                    date: "01/05/2021"
-                },
-                {
-                    id: 6,
-                    date: "05/05/2021"
-                }
-            ]
-        }
-    ];
-
-    sites = [
-        {
-            id: 1,
-            name: "site 12",
-            hcp: "01/05/2021",
-            phone: "074328959743",
-            address: "lorem ipsum",
-            email: "fsd@fds.com"
-        },
-        {
-            id: 2,
-            name: "site 45",
-            hcp: "01/05/2021",
-            phone: "074328959743",
-            address: "lorem ipsum",
-            email: "fsd@fds.com"
-        },
-        {
-            id: 3,
-            name: "site 78",
-            hcp: "01/05/2021",
-            phone: "074328959743",
-            address: "lorem ipsum",
-            email: "fsd@fds.com"
-        }
-    ];
-
-    econsents = [
-        {
-            id: 1,
-            name: "site 12",
-            version: 1,
-            file: 'something',
-            documentDate: "01/05/2021",
-            providedDate: "06/08/2021",
-            hcpDate: "16/25/2022",
-            signed: true
-        },
-        {
-            id: 2,
-            name: "site 45",
-            version: 2,
-            file: 'something',
-            documentDate: "01/05/2021",
-            providedDate: "06/08/2021",
-            hcpDate: "16/25/2022",
-            signed: false
-        },
-        {
-            id: 3,
-            name: "site 78",
-            version: 4,
-            file: 'something',
-            documentDate: "01/05/2021",
-            providedDate: "06/08/2021",
-            hcpDate: "16/25/2022",
-            signed: true
-        }
-    ];
-
-    notifications = [
-        {
-            id: 1,
-            name: "Status update",
-            startDate: "01/05/2021",
-            details: "lorem ipsum lorem ipsum lorem ipsum lorem",
-            type: 'econsent'
-        },
-        {
-            id: 2,
-            name: "Dr responded to question",
-            startDate: "01/05/2021",
-            details: "lorem ipsum lorem ipsum lorem ipsum lorem",
-            type: 'question'
-        },
-        {
-            id: 3,
-            name: "New trial will start soon",
-            startDate: "01/05/2021",
-            details: "lorem ipsum lorem ipsum lorem ipsum lorem",
-            type: 'trial'
-        }
-    ];
-
     getSite(id, callback) {
-        callback(undefined, this.sites.find(site => site.id === id));
+        callback(undefined, JSON.parse(JSON.stringify(Constants.sites.find(site => site.id === id))));
     }
 
     getEconsent(id, callback) {
-        callback(undefined, this.econsents.find(econsent => econsent.id === id));
+        callback(undefined, JSON.parse(JSON.stringify(Constants.econsents.find(econsent => econsent.id === id))));
     }
 
     getTrial(id, callback) {
-        let trialIndex = this.trials.findIndex(trial => trial.id === id);
+        let trialIndex = Constants.trials.findIndex(trial => trial.id === id);
         if (trialIndex === -1) {
             return callback("Trial not found.", undefined);
         }
-        let existingTrial = this.trials[trialIndex];
+        let existingTrial = Constants.trials[trialIndex];
         this.getSite(existingTrial.siteId, (err, data) => {
             existingTrial.site = data;
             this.getEconsent(existingTrial.econsentId, (err, data) => {
                 existingTrial.econsent = data;
-                callback(undefined, existingTrial);
+                callback(undefined, JSON.parse(JSON.stringify(existingTrial)));
             });
         });
     }
 
     getNotifications(callback) {
-        callback(undefined, this.notifications);
+        callback(undefined, JSON.parse(JSON.stringify(Constants.notifications)));
+    }
+
+    updateNotification(notification, callback) {
+        let notificationIndex = Constants.notifications.findIndex(notif => notif.id === notification.id)
+        if (notificationIndex === -1) {
+            return callback(`Notification with id ${notification.id} not exist.`);
+        }
+        Constants.notifications[notificationIndex] = JSON.parse(JSON.stringify(notification));
+        callback(undefined, JSON.parse(JSON.stringify(notification)));
     }
 
     getSites(callback) {
-        callback(undefined, this.sites);
+        callback(undefined, JSON.parse(JSON.stringify(Constants.sites)));
     }
 
     getEconsents() {
-        callback(undefined, this.econsents);
+        callback(undefined, JSON.parse(JSON.stringify(Constants.econsents)));
     }
 
     getTrials(callback) {
-        let trialsCopy = JSON.parse(JSON.stringify(this.trials));
+        let trialsCopy = JSON.parse(JSON.stringify(Constants.trials));
         let auxTrials = []
 
         let getFullTrials = (trial) => {
             if (trial === undefined) {
-                return callback(undefined, auxTrials);
+                return callback(undefined, JSON.parse(JSON.stringify(auxTrials)));
             }
             this.getTrial(trial.id, (err, data) => {
                 auxTrials.push(data);
@@ -199,4 +69,6 @@ export default class TrialDataService {
         }
         getFullTrials(trialsCopy.shift());
     }
+
+
 }

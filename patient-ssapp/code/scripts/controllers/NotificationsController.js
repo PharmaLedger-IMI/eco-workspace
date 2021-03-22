@@ -19,8 +19,28 @@ export default class NotificationsController extends ContainerController {
                     icon: Constants.getIconByNotificationType(notification.type)
                 }
             });
-            debugger
         })
+
+        this.attachNotificationNavigateHandler();
+    }
+
+    attachNotificationNavigateHandler(){
+        this.on('go-to-notification', (event) => {
+            let notificationId = event.data;
+            let notification = this.model.notifications.find(notification => notification.id === notificationId);
+            let page = Constants.getPageByNotificationType(notification.type)
+            if (!notification.viewed) {
+                notification.viewed = true;
+                this.TrialDataService.updateNotification(notification, (err, data) => {
+                    if (err) {
+                        return console.log(err);
+                    }
+                    this.History.navigateToPageByTag(page, notification.entityId);
+                });
+            } else {
+                this.History.navigateToPageByTag(page, notification.entityId);
+            }
+        });
     }
 
 }
