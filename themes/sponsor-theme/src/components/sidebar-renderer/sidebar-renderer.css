@@ -47,8 +47,16 @@ a.active .wrapper_container {
 
 /* no lines on subcategory */
 
+.fa.fa-home {
+  background-color: yellow;
+  color: green;
+  height: 40px;
+  width: 40px;
+}
+
 .children .item_container {
   border-style: none;
+  display: flex;
 }
 
 .children .item_container .item_name {
