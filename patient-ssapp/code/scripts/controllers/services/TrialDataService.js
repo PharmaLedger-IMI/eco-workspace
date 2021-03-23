@@ -68,7 +68,8 @@ export default class TrialDataService {
             hcp: "01/05/2021",
             phone: "074328959743",
             address: "lorem ipsum",
-            email: "fsd@fds.com"
+            email: "fsd@fds.com",
+            icon: 'assets/images/hospitalfirst.png'
         },
         {
             id: 2,
@@ -76,7 +77,8 @@ export default class TrialDataService {
             hcp: "01/05/2021",
             phone: "074328959743",
             address: "lorem ipsum",
-            email: "fsd@fds.com"
+            email: "fsd@fds.com",
+            icon: 'assets/images/hospitalsecond.jpg'
         },
         {
             id: 3,
@@ -84,7 +86,8 @@ export default class TrialDataService {
             hcp: "01/05/2021",
             phone: "074328959743",
             address: "lorem ipsum",
-            email: "fsd@fds.com"
+            email: "fsd@fds.com",
+            icon: 'assets/images/hospitalthird.png'
         }
     ];
 

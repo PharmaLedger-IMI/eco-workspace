@@ -5,50 +5,52 @@
                 <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
                 <psk-label class="scan-error-title" label="Sites"></psk-label>
             </div>
-            <hr/>
-            <psk-layout align-items="center" class="coloredBackground">
 
-                <psk-layout-item class="ediary-default-bottom">
-                    <psk-label class="ediary-user-name-title" label="Sites"></psk-label>
-
+            <div class="">
+                <div class="padding-sides">
                     <psk-for-each data-view-model="sites">
-                        <psk-layout  class="site-controls">
-                            <psk-layout-item>
-                                <psk-button class="invisible-button black-blue-text" event-name="sites:details"
-                                            event-data="@id">
-                                    <psk-card>
+                        <div class="dispay-flex date-div justify-content-space-between">
+                            <div class="dispay-flex">
+                                <div class="left-image padding-image">
+                                    <psk-img class="ed-control-image" src="@icon"
+                                             height='50' width='50'></psk-img>
+                                </div>
+                                <div class="right-text">
+                                    <div>
+                                        <div>
+                                            <strong>
+                                                <psk-echo value="@name"></psk-echo>
+                                            </strong>
+                                        </div>
+                                        <div>
+                                            <psk-echo value="Address: "></psk-echo>
+                                            <strong>
+                                                <psk-echo value="@address"></psk-echo>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <psk-echo value="Phone: "></psk-echo>
+                                        <strong>
+                                            <psk-echo value="@phone"></psk-echo>
+                                        </strong>
+                                    </div>
+                                    <div>
+                                        <psk-echo value="Email: "></psk-echo>
+                                        <strong>
+                                            <psk-echo value="@email"></psk-echo>
+                                        </strong>
+                                    </div>
 
-                                        <div >
-                                            <psk-label class="site-list-title" label="@name"></psk-label>
-                                            <psk-label class="site-list-second"
-                                                       label="@address"></psk-label>
-                                        </div>
-
-                                        <div class="label_and_image_site">
-                                            <psk-img src="assets/images/at.png"
-                                                     height='15'
-                                                     width='15'></psk-img>
-                                            <psk-label class="site-list-second"
-                                                       label="@email"></psk-label>
-                                        </div>
-                                        <div class="label_and_image_site">
-                                            <psk-img src="assets/images/phone.png"
-                                                     height='15'
-                                                     width='15'></psk-img>
-                                            <psk-label class="site-list-second"
-                                                       label="@phone"></psk-label>
-                                        </div>
-                                        </div>
-                                    </psk-card>
-                                </psk-button>
-                            </psk-layout-item>
-
-                        </psk-layout>
-                        <hr />
+                                </div>
+                            </div>
+                            <psk-button-link icon="arrow-right" class="go-back-link padding-top-35"
+                                             event-name="sites:details" event-data="@id"></psk-button-link>
+                        </div>
+                        <hr>
                     </psk-for-each>
-                </psk-layout-item>
-                </hr>
-            </psk-layout>
+                </div>
+            </div>
         </psk-container>
     </psk-mobile>
 </psk-example>

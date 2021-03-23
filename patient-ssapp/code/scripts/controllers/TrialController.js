@@ -14,6 +14,7 @@ export default class TrialController extends ContainerController {
                 return console.log(err);
             }
             this.model.trial = data;
+            console.log(data);
         })
 
         this.on('go-to-site', (event) => {

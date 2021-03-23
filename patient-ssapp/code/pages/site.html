@@ -3,16 +3,74 @@
         <psk-container controller-name="SiteController">
             <div class="header-row">
                 <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
-                <psk-label class="scan-error-title" label="Sites"></psk-label>
+                <psk-label class="scan-error-title" label="@site.name"></psk-label>
             </div>
-            <div class="subheader">
-                <psk-label class="subheader" label="General Data"></psk-label>
+            <hr>
+            <div class="padding-sides">
+            <div class="dispay-flex date-div justify-content-space-between">
+                <div class="dispay-flex">
+                    <div class="left-image">
+                        <psk-img class="ed-control-image" src="@site.icon"
+                                 height='80' width='80'></psk-img>
+                    </div>
+                    <div class="right-text">
+                        <strong>
+
+                            <psk-echo value="@site.name"></psk-echo>
+                        </strong>
+                    </div>
+                </div>
+
+            </div>
+            <hr>
+            <div class="dispay-flex date-div justify-content-space-between">
+                <div class="dispay-flex">
+                    <div class="left-image">
+                        <psk-img class="ed-control-image" src="assets/images/phone.png"
+                                 height='40' width='40'></psk-img>
+                    </div>
+                    <div class="right-text">
+                        <strong>
+                            <a href="tel:+4917640206387"/>
+                            <psk-echo value="@site.phone"></psk-echo>
+                        </strong>
+                    </div>
+                </div>
+
             </div>
 
+            <div class="dispay-flex date-div justify-content-space-between">
+                <div class="dispay-flex">
+                    <div class="left-image">
+                        <psk-img class="ed-control-image" src="assets/images/at.png"
+                                 height='40' width='40'></psk-img>
+                    </div>
+                    <div class="right-text">
+                        <strong>
 
-            <psk-label  label="@model.name" />
-            <psk-label label="model.name" />
-            <psk-label  label="@phone" />
+                            <psk-echo value="@site.email"></psk-echo>
+                        </strong>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="dispay-flex date-div justify-content-space-between">
+                <div class="dispay-flex">
+                    <div class="left-image">
+                        <psk-img class="ed-control-image" src="assets/images/pin.png"
+                                 height='40' width='40'></psk-img>
+                    </div>
+                    <div class="right-text">
+                        <strong>
+
+                            <psk-echo value="@site.address"></psk-echo>
+                        </strong>
+                    </div>
+                </div>
+
+            </div>
+            </div>
         </psk-container>
     </psk-mobile>
 </psk-example>
