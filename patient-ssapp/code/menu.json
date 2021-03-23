@@ -66,6 +66,13 @@
       "icon": "fa-home",
       "pageSrc": "econsent.html",
       "tags": "econsent"
+    },
+    {
+      "name": "Question",
+      "path": "/suestion",
+      "icon": "fa-home",
+      "pageSrc": "question.html",
+      "tags": "question"
     }
   ]
 }

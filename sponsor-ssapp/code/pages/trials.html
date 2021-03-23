@@ -13,55 +13,107 @@
       <psk-button class="align-self-end" label="Clear filters" event-name="filters-cleared"></psk-button>
       <psk-button class="align-self-end" label="Add trial" event-name="add-trial"></psk-button>
     </psk-layout>
+
     <psk-condition condition="@trialArrayNotEmpty">
       <div slot="condition-true">
-        <psk-layout slot="condition-true" columns="9">
-          <psk-label label="Id"></psk-label>
-          <psk-label label="Trial Name"></psk-label>
-          <psk-label label="Progress"></psk-label>
-          <psk-label label="EC Status"></psk-label>
-          <psk-label label="Enrolled"></psk-label>
-          <psk-label label="Total"></psk-label>
-          <psk-label label="Countries"></psk-label>
-          <psk-label label="Started"></psk-label>
-          <psk-label label="View"></psk-label>
+        <psk-layout class="background-primary table-row" slot="condition-true" columns="9">
+          <psk-for-each data-view-model="@headers" class="display-contents" style="display: contents">
+            <span class="d-flex flex-row align-items-center justify-content-between pr-1 table-cell">
+              <psk-button class="btn-bare" disabled="@notSortable" event-name="sort-column" event-data="@column">
+                <div class="background-primary d-flex flex-row align-items-center justify-content-between pr-1">
+                  <psk-label label="@label"></psk-label>
+                  <div>
+                    <psk-condition condition="@asc">
+                      <div slot="condition-true">&uarr;</div>
+                    </psk-condition>
+                    <psk-condition condition="@desc">
+                      <div slot="condition-true">&darr;</div>
+                    </psk-condition>
+                    <psk-condition condition="@notSortable">
+                      <div slot="condition-false">
+                        <psk-condition condition="@asc">
+                          <div slot="condition-false">
+                            <psk-condition condition="@desc">
+                              <div style="font-weight: 300" slot="condition-false">&udarr;</div>
+                            </psk-condition>
+                          </div>
+                        </psk-condition>
+                      </div>
+                    </psk-condition>
+                  </div>
+                </div>
+              </psk-button>
+            </span>
+          </psk-for-each>
         </psk-layout>
-        <hr />
-        <psk-for-each data-view-model="trials">
-          <psk-layout columns="9" class="justify-content-center align-items-center">
-            <psk-label label="@id"></psk-label>
-            <psk-label label="@name"></psk-label>
-            <psk-label label="@progress"></psk-label>
-            <psk-label label="@status"></psk-label>
-            <psk-label label="@enrolled"></psk-label>
-            <psk-label label="@total"></psk-label>
-            <psk-label label="@countries"></psk-label>
-            <psk-label label="@started"></psk-label>
-            <psk-button class="align-self-end" label="View" event-name="view-trial" event-data="@id"></psk-button>
+        <psk-for-each data-view-model="@pagination.items" style="display: contents">
+          <psk-layout columns="9" class="justify-content-center align-items-center table-row">
+            <psk-label class="table-cell" label="@id"></psk-label>
+            <psk-label class="table-cell" label="@name"></psk-label>
+            <psk-label class="table-cell" label="@progress"></psk-label>
+            <psk-label class="table-cell" label="@status"></psk-label>
+            <psk-label class="table-cell" label="@enrolled"></psk-label>
+            <psk-label class="table-cell" label="@total"></psk-label>
+            <psk-label class="table-cell" label="@countries"></psk-label>
+            <psk-label class="table-cell" label="@started"></psk-label>
+            <psk-button class="btn-bare table-cell" event-name="view-trial" event-data="@id"> &#128269; </psk-button>
           </psk-layout>
-          <div slot="no-data">No trials available.</div>
         </psk-for-each>
+
+        <div class="d-flex align-items-center justify-content-between flex-wrap">
+          <div class="d-flex align-items-center justify-content-center">
+            <span>Page&nbsp;</span>
+            <psk-select value="@test" view-model="@pagination.pages" event-name="navigate-to-page"></psk-select>
+            <span>&nbsp;of&nbsp;</span>
+            <psk-label label="@pagination.totalPages"></psk-label>
+            <span>&nbsp;Pages</span>
+          </div>
+
+          <div class="d-flex flex-row">
+            <psk-button class="page-link page-button" disabled="@pagination.previous" event-name="go-to-first-page">
+              <span aria-hidden="true">&laquo;</span>
+            </psk-button>
+            <psk-button class="page-link page-button" disabled="@pagination.previous" event-name="go-to-previous-page">
+              <span aria-hidden="true">&lsaquo;</span>
+            </psk-button>
+            <psk-for-each class="d-flex flex-row" data-view-model="@pagination.slicedPages">
+              <psk-condition condition="@active">
+                <div slot="condition-true" class="active">
+                  <psk-button
+                    class="page-link page-button active"
+                    label="@label"
+                    event-name="navigate-to-page"
+                    event-data="@value"
+                  >
+                  </psk-button>
+                </div>
+                <div slot="condition-false">
+                  <psk-button
+                    class="page-link page-button"
+                    label="@label"
+                    event-name="navigate-to-page"
+                    event-data="@value"
+                  ></psk-button>
+                </div>
+              </psk-condition>
+            </psk-for-each>
+            <psk-button class="page-link page-button" disabled="@pagination.next" event-name="go-to-next-page">
+              <span aria-hidden="true">&rsaquo;</span>
+            </psk-button>
+            <psk-button class="page-link page-button" disabled="@pagination.next" event-name="go-to-last-page">
+              <span aria-hidden="true">&raquo;</span>
+            </psk-button>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-center">
+            <psk-select view-model="@pagination.itemsPerPageOptions" event-name="set-items-per-page"></psk-select>
+            <span>&nbsp;Items Per Page</span>
+          </div>
+        </div>
       </div>
       <div slot="condition-false">
         <div>No trials available.</div>
       </div>
     </psk-condition>
   </psk-container>
-  <ul class="pagination">
-    <li class="page-item">
-      <a class="page-link" href="#" aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
-        <span class="sr-only">Previous</span>
-      </a>
-    </li>
-    <li class="page-item"><a class="page-link" href="#">1</a></li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    <li class="page-item">
-      <a class="page-link" href="#" aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-        <span class="sr-only">Next</span>
-      </a>
-    </li>
-  </ul>
 </psk-page>

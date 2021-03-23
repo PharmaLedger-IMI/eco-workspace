@@ -16,24 +16,34 @@
                                              height='50' width='50'></psk-img>
                                 </div>
                                 <div class="right-text">
-                                    <div>
-                                        <div>
-                                            <strong>
+                                    <psk-condition condition="@viewed">
+                                        <div slot="condition-true">
+                                            <div>
                                                 <psk-echo value="@name"></psk-echo>
-                                            </strong>
-                                        </div>
-                                        <div>
-                                            <strong>
+                                            </div>
+                                            <div>
                                                 <psk-echo value="@details"></psk-echo>
-                                            </strong>
-                                        </div>
-                                        <div>
-                                            <psk-echo value="Date: "></psk-echo>
-                                            <strong>
+                                            </div>
+                                            <div>
+                                                <psk-echo value="Date: "></psk-echo>
                                                 <psk-echo value="@startDate"></psk-echo>
+                                            </div>
+                                        </div>
+                                        <div slot="condition-false">
+                                            <strong>
+                                                <div>
+                                                    <psk-echo value="@name"></psk-echo>
+                                                </div>
+                                                <div>
+                                                    <psk-echo value="@details"></psk-echo>
+                                                </div>
+                                                <div>
+                                                    <psk-echo value="Date: "></psk-echo>
+                                                    <psk-echo value="@startDate"></psk-echo>
+                                                </div>
                                             </strong>
                                         </div>
-                                    </div>
+                                    </psk-condition>
                                 </div>
                             </div>
                             <psk-button-link icon="arrow-right" class="go-back-link padding-top-35"

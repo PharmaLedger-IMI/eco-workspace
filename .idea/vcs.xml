@@ -4,6 +4,9 @@
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/apihub-root/dsu-explorer/loader" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/apihub-root/eco-wallet/loader" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/apihub-root/hco-wallet/loader" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/apihub-root/patient-wallet/loader" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/apihub-root/sponsor-wallet/loader" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cardinal" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/dossier-explorer-ssapp" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/dossier-explorer-wallet-prototype" vcs="Git" />

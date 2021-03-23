@@ -1,13 +1,13 @@
 .icon {
-    margin: .5rem;
-    padding: .5rem;
+  margin: 0;
+  padding: 0;
 }
 
 .icon.disable-color {
-    color: #999 !important;
+  color: #999 !important;
 }
 
 psk-icon {
-    display: block;
-    text-align: center;
+  display: block;
+  text-align: center;
 }
