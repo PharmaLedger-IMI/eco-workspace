@@ -6,10 +6,11 @@ export default class EconsentController extends ContainerController {
         super(element, history);
 
         this.setModel({});
-        let receivedParam = this.History.getState();
+        let receivedData = this.History.getState();
 
         this.TrialDataService = new TrialDataService(this.DSUStorage);
-        this.TrialDataService.getEconsent(receivedParam, (err, data) => {
+        debugger;
+        this.TrialDataService.getEconsent(receivedData.trialId,receivedData.econsentId, (err, data) => {
             if (err) {
                 return console.log(err);
             }

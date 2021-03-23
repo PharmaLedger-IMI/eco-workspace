@@ -26,7 +26,20 @@ const readTrial = (id, callback) => {
         if (err) {
             return callback(err);
         }
-        callback(undefined, trials.find(trial => trial.id == id))
+        let trial = trials.find(trial => trial.id == id);
+        readSite(trial.siteId, (err, site) => {
+            if (err) {
+                return callback(err);
+            }
+            trial.site= site;
+            readEconsentBy(id, trial.econsentId, (err, econsent) => {
+                if (err) {
+                    return callback(err);
+                }
+                trial.econsent= econsent;
+                callback(undefined, trial)
+            })
+        })
     });
 }
 
@@ -45,8 +58,7 @@ const readEconsentsBy = (trialId, callback) => {
 };
 
 const readEconsentBy = (trialId, econsentId, callback) => {
-    console.log('readEconsentBy', trialId, econsentId)
-    readEconsentsBy(trialId,(err, econsents) => {
+    readEconsentsBy(trialId, (err, econsents) => {
         if (err) {
             return callback(err);
         }
@@ -55,6 +67,7 @@ const readEconsentBy = (trialId, econsentId, callback) => {
 }
 
 const readSites = (callback) => {
+    console.log("SITES PATH" + SITES_PATH);
     fs.readFile(path.resolve(__dirname, SITES_PATH), (err, data) => {
         if (err) {
             return callback(err);

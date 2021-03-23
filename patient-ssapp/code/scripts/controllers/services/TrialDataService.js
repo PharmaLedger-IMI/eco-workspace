@@ -9,30 +9,49 @@ export default class TrialDataService {
     }
 
     getSite(id, callback) {
-        callback(undefined, JSON.parse(JSON.stringify(Constants.sites.find(site => site.id === id))));
+        this.EcoAdaptorApi.getSite(id,(err, response) => {
+            debugger
+            if (err) {
+                return console.log(err);
+            }
+            callback(undefined, response);
+        })
     }
 
-    getEconsent(id, callback) {
-        callback(undefined, JSON.parse(JSON.stringify(Constants.econsents.find(econsent => econsent.id === id))));
+    getEconsent(trialId, econsentId, callback) {
+        this.EcoAdaptorApi.getEconsent(trialId,econsentId,(err, response) => {
+            if (err) {
+                return console.log(err);
+            }
+            callback(undefined, response);
+        })
     }
 
     getTrial(id, callback) {
-        let trialIndex = Constants.trials.findIndex(trial => trial.id === id);
-        if (trialIndex === -1) {
-            return callback("Trial not found.", undefined);
-        }
-        let existingTrial = Constants.trials[trialIndex];
-        this.getSite(existingTrial.siteId, (err, data) => {
-            existingTrial.site = data;
-            this.getEconsent(existingTrial.econsentId, (err, data) => {
-                existingTrial.econsent = data;
-                callback(undefined, JSON.parse(JSON.stringify(existingTrial)));
-            });
-        });
+        this.EcoAdaptorApi.getTrial(id,(err, response) => {
+            if (err) {
+                return console.log(err);
+            }
+            callback(undefined, response);
+        })
     }
 
     getNotifications(callback) {
-        callback(undefined, JSON.parse(JSON.stringify(Constants.notifications)));
+        this.EcoAdaptorApi.getNotifications((err, response) => {
+            if (err) {
+                return console.log(err);
+            }
+            callback(undefined, response);
+        })
+    }
+
+    getNotification(id,callback) {
+        this.EcoAdaptorApi.getNotification(id,(err, response) => {
+            if (err) {
+                return console.log(err);
+            }
+            callback(undefined, response);
+        })
     }
 
     updateNotification(notification, callback) {
@@ -45,37 +64,32 @@ export default class TrialDataService {
     }
 
     getSites(callback) {
-        this.EcoAdaptorApi.getSites((err, sites) => {
+        this.EcoAdaptorApi.getSites((err, response) => {
             debugger
             if (err) {
                 return console.log(err);
             }
-            callback(undefined, sites);
+            callback(undefined, response);
         })
     }
 
-    getEconsents() {
-        callback(undefined, JSON.parse(JSON.stringify(Constants.econsents)));
+    getEconsents(trialId) {
+        this.EcoAdaptorApi.getEconsents(trialId, (err, response) => {
+            if (err) {
+                return console.log(err);
+            }
+            callback(undefined, response);
+        })
     }
 
     getTrials(callback) {
-        let trialsCopy = JSON.parse(JSON.stringify(Constants.trials));
-        let auxTrials = []
-
-        let getFullTrials = (trial) => {
-            if (trial === undefined) {
-                return callback(undefined, JSON.parse(JSON.stringify(auxTrials)));
+        this.EcoAdaptorApi.getTrials((err, response) => {
+            debugger
+            if (err) {
+                return console.log(err);
             }
-            this.getTrial(trial.id, (err, data) => {
-                auxTrials.push(data);
-                getFullTrials(trialsCopy.shift())
-            });
-        }
-
-        if (trialsCopy.length === 0) {
-            return callback(undefined, []);
-        }
-        getFullTrials(trialsCopy.shift());
+            callback(undefined, response);
+        })
     }
 
 

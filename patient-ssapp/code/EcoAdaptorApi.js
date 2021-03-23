@@ -3,7 +3,14 @@ const opendsu = require("opendsu");
 export default class EcoAdaptorApi {
 
     ECO_ADAPTER_PATH = "ecoAdapter";
+    TRIALS_LIST_PATH = `${this.ECO_ADAPTER_PATH}/trials`;
     SITES_LIST_PATH = `${this.ECO_ADAPTER_PATH}/sites`;
+    NOTIFICATIONS_LIST_PATH = `${this.ECO_ADAPTER_PATH}/notifications`;
+    TRIAL_LIST_PATH = `${this.ECO_ADAPTER_PATH}/trials/{trialId}`;
+    SITE_LIST_PATH = `${this.ECO_ADAPTER_PATH}/sites/{siteId}`;
+    NOTIFICATION_LIST_PATH = `${this.ECO_ADAPTER_PATH}/notifications/{notificationId}`;
+    ECONSENTS_LIST_PATH = `${this.ECO_ADAPTER_PATH}/trials/{trialId}/econsents`;
+    ECONSENT_LIST_PATH = `${this.ECO_ADAPTER_PATH}/trials/{trialId}/econsents/{econsentId}`;
 
     constructor(serverEndpoint) {
         let SERVER_ENDPOINT = serverEndpoint || window.location.origin;
@@ -17,8 +24,37 @@ export default class EcoAdaptorApi {
     }
 
 
+    getSite(siteId, callback) {
+        this.makeRequest('GET', this.replaceVariablesInUrlPath(this.SITE_LIST_PATH, [siteId]), {}, callback);
+    }
+
     getSites(callback) {
         this.makeRequest('GET', this.SITES_LIST_PATH, {}, callback);
+    }
+
+    getTrial(trialId, callback) {
+        this.makeRequest('GET',  this.replaceVariablesInUrlPath(this.TRIAL_LIST_PATH, [trialId]), {}, callback);
+    }
+
+    getTrials(callback) {
+        this.makeRequest('GET', this.TRIALS_LIST_PATH, {}, callback);
+    }
+
+    getNotification(notificationId, callback) {
+        this.makeRequest('GET',  this.replaceVariablesInUrlPath(this.NOTIFICATION_LIST_PATH, [notificationId]), {}, callback);
+    }
+
+    getNotifications(callback) {
+        this.makeRequest('GET', this.NOTIFICATIONS_LIST_PATH, {}, callback);
+    }
+
+    getEconsent(trialId, econsentId, callback) {
+        debugger;
+        this.makeRequest('GET',  this.replaceVariablesInUrlPath(this.ECONSENT_LIST_PATH, [trialId,econsentId]), {}, callback);
+    }
+
+    getEconsents(trialId, callback) {
+        this.makeRequest('GET',  this.replaceVariablesInUrlPath(this.ECONSENTS_LIST_PATH, [trialId]), {}, callback);
     }
 
     makeRequest(method, path, body, callback) {
@@ -44,7 +80,7 @@ export default class EcoAdaptorApi {
                 response.json()
                     .then((data) => {
                         console.log('[EcoAdapterApiCall][Response]', method, path, response.status, response.statusCode, data);
-                        if (!response.ok || response.status != 201) {
+                        if (!response.ok || response.status != 200) {
                             return callback(response);
                         }
                         callback(undefined, data);
@@ -56,6 +92,15 @@ export default class EcoAdaptorApi {
             .catch(error => {
                 return callback(error);
             })
+    }
+
+    replaceVariablesInUrlPath = (path, variables) => {
+        if (path === undefined || variables === undefined || variables.constructor !== Array
+            || !(typeof path == 'string' || path instanceof String)) {
+            return path;
+        }
+        variables.forEach((v) => path = path.replace(/{[\d\w]+}/, v))
+        return path;
     }
 }
 
