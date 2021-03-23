@@ -131,6 +131,7 @@ export default class Constants {
     static econsents = [
         {
             id: 1,
+            trialId: 2,
             name: "site 12",
             version: 1,
             file: 'something',
@@ -141,6 +142,7 @@ export default class Constants {
         },
         {
             id: 2,
+            trialId: 3,
             name: "site 45",
             version: 2,
             file: 'something',
@@ -151,6 +153,7 @@ export default class Constants {
         },
         {
             id: 3,
+            trialId: 1,
             name: "site 78",
             version: 4,
             file: 'something',

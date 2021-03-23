@@ -1,9 +1,11 @@
 import Constants from "../Constants.js";
+import EcoAdaptorApi from "../../../EcoAdaptorApi.js";
 
 export default class TrialDataService {
 
     constructor(DSUStorage) {
         this.DSUStorage = DSUStorage;
+        this.EcoAdaptorApi = new EcoAdaptorApi();
     }
 
     getSite(id, callback) {
@@ -43,7 +45,13 @@ export default class TrialDataService {
     }
 
     getSites(callback) {
-        callback(undefined, JSON.parse(JSON.stringify(Constants.sites)));
+        this.EcoAdaptorApi.getSites((err, sites) => {
+            debugger
+            if (err) {
+                return console.log(err);
+            }
+            callback(undefined, sites);
+        })
     }
 
     getEconsents() {
