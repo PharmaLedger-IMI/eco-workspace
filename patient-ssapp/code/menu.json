@@ -73,6 +73,13 @@
       "icon": "fa-home",
       "pageSrc": "question.html",
       "tags": "question"
+    },
+    {
+      "name": "ReadEconsent",
+      "path": "/readeconsent",
+      "icon": "fa-home",
+      "pageSrc": "readeconsent.html",
+      "tags": "readeconsent"
     }
   ]
 }

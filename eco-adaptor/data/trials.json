@@ -24,7 +24,7 @@
       "startDate": "01/05/2021",
       "details": "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
       "siteId": 2,
-      "econsentId": 3,
+      "econsentId": 2,
       "visits": [
         {
           "id": 3,
@@ -42,7 +42,7 @@
       "startDate": "01/05/2021",
       "details": "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
       "siteId": 3,
-      "econsentId": 2,
+      "econsentId": 3,
       "visits": [
         {
           "id": 5,

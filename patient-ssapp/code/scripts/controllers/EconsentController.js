@@ -11,6 +11,7 @@ export default class EconsentController extends ContainerController {
         this.TrialDataService = new TrialDataService(this.DSUStorage);
         debugger;
         this.TrialDataService.getEconsent(receivedData.trialId,receivedData.econsentId, (err, data) => {
+            debugger
             if (err) {
                 return console.log(err);
             }
@@ -31,6 +32,21 @@ export default class EconsentController extends ContainerController {
                     return console.log(err);
                 }
                 console.log('withdrawEconsent', response)
+                if(response){
+                    this.model.econsent.signed = false;
+                }
+            });
+        })
+
+        this.on('econsent:read', (event) => {
+            this.showModal('readEconsent', {}, (err, response) => {
+                if (err) {
+                    return console.log(err);
+                }
+
+                if(response){
+                    this.model.econsent.signed = true;
+                }
             });
         })
     }

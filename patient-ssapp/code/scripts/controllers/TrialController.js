@@ -25,6 +25,7 @@ export default class TrialController extends ContainerController {
             debugger;
             this.History.navigateToPageByTag('econsent', {trialId: receivedParam, econsentId: event.data});
         })
+
     }
 
 }

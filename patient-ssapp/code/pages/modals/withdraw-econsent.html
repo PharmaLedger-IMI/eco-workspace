@@ -5,11 +5,14 @@
         <div class="content">
             <psk-label slot="title" class="bpd-modal-title" label="Are you sure you want to withdraw?"></psk-label>
             <psk-textarea view-model="@reason"></psk-textarea>
+            <psk-label slot="title" class="bpd-modal-title" view-model="@error"> </psk-label>
         </div>
 
         <psk-card slot="footer" class="bpd-row bpd-creation-row">
             <psk-button event-name="withdraw-on-click">Withdraw</psk-button>
+            <psk-list-feedbacks messages-to-display="5" time-alive="3000"></psk-list-feedbacks>
         </psk-card>
+
 
     </psk-modal>
 </psk-container>
