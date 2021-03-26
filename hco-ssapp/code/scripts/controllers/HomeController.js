@@ -1,4 +1,4 @@
-import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
+const {WebcController} = WebCardinal.controllers;
 
 const initialTrialModel = {
     title: {
@@ -48,7 +48,7 @@ const initModel = {
     trialsModel: JSON.parse(JSON.stringify(initialTrialModel))
 }
 
-export default class HomeController extends ContainerController {
+export default class HomeController extends WebcController  {
     constructor(element, history) {
         super(element, history);
         this._attachHandlerCreateTrial();
@@ -61,7 +61,8 @@ export default class HomeController extends ContainerController {
         this.on('home:trial', (event) => {
             e.preventDefault();
             e.stopImmediatePropagation();
-            this.History.navigateToPageByTag('create-trial');
+            this.navigateToPageTag('create-trial');
+
         });
     }
     _attachHandlerTrialDetails(){

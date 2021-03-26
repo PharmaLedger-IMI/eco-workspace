@@ -1,0 +1,20 @@
+{
+  "theme": "blue-fluorite-theme",
+  "pages": [
+    {
+      "name": "Home",
+      "path": "/home",
+      "src": "home.html",
+      "tag": "home"
+    },
+    {
+      "name": "Create trial",
+      "tag": "create-trial",
+      "indexed": false
+    }
+  ],
+  "pagesFallback": {
+    "name": "404",
+    "src": "./home.html"
+  }
+}
