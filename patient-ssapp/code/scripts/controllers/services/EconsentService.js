@@ -1,36 +1,37 @@
-import TrialModel from '../../models/EDIaryModel.js';
 
-export default class EDiaryService {
+import EconsentModel from "../../models/EconsentModel.js";
 
-    EDIARY_PATH = "/ediaryies";
+export default class EconsentService {
+
+    ECONSENTS_PATH = "/econsents";
 
     constructor(DSUStorage) {
         this.DSUStorage = DSUStorage;
     }
 
     getServiceModel(callback){
-        this.DSUStorage.call('listDSUs', this.EDIARY_PATH, (err, dsuList) => {
+        this.DSUStorage.call('listDSUs', this.ECONSENTS_PATH, (err, dsuList) => {
             if (err){
                 callback(err, undefined);
                 return;
             }
-            let ediaryies = [];
+            let econsents = [];
             let getServiceDsu = (dsuItem) => {
                 this.DSUStorage.getItem(this._getDsuStoragePath(dsuItem.identifier), (err, content) => {
                     if (err)
                     {
-                        ediaryies.slice(0);
+                        econsents.slice(0);
                         callback(err, undefined);
                         return;
                     }
                     let textDecoder = new TextDecoder("utf-8");
-                    let trial = JSON.parse(textDecoder.decode(content));
-                    ediaryies.push(trial);
+                    let econsent = JSON.parse(textDecoder.decode(content));
+                    econsents.push(econsent);
 
                     if (dsuList.length === 0)
                     {
-                        const model = new TrialModel()._getWrapperData();
-                        model.trials = ediaryies;
+                        const model = new EconsentModel()._getWrapperData();
+                        model.econsents = econsents;
                         callback(undefined, model);
                         return;
                     }
@@ -49,7 +50,7 @@ export default class EDiaryService {
 
     }
 
-    getEdiary(uid, callback){
+    getEconsent(uid, callback){
         this.DSUStorage.getItem(this._getDsuStoragePath(uid), (err, content) => {
             if (err)
             {
@@ -57,13 +58,13 @@ export default class EDiaryService {
                 return;
             }
             let textDecoder = new TextDecoder("utf-8");
-            let trial = JSON.parse(textDecoder.decode(content));
-            callback(undefined, trial);
+            let econsent = JSON.parse(textDecoder.decode(content));
+            callback(undefined, econsent);
         })
     }
 
-    saveEdiary(data, callback){
-        this.DSUStorage.call('createSSIAndMount',this.EDIARY_PATH, (err, keySSI) => {
+    saveEconsent(data, callback){
+        this.DSUStorage.call('createSSIAndMount',this.ECONSENTS_PATH, (err, keySSI) => {
             if (err)
             {
                 callback(err,undefined);
@@ -71,17 +72,17 @@ export default class EDiaryService {
             }
             data.KeySSI = keySSI;
             data.uid = keySSI;
-            this.updateEdiary(data, callback);
+            this.updateEconsent(data, callback);
         })
     }
-    mountEdiary(keySSI, callback){
-        this.DSUStorage.call('mount',this.EDIARY_PATH, keySSI, (err) =>{
+    mountEconsent(keySSI, callback){
+        this.DSUStorage.call('mount',this.ECONSENTS_PATH, keySSI, (err) =>{
             if (err)
             {
                 return callback(err, undefined);
             }
 
-            this.getEdiary(keySSI, (err, org) =>{
+            this.getEconsent(keySSI, (err, org) =>{
                 if (err)
                 {
                     return callback(err, undefined);
@@ -92,7 +93,7 @@ export default class EDiaryService {
 
         })
     }
-    updateEdiary(data, callback){
+    updateEconsent(data, callback){
         this.DSUStorage.setObject(this._getDsuStoragePath(data.uid), data, (err) => {
             if (err){
                 callback(err, undefined);
@@ -102,9 +103,9 @@ export default class EDiaryService {
         })
     }
 
-    unmountEdiary(diaryUid, callback) {
-        let unmountPath = this.EDIARY_PATH + '/' + diaryUid;
-        this.DSUStorage.call('ediaryUnmount', unmountPath, (err, result) => {
+    unmountEconsent(diaryUid, callback) {
+        let unmountPath = this.ECONSENTS_PATH + '/' + diaryUid;
+        this.DSUStorage.call('econsentUnmount', unmountPath, (err, result) => {
             if (err) {
                 callback(err, undefined);
                 return;
@@ -114,6 +115,6 @@ export default class EDiaryService {
     }
 
     _getDsuStoragePath(keySSI){
-        return this.EDIARY_PATH + '/' + keySSI + '/data.json';
+        return this.ECONSENTS_PATH + '/' + keySSI + '/data.json';
     }
 }

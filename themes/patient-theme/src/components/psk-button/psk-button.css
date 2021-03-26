@@ -225,6 +225,12 @@ psk-button.fullWidth button {
     width: 80%;
 }
 
+.econsents-button{
+    position: absolute;
+    padding-left: 10%;
+    width: 90%;
+}
+
 .full-width-button button{
     text-align: center;
 }

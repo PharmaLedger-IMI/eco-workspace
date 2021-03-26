@@ -6,10 +6,12 @@
                 <psk-label class="scan-error-title" label="Sites"></psk-label>
             </div>
 
-            <div class="">
+
                 <div class="padding-sides">
                     <psk-for-each data-view-model="sites">
+
                         <div class="dispay-flex date-div justify-content-space-between">
+
                             <div class="dispay-flex">
                                 <div class="left-image padding-image">
                                     <psk-img class="ed-control-image" src="@icon"
@@ -46,11 +48,13 @@
                             </div>
                             <psk-button-link icon="arrow-right" class="go-back-link padding-top-35"
                                              event-name="sites:details" event-data="@id"></psk-button-link>
+
                         </div>
+
                         <hr>
                     </psk-for-each>
                 </div>
-            </div>
+
         </psk-container>
     </psk-mobile>
 </psk-example>

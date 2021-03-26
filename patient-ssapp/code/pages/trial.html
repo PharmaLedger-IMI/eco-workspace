@@ -5,7 +5,9 @@
                 <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
                 <psk-label class="scan-error-title" label="Trial"></psk-label>
             </div>
+            <hr/>
             <div class="">
+                <psk-label class="trial-status" label="@trial.status"></psk-label>
                 <div class="subheader">
                     <psk-label class="subheader" label="General Data"></psk-label>
                 </div>
@@ -17,9 +19,15 @@
                         </strong>
                     </div>
                     <div>
-                        <psk-echo value="Start date: "></psk-echo>
+                        <psk-echo value="Trial number: "></psk-echo>
                         <strong>
-                            <psk-echo value="@trial.startDate"></psk-echo>
+                            <psk-echo value="@trial.number"></psk-echo>
+                        </strong>
+                    </div>
+                    <div>
+                        <psk-echo value="Sponsor: "></psk-echo>
+                        <strong>
+                            <psk-echo value="@trial.sponsorName"></psk-echo>
                         </strong>
                     </div>
                     <div>
@@ -30,96 +38,128 @@
                     </div>
                 </div>
             </div>
-            <div class="">
-                <div class="subheader">
-                    <psk-label class="subheader" label="Site"></psk-label>
-                </div>
-                <div class="padding-sides dispay-flex justify-content-space-between">
-                    <div>
-                        <div>
-                            <psk-echo value="Site Name: "></psk-echo>
-                            <strong>
-                                <psk-echo value="@trial.site.name"></psk-echo>
-                            </strong>
-                        </div>
-                        <div>
-                            <psk-echo value="HCP: "></psk-echo>
-                            <strong>
-                                <psk-echo value="@trial.site.hcp"></psk-echo>
-                            </strong>
-                        </div>
-                    </div>
-                    <psk-button-link icon="arrow-right" class="go-back-link"
-                                     event-name="go-to-site" event-data="@trial.site.id"></psk-button-link>
-                </div>
-            </div>
-            <div class="">
-                <div class="subheader">
-                    <psk-label class="subheader" label="Econsent"></psk-label>
-                </div>
-                <div class="dispay-flex padding-sides justify-content-space-between">
-                    <div>
-                        <div class="dispay-flex">
-                            <psk-condition condition="@trial.econsent.signed">
-                                <psk-icon slot="condition-true" class="trial-icon" icon="check" color="green">
-                                </psk-icon>
-                                <psk-icon slot="condition-false" class="trial-icon" icon="times" color="red">
-                                </psk-icon>
-                            </psk-condition>
-                            <div class="padding-top">
-                                <psk-echo value="Econsent"></psk-echo>
-                                <strong>
-                                    <psk-condition condition="@trial.econsent.signed">
-                                        <psk-echo slot="condition-false" value="not"></psk-echo>
-                                    </psk-condition>
+            <!--            <div class="">-->
+            <!--                <div class="subheader">-->
+            <!--                    <psk-label class="subheader" label="Site"></psk-label>-->
+            <!--                </div>-->
+            <!--                <div class="padding-sides dispay-flex justify-content-space-between">-->
+            <!--                    <div>-->
+            <!--                        <div>-->
+            <!--                            <psk-echo value="Site Name: "></psk-echo>-->
+            <!--                            <strong>-->
+            <!--                                <psk-echo value="@trial.site.name"></psk-echo>-->
+            <!--                            </strong>-->
+            <!--                        </div>-->
+            <!--                        <div>-->
+            <!--                            <psk-echo value="HCP: "></psk-echo>-->
+            <!--                            <strong>-->
+            <!--                                <psk-echo value="@trial.site.hcp"></psk-echo>-->
+            <!--                            </strong>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+            <!--                    <psk-button-link icon="arrow-right" class="go-back-link"-->
+            <!--                                     event-name="go-to-site" event-data="@trial.site.id"></psk-button-link>-->
+            <!--                </div>-->
+            <!--            </div>-->
+<!--            <div class="">-->
+<!--                <div class="subheader">-->
+<!--                    <psk-label class="subheader" label="Econsent"></psk-label>-->
+<!--                </div>-->
+<!--                <div class="dispay-flex padding-sides justify-content-space-between">-->
+<!--                    <div>-->
+<!--                        <div class="dispay-flex">-->
+<!--                            <psk-condition condition="@trial.econsent.signed">-->
+<!--                                <psk-icon slot="condition-true" class="trial-icon" icon="check" color="green">-->
+<!--                                </psk-icon>-->
+<!--                                <psk-icon slot="condition-false" class="trial-icon" icon="times" color="red">-->
+<!--                                </psk-icon>-->
+<!--                            </psk-condition>-->
+<!--                            <div class="padding-top">-->
+<!--                                <psk-echo value="Econsent"></psk-echo>-->
+<!--                                <strong>-->
+<!--                                    <psk-condition condition="@trial.econsent.signed">-->
+<!--                                        <psk-echo slot="condition-false" value="not"></psk-echo>-->
+<!--                                    </psk-condition>-->
 
-                                    <psk-echo value="signed"></psk-echo>
-                                </strong>
-                            </div>
-                        </div>
-                        <div class="dispay-flex justify-content-space-between">
-                            <div>
-                                <div>
-                                    <psk-echo value="Econsent Name: "></psk-echo>
-                                    <strong>
-                                        <psk-echo value="@trial.econsent.name"></psk-echo>
-                                    </strong>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <psk-button-link icon="arrow-right" class="go-back-link padding-top"
-                                     event-name="go-to-econsent" event-data="@trial.econsentId"></psk-button-link>
+<!--                                    <psk-echo value="signed"></psk-echo>-->
+<!--                                </strong>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="dispay-flex justify-content-space-between">-->
+<!--                            <div>-->
+<!--                                <div>-->
+<!--                                    <psk-echo value="Econsent Name: "></psk-echo>-->
+<!--                                    <strong>-->
+<!--                                        <psk-echo value="@trial.econsent.name"></psk-echo>-->
+<!--                                    </strong>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <psk-button-link icon="arrow-right" class="go-back-link padding-top"-->
+<!--                                     event-name="go-to-econsent" event-data="@trial.econsentId"></psk-button-link>-->
 
-                </div>
-            </div>
+<!--                </div>-->
+<!--            </div>-->
+
             <div class="">
                 <div class="subheader">
-                    <psk-label class="subheader" label="Visits"></psk-label>
+                    <psk-label class="subheader" label="ECONSENTS"></psk-label>
                 </div>
                 <div class="padding-sides">
-                    <psk-for-each data-view-model="trial.visits">
+                    <psk-for-each data-view-model="trial.econsents">
                         <div class="dispay-flex date-div justify-content-space-between">
                             <div class="dispay-flex">
                                 <div class="left-image">
-                                    <psk-img class="ed-control-image" src="assets/images/calendar.png"
-                                             height='50' width='50'></psk-img>
+                                    <psk-img class="ed-control-image" src="assets/images/document_black.png"
+                                             height='40' width='40'></psk-img>
                                 </div>
                                 <div class="right-text">
                                     <strong>
-                                        <psk-echo value="@date"></psk-echo>
-                                        <psk-echo value="Visit"></psk-echo>
+                                        <psk-label class="econsent-name" label="@name"></psk-label>
+                                        <psk-echo value="version"></psk-echo>
+                                        <psk-echo value="@version"></psk-echo>
+                                        <psk-echo value="Signed"></psk-echo>
+                                        <psk-echo value="@documentDate"></psk-echo>
                                     </strong>
                                 </div>
                             </div>
                             <psk-button-link icon="arrow-right" class="go-back-link"
-                                             event-name="go-to-visit" event-data="@id"></psk-button-link>
+                                             event-name="go-to-econsent" event-data="@id"></psk-button-link>
                         </div>
                         <hr>
                     </psk-for-each>
                 </div>
             </div>
-            <psk-button class="patient-general-button full-width-button" event-name="home:question">Ask Question</psk-button>
+
+
+            <!--            <div class="">-->
+            <!--                <div class="subheader">-->
+            <!--                    <psk-label class="subheader" label="Visits"></psk-label>-->
+            <!--                </div>-->
+            <!--                <div class="padding-sides">-->
+            <!--                    <psk-for-each data-view-model="trial.visits">-->
+            <!--                        <div class="dispay-flex date-div justify-content-space-between">-->
+            <!--                            <div class="dispay-flex">-->
+            <!--                                <div class="left-image">-->
+            <!--                                    <psk-img class="ed-control-image" src="assets/images/calendar.png"-->
+            <!--                                             height='50' width='50'></psk-img>-->
+            <!--                                </div>-->
+            <!--                                <div class="right-text">-->
+            <!--                                    <strong>-->
+            <!--                                        <psk-echo value="@date"></psk-echo>-->
+            <!--                                        <psk-echo value="Visit"></psk-echo>-->
+            <!--                                    </strong>-->
+            <!--                                </div>-->
+            <!--                            </div>-->
+            <!--                            <psk-button-link icon="arrow-right" class="go-back-link"-->
+            <!--                                             event-name="go-to-visit" event-data="@id"></psk-button-link>-->
+            <!--                        </div>-->
+            <!--                        <hr>-->
+            <!--                    </psk-for-each>-->
+            <!--                </div>-->
+            <!--            </div>-->
+            <!--            <psk-button class="patient-general-button full-width-button" event-name="home:question">Ask Question</psk-button>-->
 
         </psk-container>
     </psk-mobile>

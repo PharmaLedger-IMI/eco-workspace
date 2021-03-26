@@ -17,6 +17,18 @@ export default class Constants {
         },
     }
 
+    static trialStatus = {
+        Completed: {
+            name: 'Completed',
+            color: '#00cc00'
+        },
+        HOLD: {
+            name: 'hold',
+            color: '#757575'
+        }
+
+    }
+
     static getNotificationType = (notificationType) => {
         if (!(typeof notificationType === 'string')) {
             return undefined;
@@ -29,9 +41,16 @@ export default class Constants {
         return this.notificationTypes[notification];
     }
 
+
     static getIconByNotificationType = (notificationType) => {
         let notification = this.getNotificationType(notificationType);
         return notification === undefined ? notification : notification.icon;
+    }
+
+    static getColorByTrialStatus = (trialType) => {
+        let trial = this.trialStatus [Object.keys(this.trialStatus)
+            .find(key => this.trialStatus[key].name.toLowerCase() === trialType.toLowerCase())];
+        return trial === undefined ? trial : trial.color;
     }
 
     static getPageByNotificationType = (notificationType) => {

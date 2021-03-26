@@ -1,5 +1,5 @@
 import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
-import EDiaryService from "./services/EDiaryService.js";
+import EconsentService from "./services/EconsentService.js";
 
 const initModel = {
 

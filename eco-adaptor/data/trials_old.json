@@ -1,0 +1,58 @@
+{
+  "trials": [
+    {
+      "id": 1,
+      "name": "trial name 1",
+      "startDate": "01/05/2021",
+      "details": "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
+      "siteId": 1,
+      "econsentId": 1,
+      "visits": [
+        {
+          "id": 1,
+          "date": "01/05/2021"
+        },
+        {
+          "id": 2,
+          "date": "05/05/2021"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "trial name 2",
+      "startDate": "01/05/2021",
+      "details": "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
+      "siteId": 2,
+      "econsentId": 2,
+      "visits": [
+        {
+          "id": 3,
+          "date": "01/05/2021"
+        },
+        {
+          "id": 4,
+          "date": "05/05/2021"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "trial name 3",
+      "startDate": "01/05/2021",
+      "details": "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
+      "siteId": 3,
+      "econsentId": 3,
+      "visits": [
+        {
+          "id": 5,
+          "date": "01/05/2021"
+        },
+        {
+          "id": 6,
+          "date": "05/05/2021"
+        }
+      ]
+    }
+  ]
+}

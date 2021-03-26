@@ -31,13 +31,21 @@ const readTrial = (id, callback) => {
             if (err) {
                 return callback(err);
             }
-            trial.site= site;
+            trial.site = site;
             readEconsentBy(id, trial.econsentId, (err, econsent) => {
                 if (err) {
                     return callback(err);
                 }
-                trial.econsent= econsent;
-                callback(undefined, trial)
+                trial.econsent = econsent;
+
+                readEconsentsBy(id, (err, econsents) => {
+                    if (err) {
+                        return callback(err);
+                    }
+                    trial.econsents = econsents;
+                    console.log ("econsents"+econsents);
+                    callback(undefined, trial)
+                })
             })
         })
     });
