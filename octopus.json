@@ -193,6 +193,16 @@
       ]
     },
     {
+      "name": "themes/sponsor-theme",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd themes/sponsor-theme && npm install"
+        }
+      ]
+    },
+    {
       "name": "eco-ssapp",
       "src": "",
       "actions": [
@@ -240,6 +250,26 @@
         {
           "type": "execute",
           "cmd": "cd cardinal && npm run build-dossier"
+        }
+      ]
+    },
+    {
+      "name": "sponsor-theme-wallet-build",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd themes/sponsor-theme && npm run build-dossier"
+        }
+      ]
+    },
+    {
+      "name": "patient-theme-wallet-build",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd themes/patient-theme && npm run build-dossier"
         }
       ]
     },
