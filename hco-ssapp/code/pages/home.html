@@ -1,8 +1,7 @@
 <psk-page title="Home">
-    <webc-container controller-name="HomeController">
+    <webc-container controller="HomeController">
 
         <psk-label class="" label="E-Consent"/>
-
 
 
         <psk-card class="bpd-dashboard">
@@ -10,42 +9,42 @@
             <div class="bpd-buttons-row bpd-wide-cards">
 
 
-
                 <psk-button class="bpd-organization-card" event-name="home:patient">
 
-                    <psk-label class="trial-card-label" label="Lorem ipsum dolor sit amet, consectetur adipiscing elit."/>
+                    <psk-label class="trial-card-label"
+                               label="Lorem ipsum dolor sit amet, consectetur adipiscing elit."/>
 
                 </psk-button>
 
 
-                <psk-button class="bpd-organization-card" event-name="home:patient">
-                    <psk-label class="trial-card-label" label="Lorem ipsum dolor sit amet, consectetur adipiscing elit."/>
+                <psk-button class="bpd-organization-card" data-tag="home:patient">
+                    <psk-label class="trial-card-label"
+                               label="Lorem ipsum dolor sit amet, consectetur adipiscing elit."/>
                 </psk-button>
 
-                <psk-button class="bpd-organization-card" event-name="home:patient">
-                    <psk-label class="trial-card-label" label="Lorem ipsum dolor sit amet, consectetur adipiscing elit."/>
+                <psk-button class="bpd-organization-card" data-tag="home:patient">
+                    <psk-label class="trial-card-label"
+                               label="Lorem ipsum dolor sit amet, consectetur adipiscing elit."/>
                 </psk-button>
 
             </div>
         </psk-card>
 
+        <psk-button data-tag="minus" button-class="btn btn-danger">Test button</psk-button>
         <psk-card class="bpd-dashboard">
             <psk-label class="bpd-dashboard-title" label="Trials"/>
             <div class="bpd-organization-elements">
 
-                <psk-for-each data-view-model="trials">
-
-                    <psk-button class="trial-home-card" event-name="home:trialDetails" event-data = "@id">
-                        <div class="bpd-organization-card-content">
-                            <psk-icon icon="users" color="rgb(255, 255, 255)"></psk-icon>
-                        </div>
-                        <psk-label class="trial-card-label" label="@title"/>
-                        <psk-label class="trial-card-label" label="@date"/>
-                        <psk-label class="trial-card-label" label="@description"/>
-                    </psk-button>
-
-                </psk-for-each>
-
+                <div  data-for="@trials">
+                <psk-button class="trial-home-card" data-tag="home:trialDetails" >
+                    <div class="bpd-organization-card-content">
+                        <psk-icon icon="users" color="rgb(255, 255, 255)"></psk-icon>
+                    </div>
+                    <psk-label class="trial-card-label" label="title"/>
+                    <psk-label class="trial-card-label" label="date"/>
+                    <psk-label class="trial-card-label" label="description"/>
+                </psk-button>
+                </div>
             </div>
         </psk-card>
 
