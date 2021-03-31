@@ -1,30 +1,69 @@
-import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
 import TrialDataService from "./services/TrialDataService.js";
-
 import Constants from "./Constants.js";
 
-export default class TrialController extends ContainerController {
+const {WebcController} = WebCardinal.controllers;
+
+export default class TrialController extends WebcController {
+
+     trialStatus = {
+        first: {
+            name: 'First',
+            color: '#00cc00',
+            value:1,
+            background: ''
+        },
+         second: {
+             name: 'Second',
+             color: '#00cc00',
+             value:2,
+             background: ''
+         },
+         third: {
+             name: 'Third',
+             color: '#00cc00',
+             value:3,
+             background: ''
+         },
+         fourth: {
+             name: 'Forth',
+             color: '#00cc00',
+             value:4,
+             background: ''
+         },
+         Completed: {
+             name: 'Completed',
+             color: '#00cc00',
+             value:5,
+             background: ''
+         },
+
+    }
     constructor(element, history) {
         super(element, history);
 
         this.setModel({});
-        let receivedParam = this.History.getState();
+
+        this.model.trial= {};
+        this.model.econsents =[];
 
         debugger;
         this.TrialDataService = new TrialDataService(this.DSUStorage);
-        this.TrialDataService.getTrial(receivedParam, (err, data) => {
+        this.TrialDataService.getTrial(1, (err, data) => {
             if (err) {
                 return console.log(err);
             }
+            debugger
 
             this.model.trial = data;
             this.model.trial.color = Constants.getColorByTrialStatus(this.model.trial.status);
-            this.model.trial.status = '  TP STATUS: ' + this.model.trial.status;
+            this.model.econsents.push(...data.econsents);
+            console.log ("data" + data);
+            console.log ("ECONSENTS" + data.econsents);
 
         })
 
         this.on('go-to-site', (event) => {
-            this.History.navigateToPageByTag('site', event.data);
+            this.navigateToPageByTag('site', event.data);
         })
 
         this.on('go-to-econsent', (event) => {

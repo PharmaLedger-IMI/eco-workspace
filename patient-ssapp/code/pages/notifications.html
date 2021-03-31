@@ -1,58 +1,61 @@
 <psk-example class="mobile-example">
     <psk-mobile class="noPadding background" disable-header>
-        <psk-container controller-name="NotificationsController">
-            <div class="header-row">
+        <link rel="stylesheet" href="/assets/css/pages/notifications.css">
+        <webc-container controller="NotificationsController">
+            <div class=header-title>
                 <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
                 <psk-label class="scan-error-title" label="Notifications"></psk-label>
             </div>
 
             <div class="">
-                <div class="padding-sides">
-                    <psk-for-each data-view-model="notifications">
-                        <div class="dispay-flex date-div justify-content-space-between">
-                            <div class="dispay-flex">
-                                <div class="left-image padding-image">
-                                    <psk-img class="ed-control-image" src="@icon"
-                                             height='50' width='50'></psk-img>
-                                </div>
-                                <div class="right-text">
-                                    <psk-condition condition="@viewed">
-                                        <div slot="condition-true">
-                                            <div>
-                                                <psk-echo value="@name"></psk-echo>
-                                            </div>
-                                            <div>
-                                                <psk-echo value="@details"></psk-echo>
-                                            </div>
-                                            <div>
-                                                <psk-echo value="Date: "></psk-echo>
-                                                <psk-echo value="@startDate"></psk-echo>
-                                            </div>
+                <div class="padding-sides" data-for="@notifications">
+
+                    <div class="dispay-flex date-div justify-content-space-between">
+                        <div class="dispay-flex">
+                            <div class="left-image padding-image">
+                                <psk-img class="left-image" src="@icon"
+                                         height='50' width='50'></psk-img>
+                            </div>
+                            <div class="right-text" data-if="@viewed">
+                                <container slot="true">
+                                    <div>
+                                        {{@name}}
+                                    </div>
+                                    <div>
+                                        {{@details}}
+                                    </div>
+
+                                    <div>
+                                        <psk-echo value="Date: "></psk-echo>
+                                        {{@startDate}}
+                                    </div>
+                                </container>
+                                <container slot="false">
+                                    <strong>
+                                        <div>
+                                            {{@name}}
                                         </div>
-                                        <div slot="condition-false">
-                                            <strong>
-                                                <div>
-                                                    <psk-echo value="@name"></psk-echo>
-                                                </div>
-                                                <div>
-                                                    <psk-echo value="@details"></psk-echo>
-                                                </div>
-                                                <div>
-                                                    <psk-echo value="Date: "></psk-echo>
-                                                    <psk-echo value="@startDate"></psk-echo>
-                                                </div>
-                                            </strong>
+                                        <div>
+                                            {{@details}}
                                         </div>
-                                    </psk-condition>
-                                </div>
+                                        <div>
+                                            <psk-echo value="Date: "></psk-echo>
+                                            {{@startDate}}
+                                        </div>
+                                    </strong>
+                                </container>
+
                             </div>
                             <psk-button-link icon="arrow-right" class="go-back-link padding-top-35"
                                              event-name="go-to-notification" event-data="@id"></psk-button-link>
                         </div>
-                        <hr>
-                    </psk-for-each>
+                    </div>
                 </div>
             </div>
-        </psk-container>
+            <hr>
+
+            </div>
+            </div>
+        </webc-container>
     </psk-mobile>
 </psk-example>

@@ -1,0 +1,36 @@
+.left-image{
+    float:left;
+    margin-top: 10px;
+
+}
+
+.header-title {
+    display: flex;
+    height: 50px;
+}
+
+.scan-error-title {
+    color: #00345B;
+    font-weight: bold;
+    font-size: 20px;
+}
+.padding-sides {
+    padding: 20px;
+}
+
+.dispay-flex {
+    display: flex;
+}
+.date-div {
+    margin-bottom: 20px;
+}
+
+.date-div .left-image.padding-image {
+    float: left;
+    padding-top: 25px;
+}
+
+.date-div .right-text {
+    padding-top: 15px;
+}
+

@@ -1,166 +1,87 @@
 <psk-example class="mobile-example">
     <psk-mobile class="noPadding background" disable-header>
-        <psk-container controller-name="TrialController">
-            <div class="header-row">
+        <link rel="stylesheet" href="/assets/css/pages/trial.css">
+        <webc-container controller="TrialController">
+            <div class="header-title">
                 <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
                 <psk-label class="scan-error-title" label="Trial"></psk-label>
             </div>
             <hr/>
-            <div class="">
+
+            <div class="status">
+                <div class="dispay-flex">
+                    <div class="circle_selected">1</div>
+                    <div class="circle_selected">2</div>
+                    <div class="circle_selected">3</div>
+                    <div class="circle_unselected">4</div>
+                    <div class="circle_unselected">5</div>
+                </div>
                 <psk-label class="trial-status" label="@trial.status"></psk-label>
-                <div class="subheader">
-                    <psk-label class="subheader" label="General Data"></psk-label>
-                </div>
-                <div class="padding-sides">
-                    <div>
-                        <psk-echo value="Trial Name: "></psk-echo>
-                        <strong>
-                            <psk-echo value="@trial.name"></psk-echo>
-                        </strong>
-                    </div>
-                    <div>
-                        <psk-echo value="Trial number: "></psk-echo>
-                        <strong>
-                            <psk-echo value="@trial.number"></psk-echo>
-                        </strong>
-                    </div>
-                    <div>
-                        <psk-echo value="Sponsor: "></psk-echo>
-                        <strong>
-                            <psk-echo value="@trial.sponsorName"></psk-echo>
-                        </strong>
-                    </div>
-                    <div>
-                        <psk-echo value="Details: "></psk-echo>
-                        <strong>
-                            <psk-echo value="@trial.details"></psk-echo>
-                        </strong>
-                    </div>
-                </div>
             </div>
-            <!--            <div class="">-->
-            <!--                <div class="subheader">-->
-            <!--                    <psk-label class="subheader" label="Site"></psk-label>-->
-            <!--                </div>-->
-            <!--                <div class="padding-sides dispay-flex justify-content-space-between">-->
-            <!--                    <div>-->
-            <!--                        <div>-->
-            <!--                            <psk-echo value="Site Name: "></psk-echo>-->
-            <!--                            <strong>-->
-            <!--                                <psk-echo value="@trial.site.name"></psk-echo>-->
-            <!--                            </strong>-->
-            <!--                        </div>-->
-            <!--                        <div>-->
-            <!--                            <psk-echo value="HCP: "></psk-echo>-->
-            <!--                            <strong>-->
-            <!--                                <psk-echo value="@trial.site.hcp"></psk-echo>-->
-            <!--                            </strong>-->
-            <!--                        </div>-->
-            <!--                    </div>-->
-            <!--                    <psk-button-link icon="arrow-right" class="go-back-link"-->
-            <!--                                     event-name="go-to-site" event-data="@trial.site.id"></psk-button-link>-->
-            <!--                </div>-->
-            <!--            </div>-->
-<!--            <div class="">-->
-<!--                <div class="subheader">-->
-<!--                    <psk-label class="subheader" label="Econsent"></psk-label>-->
-<!--                </div>-->
-<!--                <div class="dispay-flex padding-sides justify-content-space-between">-->
-<!--                    <div>-->
-<!--                        <div class="dispay-flex">-->
-<!--                            <psk-condition condition="@trial.econsent.signed">-->
-<!--                                <psk-icon slot="condition-true" class="trial-icon" icon="check" color="green">-->
-<!--                                </psk-icon>-->
-<!--                                <psk-icon slot="condition-false" class="trial-icon" icon="times" color="red">-->
-<!--                                </psk-icon>-->
-<!--                            </psk-condition>-->
-<!--                            <div class="padding-top">-->
-<!--                                <psk-echo value="Econsent"></psk-echo>-->
-<!--                                <strong>-->
-<!--                                    <psk-condition condition="@trial.econsent.signed">-->
-<!--                                        <psk-echo slot="condition-false" value="not"></psk-echo>-->
-<!--                                    </psk-condition>-->
+            <div class="subheader">
+                <psk-label label="General Data"></psk-label>
+            </div>
+            <div class="padding-sides">
+                <div>
+                    <psk-echo value="Trial Name: "></psk-echo>
+                    <strong>
+                        {{@trial.name}}
+                    </strong>
+                </div>
+                <div>
+                    <psk-echo value="Trial number: "></psk-echo>
+                    <strong>
+                        {{@trial.number}}
+                    </strong>
+                </div>
+                <div>
+                    <psk-echo value="Sponsor: "></psk-echo>
+                    <strong>
+                        {{@trial.sponsorName}}
+                    </strong>
+                </div>
+                <div>
+                    <psk-echo value="Details: "></psk-echo>
+                    <strong>
+                        {{@trial.details}}
+                    </strong>
+                </div>
 
-<!--                                    <psk-echo value="signed"></psk-echo>-->
-<!--                                </strong>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="dispay-flex justify-content-space-between">-->
-<!--                            <div>-->
-<!--                                <div>-->
-<!--                                    <psk-echo value="Econsent Name: "></psk-echo>-->
-<!--                                    <strong>-->
-<!--                                        <psk-echo value="@trial.econsent.name"></psk-echo>-->
-<!--                                    </strong>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <psk-button-link icon="arrow-right" class="go-back-link padding-top"-->
-<!--                                     event-name="go-to-econsent" event-data="@trial.econsentId"></psk-button-link>-->
+            </div>
 
-<!--                </div>-->
-<!--            </div>-->
 
             <div class="">
                 <div class="subheader">
                     <psk-label class="subheader" label="ECONSENTS"></psk-label>
                 </div>
-                <div class="padding-sides">
-                    <psk-for-each data-view-model="trial.econsents">
-                        <div class="dispay-flex date-div justify-content-space-between">
-                            <div class="dispay-flex">
-                                <div class="left-image">
-                                    <psk-img class="ed-control-image" src="assets/images/document_black.png"
-                                             height='40' width='40'></psk-img>
-                                </div>
-                                <div class="right-text">
-                                    <strong>
-                                        <psk-label class="econsent-name" label="@name"></psk-label>
-                                        <psk-echo value="version"></psk-echo>
-                                        <psk-echo value="@version"></psk-echo>
-                                        <psk-echo value="Signed"></psk-echo>
-                                        <psk-echo value="@documentDate"></psk-echo>
-                                    </strong>
-                                </div>
+                <div class="padding-sides" data-for="@econsents">
+
+                    <div class="dispay-flex date-div justify-content-space-between">
+                        <div class="dispay-flex">
+
+                            <div class="left-image padding-image">
+                                <psk-img class="left-image" src="assets/images/document_black.png"
+                                         height='40' width='40'></psk-img>
                             </div>
-                            <psk-button-link icon="arrow-right" class="go-back-link"
-                                             event-name="go-to-econsent" event-data="@id"></psk-button-link>
+                            <div class="right-text">
+                                <strong>
+                                    <psk-label class="econsent-name">{{@name}}</psk-label>
+                                    {{@version}}
+
+                                    <psk-echo value="Signed"></psk-echo>
+                                    {{@documentDate}}
+                                </strong>
+                            </div>
                         </div>
-                        <hr>
-                    </psk-for-each>
+                        <psk-button-link icon="arrow-right" class="go-back-link"
+                                         data-tag="go-to-econsent" event-data="@id"></psk-button-link>
+                    </div>
+                    <hr>
+
                 </div>
             </div>
 
 
-            <!--            <div class="">-->
-            <!--                <div class="subheader">-->
-            <!--                    <psk-label class="subheader" label="Visits"></psk-label>-->
-            <!--                </div>-->
-            <!--                <div class="padding-sides">-->
-            <!--                    <psk-for-each data-view-model="trial.visits">-->
-            <!--                        <div class="dispay-flex date-div justify-content-space-between">-->
-            <!--                            <div class="dispay-flex">-->
-            <!--                                <div class="left-image">-->
-            <!--                                    <psk-img class="ed-control-image" src="assets/images/calendar.png"-->
-            <!--                                             height='50' width='50'></psk-img>-->
-            <!--                                </div>-->
-            <!--                                <div class="right-text">-->
-            <!--                                    <strong>-->
-            <!--                                        <psk-echo value="@date"></psk-echo>-->
-            <!--                                        <psk-echo value="Visit"></psk-echo>-->
-            <!--                                    </strong>-->
-            <!--                                </div>-->
-            <!--                            </div>-->
-            <!--                            <psk-button-link icon="arrow-right" class="go-back-link"-->
-            <!--                                             event-name="go-to-visit" event-data="@id"></psk-button-link>-->
-            <!--                        </div>-->
-            <!--                        <hr>-->
-            <!--                    </psk-for-each>-->
-            <!--                </div>-->
-            <!--            </div>-->
-            <!--            <psk-button class="patient-general-button full-width-button" event-name="home:question">Ask Question</psk-button>-->
-
-        </psk-container>
+        </webc-container>
     </psk-mobile>
 </psk-example>

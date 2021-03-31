@@ -11,75 +11,69 @@
       "name": "Home",
       "path": "/home",
       "icon": "fa-home",
-      "pageSrc": "home.html",
-      "tags": "home"
-    },
-    {
-      "name": "Create trial",
-      "tags": "create-trial",
-      "indexed": false
+      "pageSrc": "home.html"
     },
     {
       "name": "Create diary",
       "pageSrc": "create-diary.html",
-      "tags": "create-diary",
-      "indexed": false
+      "path": "/create-diary",
+      "icon": "fa-home"
     },
     {
       "name": "Ediary",
       "path": "/ediary",
       "icon": "fa-home",
       "pageSrc": "ediary.html",
-      "tags": "ediary"
+
     },
     {
       "name": "Sites",
       "path": "/sites",
       "icon": "fa-home",
       "pageSrc": "sites.html",
-      "tags": "sites"
+
     },
     {
       "name": "Site",
       "path": "/site",
       "icon": "fa-home",
       "pageSrc": "site.html",
-      "tags": "site"
+
     },
     {
       "name": "Trial",
       "path": "/trial",
       "icon": "fa-home",
       "pageSrc": "trial.html",
-      "tags": "trial"
+
     },
     {
       "name": "Notification",
       "path": "/notifications",
       "icon": "fa-home",
       "pageSrc": "notifications.html",
-      "tags": "notifications"
+
     },
     {
       "name": "Econsent",
       "path": "/econsent",
       "icon": "fa-home",
       "pageSrc": "econsent.html",
-      "tags": "econsent"
+
     },
     {
       "name": "Question",
       "path": "/suestion",
       "icon": "fa-home",
       "pageSrc": "question.html",
-      "tags": "question"
+
     },
     {
       "name": "ReadEconsent",
       "path": "/readeconsent",
       "icon": "fa-home",
       "pageSrc": "readeconsent.html",
-      "tags": "readeconsent"
+
     }
   ]
 }
