@@ -1,9 +1,9 @@
-label{
+label {
     text-align: start;
 }
 
-psk-label{
-    display:flex;
+psk-label {
+    display: flex;
     align-items: center;
 }
 
@@ -76,6 +76,30 @@ psk-label{
     font-size: 20px;
 }
 
+.trial-status {
+    color: #00cc00;
+    font-weight: bold;
+    font-size: 18px;
+    margin-left: 10px;
+    text-align: center;
+}
+
+.econsent-status {
+    color: #00345b;
+    font-weight: bold;
+    font-size: 18px;
+    margin-left: 10px;
+    text-align: center;
+}
+
+.econsent-name {
+    color: #00345B;
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: -18px;
+
+}
+
 .subheader {
     color: #f2f2f2;
     padding-left: 20px;
@@ -109,12 +133,14 @@ psk-label{
     font-weight: bold;
     font-size: 18px;
 }
+
 .site-list-title {
     font-weight: bold;
     font-size: 18px;
-    margin: 0 ;
+    margin: 0;
 }
-.site-list-second{
+
+.site-list-second {
     font-size: 14px;
     margin-top: 3px;
     margin-bottom: 0px;
@@ -140,13 +166,12 @@ psk-label{
     display: block;
     text-align: left;
     margin-left: 5%;
-    color: rgba(0,0,0,0.7);
+    color: rgba(0, 0, 0, 0.7);
 }
 
 .ed-label,
-.ed-label psk-label
-{
+.ed-label psk-label {
     font-weight: bold;
     font-size: 14px;
-    color: rgba(0,0,0,0.5) !important;
+    color: rgba(0, 0, 0, 0.5) !important;
 }

@@ -1,24 +1,27 @@
-import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
 import TrialDataService from "./services/TrialDataService.js";
 import Constants from "./Constants.js";
 
-export default class NotificationsController extends ContainerController {
+const {WebcController} = WebCardinal.controllers;
+
+export default class NotificationsController extends WebcController {
     constructor(element, history) {
         super(element, history);
 
         this.setModel({});
+        this.model.notifications = [];
 
         this.TrialDataService = new TrialDataService(this.DSUStorage);
         this.TrialDataService.getNotifications((err, data) => {
             if(err) {
                 return console.log(err);
             }
-            this.model.notifications = data.map(notification => {
+
+            this.model.notifications.push(...data.map(notification => {
                 return {
                     ...notification,
                     icon: Constants.getIconByNotificationType(notification.type)
                 }
-            });
+            }));
         })
 
         this.attachNotificationNavigateHandler();

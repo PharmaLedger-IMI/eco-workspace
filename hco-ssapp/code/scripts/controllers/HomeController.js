@@ -1,4 +1,4 @@
-import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
+const {WebcController} = WebCardinal.controllers;
 
 const initialTrialModel = {
     title: {
@@ -6,12 +6,12 @@ const initialTrialModel = {
         label: 'Trial',
         value: 'Trial1',
     },
-    date:{
+    date: {
         name: 'date',
         label: 'Date',
         value: 'dd.mm.yyyy',
     },
-    description:{
+    description: {
         name: 'description',
         label: 'Description',
         value: 'Loren ipsum test test test test test test 1 ',
@@ -26,47 +26,57 @@ const initModel = {
             id: 1,
             title: 'Trial 1',
             date: '11.mm.yyyy',
-            description : 'trial 1Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris ',
-            initTrialModel:  JSON.parse(JSON.stringify(initialTrialModel))
+            description: 'trial 1Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris ',
+            initTrialModel: JSON.parse(JSON.stringify(initialTrialModel))
 
         },
         {
             id: 2,
             title: 'Trial 2',
             date: '22.mm.yyyy',
-            description : 'Trial 2 Description Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris ',
-            initTrialModel:  JSON.parse(JSON.stringify(initialTrialModel))
+            description: 'Trial 2 Description Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris ',
+            initTrialModel: JSON.parse(JSON.stringify(initialTrialModel))
         },
         {
             id: 3,
             title: 'Trial 3',
             date: '33.mm.yyyy',
-            description : 'Trial 3 Description Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris ',
-            initTrialModel:  JSON.parse(JSON.stringify(initialTrialModel))
+            description: 'Trial 3 Description Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris ',
+            initTrialModel: JSON.parse(JSON.stringify(initialTrialModel))
         },
     ],
     trialsModel: JSON.parse(JSON.stringify(initialTrialModel))
 }
 
-export default class HomeController extends ContainerController {
+export default class HomeController extends WebcController {
     constructor(element, history) {
         super(element, history);
         this._attachHandlerCreateTrial();
         this._attachHandlerClinics();
         this._attachHandlerTrialDetails();
-        this.model= this.setModel(initModel);
+        this.setModel(initModel);
+        console.log(this.model.trials);
+        this.onTagEvent('minus', 'click', () => {
+                console.log('button pressed ');
+                debugger
+            }
+        )
     }
 
-    _attachHandlerCreateTrial(){
-        this.on('home:trial', (event) => {
+
+    _attachHandlerCreateTrial() {
+        this.onTagEvent('home:patient', 'click', (event) => {
             e.preventDefault();
+            console.log("print");
             e.stopImmediatePropagation();
-            this.History.navigateToPageByTag('create-trial');
+            this.navigateToPageTag('create-trial');
+
         });
     }
-    _attachHandlerTrialDetails(){
+
+    _attachHandlerTrialDetails() {
         this.on('home:trialDetails', (event) => {
-            console.log ("Button pressed");
+            console.log("Button pressed");
             const id = event.data;
             const trialIndex = this.model.trials.findIndex((trial) => trial.id === id);
             if (trialIndex === -1) {
@@ -87,9 +97,9 @@ export default class HomeController extends ContainerController {
     }
 
 
-    _attachHandlerClinics(){
+    _attachHandlerClinics() {
         this.on('home:clinics', (event) => {
-            console.log ("Button 2 pressed");
+            console.log("Button 2 pressed");
         });
     }
 }

@@ -9,8 +9,7 @@ export default class TrialDataService {
     }
 
     getSite(id, callback) {
-        this.EcoAdaptorApi.getSite(id,(err, response) => {
-            debugger
+        this.EcoAdaptorApi.getSite(id, (err, response) => {
             if (err) {
                 return console.log(err);
             }
@@ -19,7 +18,7 @@ export default class TrialDataService {
     }
 
     getEconsent(trialId, econsentId, callback) {
-        this.EcoAdaptorApi.getEconsent(trialId,econsentId,(err, response) => {
+        this.EcoAdaptorApi.getEconsent(trialId, econsentId, (err, response) => {
             if (err) {
                 return console.log(err);
             }
@@ -28,7 +27,7 @@ export default class TrialDataService {
     }
 
     getTrial(id, callback) {
-        this.EcoAdaptorApi.getTrial(id,(err, response) => {
+        this.EcoAdaptorApi.getTrial(id, (err, response) => {
             if (err) {
                 return console.log(err);
             }
@@ -45,8 +44,8 @@ export default class TrialDataService {
         })
     }
 
-    getNotification(id,callback) {
-        this.EcoAdaptorApi.getNotification(id,(err, response) => {
+    getNotification(id, callback) {
+        this.EcoAdaptorApi.getNotification(id, (err, response) => {
             if (err) {
                 return console.log(err);
             }
@@ -65,7 +64,6 @@ export default class TrialDataService {
 
     getSites(callback) {
         this.EcoAdaptorApi.getSites((err, response) => {
-            debugger
             if (err) {
                 return console.log(err);
             }
@@ -84,7 +82,6 @@ export default class TrialDataService {
 
     getTrials(callback) {
         this.EcoAdaptorApi.getTrials((err, response) => {
-            debugger
             if (err) {
                 return console.log(err);
             }

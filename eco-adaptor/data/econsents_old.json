@@ -2,8 +2,8 @@
   "econsents": [
     {
       "id": 1,
-      "trialId": 1,
-      "name": "Main Consent Mandatory",
+      "trialId": 3,
+      "name": "site 12",
       "version": 1,
       "file": "something",
       "documentDate": "01/05/2021",
@@ -13,8 +13,8 @@
     },
     {
       "id": 2,
-      "trialId": 1,
-      "name": "Second Consent OPTIONAL",
+      "trialId": 2,
+      "name": "site 45",
       "version": 2,
       "file": "something",
       "documentDate": "01/05/2021",
@@ -25,7 +25,7 @@
     {
       "id": 1,
       "trialId": 1,
-      "name": "Third Consent OPTIONAL",
+      "name": "site 78",
       "version": 4,
       "file": "something",
       "documentDate": "01/05/2021",

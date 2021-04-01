@@ -1,12 +1,12 @@
 <psk-example class="mobile-example">
     <psk-mobile class="noPadding background" disable-header>
-        <psk-container controller-name="HomeController">
+        <webc-container controller="HomeController">
             <psk-layout template-rows="25% 0% 75%" align-items="center" class="coloredBackground">
-                <psk-layout-item class="home-default"></psk-layout-item>
+
 
                 <psk-layout-item class="home-image">
                     <psk-container class="ed-avatar-bordered-image">
-                        <psk-button class="invisible-button notification-button" event-name="home:notifications">
+                        <psk-button class="invisible-button notification-button" data-tag="home:notifications">
                             <psk-img class="ed-control-image" src="assets/images/notification.png"
                                      height='40' width='40'></psk-img>
                         </psk-button>
@@ -17,38 +17,52 @@
                 </psk-layout-item>
 
                 <psk-layout-item class="home-default-bottom">
-                    <psk-label class="user-name-title" label="User ID"></psk-label>
+                    <psk-label class="user-name-title" label="JOHN SMITH"></psk-label>
+                    <psk-label class="user-name-title" label="TP NUMBER"></psk-label>
+                    <div class="padding-sides" data-for="@trials">
 
-                    <psk-layout align-items="center" row-gap="10%" class="ed-controls">
-                        <psk-for-each data-view-model="trials">
-                            <psk-layout-item>
-                                <psk-button class="invisible-button" event-name="home:trial-details" event-data="@id">
-                                    <psk-card class="ed-control-line-father">
-                                        <div class="ed-control-line-left">
-                                            <psk-img class="ed-control-image" src="assets/images/hospital.png"
-                                                     height='40' width='40'></psk-img>
+                        <div class="dispay-flex date-div justify-content-space-between">
+                            <div class="dispay-flex">
+                                <div class="left-image padding-image">
+                                    <psk-img class="ed-control-image" src="assets/images/hospital.png"
+                                             height='50' width='50'></psk-img>
+                                </div>
+                                <div class="right-text">
+                                    <div>
+                                        <div>
+                                            <strong>
+                                                <psk-echo value="Trial Name: " ></psk-echo>
+                                                {{@name}}
+                                            </strong>
                                         </div>
-                                        <div class="ed-control-line-right">
-                                            <div>
-                                                <psk-label class="ed-control-button-title" label="@name"></psk-label>
-                                            </div>
-                                            <div>
-                                                <psk-label class="" label="@details"></psk-label>
-                                            </div>
-                                            <hr>
+                                        <div>
+                                            <psk-echo value="Number: "></psk-echo>
+                                            <strong>
+                                                {{@number}}
+                                            </strong>
                                         </div>
-                                    </psk-card>
-                                </psk-button>
-                            </psk-layout-item>
-                        </psk-for-each>
-                    </psk-layout>
+                                    </div>
+                                    <div>
+                                        <psk-echo value="Sponsor Name: "></psk-echo>
+                                        <strong>
+                                            {{@sponsorName}}
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <psk-button icon="arrow-right" class="go-back-link padding-top-35"
+                                        data-tag="home:trial-details" event-data="@id"></psk-button>
+                        </div>
+                        <hr>
+
+                    </div>
 
                     <psk-card class="patient-button-row">
-                        <psk-button class="patient-general-button" event-name="home:sites">Sites</psk-button>
-                        <psk-button class="patient-general-button" event-name="home:questionnaire">Questions</psk-button>
+                        <psk-button class="patient-general-button" data-tag="home:sites">Site</psk-button>
+                        <psk-button class="patient-general-button" data-tag="home:questionnaire">FAQ</psk-button>
                     </psk-card>
                 </psk-layout-item>
             </psk-layout>
-        </psk-container>
+        </webc-container>
     </psk-mobile>
 </psk-example>

@@ -106,11 +106,10 @@ export default class TrialsController extends ContainerController {
             this.TrialService.saveTrial( trialObject,(err, updTrial) => {
                 debugger;
                 if (err) {
-                    debugger;
                     console.log(err);
                     return;
                 }
-                debugger;
+
                 console.log("Trial saved" +updTrial.uid);
                 this.uid = updTrial.uid;
 
