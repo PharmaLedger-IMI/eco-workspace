@@ -1,7 +1,7 @@
 import ContainerController from '../../cardinal/controllers/base-controllers/ContainerController.js';
-import TrialsService from '../services/TrialsService.js';
+import { trialsService } from '../services/TrialsService.js';
 
-export default class DebugLogController extends ContainerController {
+export default class ListTrialsController extends ContainerController {
   statusesArray = ['Approved', 'Pending', 'Rejected'];
   itemsPerPageArray = [5, 10, 15, 20, 30];
 
@@ -123,33 +123,50 @@ export default class DebugLogController extends ContainerController {
 
   constructor(element, history) {
     super(element, history);
-    this.history = history;
 
-    this.trialsService = new TrialsService();
+    this.trialsService = trialsService;
 
-    this.trials = this.getTrials();
+    this.setModel({
+      statuses: this.statuses,
+      countries: this.countriesModel,
+      search: this.search,
+      trials: [],
+      pagination: this.pagination,
+      headers: this.headers,
+      clearButtonDisabled: true,
+    });
+
+    this.attachEvents();
+
+    this.init();
+  }
+
+  async init() {
+    this.trials = await this.getTrials();
     const countries = [];
 
     this.trials.forEach((trial) =>
       trial.countries.forEach((country) => !countries.includes(country) && countries.push(country))
     );
 
-    this.setModel({
-      statuses: this.statuses,
-      countries: { ...this.countriesModel, options: countries.map((x) => ({ label: x, value: x })) },
-      search: this.search,
-      trials: this.trials.map((trial) => ({
-        ...trial,
-        countries: trial.countries.join(),
-        status: this.statusesArray[trial.status],
-      })),
-      pagination: this.pagination,
-      headers: this.headers,
-    });
+    this.model.countries = { ...this.countriesModel, options: countries.map((x) => ({ label: x, value: x })) };
 
+    this.model.trials = this.trials.map((trial) => ({
+      ...trial,
+      countries: trial.countries.join(),
+      status: this.statusesArray[trial.status],
+    }));
     this.paginateTrials(this.model.trials);
+  }
 
-    this.attachEvents();
+  async getTrials() {
+    try {
+      const trials = await this.trialsService.getTrials();
+      return trials;
+    } catch (error) {
+      // TODO: handle errors with pop up
+      console.log(error);
+    }
   }
 
   paginateTrials(trials, page = 1) {
@@ -189,10 +206,6 @@ export default class DebugLogController extends ContainerController {
     console.log('TEST:', this.model.test);
   }
 
-  getTrials() {
-    return this.trialsService.getTrials();
-  }
-
   setTrialsModel(trials) {
     const model = trials.map((trial) => ({
       ...trial,
@@ -207,6 +220,13 @@ export default class DebugLogController extends ContainerController {
 
   filterData() {
     let result = this.trials;
+    console.log(
+      'result:',
+      this.model.pagination &&
+        this.model.pagination.items &&
+        Array.isArray(this.model.pagination.items) &&
+        this.model.pagination.items.length > 0
+    );
 
     if (this.model.countries.value) {
       result = result.filter((x) => x.countries.includes(this.model.countries.value));
@@ -224,11 +244,13 @@ export default class DebugLogController extends ContainerController {
   sortColumn(column) {
     if (column || this.model.headers.some((x) => x.asc || x.desc)) {
       if (!column) column = this.model.headers.find((x) => x.asc || x.desc).column;
+
       const headers = this.model.headers;
       const selectedColumn = headers.find((x) => x.column === column);
       const idx = headers.indexOf(selectedColumn);
-      console.log('INDEX:', idx);
+
       if (headers[idx].notSortable) return;
+
       if (headers[idx].asc || headers[idx].desc) {
         this.model.trials.reverse();
         this.paginateTrials(this.model.trials, this.model.pagination.currentPage);
@@ -275,10 +297,12 @@ export default class DebugLogController extends ContainerController {
     });
 
     this.on('filters-changed', async (event) => {
+      this.model.clearButtonDisabled = false;
       this.filterData();
     });
 
     this.on('filters-cleared', async (event) => {
+      this.model.clearButtonDisabled = true;
       this.model.countries.value = null;
       this.model.statuses.value = null;
       this.model.search.value = null;
@@ -288,6 +312,7 @@ export default class DebugLogController extends ContainerController {
     const searchField = this.element.querySelector('#search-field');
     searchField.addEventListener('keydown', () => {
       setTimeout(() => {
+        this.model.clearButtonDisabled = false;
         this.filterData();
       }, 300);
     });
@@ -298,21 +323,31 @@ export default class DebugLogController extends ContainerController {
     });
 
     this.on('go-to-previous-page', async () => {
-      this.paginateTrials(this.model.trials, this.model.pagination.currentPage - 1);
+      // TODO: button is clickable and fires event although disabled
+      console.log('EVENT FIRED');
+      if (this.model.pagination.currentPage !== 1) {
+        this.paginateTrials(this.model.trials, this.model.pagination.currentPage - 1);
+      }
     });
 
     this.on('go-to-next-page', async () => {
-      this.paginateTrials(this.model.trials, this.model.pagination.currentPage + 1);
+      if (this.model.pagination.currentPage !== this.model.pagination.totalPages) {
+        this.paginateTrials(this.model.trials, this.model.pagination.currentPage + 1);
+      }
     });
 
     this.on('go-to-last-page', async () => {
       const length = this.model.trials.length;
       const numberOfPages = Math.ceil(length / this.model.pagination.itemsPerPage);
-      this.paginateTrials(this.model.trials, numberOfPages);
+      if (this.model.pagination.currentPage !== numberOfPages) {
+        this.paginateTrials(this.model.trials, numberOfPages);
+      }
     });
 
     this.on('go-to-first-page', async () => {
-      this.paginateTrials(this.model.trials, 1);
+      if (this.model.pagination.currentPage !== 1) {
+        this.paginateTrials(this.model.trials, 1);
+      }
     });
 
     this.on('set-items-per-page', async (event) => {

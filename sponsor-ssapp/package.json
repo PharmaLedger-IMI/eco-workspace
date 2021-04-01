@@ -22,5 +22,6 @@
   "homepage": "https://github.com/PharmaLedger-IMI/eco-workspace",
   "dependencies": {
     "octopus": "git+http://github.com/privatesky/octopus.git"
-  }
+  },
+  "devDependencies": {}
 }

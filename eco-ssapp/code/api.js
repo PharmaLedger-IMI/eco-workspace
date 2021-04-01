@@ -1,6 +1,3 @@
-
-
-
 const securityContext = require("opendsu").loadApi("sc");
 const mainDSU = securityContext.getMainDSU();
 
