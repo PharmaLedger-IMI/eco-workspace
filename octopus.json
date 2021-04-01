@@ -173,6 +173,21 @@
       ]
     },
     {
+      "name": "apihub-root/sponsor-wallet/loader",
+      "src": "http://github.com/privatesky/web-dossier-loader.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
+        {
+          "type": "execute",
+          "cmd": "cd apihub-root/sponsor-wallet/loader && npm install"
+        }
+      ]
+    },
+    {
       "name": "themes/blue-fluorite-theme",
       "src": "",
       "actions": [
@@ -199,6 +214,16 @@
         {
           "type": "execute",
           "cmd": "cd themes/sponsor-theme && npm install"
+        }
+      ]
+    },
+    {
+      "name": "sponsor-ssapp",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd sponsor-ssapp && npm install"
         }
       ]
     },
@@ -342,7 +367,50 @@
       "actions": [
         {
           "type": "execute",
+          "cmd": "cd apihub-root/sponsor-wallet/loader && npm install"
+        },
+        {
+          "type": "execute",
           "cmd": "cd apihub-root/dsu-explorer/loader && npm install"
+        }
+      ]
+    },
+    {
+      "name": "sponsor-wallet-loader-build",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd apihub-root/sponsor-wallet/loader && npm run build"
+        }
+      ]
+    },
+    {
+      "name": "sponsor_wallet_bind_to_sponsor_ssapp",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd sponsor-ssapp && npm run build"
+        },
+        {
+          "type": "copy",
+          "src": "./sponsor-ssapp/seed",
+          "target": "./apihub-root/sponsor-wallet/apps-patch/sponsor-ssapp/seed",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "./sponsor-ssapp/seed",
+          "target": "./apihub-root/sponsor-wallet/wallet-patch/seed",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "execute",
+          "cmd": "echo Use this folder template in order to customize the application instance by adding configuration, pages etc. > ./apihub-root/sponsor-wallet/apps-patch/sponsor-ssapp/readme"
         }
       ]
     },
