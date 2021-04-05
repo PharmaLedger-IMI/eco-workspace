@@ -28,6 +28,11 @@
   background-color: rgba(0, 136, 152, 0.8) !important;
 }
 
+.btn.btn-primary:disabled,
+.submit:disabled {
+  background-color: rgba(0, 136, 152, 0.8) !important;
+}
+
 /* ---------- pagination button -------------  */
 .page-button .btn.btn-primary {
   border: none;
@@ -64,6 +69,15 @@
   background-color: rgba(0, 136, 152, 0.8);
 }
 
+.page-button .btn.btn-primary:disabled {
+  background-color: white !important;
+  color: #c4c4c4;
+}
+
+.page-button .btn.btn-primary:disabled:hover {
+  background-color: white !important;
+  color: #c4c4c4;
+}
 /* ---------- bare button -------------  */
 .btn-bare.hydrated {
   width: 100% !important;

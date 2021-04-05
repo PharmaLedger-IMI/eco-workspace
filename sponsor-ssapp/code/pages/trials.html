@@ -10,7 +10,12 @@
       <div>
         <psk-input id="search-field" view-model="search" event-name="filters-changed" event-data="text"></psk-input>
       </div>
-      <psk-button class="align-self-end" label="Clear filters" event-name="filters-cleared"></psk-button>
+      <psk-button
+        class="align-self-end"
+        disabled="@clearButtonDisabled"
+        label="Clear filters"
+        event-name="filters-cleared"
+      ></psk-button>
       <psk-button class="align-self-end" label="Add trial" event-name="add-trial"></psk-button>
     </psk-layout>
 
@@ -63,6 +68,7 @@
         <div class="d-flex align-items-center justify-content-between flex-wrap">
           <div class="d-flex align-items-center justify-content-center">
             <span>Page&nbsp;</span>
+            <!-- TODO: no two-way binding on select, also how to set default/initial value -->
             <psk-select value="@test" view-model="@pagination.pages" event-name="navigate-to-page"></psk-select>
             <span>&nbsp;of&nbsp;</span>
             <psk-label label="@pagination.totalPages"></psk-label>

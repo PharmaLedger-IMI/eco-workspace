@@ -9,3 +9,4 @@
 seed
 bundles
 package-lock.json
+.eslintrc.json
