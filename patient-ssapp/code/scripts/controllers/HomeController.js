@@ -25,10 +25,7 @@ export default class HomeController extends WebcController {
     _attachHandlerTrialClick(){
 
         this.onTagClick('home:trial-details', (model, target, event) => {
-                console.log('button pressed event '+event+"target "+target);
-                this.navigateToPageTag('trial')
-            debugger
-
+                    this.navigateToPageTag('trial')
             }
         )
     }
@@ -40,8 +37,8 @@ export default class HomeController extends WebcController {
     }
 
     _attachHandlerSites(){
-        this.onTagClick('home:sites', (event) => {
-            this.navigateToPageTag('sites');
+        this.onTagClick('home:site', (event) => {
+            this.navigateToPageTag('site');
         });
     }
 

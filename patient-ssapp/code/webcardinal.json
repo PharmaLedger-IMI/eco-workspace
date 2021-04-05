@@ -20,6 +20,24 @@
       "tag": "notifications"
     },
     {
+      "name": "Econsent",
+      "path": "/econsent",
+      "src": "econsent.html",
+      "tag": "econsent"
+    },
+    {
+      "name": "SignEconsent",
+      "path": "/sign-econsent",
+      "src": "sign-econsent.html",
+      "tag": "sign-econsent"
+    },
+    {
+      "name": "Site",
+      "path": "/site",
+      "src": "site.html",
+      "tag": "site"
+    },
+    {
       "name": "Create trial",
       "tag": "create-trial",
       "indexed": false

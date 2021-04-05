@@ -1,0 +1,25 @@
+.home-image {
+    width: 180px;
+    z-index: 100;
+    padding-bottom: 160px;
+}
+
+.ed-avatar-bordered-image {
+    background-color: white;
+}
+
+.ed-avatar-bordered-image #ed-profile-image {
+    border-radius: 90px;
+    width: 124px;
+    height: 124px;
+    position: relative;
+    left: 5px;
+    top: 5px;
+}
+
+.home-default-bottom {
+    width: 100%;
+    height: 100%;
+    background-color: #00345B;
+    color: white;
+}
