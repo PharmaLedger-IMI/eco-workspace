@@ -1,3 +1,5 @@
+import CommunicationService from "./services/CommunicationService.js";
+
 const {WebcController} = WebCardinal.controllers;
 
 const initialTrialModel = {
@@ -56,6 +58,9 @@ export default class HomeController extends WebcController {
         this._attachHandlerTrialDetails();
         this.setModel(initModel);
         console.log(this.model.trials);
+
+        this.CommunicationService = new CommunicationService();
+
         this.onTagEvent('minus', 'click', () => {
                 console.log('button pressed ');
                 debugger
