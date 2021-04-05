@@ -6,9 +6,9 @@ export default class TrialController extends ContainerController {
     this.setModel({
       id: null,
     });
-    let trialId = this.History.getState();
+    let { id, keySSI } = this.History.getState();
 
-    this.model.id = trialId;
+    this.model.id = id;
 
     this.attachEvents();
 

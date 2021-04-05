@@ -12,11 +12,12 @@
   <br />
 
   <psk-tab-navigator default="0">
-    // *************** TRIAL TRACKING ********************
+    <!-- *************** TRIAL TRACKING ******************** -->
     <psk-tab title="Trial Tracking">Trial Tracking</psk-tab>
 
-    // *************** PARTICIPANTS ********************
-    <psk-tab title="Participants">
+    <!-- *************** PARTICIPANTS ******************** -->
+    <psk-tab title="Participants">Participants</psk-tab>
+    <!-- <psk-tab title="Participants">
       <psk-container controller-name="TrialParticipantsController">
         <psk-layout columns="3" column-gap="20px" class="justify-content-center align-items-center">
           <psk-card title="Total Trial Participants" class="card p-1">
@@ -209,15 +210,140 @@
           </div>
         </psk-condition>
       </psk-container>
+    </psk-tab> -->
+
+    <!-- *************** INFORM CONSENTS ******************** -->
+    <psk-tab title="Inform Consents">
+      <psk-container controller-name="TrialConsentsController">
+        <!-- **************** INFORM CONSENTS TOP BAR ************************* -->
+        <psk-layout class="d-flex flex-wrap justify-content-between align-items-center mt-5">
+          <div>
+            <psk-input id="search-field" view-model="search" event-name="filters-changed" event-data="text"></psk-input>
+          </div>
+          <psk-button class="align-self-end" label="Add consent" event-name="add-consent"></psk-button>
+        </psk-layout>
+
+        <!-- *************** INFORM CONSENT TABLE ********************* -->
+        <psk-condition condition="@consentsArrayNotEmpty">
+          <div slot="condition-true">
+            <psk-layout class="background-primary table-row" columns="7">
+              <psk-for-each data-view-model="@headers" class="display-contents" style="display: contents">
+                <span class="d-flex flex-row align-items-center justify-content-between pr-1 table-cell">
+                  <psk-button class="btn-bare" disabled="@notSortable" event-name="sort-column" event-data="@column">
+                    <div class="background-primary d-flex flex-row align-items-center justify-content-between pr-1">
+                      <psk-label label="@label"></psk-label>
+                      <div>
+                        <psk-condition condition="@asc">
+                          <div slot="condition-true">&uarr;</div>
+                        </psk-condition>
+                        <psk-condition condition="@desc">
+                          <div slot="condition-true">&darr;</div>
+                        </psk-condition>
+                        <psk-condition condition="@notSortable">
+                          <div slot="condition-false">
+                            <psk-condition condition="@asc">
+                              <div slot="condition-false">
+                                <psk-condition condition="@desc">
+                                  <div style="font-weight: 300" slot="condition-false">&udarr;</div>
+                                </psk-condition>
+                              </div>
+                            </psk-condition>
+                          </div>
+                        </psk-condition>
+                      </div>
+                    </div>
+                  </psk-button>
+                </span>
+              </psk-for-each>
+            </psk-layout>
+            <psk-for-each data-view-model="@pagination.items" style="display: contents">
+              <psk-layout columns="7" class="justify-content-center align-items-center table-row">
+                <psk-label class="table-cell" label="@id"></psk-label>
+                <psk-label class="table-cell" label="@name"></psk-label>
+                <psk-label class="table-cell" label="@version"></psk-label>
+                <psk-label class="table-cell" label="@versionDate"></psk-label>
+                <psk-label class="table-cell" label="@type"></psk-label>
+                <psk-label class="table-cell" label="@attachment"></psk-label>
+                <div class="d-flex flex-row">
+                  <!-- <psk-button class="btn-bare table-cell" event-name="update-consent" event-data="@id">
+                    &#128269;
+                  </psk-button> -->
+                  <psk-button class="btn-bare table-cell" event-name="delete-consent" event-data="@keySSI">
+                    &#10060;
+                  </psk-button>
+                  <!-- <psk-button class="btn-bare table-cell" event-name="set-as-current" event-data="@id">
+                    &#10060;
+                  </psk-button> -->
+                </div>
+              </psk-layout>
+            </psk-for-each>
+
+            <div class="d-flex align-items-center justify-content-between flex-wrap">
+              <div class="d-flex align-items-center justify-content-center">
+                <span>Page&nbsp;</span>
+                <psk-select value="@test" view-model="@pagination.pages" event-name="navigate-to-page"></psk-select>
+                <span>&nbsp;of&nbsp;</span>
+                <psk-label label="@pagination.totalPages"></psk-label>
+                <span>&nbsp;Pages</span>
+              </div>
+
+              <div class="d-flex flex-row">
+                <psk-button class="page-link page-button" disabled="@pagination.previous" event-name="go-to-first-page">
+                  <span aria-hidden="true">&laquo;</span>
+                </psk-button>
+                <psk-button
+                  class="page-link page-button"
+                  disabled="@pagination.previous"
+                  event-name="go-to-previous-page"
+                >
+                  <span aria-hidden="true">&lsaquo;</span>
+                </psk-button>
+                <psk-for-each class="d-flex flex-row" data-view-model="@pagination.slicedPages">
+                  <psk-condition condition="@active">
+                    <div slot="condition-true" class="active">
+                      <psk-button
+                        class="page-link page-button active"
+                        label="@label"
+                        event-name="navigate-to-page"
+                        event-data="@value"
+                      >
+                      </psk-button>
+                    </div>
+                    <div slot="condition-false">
+                      <psk-button
+                        class="page-link page-button"
+                        label="@label"
+                        event-name="navigate-to-page"
+                        event-data="@value"
+                      ></psk-button>
+                    </div>
+                  </psk-condition>
+                </psk-for-each>
+                <psk-button class="page-link page-button" disabled="@pagination.next" event-name="go-to-next-page">
+                  <span aria-hidden="true">&rsaquo;</span>
+                </psk-button>
+                <psk-button class="page-link page-button" disabled="@pagination.next" event-name="go-to-last-page">
+                  <span aria-hidden="true">&raquo;</span>
+                </psk-button>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-center">
+                <psk-select view-model="@pagination.itemsPerPageOptions" event-name="set-items-per-page"></psk-select>
+                <span>&nbsp;Items Per Page</span>
+              </div>
+            </div>
+          </div>
+          <div slot="condition-false">
+            <div>No consents available.</div>
+          </div>
+        </psk-condition>
+      </psk-container>
     </psk-tab>
 
-    // *************** INFORM CONSENTS ********************
-    <psk-tab title="Inform Consents">Inform Consents</psk-tab>
-
-    // *************** INFO ********************
+    <!-- *************** INFO ******************** -->
     <psk-tab title="Info">Info</psk-tab>
 
-    // *************** HISTORY ********************
+    <!-- *************** HISTORY ******************** -->
     <psk-tab title="History">History</psk-tab>
   </psk-tab-navigator>
 </psk-page>

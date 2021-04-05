@@ -21,7 +21,7 @@
 
     <psk-condition condition="@trialArrayNotEmpty">
       <div slot="condition-true">
-        <psk-layout class="background-primary table-row" slot="condition-true" columns="9">
+        <psk-layout class="background-primary table-row" slot="condition-true" columns="5">
           <psk-for-each data-view-model="@headers" class="display-contents" style="display: contents">
             <span class="d-flex flex-row align-items-center justify-content-between pr-1 table-cell">
               <psk-button class="btn-bare" disabled="@notSortable" event-name="sort-column" event-data="@column">
@@ -52,16 +52,15 @@
           </psk-for-each>
         </psk-layout>
         <psk-for-each data-view-model="@pagination.items" style="display: contents">
-          <psk-layout columns="9" class="justify-content-center align-items-center table-row">
+          <psk-layout columns="5" class="justify-content-center align-items-center table-row">
             <psk-label class="table-cell" label="@id"></psk-label>
             <psk-label class="table-cell" label="@name"></psk-label>
-            <psk-label class="table-cell" label="@progress"></psk-label>
             <psk-label class="table-cell" label="@status"></psk-label>
-            <psk-label class="table-cell" label="@enrolled"></psk-label>
-            <psk-label class="table-cell" label="@total"></psk-label>
             <psk-label class="table-cell" label="@countries"></psk-label>
-            <psk-label class="table-cell" label="@started"></psk-label>
-            <psk-button class="btn-bare table-cell" event-name="view-trial" event-data="@id"> &#128269; </psk-button>
+            <div class="d-flex flex-row">
+              <psk-button class="btn-bare table-cell" event-name="view-trial" event-data="@id"> &#128269; </psk-button>
+              <psk-button class="btn-bare table-cell" event-name="delete-trial" event-data="@id"> &#10060; </psk-button>
+            </div>
           </psk-layout>
         </psk-for-each>
 
@@ -121,5 +120,7 @@
         <div>No trials available.</div>
       </div>
     </psk-condition>
+
+    <psk-list-feedbacks messages-to-display="5" time-alive="3000"> </psk-list-feedbacks>
   </psk-container>
 </psk-page>

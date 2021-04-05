@@ -48,7 +48,22 @@ function trialUnmount(path, callback) {
   mainDSU.unmount(path, callback);
 }
 
+function listFiles(path, callback) {
+  mainDSU.listFiles(path, callback);
+}
+
+function listFolders(path, callback) {
+  mainDSU.listFolders(path, callback);
+}
+
+function readFile(path, callback) {
+  mainDSU.readFile(path, callback);
+}
+
 module.exports = {
+  readFile,
+  listFolders,
+  listFiles,
   listDSUs,
   loadDSU,
   createSSIAndMount,

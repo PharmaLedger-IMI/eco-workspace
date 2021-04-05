@@ -1,87 +1,125 @@
-class TrialsService {
-  SERVICE_PATH = '/trials';
-  countries = ['US', 'GR', 'IT', 'ES', 'UK', 'RO', 'PT', 'ES'];
-
-  trials = Array.from({ length: Math.floor(Math.random() * Math.floor(50) + 10) }, (_, i) => i + 1).map((y) => ({
-    id: y,
-    name: `trial ${y}`,
-    progress: Math.floor(Math.random() * 100),
-    status: Math.floor(Math.random() * 2),
-    enrolled: Math.floor(Math.random() * 500),
-    total: Math.floor(Math.random() * 1000),
-    countries: this.countries.sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * 2 + 1)),
-    started: this.randomDate(new Date(2012, 0, 1), new Date()).toISOString().slice(0, 10),
-  }));
-
-  sites = Array.from({ length: Math.floor(Math.random() * Math.floor(10) + 2) }, (_, i) => i + 1).map((y) => ({
-    name: `Site ${y}`,
-    country: this.countries[Math.floor(Math.random() * this.countries.length)],
-    enteredTrial: this.randomDate(new Date(2012, 0, 1), new Date()).toISOString().slice(0, 10),
-  }));
-
-  consents = Array.from({ length: Math.floor(Math.random() * Math.floor(10) + 2) }, (_, i) => i + 1).map((y) => ({
-    name: `Consent name ${Math.floor(Math.random() * Math.floor(3) + 1)}`,
-    version: Math.random().toFixed(1),
-    update: this.randomDate(new Date(2012, 0, 1), new Date()).toISOString().slice(0, 10),
-    created: this.randomDate(new Date(2012, 0, 1), new Date()).toISOString().slice(0, 10),
-    filename: `filename${y}`,
-    current: Math.floor(Math.random() * Math.floor(2)) ? true : false,
-  }));
-
-  consentStatuses = ['Withdrew', 'Waiting re-consent', 'Consent'];
-
-  trialsInfo = this.trials.map((x) => ({
-    id: x.id,
-    consents: this.consents,
-    sites: this.sites,
-    participants: Array.from({ length: Math.floor(Math.random() * Math.floor(30) + 10) }, (_, i) => i + 1).map((y) => ({
-      id: y,
-      country: this.countries[Math.floor(Math.random() * this.countries.length)],
-      site: this.sites[Math.floor(Math.random() * this.sites.length)],
-      consent: this.consents[Math.floor(Math.random() * this.consents.length)],
-      consentVersion: Math.random().toFixed(1),
-      consentStatus: this.consentStatuses[Math.floor(Math.random() * this.consentStatuses.length)],
-      patientSigned: this.randomDate(new Date(2012, 0, 1), new Date()).toISOString().slice(0, 10),
-      hcpSigned: this.randomDate(new Date(2012, 0, 1), new Date()).toISOString().slice(0, 10),
-      lastSignedICF: null,
-    })),
-  }));
-
-  randomDate(start, end) {
-    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-  }
+export default class TrialsService {
+  TRIALS_PATH = '/trials';
+  TRIALS_LIST_FILENAME = 'trials.json';
+  TRIALS_LIST_PATH = this.TRIALS_PATH + '/' + this.TRIALS_LIST_FILENAME;
 
   constructor(DSUStorage) {
     this.DSUStorage = DSUStorage;
   }
 
-  getTrials() {
-    console.log(this.trials);
-    const result = new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(this.trials);
-      }, 300);
-    });
+  async getTrials() {
+    const result = await this.readTrialList();
+    if (result && result.table) {
+      return result.table.filter((x) => !x.deleted);
+    } else return [];
+  }
+
+  async getTrial(keySSI) {
+    const result = await this.getItem(this.getDsuStoragePath(keySSI));
     return result;
   }
 
-  getTrial(id) {
-    const result = new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(this.trialsInfo.find((x) => x.id === id));
-      }, 300);
+  async createTrial(data) {
+    const keySSI = await this.createSSIAndMount(this.TRIALS_PATH);
+    data.keySSI = keySSI;
+    const trial = await this.setItem(this.getDsuStoragePath(data.keySSI), data);
+    await this.addTrialToList({
+      id: data.id,
+      keySSI: data.keySSI,
+      name: data.name,
+      status: data.status,
+      countries: data.countries,
     });
+    return trial;
+  }
+
+  async deleteTrial(id) {
+    await this.removeTrialFromList(id);
+  }
+
+  async removeTrialFromList(id) {
+    const trialList = await this.getItem(this.TRIALS_LIST_PATH);
+    const trial = trialList.table.find((x) => x.id === id);
+    trial['deleted'] = true;
+    const result = await this.setItem(this.TRIALS_LIST_PATH, trialList);
     return result;
   }
 
-  getTrialConsents(id) {
-    const result = new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(this.consents);
-      }, 300);
-    });
+  async addTrialToList(data) {
+    let trialList = await this.getItem(this.TRIALS_LIST_PATH);
+    trialList.table = [...trialList.table, data];
+    const result = await this.setItem(this.TRIALS_LIST_PATH, trialList);
     return result;
+  }
+
+  async createTrialList() {
+    return await this.setItem(this.TRIALS_LIST_PATH, { table: [] });
+  }
+
+  async readTrialList() {
+    try {
+      const fileList = await this.listFiles(this.TRIALS_PATH);
+      if (fileList.includes(this.TRIALS_LIST_FILENAME)) {
+        return await this.getItem(this.TRIALS_LIST_PATH);
+      } else {
+        return await this.createTrialList();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  getItem(path) {
+    return new Promise((resolve, reject) => {
+      this.DSUStorage.getItem(path, (err, content) => {
+        if (err) {
+          reject(new Error(err));
+          return;
+        }
+        let textDecoder = new TextDecoder('utf-8');
+        let json = JSON.parse(textDecoder.decode(content));
+        resolve(json);
+      });
+    });
+  }
+
+  setItem(path, content) {
+    return new Promise((resolve, reject) => {
+      this.DSUStorage.setObject(path, content, async (err) => {
+        if (err) {
+          reject(new Error(err));
+          return;
+        }
+        resolve(content);
+      });
+    });
+  }
+
+  createSSIAndMount(path) {
+    return new Promise((resolve, reject) => {
+      this.DSUStorage.call('createSSIAndMount', path, async (err, keySSI) => {
+        if (err) {
+          reject(new Error(err));
+          return;
+        }
+        resolve(keySSI);
+      });
+    });
+  }
+
+  listFiles(path) {
+    return new Promise((resolve, reject) => {
+      this.DSUStorage.call('listFiles', path, async (err, result) => {
+        if (err) {
+          reject(new Error(err));
+          return;
+        }
+        resolve(result);
+      });
+    });
+  }
+
+  getDsuStoragePath(keySSI) {
+    return this.TRIALS_PATH + '/' + keySSI + '/data.json';
   }
 }
-
-export const trialsService = new TrialsService();

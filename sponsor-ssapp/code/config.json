@@ -8,7 +8,7 @@
     "avatar": "resources/images/person.png"
   },
   "modals": {
-    "loadingModal": "loading-modal.html",
-    "batchInfoModal": "batch-info.html"
+    "addNewTrialModal": "modals/add-new-trial.html",
+    "addNewConsentModal": "modals/add-new-consent.html"
   }
 }
