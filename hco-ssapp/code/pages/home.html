@@ -1,15 +1,17 @@
 <psk-page title="Home">
     <webc-container controller="HomeController">
 
-        <psk-label class="" label="E-Consent"/>
+        <div class="subheader">
+            <psk-label class="trial-title" label="Trials"></psk-label>
+        </div>
 
-        <psk-button data-tag="minus" button-class="btn btn-danger">Test button</psk-button>
+
         <psk-card class="bpd-dashboard">
-            <psk-label class="bpd-dashboard-title" label="Trials"/>
+
             <div class="bpd-organization-elements">
 
                 <div data-for="@trials">
-                    <psk-layout columns="11" class="justify-content-center align-items-center table-row">
+                    <psk-layout columns="11" class="justify-content-center align-items-center table-row" >
                         <psk-label class="table-cell" label="name"></psk-label>
                         <psk-label class="table-cell" label="Number/ID"></psk-label>
                         <psk-label class="table-cell" label="status"></psk-label>
@@ -22,7 +24,7 @@
                         <psk-label class="table-cell" label="milestones"></psk-label>
                         <psk-label class="table-cell" label="participants"></psk-label>
                         <psk-label class="table-cell" label="screening"></psk-label>
-
+                        <button  data-tag="home:trial"> >> </button>
                     </psk-layout>
                 </div>
             </div>

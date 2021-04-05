@@ -48,6 +48,8 @@ const initModel = {
     trialsModel: JSON.parse(JSON.stringify(initialTrialModel))
 }
 
+
+
 export default class HomeController extends WebcController {
     constructor(element, history) {
         super(element, history);
@@ -56,9 +58,9 @@ export default class HomeController extends WebcController {
         this._attachHandlerTrialDetails();
         this.setModel(initModel);
         console.log(this.model.trials);
-        this.onTagEvent('minus', 'click', () => {
-                console.log('button pressed ');
-                debugger
+
+        this.onTagEvent('home:trial', 'click', () => {
+            this.navigateToPageTag('trial');
             }
         )
     }
@@ -102,4 +104,7 @@ export default class HomeController extends WebcController {
             console.log("Button 2 pressed");
         });
     }
+
+
+
 }

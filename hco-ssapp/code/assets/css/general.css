@@ -1,0 +1,18 @@
+.subheader {
+    height: 60px;
+    width: 100%;
+    background-color: #CDD7F2;
+    margin-top: 120px;
+    padding:10px;
+}
+
+.trial-title {
+    font-size: 22px;
+    color: #00345b;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align:center;
+    vertical-align:middle;
+    display:table-cell;
+    margin-left: 20px;
+}

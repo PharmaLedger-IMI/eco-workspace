@@ -1,33 +1,56 @@
 <psk-page title="Home">
-    <webc-container controller="HomeController">
-
-        <psk-label class="" label="E-Consent"/>
-
-        <psk-button data-tag="minus" button-class="btn btn-danger">Test button</psk-button>
+    <link rel="stylesheet" href="/assets/css/pages/trial.css">
+    <webc-container controller="TrialController">
+        <div class="subheader">
+            <psk-label class="trial-title" label="Trial"></psk-label>
+        </div>
         <psk-card class="bpd-dashboard">
-            <psk-label class="bpd-dashboard-title" label="Trials"/>
-            <div class="bpd-organization-elements">
 
-                <div data-for="@trials">
-                    <psk-layout columns="11" class="justify-content-center align-items-center table-row">
-                        <psk-label class="table-cell" label="name"></psk-label>
-                        <psk-label class="table-cell" label="Number/ID"></psk-label>
-                        <psk-label class="table-cell" label="status"></psk-label>
-                        <psk-label class="table-cell" label="description"></psk-label>
+            <div class="top-divided">
+                <div class="left">
+                    <div class="top-buttons">
+                        <button class="trial-button">Trial Info</button>
+                        <button class="trial-button">Consent Info</button>
+                    </div>
+                    <psk-label class="trial-title" label="Trial Participants Overview"></psk-label>
+                    <psk-label class="simple-text" label="Number of subjects"></psk-label>
+                    <psk-label class="simple-text" label="Total number of participants"></psk-label>
+                    <psk-label class="simple-text" label="Percentange of enrollemnt"></psk-label>
+                    <psk-label class="simple-text" label="Number of subjects with withdrowed "></psk-label>
+                    <psk-label class="simple-text"
+                               label="Number of subjects to which the study has been proposed"></psk-label>
+                    <psk-label class="simple-text" label="Date in which "></psk-label>
 
-                        <psk-label class="table-cell" label="recruitment"></psk-label>
-                        <psk-label class="table-cell" label="sponsor"></psk-label>
-                        <psk-label class="table-cell" label="site"></psk-label>
-                        <psk-label class="table-cell" label="sitestatus"></psk-label>
-                        <psk-label class="table-cell" label="milestones"></psk-label>
-                        <psk-label class="table-cell" label="participants"></psk-label>
-                        <psk-label class="table-cell" label="screening"></psk-label>
-
-                    </psk-layout>
+                </div>
+                <div class="right">
+                    <psk-label class="simple-text" label="Number of participants enrolled every year"></psk-label>
+                    <psk-img src="assets/images/diagram.png"
+                             height='50' width='50'></psk-img>
                 </div>
             </div>
         </psk-card>
 
+        <psk-label class="trial-title" label="Trial Participants"></psk-label>
+        <div class="padding-sides" data-for="@trial.participants">
+
+            <div class="dispay-flex date-div justify-content-space-between">
+                <div class="dispay-flex">
+
+                    <div class="left">
+                        <strong>
+                            <psk-label class="participant">{{@name}}</psk-label>
+                        </strong>
+                    </div>
+                    <div class="right-text">
+                        <strong>
+                            <psk-label class="participant">{{@status}}</psk-label>
+                        </strong>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <button class="trial-button">Add trial participant</button>
     </webc-container>
 </psk-page>
 

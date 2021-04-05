@@ -11,6 +11,12 @@
       "name": "Create trial",
       "tag": "create-trial",
       "indexed": false
+    },
+    {
+      "name": "Trial",
+      "path": "/trial",
+      "src": "trial.html",
+      "tag": "trial"
     }
   ],
   "pagesFallback": {

@@ -21,7 +21,7 @@ assert.callback('w3cDID MQ test', (testFinished) => {
             }
 
             firstDIDDocument.readMessage((err, msg) => {
-                if(err){
+                if (err) {
                     throw err;
                 }
 
@@ -37,9 +37,9 @@ assert.callback('w3cDID MQ test', (testFinished) => {
                 }
 
                 const senderIdentity = firstDIDDocument.getIdentifier();
-                setTimeout(()=>{
+                setTimeout(() => {
                     secondDIDDocument.sendMessage(message, recipientIdentity, (err) => {
-                        if(err){
+                        if (err) {
                             throw err;
                         }
                         console.log(`${senderIdentity} sent message to ${recipientIdentity}.`);
@@ -51,4 +51,26 @@ assert.callback('w3cDID MQ test', (testFinished) => {
     });
 
 }, 15000);
+
+assert.callback('w3cDID resolver test', (testFinished) => {
+    const domain = 'default';
+
+    w3cDID.createIdentity("sReadPK", keySSI.createTemplateSeedSSI(domain), (err, didDocument) => {
+        if (err) {
+            throw err;
+        }
+
+        w3cDID.resolveDID(didDocument.getIdentifier(), (err, didDocument) => {
+            if (err) {
+                throw err;
+            }
+            debugger
+
+            didDocument.sendMessage("The DID Sent a message : HI! ")
+
+        });
+
+
+    });
+}, 5000);
 
