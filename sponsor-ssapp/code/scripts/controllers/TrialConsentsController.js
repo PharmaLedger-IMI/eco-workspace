@@ -1,38 +1,20 @@
-import ContainerController from '../../cardinal/controllers/base-controllers/ContainerController.js';
-import TrialsService from '../services/TrialsService.js';
-import { trialStatusesEnum, trialTableHeaders } from '../constants/trial.js';
+import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
+import { consentTypeEnum, consentTableHeaders } from '../constants/consent.js';
+import ConsentsService from '../services/ConsentsService.js';
 
-export default class ListTrialsController extends ContainerController {
-  statusesArray = Object.entries(trialStatusesEnum).map(([k, v]) => v);
+export default class TrialConsentsController extends ContainerController {
+  typesArray = Object.entries(consentTypeEnum).map(([k, v]) => v);
   itemsPerPageArray = [5, 10, 15, 20, 30];
-
-  headers = trialTableHeaders;
-
-  countriesModel = {
-    label: 'Select country',
-    placeholder: 'Please select an option',
-    required: false,
-    options: [],
-  };
-
-  statuses = {
-    label: 'Select a status',
-    placeholder: 'Please select an option',
-    required: false,
-    options: this.statusesArray.map((x) => ({
-      label: x,
-      value: x,
-    })),
-  };
+  headers = consentTableHeaders;
 
   search = {
-    label: 'Search for a trial',
+    label: 'Search for consent',
     required: false,
-    placeholder: 'Trial name...',
+    placeholder: 'Consent name...',
     value: '',
   };
 
-  trials = null;
+  consents = null;
 
   pagination = {
     previous: false,
@@ -55,18 +37,18 @@ export default class ListTrialsController extends ContainerController {
 
   constructor(element, history) {
     super(element, history);
+    let { id, keySSI } = this.History.getState();
 
-    this.trialsService = new TrialsService(this.DSUStorage);
+    // console.log(id, keySSI);
+
+    this.keySSI = keySSI;
+    this.consentsService = new ConsentsService(this.DSUStorage);
     this.feedbackEmitter = null;
 
     this.setModel({
-      statuses: this.statuses,
-      countries: this.countriesModel,
-      search: this.search,
-      trials: [],
+      consents: [],
       pagination: this.pagination,
       headers: this.headers,
-      clearButtonDisabled: true,
     });
 
     this.attachEvents();
@@ -75,34 +57,23 @@ export default class ListTrialsController extends ContainerController {
   }
 
   async init() {
-    await this.getTrials();
-    this.paginateTrials(this.model.trials);
+    await this.getConsents();
+    this.paginateConsents(this.model.consents);
   }
 
-  async getTrials() {
+  async getConsents() {
     try {
-      this.trials = await this.trialsService.getTrials();
-      this.updateCountryOptions(this.trials);
-      this.setTrialsModel(this.trials);
+      this.consents = await this.consentsService.getTrialConsents(this.keySSI);
+      this.setConsentsModel(this.consents);
     } catch (error) {
       console.log(error);
-      this.showFeedbackToast('ERROR: There was an issue accessing trials object', 'Result', 'toast');
+      this.showFeedbackToast('ERROR: There was an issue accessing consents object', 'Result', 'toast');
     }
   }
 
-  updateCountryOptions(trials) {
-    const countries = [];
-
-    trials.forEach((trial) =>
-      trial.countries.forEach((country) => !countries.includes(country) && countries.push(country))
-    );
-
-    this.model.countries = { ...this.countriesModel, options: countries.map((x) => ({ label: x, value: x })) };
-  }
-
-  paginateTrials(trials, page = 1) {
+  paginateConsents(consents, page = 1) {
     const itemsPerPage = this.model.pagination.itemsPerPage;
-    const length = trials.length;
+    const length = consents.length;
     const numberOfPages = Math.ceil(length / itemsPerPage);
     const pages = Array.from({ length: numberOfPages }, (_, i) => i + 1).map((x) => ({
       label: x,
@@ -112,7 +83,7 @@ export default class ListTrialsController extends ContainerController {
 
     this.model.pagination.previous = page > 1 && pages.length > 1 ? false : true;
     this.model.pagination.next = page < pages.length && pages.length > 1 ? false : true;
-    this.model.pagination.items = trials.slice(itemsPerPage * (page - 1), itemsPerPage * page);
+    this.model.pagination.items = consents.slice(itemsPerPage * (page - 1), itemsPerPage * page);
     this.model.pagination.pages = {
       ...this.model.pagination.pages,
       options: pages.map((x) => ({
@@ -137,31 +108,22 @@ export default class ListTrialsController extends ContainerController {
     // console.log('TEST:', this.model.test);
   }
 
-  setTrialsModel(trials) {
-    const model = trials.map((trial) => ({
-      ...trial,
-      countries: trial.countries.join(),
-    }));
+  setConsentsModel(consents) {
+    const model = [...consents];
 
-    this.model.trials = model;
-    this.paginateTrials(model, 1);
+    this.model.consents = model;
+    this.paginateConsents(model, 1);
     this.model.headers = this.model.headers.map((x) => ({ ...x, asc: false, desc: false }));
   }
 
   filterData() {
-    let result = this.trials;
+    let result = this.consents;
 
-    if (this.model.countries.value) {
-      result = result.filter((x) => x.countries.includes(this.model.countries.value));
-    }
-    if (this.model.statuses.value) {
-      result = result.filter((x) => x.status === this.model.statuses.value);
-    }
     if (this.model.search.value && this.model.search.value !== '') {
       result = result.filter((x) => x.name.toUpperCase().search(this.model.search.value.toUpperCase()) !== -1);
     }
 
-    this.setTrialsModel(result);
+    this.setConsentsModel(result);
   }
 
   sortColumn(column) {
@@ -175,16 +137,16 @@ export default class ListTrialsController extends ContainerController {
       if (headers[idx].notSortable) return;
 
       if (headers[idx].asc || headers[idx].desc) {
-        this.model.trials.reverse();
-        this.paginateTrials(this.model.trials, this.model.pagination.currentPage);
+        this.model.consents.reverse();
+        this.paginateConsents(this.model.consents, this.model.pagination.currentPage);
         this.model.headers = this.model.headers.map((x) => {
           if (x.column !== column) {
             return { ...x, asc: false, desc: false };
           } else return { ...x, asc: !headers[idx].asc, desc: !headers[idx].desc };
         });
       } else {
-        this.model.trials = this.model.trials.sort((a, b) => (a[column] >= b[column] ? 1 : -1));
-        this.paginateTrials(this.model.trials, this.model.pagination.currentPage);
+        this.model.consents = this.model.consents.sort((a, b) => (a[column] >= b[column] ? 1 : -1));
+        this.paginateConsents(this.model.consents, this.model.pagination.currentPage);
         this.model.headers = this.model.headers.map((x) => {
           if (x.column !== column) {
             return { ...x, asc: false, desc: false };
@@ -204,7 +166,7 @@ export default class ListTrialsController extends ContainerController {
 
   attachEvents() {
     this.model.addExpression(
-      'trialArrayNotEmpty',
+      'consentsArrayNotEmpty',
       () => {
         return (
           this.model.pagination &&
@@ -213,52 +175,54 @@ export default class ListTrialsController extends ContainerController {
           this.model.pagination.items.length > 0
         );
       },
-      'trials'
+      'pagination.items'
     );
 
     this.on('openFeedback', (e) => {
       this.feedbackEmitter = e.detail;
     });
 
-    this.on('add-trial', async (event) => {
-      this.showModal('addNewTrialModal', {}, (err, response) => {
+    this.on('add-consent', async (event) => {
+      this.showModal('addNewConsentModal', {}, (err, response) => {
         if (err) {
           console.log(err);
-          return this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new trial', 'toast');
+          return this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new consent', 'toast');
         }
-        this.getTrials();
-        this.showFeedbackToast('Result', 'Trial added successfully', 'toast');
+        this.getConsents();
+        this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
       });
     });
-
-    this.on('delete-trial', async (event) => {
+    this.on('update-consent', async (event) => {
+      // this.showModal('addNewConsentModal', {}, (err, response) => {
+      //   if (err) {
+      //     console.log(err);
+      //     return this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new consent', 'toast');
+      //   }
+      //   this.getConsents();
+      //   this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
+      // });
+    });
+    this.on('delete-consent', async (event) => {
       try {
-        await this.trialsService.deleteTrial(event.data);
-        this.showFeedbackToast('Result', 'Trial deleted successfully', 'toast');
-        this.getTrials();
+        await this.consentsService.deleteConsent(this.keySSI, event.data);
+        this.showFeedbackToast('Result', 'Consent deleted successfully', 'toast');
+        this.getConsents();
       } catch (error) {
-        this.showFeedbackToast('Result', 'ERROR: The was an error, trial cannot be deleted right now', 'toast');
+        this.showFeedbackToast('Result', 'ERROR: The was an error, consent cannot be deleted right now', 'toast');
       }
     });
-
-    this.on('view-trial', async (event) => {
-      console.log(this.trials.find((x) => x.id === event.data));
-      this.History.navigateToPageByTag('trial', {
-        id: event.data,
-        keySSI: this.trials.find((x) => x.id === event.data).keySSI,
-      });
+    this.on('set-as-current', async (event) => {
+      // this.showModal('addNewConsentModal', {}, (err, response) => {
+      //   if (err) {
+      //     console.log(err);
+      //     return this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new consent', 'toast');
+      //   }
+      //   this.getConsents();
+      //   this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
+      // });
     });
 
     this.on('filters-changed', async (event) => {
-      this.model.clearButtonDisabled = false;
-      this.filterData();
-    });
-
-    this.on('filters-cleared', async (event) => {
-      this.model.clearButtonDisabled = true;
-      this.model.countries.value = null;
-      this.model.statuses.value = null;
-      this.model.search.value = null;
       this.filterData();
     });
 
@@ -272,38 +236,38 @@ export default class ListTrialsController extends ContainerController {
 
     this.on('navigate-to-page', async (event) => {
       event.preventDefault();
-      this.paginateTrials(this.model.trials, event.data.value ? parseInt(event.data.value) : event.data);
+      this.paginateConsents(this.model.consents, event.data.value ? parseInt(event.data.value) : event.data);
     });
 
     this.on('go-to-previous-page', async () => {
       if (this.model.pagination.currentPage !== 1) {
-        this.paginateTrials(this.model.trials, this.model.pagination.currentPage - 1);
+        this.paginateConsents(this.model.consents, this.model.pagination.currentPage - 1);
       }
     });
 
     this.on('go-to-next-page', async () => {
       if (this.model.pagination.currentPage !== this.model.pagination.totalPages) {
-        this.paginateTrials(this.model.trials, this.model.pagination.currentPage + 1);
+        this.paginateConsents(this.model.consents, this.model.pagination.currentPage + 1);
       }
     });
 
     this.on('go-to-last-page', async () => {
-      const length = this.model.trials.length;
+      const length = this.model.consents.length;
       const numberOfPages = Math.ceil(length / this.model.pagination.itemsPerPage);
       if (this.model.pagination.currentPage !== numberOfPages) {
-        this.paginateTrials(this.model.trials, numberOfPages);
+        this.paginateConsents(this.model.consents, numberOfPages);
       }
     });
 
     this.on('go-to-first-page', async () => {
       if (this.model.pagination.currentPage !== 1) {
-        this.paginateTrials(this.model.trials, 1);
+        this.paginateConsents(this.model.consents, 1);
       }
     });
 
     this.on('set-items-per-page', async (event) => {
       this.model.pagination.itemsPerPage = parseInt(event.data.value);
-      this.paginateTrials(this.model.trials, 1);
+      this.paginateConsents(this.model.consents, 1);
     });
 
     this.on('sort-column', async (event) => {

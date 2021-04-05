@@ -1,5 +1,5 @@
 import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
-import { trialsService } from '../services/TrialsService.js';
+import TrialsService from '../services/TrialsService.js';
 
 export default class TrialParticipantsController extends ContainerController {
   trial = null;
@@ -140,6 +140,7 @@ export default class TrialParticipantsController extends ContainerController {
 
   constructor(element, history) {
     super(element, history);
+    this.trialsService = new TrialsService(this.DSUStorage);
     this.setModel({
       trial: {
         id: null,
@@ -163,8 +164,6 @@ export default class TrialParticipantsController extends ContainerController {
     let trialId = this.History.getState();
 
     this.model.id = trialId;
-
-    this.trialsService = trialsService;
 
     this.attachAll();
 

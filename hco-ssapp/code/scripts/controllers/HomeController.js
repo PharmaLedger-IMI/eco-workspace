@@ -1,3 +1,5 @@
+import CommunicationService from "./services/CommunicationService.js";
+
 const {WebcController} = WebCardinal.controllers;
 
 const initialTrialModel = {
@@ -48,8 +50,6 @@ const initModel = {
     trialsModel: JSON.parse(JSON.stringify(initialTrialModel))
 }
 
-
-
 export default class HomeController extends WebcController {
     constructor(element, history) {
         super(element, history);
@@ -59,8 +59,11 @@ export default class HomeController extends WebcController {
         this.setModel(initModel);
         console.log(this.model.trials);
 
-        this.onTagEvent('home:trial', 'click', () => {
-            this.navigateToPageTag('trial');
+        this.CommunicationService = new CommunicationService();
+
+        this.onTagEvent('minus', 'click', () => {
+                console.log('button pressed ');
+                debugger
             }
         )
     }
@@ -104,7 +107,4 @@ export default class HomeController extends WebcController {
             console.log("Button 2 pressed");
         });
     }
-
-
-
 }
