@@ -1,0 +1,9 @@
+.header-title {
+    display: flex;
+    height: 50px;
+}
+
+.read-box{
+    width: 90%;
+    height: 500px;
+}

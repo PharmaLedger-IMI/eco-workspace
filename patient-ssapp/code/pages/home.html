@@ -1,5 +1,6 @@
 <psk-example class="mobile-example">
     <psk-mobile class="noPadding background" disable-header>
+        <link rel="stylesheet" href="/assets/css/pages/home.css">
         <webc-container controller="HomeController">
             <psk-layout template-rows="25% 0% 75%" align-items="center" class="coloredBackground">
 
@@ -51,14 +52,14 @@
                                 </div>
                             </div>
                             <psk-button icon="arrow-right" class="go-back-link padding-top-35"
-                                        data-tag="home:trial-details" event-data="@id"></psk-button>
+                                        data-tag="home:trial-details" eventData="@sponsorName"></psk-button>
                         </div>
                         <hr>
 
                     </div>
 
                     <psk-card class="patient-button-row">
-                        <psk-button class="patient-general-button" data-tag="home:sites">Site</psk-button>
+                        <psk-button class="patient-general-button" data-tag="home:site">Site</psk-button>
                         <psk-button class="patient-general-button" data-tag="home:questionnaire">FAQ</psk-button>
                     </psk-card>
                 </psk-layout-item>

@@ -7,7 +7,10 @@
       "phone": "074328959743",
       "address": "lorem ipsum",
       "email": "fsd@fds.com",
-      "icon": "assets/images/hospitalfirst.png"
+      "icon": "assets/images/hospitalfirst.png",
+      "investigatorPhone" : "078943285435324",
+      "investigatorName": "Lorem ipsum",
+      "investigatorEmail": "aa@dfds.com"
     },
     {
       "id": 2,

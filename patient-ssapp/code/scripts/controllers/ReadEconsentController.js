@@ -1,6 +1,7 @@
-import ModalController from '../../../cardinal/controllers/base-controllers/ModalController.js';
 
-export default class WithdrawEconsent extends ModalController {
+const {WebcController} = WebCardinal.controllers;
+
+export default class ReadEconsentController extends WebcController {
     constructor(element, history) {
         super(element, history);
         this.setModel({
@@ -17,9 +18,29 @@ export default class WithdrawEconsent extends ModalController {
         })
 
         this.signEconsent();
+        this.readEconsent("/assets/econsent.txt")
 
     }
 
+    readEconsent(file){
+            // read text from URL location
+            var request = new XMLHttpRequest();
+            request.open('GET', 'https://filesamples.com/samples/document/txt/sample3.txt', true);
+            request.send(null);
+            debugger
+            request.onreadystatechange = function () {
+                if (request.readyState === 4 && request.status === 200) {
+                    var type = request.getResponseHeader('Content-Type');
+                    if (type.indexOf("text") !== 1) {
+                        debugger
+                        return request.responseText;
+                        console.log(request.responseText);
+                        console.log(request.response);
+                    }
+                }
+            }
+
+    }
     signEconsent() {
         this.on('econsent:sign', (event) => {
 
