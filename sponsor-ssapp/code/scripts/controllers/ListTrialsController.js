@@ -58,7 +58,7 @@ export default class ListTrialsController extends ContainerController {
     super(element, history);
 
     this.trialsService = new TrialsService(this.DSUStorage);
-    this.CommunicationService = new CommunicationService(CommunicationService.SPONSOR_IDENTITY);
+    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.SPONSOR_IDENTITY);
     this.feedbackEmitter = null;
 
     this.setModel({
@@ -319,8 +319,11 @@ export default class ListTrialsController extends ContainerController {
     });
   }
 
-  sendMessageToHco (operation , ssi){
-
-    this.CommunicationService.sendMessage(CommunicationService.HCO_IDENTITY, {operation:operation, ssi:ssi});
+  sendMessageToHco(operation, ssi){
+    this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY,
+        {
+            operation: operation,
+            ssi: ssi
+        });
   }
 }

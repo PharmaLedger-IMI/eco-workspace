@@ -58,7 +58,7 @@ export default class HomeController extends WebcController {
         this._attachHandlerTrialDetails();
         this.setModel(initModel);
 
-        this.CommunicationService = new CommunicationService(CommunicationService.HCO_IDENTITY);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
         this.CommunicationService.listenForMessages((err, message) => {
             if(err) {
                 return console.error(err);

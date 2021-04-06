@@ -1,13 +1,13 @@
 const opendsu = require("opendsu");
 const w3cDID = opendsu.loadAPI('w3cdid');
 
-export default class CommunicationService {
+const SPONSOR_IDENTITY = "sponsorIdentity";
+const HCO_IDENTITY = "hcoIdentity";
+
+class CommunicationService {
 
     DEFAULT_FORMAT_IDENTIFIER = "did";
     DEMO_METHOD_NAME = "demo";
-
-    static SPONSOR_IDENTITY = "sponsorIdentity";
-    static HCO_IDENTITY = "hcoIdentity";
 
     listenerIsActive = false;
 
@@ -54,6 +54,23 @@ export default class CommunicationService {
             if (!this.listenerIsActive) {
                 this.readMessage(callback)
             }
-        }, 500);
+        }, 100);
     }
-} 
+}
+
+let instance = null;
+
+const getInstance = (identity) => {
+    if (instance === null) {
+        instance = new CommunicationService(identity);
+    }
+    return instance;
+}
+
+export default {
+    getInstance,
+    identities: {
+        SPONSOR_IDENTITY,
+        HCO_IDENTITY
+    }
+};
