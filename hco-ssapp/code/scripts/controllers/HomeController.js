@@ -57,15 +57,14 @@ export default class HomeController extends WebcController {
         this._attachHandlerClinics();
         this._attachHandlerTrialDetails();
         this.setModel(initModel);
-        console.log(this.model.trials);
 
         this.CommunicationService = new CommunicationService(CommunicationService.HCO_IDENTITY);
-        this.CommunicationService.readMessage((err, message) => {
+        this.CommunicationService.listenForMessages((err, message) => {
             if(err) {
                 return console.error(err);
             }
             console.log(message);
-        })
+        });
 
         this.onTagEvent('minus', 'click', () => {
                 console.log('button pressed ');

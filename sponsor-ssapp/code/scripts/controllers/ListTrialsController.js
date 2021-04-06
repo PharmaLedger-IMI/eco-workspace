@@ -224,15 +224,15 @@ export default class ListTrialsController extends ContainerController {
 
     this.on('add-trial', async (event) => {
       debugger;
-      this.sendMessageToHco( "this is a message from the sponsor! NU YOUHOU ! ");
-      this.showModal('addNewTrialModal', {}, (err, response) => {
 
+      this.showModal('addNewTrialModal', {}, (err, response) => {
 
         if (err) {
           console.log(err);
           return this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new trial', 'toast');
         }
         this.getTrials();
+        this.sendMessageToHco( "add", response.keySSI);
         this.showFeedbackToast('Result', 'Trial added successfully', 'toast');
       });
     });
@@ -242,6 +242,8 @@ export default class ListTrialsController extends ContainerController {
         await this.trialsService.deleteTrial(event.data);
         this.showFeedbackToast('Result', 'Trial deleted successfully', 'toast');
         this.getTrials();
+        this.sendMessageToHco( "delete", event.data);
+
       } catch (error) {
         this.showFeedbackToast('Result', 'ERROR: The was an error, trial cannot be deleted right now', 'toast');
       }
@@ -317,7 +319,8 @@ export default class ListTrialsController extends ContainerController {
     });
   }
 
-  sendMessageToHco (message){
-    this.CommunicationService.sendMessage(CommunicationService.HCO_IDENTITY, message)
+  sendMessageToHco (operation , ssi){
+
+    this.CommunicationService.sendMessage(CommunicationService.HCO_IDENTITY, {operation:operation, ssi:ssi});
   }
 }
