@@ -1,6 +1,7 @@
 import ContainerController from '../../cardinal/controllers/base-controllers/ContainerController.js';
 import TrialsService from '../services/TrialsService.js';
 import { trialStatusesEnum, trialTableHeaders } from '../constants/trial.js';
+import CommunicationService from "../services/CommunicationService.js";
 
 export default class ListTrialsController extends ContainerController {
   statusesArray = Object.entries(trialStatusesEnum).map(([k, v]) => v);
@@ -221,7 +222,11 @@ export default class ListTrialsController extends ContainerController {
     });
 
     this.on('add-trial', async (event) => {
+      debugger;
+      this.sendMessageToHco( "this is a message from the sponsor! YOUHOU ! ");
       this.showModal('addNewTrialModal', {}, (err, response) => {
+
+
         if (err) {
           console.log(err);
           return this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new trial', 'toast');
@@ -309,5 +314,10 @@ export default class ListTrialsController extends ContainerController {
     this.on('sort-column', async (event) => {
       this.sortColumn(event.data);
     });
+  }
+
+  sendMessageToHco (message){
+    let communicationService = new CommunicationService ();
+    communicationService.sendMessage(message);
   }
 }

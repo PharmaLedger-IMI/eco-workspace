@@ -9,33 +9,16 @@ export default class CommunicationService {
             if (err) {
                 throw err;
             }
-
+            const recipientIdentity = firstDIDDocument.getIdentifier();
+            console.log ("IDENTITY created , is waiting for messages");
             firstDIDDocument.readMessage((err, msg) => {
                 if(err){
                     throw err;
                 }
 
-                console.log(`${recipientIdentity} received message: ${msg}`);
+                console.log(`${recipientIdentity} received messag from sponsor : ${msg}`);
             });
 
-            const recipientIdentity = firstDIDDocument.getIdentifier();
-            w3cDID.createIdentity("demo", "otherDemoIdentity", (err, secondDIDDocument) => {
-                if (err) {
-                    throw err;
-                }
-
-                const senderIdentity = firstDIDDocument.getIdentifier();
-                setTimeout(()=>{
-                    let message = "Hello from another part of the world.";
-                    secondDIDDocument.sendMessage(message, recipientIdentity, (err) => {
-                        if(err){
-                            throw err;
-                        }
-                        console.log(`${senderIdentity} sent message to ${recipientIdentity}.`);
-                    });
-                }, 1000);
-
-            });
         });
 
     }
