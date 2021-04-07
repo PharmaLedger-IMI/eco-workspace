@@ -1,4 +1,5 @@
 import CommunicationService from "./services/CommunicationService.js";
+import TrialService from "./services/TrialService.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -24,28 +25,31 @@ const initialTrialModel = {
 const initModel = {
     title: 'HomePage',
     trials: [
-        {
-            id: 1,
-            title: 'Trial 1',
-            date: '11.mm.yyyy',
-            description: 'trial 1Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris ',
-            initTrialModel: JSON.parse(JSON.stringify(initialTrialModel))
-
-        },
-        {
-            id: 2,
-            title: 'Trial 2',
-            date: '22.mm.yyyy',
-            description: 'Trial 2 Description Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris ',
-            initTrialModel: JSON.parse(JSON.stringify(initialTrialModel))
-        },
-        {
-            id: 3,
-            title: 'Trial 3',
-            date: '33.mm.yyyy',
-            description: 'Trial 3 Description Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris ',
-            initTrialModel: JSON.parse(JSON.stringify(initialTrialModel))
-        },
+        // {
+        //     id: 1,
+        //     name: 'ala',
+        //     title: 'Trial 1',
+        //     date: '11.mm.yyyy',
+        //     description: 'trial 1Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris ',
+        //     initTrialModel: JSON.parse(JSON.stringify(initialTrialModel))
+        //
+        // },
+        // {
+        //     id: 2,
+        //     name: 'bala',
+        //     title: 'Trial 2',
+        //     date: '22.mm.yyyy',
+        //     description: 'Trial 2 Description Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris ',
+        //     initTrialModel: JSON.parse(JSON.stringify(initialTrialModel))
+        // },
+        // {
+        //     id: 3,
+        //     name: 'portocala',
+        //     title: 'Trial 3',
+        //     date: '33.mm.yyyy',
+        //     description: 'Trial 3 Description Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris ',
+        //     initTrialModel: JSON.parse(JSON.stringify(initialTrialModel))
+        // },
     ],
     trialsModel: JSON.parse(JSON.stringify(initialTrialModel))
 }
@@ -58,20 +62,32 @@ export default class HomeController extends WebcController {
         this._attachHandlerTrialDetails();
         this.setModel(initModel);
 
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
-        this.CommunicationService.listenForMessages((err, message) => {
+        this.TrialService = new TrialService(this.DSUStorage);
+        this.TrialService.getServiceModel((err, data) => {
             if(err) {
                 return console.error(err);
             }
-            console.log(message);
-            this.addMessageToNotificationDsu (message);
+            this.model.trials = data.trials;
+        })
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+        this.CommunicationService.listenForMessages((err, data) => {
+            if(err) {
+                return console.error(err);
+            }
+            data = JSON.parse(data);
+            this.TrialService.mountTrial(data.message.ssi,(err, trial) => {
+                if (err) {
+                    return console.log(err);
+                }
+                this.model.trials.push(trial);
+            });
+            this.addMessageToNotificationDsu(data);
         });
 
         this.onTagEvent('home:trial', 'click', (model) => {
-            this.navigateToPageTag('trial', model);
+            this.navigateToPageTag('trial', model.id);
         })
     }
-
 
     _attachHandlerCreateTrial() {
         this.onTagEvent('home:patient', 'click', (event) => {
@@ -79,7 +95,6 @@ export default class HomeController extends WebcController {
             console.log("print");
             e.stopImmediatePropagation();
             this.navigateToPageTag('create-trial');
-
         });
     }
 
