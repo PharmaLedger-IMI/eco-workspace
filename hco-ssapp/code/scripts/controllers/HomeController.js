@@ -67,11 +67,9 @@ export default class HomeController extends WebcController {
             this.addMessageToNotificationDsu (message);
         });
 
-        this.onTagEvent('home:trial', 'click', () => {
-                console.log('button pressed ');
-            this.navigateToPageTag('trial');
-            }
-        )
+        this.onTagEvent('home:trial', 'click', (model) => {
+            this.navigateToPageTag('trial', model);
+        })
     }
 
 
