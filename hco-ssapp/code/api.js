@@ -49,12 +49,15 @@ function trialUnmount(path, callback) {
     mainDSU.unmount(path, callback);
 }
 
-
+function notificationUnmount(path, callback) {
+    mainDSU.unmount(path, callback);
+}
 
 module.exports = {
     listDSUs,
     loadDSU,
     createSSIAndMount,
     trialUnmount,
+    notificationUnmount,
     mount
 }

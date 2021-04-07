@@ -64,11 +64,12 @@ export default class HomeController extends WebcController {
                 return console.error(err);
             }
             console.log(message);
+            this.addMessageToNotificationDsu (message);
         });
 
-        this.onTagEvent('minus', 'click', () => {
+        this.onTagEvent('home:trial', 'click', () => {
                 console.log('button pressed ');
-                debugger
+            this.navigateToPageTag('trial');
             }
         )
     }
@@ -111,5 +112,9 @@ export default class HomeController extends WebcController {
         this.on('home:clinics', (event) => {
             console.log("Button 2 pressed");
         });
+    }
+
+    addMessageToNotificationDsu (message){
+
     }
 }

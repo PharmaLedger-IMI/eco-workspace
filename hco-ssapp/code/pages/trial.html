@@ -25,32 +25,34 @@
                 <div class="right">
                     <psk-label class="simple-text" label="Number of participants enrolled every year"></psk-label>
                     <psk-img src="assets/images/diagram.png"
-                             height='50' width='50'></psk-img>
+                    ></psk-img>
                 </div>
             </div>
         </psk-card>
 
-        <psk-label class="trial-title" label="Trial Participants"></psk-label>
-        <div class="padding-sides" data-for="@trial.participants">
-
-            <div class="dispay-flex date-div justify-content-space-between">
-                <div class="dispay-flex">
-
-                    <div class="left">
-                        <strong>
-                            <psk-label class="participant">{{@name}}</psk-label>
-                        </strong>
-                    </div>
-                    <div class="right-text">
-                        <strong>
-                            <psk-label class="participant">{{@status}}</psk-label>
-                        </strong>
-                    </div>
-                </div>
+        <div class="tp-wrapper">
+            <div class="left">
+                <psk-label class="trial-title" label="Trial Participants"></psk-label>
+                <table class="tp-table">
+                    <thead>
+                    <tr>
+                        <th width="60%">TP NUMBER</th>
+                        <th width="40%">STATUS</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr data-for="@trial.participants">
+                        <td>{{@name}}</td>
+                        <td>{{@status}}</td>
+                    </tr>
+                    </tbody>
+                </table>
 
             </div>
+            <div class="right">
+                <button class="trial-button">Add trial participant</button>
+            </div>
         </div>
-        <button class="trial-button">Add trial participant</button>
     </webc-container>
 </psk-page>
 

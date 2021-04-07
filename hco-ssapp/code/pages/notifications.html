@@ -1,19 +1,12 @@
 <psk-page title="Home">
-    <webc-container controller="HomeController">
+    <webc-container controller="NotificationsController">
 
-        <psk-label class="" label="E-Consent"/>
-
-        <psk-button data-tag="minus" button-class="btn btn-danger">Test button</psk-button>
-        <psk-card class="bpd-dashboard">
-            <psk-label class="bpd-dashboard-title" label="Trials"/>
-            <div class="bpd-organization-elements">
-
+        <div class="subheader">
+            <psk-label class="trial-title" label="Trial"></psk-label>
+        </div>
                 <div data-for="@notifications">
 
                 </div>
-            </div>
-        </psk-card>
-
     </webc-container>
 </psk-page>
 
