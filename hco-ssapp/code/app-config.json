@@ -24,6 +24,12 @@
                 "pageSrc": "home.html"
             },
             {
+                "name": "Notifications",
+                "path": "/notifications",
+                "icon": "fa-home",
+                "pageSrc": "notifications.html"
+            },
+            {
                 "name": "Create Trial",
                 "path": "/create-trial",
                 "icon": "fa-cog",

@@ -232,7 +232,7 @@ export default class ListTrialsController extends ContainerController {
           return this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new trial', 'toast');
         }
         this.getTrials();
-        this.sendMessageToHco( "add", response.keySSI);
+        this.sendMessageToHco( "add-trial", response.keySSI, "New trial"+response.number);
         this.showFeedbackToast('Result', 'Trial added successfully', 'toast');
       });
     });
@@ -242,7 +242,7 @@ export default class ListTrialsController extends ContainerController {
         await this.trialsService.deleteTrial(event.data);
         this.showFeedbackToast('Result', 'Trial deleted successfully', 'toast');
         this.getTrials();
-        this.sendMessageToHco( "delete", event.data);
+        this.sendMessageToHco( "delete-trial", event.data, "the trial was removed ");
 
       } catch (error) {
         this.showFeedbackToast('Result', 'ERROR: The was an error, trial cannot be deleted right now', 'toast');
@@ -319,11 +319,14 @@ export default class ListTrialsController extends ContainerController {
     });
   }
 
-  sendMessageToHco(operation, ssi){
+  sendMessageToHco(operation, ssi, shortMessage){
+    debugger;
     this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY,
         {
             operation: operation,
-            ssi: ssi
+            ssi: ssi,
+            shortDescription: shortMessage
+
         });
   }
 }

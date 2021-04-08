@@ -1,12 +1,19 @@
-<psk-page title="Home">
+<psk-page title="Notifications">
+    <link rel="stylesheet" href="/assets/css/pages/notifications.css">
     <webc-container controller="NotificationsController">
 
         <div class="subheader">
-            <psk-label class="trial-title" label="Trial"></psk-label>
+            <psk-label class="trial-title" label="NOTIFICATIONS"></psk-label>
         </div>
-                <div data-for="@notifications">
 
-                </div>
+        <div>
+        <div data-for="@notifications">
+            <div class="not-block">
+                <label class="not-title" style='color:@color'>{{@title}}</label>
+                <psk-label class="subtitle" >{{@shortDescription}}</psk-label>
+            </div>
+        </div>
+        </div>
     </webc-container>
 </psk-page>
 

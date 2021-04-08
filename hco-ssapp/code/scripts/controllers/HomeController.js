@@ -1,4 +1,5 @@
 import CommunicationService from "./services/CommunicationService.js";
+import NotificationsService from "./services/NotificationsService.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -53,68 +54,50 @@ const initModel = {
 export default class HomeController extends WebcController {
     constructor(element, history) {
         super(element, history);
-        this._attachHandlerCreateTrial();
-        this._attachHandlerClinics();
-        this._attachHandlerTrialDetails();
-        this.setModel(initModel);
 
+        this.setModel(initModel);
+        this.NotificationsService = new NotificationsService(this.DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+
         this.CommunicationService.listenForMessages((err, message) => {
+
             if(err) {
                 return console.error(err);
             }
-            console.log(message);
+            message = JSON.parse(message);
             this.addMessageToNotificationDsu (message);
+            console.log(message);
+            debugger;
+
         });
+
+        this._attachHandlerTrialDetails();
+
+    }
+
+
+
+    _attachHandlerTrialDetails() {
 
         this.onTagEvent('home:trial', 'click', () => {
                 console.log('button pressed ');
-            this.navigateToPageTag('trial');
+                this.navigateToPageTag('trial');
             }
         )
     }
 
 
-    _attachHandlerCreateTrial() {
-        this.onTagEvent('home:patient', 'click', (event) => {
-            e.preventDefault();
-            console.log("print");
-            e.stopImmediatePropagation();
-            this.navigateToPageTag('create-trial');
+    addMessageToNotificationDsu (message){
+        debugger;
 
-        });
-    }
-
-    _attachHandlerTrialDetails() {
-        this.on('home:trialDetails', (event) => {
-            console.log("Button pressed");
-            const id = event.data;
-            const trialIndex = this.model.trials.findIndex((trial) => trial.id === id);
-            if (trialIndex === -1) {
-                console.log('trial not found @id', id, this.model.trials);
+        this.NotificationsService.saveNotification( message.message,(err, notification) => {
+            debugger;
+            if (err) {
+                console.log(err);
                 return;
             }
 
-            const trialDetails = this.model.trials[trialIndex];
-            this.showModal('trialDetails', trialDetails, (err, data) => {
-                if (err) {
-                    console.log(err);
-                    return;
-                }
-
-            })
-
+            console.log("Notification saved" +notification.uid);
         });
-    }
-
-
-    _attachHandlerClinics() {
-        this.on('home:clinics', (event) => {
-            console.log("Button 2 pressed");
-        });
-    }
-
-    addMessageToNotificationDsu (message){
-
     }
 }

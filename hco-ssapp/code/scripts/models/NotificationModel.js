@@ -5,7 +5,7 @@ export default class NotificationModel {
 
     _getWrapperData() {
         return {
-            trials: []
+            notifications: []
         };
     }
 }

@@ -1,0 +1,26 @@
+.not-block{
+    margin-right: 20px;
+    width: 95%;
+
+    background-color: #F7F5F5;
+    margin: 10px 20px 0px 20px;
+    border-radius: 25px;
+    padding: 20px;
+
+}
+.not-title {
+    font-size: 22px;
+    font-weight: bold;
+    text-align:center;
+    vertical-align:middle;
+    display:table-cell;
+    margin-left: 20px;
+}
+.not-subtitle {
+    font-size: 20px;
+    font-weight: bold;
+    text-align:center;
+    vertical-align:middle;
+    display:table-cell;
+    margin-left: 20px;
+}

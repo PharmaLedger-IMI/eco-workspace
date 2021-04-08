@@ -19,6 +19,12 @@
       "indexed": false
     },
     {
+      "name": "Notifications",
+      "path": "/notifications",
+      "src": "notifications.html",
+      "tag": "notifications"
+    },
+    {
       "name": "Trial Details ",
       "path": "/trial/details",
       "icon": "fa-cog",

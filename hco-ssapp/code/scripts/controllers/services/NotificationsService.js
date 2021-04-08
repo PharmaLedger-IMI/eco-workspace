@@ -1,4 +1,5 @@
 import NotificationModel from "../../models/NotificationModel.js";
+import NotificationMapper from "../../utils/NotificationMapper.js";
 
 export default class NotificationsService {
 
@@ -8,7 +9,7 @@ export default class NotificationsService {
         this.DSUStorage = DSUStorage;
     }
 
-    getServiceModel(callback) {
+    getNotifications(callback) {
         this.DSUStorage.call('listDSUs', this.NOTIFICATION_PATH, (err, dsuList) => {
             if (err) {
                 callback(err, undefined);
@@ -22,6 +23,7 @@ export default class NotificationsService {
                         callback(err, undefined);
                         return;
                     }
+                    debugger;
                     let textDecoder = new TextDecoder("utf-8");
                     let not = JSON.parse(textDecoder.decode(content));
                     notifications.push(not);
@@ -59,15 +61,18 @@ export default class NotificationsService {
         })
     }
 
-    saveNotification(data, callback) {
+
+    saveNotification(not  , callback) {
+
+        not = NotificationMapper.map(not);
         this.DSUStorage.call('createSSIAndMount', this.NOTIFICATION_PATH, (err, keySSI) => {
             if (err) {
                 callback(err, undefined);
                 return;
             }
-            data.KeySSI = keySSI;
-            data.uid = keySSI;
-            this.updateNotification(data, callback);
+            not.KeySSI = keySSI;
+            not.uid = keySSI;
+            this.updateNotification(not, callback);
         })
     }
 
