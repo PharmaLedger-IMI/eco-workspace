@@ -8,49 +8,41 @@
 
         <psk-card class="bpd-dashboard">
 
-            <table class="tp-table">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Number</th>
-                    <th>STATUS</th>
-                    <th>Description</th>
-                    <th>Recruitment</th>
-                    <th>Sponsor</th>
+<!--            <table class="tp-table">-->
+<!--                <thead>-->
+<!--                <tr>-->
+<!--                    <th>Name</th>-->
+<!--                    <th>Number</th>-->
+<!--                    <th>STATUS</th>-->
+<!--                    <th>Description</th>-->
+<!--                    <th>Recruitment</th>-->
+<!--                    <th>Sponsor</th>-->
 
-                    <th>Site</th>
-                    <th>Site Status</th>
-                    <th>Milestones</th>
-                    <th>Participants</th>
-                    <th>Screening</th>
-                </tr>
+<!--                    <th>Site</th>-->
+<!--                    <th>Site Status</th>-->
+<!--                    <th>Milestones</th>-->
+<!--                    <th>Participants</th>-->
+<!--                    <th>Screening</th>-->
+<!--                </tr>-->
 
-                </thead>
-                <tbody>
-                <tr data-for="@trials">
-                    <td>{{@name}}</td>
-                    <td>{{@status}}</td>
-                </tr>
-                </tbody>
-            </table>
+<!--                </thead>-->
+<!--            </table>-->
 
             <div class="bpd-organization-elements">
-
-
                 <div data-for="@trials">
                     <psk-layout columns="11" class="justify-content-center align-items-center table-row">
-                        <psk-label class="table-cell" label="name"></psk-label>
-                        <psk-label class="table-cell" label="Number/ID"></psk-label>
-                        <psk-label class="table-cell" label="status"></psk-label>
-                        <psk-label class="table-cell" label="description"></psk-label>
+                        <psk-label class="table-cell">{{@name}}</psk-label>
+                        <psk-label class="table-cell">{{@id}}</psk-label>
+                        <psk-label class="table-cell">{{@status}}</psk-label>
+<!--                        <psk-label class="table-cell" label="description"></psk-label>-->
 
-                        <psk-label class="table-cell" label="recruitment"></psk-label>
-                        <psk-label class="table-cell" label="sponsor"></psk-label>
-                        <psk-label class="table-cell" label="site"></psk-label>
-                        <psk-label class="table-cell" label="sitestatus"></psk-label>
-                        <psk-label class="table-cell" label="milestones"></psk-label>
-                        <psk-label class="table-cell" label="participants"></psk-label>
-                        <psk-label class="table-cell" label="screening"></psk-label>
+<!--                        <psk-label class="table-cell" label="recruitment"></psk-label>-->
+<!--                        <psk-label class="table-cell" label="sponsor"></psk-label>-->
+<!--                        <psk-label class="table-cell" label="site"></psk-label>-->
+<!--                        <psk-label class="table-cell" label="sitestatus"></psk-label>-->
+<!--                        <psk-label class="table-cell" label="milestones"></psk-label>-->
+<!--                        <psk-label class="table-cell" label="participants"></psk-label>-->
+<!--                        <psk-label class="table-cell" label="screening"></psk-label>-->
                         <button data-tag="home:trial"> >></button>
                     </psk-layout>
                 </div>

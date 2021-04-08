@@ -75,6 +75,7 @@ export default class TrialService {
             this.updateTrial(data, callback);
         })
     }
+
     mountTrial(keySSI, callback){
         this.DSUStorage.call('mount',this.SERVICE_PATH, keySSI, (err) =>{
             if (err)
@@ -94,6 +95,7 @@ export default class TrialService {
 
         })
     }
+
     updateTrial(data, callback){
         //Todo add file - read the file in a var and in set object the second param will be that var
         // uid is the same with keyssi
