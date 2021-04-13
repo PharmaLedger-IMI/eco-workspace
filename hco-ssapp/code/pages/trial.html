@@ -12,7 +12,7 @@
                         <button class="trial-button">Trial Info</button>
                         <button class="trial-button">Consent Info</button>
                     </div>
-                    <psk-label class="trial-title" label="Trial Participants Overview"></psk-label>
+                    <psk-label class="trial-title" label="Trial Participants Overview"></psk-label>{{@trial.id}}
                     <psk-label class="simple-text" label="Number of subjects"></psk-label>
                     <psk-label class="simple-text" label="Total number of participants"></psk-label>
                     <psk-label class="simple-text" label="Percentange of enrollemnt"></psk-label>
@@ -50,7 +50,7 @@
 
             </div>
             <div class="right">
-                <button class="trial-button">Add trial participant</button>
+                <button class="trial-button" data-tag="add:tp" >Add trial participant</button>
             </div>
         </div>
     </webc-container>

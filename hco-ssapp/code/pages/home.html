@@ -1,53 +1,30 @@
 <psk-page title="Home">
+    <link rel="stylesheet" href="/assets/css/pages/home.css">
     <webc-container controller="HomeController">
 
         <div class="subheader">
             <psk-label class="trial-title" label="Trials"></psk-label>
         </div>
+        <div class="trial-table">
+            <psk-layout columns="9" class="justify-content-center align-items-center table-row">
+                <psk-label class="table-cell">Name</psk-label>
+                <psk-label class="table-cell">Number/Id </psk-label>
+                <psk-label class="table-cell">Status</psk-label>
 
+            </psk-layout>
+            <hr/>
+        </div>
 
-        <psk-card class="bpd-dashboard">
+        <div  class="trial-table" data-for="@trials">
+            <psk-layout columns="9" class="justify-content-center align-items-center table-row">
+                <psk-label class="table-cell">{{@name}}</psk-label>
+                <psk-label class="table-cell">{{@id}}</psk-label>
+                <psk-label class="table-cell">{{@status}}</psk-label>
+                <button data-tag="home:trial" data="@id" >>></button>
+            </psk-layout>
+            <hr/>
+        </div>
 
-<!--            <table class="tp-table">-->
-<!--                <thead>-->
-<!--                <tr>-->
-<!--                    <th>Name</th>-->
-<!--                    <th>Number</th>-->
-<!--                    <th>STATUS</th>-->
-<!--                    <th>Description</th>-->
-<!--                    <th>Recruitment</th>-->
-<!--                    <th>Sponsor</th>-->
-
-<!--                    <th>Site</th>-->
-<!--                    <th>Site Status</th>-->
-<!--                    <th>Milestones</th>-->
-<!--                    <th>Participants</th>-->
-<!--                    <th>Screening</th>-->
-<!--                </tr>-->
-
-<!--                </thead>-->
-<!--            </table>-->
-
-            <div class="bpd-organization-elements">
-                <div data-for="@trials">
-                    <psk-layout columns="11" class="justify-content-center align-items-center table-row">
-                        <psk-label class="table-cell">{{@name}}</psk-label>
-                        <psk-label class="table-cell">{{@id}}</psk-label>
-                        <psk-label class="table-cell">{{@status}}</psk-label>
-<!--                        <psk-label class="table-cell" label="description"></psk-label>-->
-
-<!--                        <psk-label class="table-cell" label="recruitment"></psk-label>-->
-<!--                        <psk-label class="table-cell" label="sponsor"></psk-label>-->
-<!--                        <psk-label class="table-cell" label="site"></psk-label>-->
-<!--                        <psk-label class="table-cell" label="sitestatus"></psk-label>-->
-<!--                        <psk-label class="table-cell" label="milestones"></psk-label>-->
-<!--                        <psk-label class="table-cell" label="participants"></psk-label>-->
-<!--                        <psk-label class="table-cell" label="screening"></psk-label>-->
-                        <button data-tag="home:trial"> >></button>
-                    </psk-layout>
-                </div>
-            </div>
-        </psk-card>
 
     </webc-container>
 </psk-page>

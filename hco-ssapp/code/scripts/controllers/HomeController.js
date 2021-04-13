@@ -71,9 +71,13 @@ export default class HomeController extends WebcController {
 
     _attachHandlerTrialDetails() {
 
-        this.onTagEvent('home:trial', 'click', () => {
-                console.log('button pressed ');
-            this.navigateToPageTag('trial');
+        this.onTagEvent('home:trial', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            let trial = this.model.trials.find(trial => trial.id == target.attributes['data'].value)
+            this.navigateToPageTag('trial',trial.keySSI);
+
+            console.log(target.attributes['data'].value)
             }
         )
     }

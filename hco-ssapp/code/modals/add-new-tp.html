@@ -1,0 +1,30 @@
+<h2 slot="title">New Trial</h2>
+<link rel="stylesheet" href="/assets/css/pages/addtp.css">
+<webc-container controller="AddTrialParticipantController">
+    <div class="subheader">
+        <psk-label class="trial-title" label="Trial"></psk-label>
+    </div>
+    <div class="top">
+
+        <div class="line">
+            <label class="tp-title">{{@tp.number.label}}</label>
+            <input data-view-model="@tp.number" data-tag="inputs-changed"/>
+        </div>
+
+
+        <div class="line">
+            <label class="tp-title" for="birthday">{{@tp.birthday.label}}</label>
+            <input type="date" data-view-model="@tp.birthday" id="birthday">
+        </div>
+
+        <div class="line">
+            <label class="tp-title">{{@tp.sex.label}}</label>
+            <input type="radio" id="sex-m" value="m">
+            <label for="sex-m">Male</label>
+            <input type="radio" id="sex-f" value="f">
+            <label for="sex-f">Female</label>
+        </div>
+        <button class="tp-button" slot="footer" data-tag="tp:submit">Submit</button>
+        <button class="tp-button" slot="footer" data-tag="tp:cancel">Cancel</button>
+    </div>
+</webc-container>
