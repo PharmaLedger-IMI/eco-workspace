@@ -1,23 +1,32 @@
 <psk-page title="Trials">
-  <psk-container controller-name="ListTrialsController">
-    <psk-layout class="d-flex flex-wrap justify-content-between align-items-center mb-5">
-      <div>
-        <psk-select view-model="countries" event-name="filters-changed" event-data="country"></psk-select>
+  <link rel="stylesheet" href="assets/css/trials.css" />
+  <webc-container controller="ListTrialsController">
+    <div class="d-flex flex-wrap justify-content-between align-items-center py-3 mb-5">
+      <div class="d-flex flex-column">
+        <div>
+          <label for="">{{ @countries.label }}</label>
+        </div>
+        <select data-for="@countries.options" value="@countries.value" data-tag="filters-changed">
+          <option value="@value">{{ @label }}</option>
+        </select>
       </div>
-      <div>
-        <psk-select view-model="statuses" event-name="filters-changed" event-data="status"></psk-select>
+      <div class="d-flex flex-column">
+        <div>
+          <label for="">{{ @statuses.label }}</label>
+        </div>
+        <select data-for="@statuses.options" value="@statuses.value" data-tag="filters-changed">
+          <option value="@value">{{ @label }}</option>
+        </select>
       </div>
-      <div>
-        <psk-input id="search-field" view-model="search" event-name="filters-changed" event-data="text"></psk-input>
+      <div class="d-flex flex-column">
+        <div>
+          <label for="">{{ @search.label }}</label>
+        </div>
+        <input id="search-field" data-view-model="@search" data-tag="filters-changed" />
       </div>
-      <psk-button
-        class="align-self-end"
-        disabled="@clearButtonDisabled"
-        label="Clear filters"
-        event-name="filters-cleared"
-      ></psk-button>
-      <psk-button class="align-self-end" label="Add trial" event-name="add-trial"></psk-button>
-    </psk-layout>
+      <button class="btn btn-primary" disabled="@clearButtonDisabled" data-tag="filters-cleared">Clear filters</button>
+      <button class="btn btn-primary" data-tag="add-trial">Add Trial</button>
+    </div>
 
     <psk-condition condition="@trialArrayNotEmpty">
       <div slot="condition-true">
@@ -67,7 +76,6 @@
         <div class="d-flex align-items-center justify-content-between flex-wrap">
           <div class="d-flex align-items-center justify-content-center">
             <span>Page&nbsp;</span>
-            <!-- TODO: no two-way binding on select, also how to set default/initial value -->
             <psk-select value="@test" view-model="@pagination.pages" event-name="navigate-to-page"></psk-select>
             <span>&nbsp;of&nbsp;</span>
             <psk-label label="@pagination.totalPages"></psk-label>
@@ -117,10 +125,10 @@
         </div>
       </div>
       <div slot="condition-false">
-        <div>No trials available.</div>d
+        <div>No trials available.</div>
       </div>
     </psk-condition>
 
     <psk-list-feedbacks messages-to-display="5" time-alive="3000"> </psk-list-feedbacks>
-  </psk-container>
+  </webc-container>
 </psk-page>

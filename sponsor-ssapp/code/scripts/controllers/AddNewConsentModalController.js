@@ -1,8 +1,10 @@
-import ModalController from '../../../cardinal/controllers/base-controllers/ModalController.js';
 import { consentTypeEnum } from '../constants/consent.js';
 import ConsentsService from '../services/ConsentsService.js';
 
-export default class AddNewConsentModalController extends ModalController {
+// eslint-disable-next-line no-undef
+const { WebcController } = WebCardinal.controllers;
+
+export default class AddNewConsentModalController extends WebcController {
   typesArray = Object.entries(consentTypeEnum).map(([k, v]) => ({
     label: v,
     value: v,
@@ -52,7 +54,7 @@ export default class AddNewConsentModalController extends ModalController {
   constructor(element, history) {
     super(element, history);
 
-    let { id, keySSI } = this.History.getState();
+    let { id, keySSI } = this.history.location.state;
 
     this.keySSI = keySSI;
 
@@ -89,8 +91,9 @@ export default class AddNewConsentModalController extends ModalController {
       if (event.data) this.file = event.data;
     });
 
-    this.on('create-consent', async (event) => {
+    this.onTagClick('create-consent', async (event) => {
       try {
+        console.log('event fired');
         this.model.submitButtonDisabled = true;
         const consent = {
           name: this.model.consent.name.value,
@@ -102,9 +105,9 @@ export default class AddNewConsentModalController extends ModalController {
         };
         const result = await this.consentsService.createConsent(consent, this.keySSI);
         this.model.submitButtonDisabled = false;
-        this.responseCallback(undefined, result);
+        this.send('confirmed', result);
       } catch (error) {
-        this.responseCallback(error, undefined);
+        this.send('closed', new Error('There was an issue creating the trial'));
         console.log(error);
       }
     });

@@ -1,12 +1,14 @@
-import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
+// eslint-disable-next-line no-undef
+const { WebcController } = WebCardinal.controllers;
 
-export default class TrialController extends ContainerController {
+export default class TrialController extends WebcController {
   constructor(element, history) {
     super(element, history);
     this.setModel({
       id: null,
     });
-    let { id, keySSI } = this.History.getState();
+
+    let { id, keySSI } = this.history.location.state;
 
     this.model.id = id;
 

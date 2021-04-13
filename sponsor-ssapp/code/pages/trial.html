@@ -1,12 +1,13 @@
 <psk-page title="Trial">
+  <link rel="stylesheet" href="assets/css/trials.css" />
   <div class="d-flex flex-row" style="font-size: 18px !important">
-    <psk-container controller-name="TrialController">
+    <webc-container controller="TrialController">
       <psk-link page="trials"> Trials </psk-link>
       <span> / </span>
       <div style="display: inline-block">
         <psk-label label="@id"> </psk-label>
       </div>
-    </psk-container>
+    </webc-container>
   </div>
 
   <br />
@@ -214,14 +215,17 @@
 
     <!-- *************** INFORM CONSENTS ******************** -->
     <psk-tab title="Inform Consents">
-      <psk-container controller-name="TrialConsentsController">
+      <webc-container controller="TrialConsentsController">
         <!-- **************** INFORM CONSENTS TOP BAR ************************* -->
-        <psk-layout class="d-flex flex-wrap justify-content-between align-items-center mt-5">
-          <div>
-            <psk-input id="search-field" view-model="search" event-name="filters-changed" event-data="text"></psk-input>
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 mb-3" style="margin-bottom: 20px">
+          <div class="d-flex flex-column">
+            <div>
+              <label for="">{{ @search.label }}</label>
+            </div>
+            <input id="search-field" data-view-model="@search" data-tag="filters-changed" />
           </div>
-          <psk-button class="align-self-end" label="Add consent" event-name="add-consent"></psk-button>
-        </psk-layout>
+          <button class="btn btn-primary" data-tag="add-consent">Add consent</button>
+        </div>
 
         <!-- *************** INFORM CONSENT TABLE ********************* -->
         <psk-condition condition="@consentsArrayNotEmpty">
@@ -332,12 +336,14 @@
                 <span>&nbsp;Items Per Page</span>
               </div>
             </div>
+            <!-- <h6>Template with complex binding</h6>
+            <webc-template template="webc-demo-template" data-model="@testing"></webc-template> -->
           </div>
           <div slot="condition-false">
             <div>No consents available.</div>
           </div>
         </psk-condition>
-      </psk-container>
+      </webc-container>
     </psk-tab>
 
     <!-- *************** INFO ******************** -->

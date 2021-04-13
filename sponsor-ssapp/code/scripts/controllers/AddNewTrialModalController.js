@@ -1,9 +1,11 @@
-import ModalController from '../../../cardinal/controllers/base-controllers/ModalController.js';
 import { trialStatusesEnum } from '../constants/trial.js';
 import { countryListAlpha2 } from '../constants/countries.js';
 import TrialsService from '../services/TrialsService.js';
 
-export default class AddNewTrialModalController extends ModalController {
+// eslint-disable-next-line no-undef
+const { WebcController } = WebCardinal.controllers;
+
+export default class AddNewTrialModalController extends WebcController {
   trialStatusesArray = Object.entries(trialStatusesEnum).map(([k, v]) => ({
     label: v,
     value: v,
@@ -63,16 +65,33 @@ export default class AddNewTrialModalController extends ModalController {
   }
 
   attachAll() {
-    this.on('inputs-changed', (event) => {
-      this.model.submitButtonDisabled = !(
-        this.model.trial.name.value &&
-        this.model.trial.status.value &&
-        this.model.trial.id.value &&
-        this.model.trial.countries.value
-      );
-    });
+    // this.model.addExpression(
+    //   'disabled',
+    //   function () {
+    //     console.log('testiung');
+    //     return !(
+    //       this.model.trial.name.value &&
+    //       this.model.trial.status.value &&
+    //       this.model.trial.id.value &&
+    //       this.model.trial.countries.value
+    //     );
+    //   },
+    //   'trial.status.value'
+    // );
 
-    this.on('create-trial', async (event) => {
+    // this.onTagEvent('inputs-changed', 'keypress', async (model, target, event) => {
+    //   event.preventDefault();
+    //   console.log(model, target, event);
+    //   this.model.submitButtonDisabled = !(
+    //     this.model.trial.name.value &&
+    //     this.model.trial.status.value &&
+    //     this.model.trial.id.value &&
+    //     this.model.trial.countries.value
+    //   );
+    //   return;
+    // });
+
+    this.onTagClick('create-trial', async (event) => {
       try {
         this.model.submitButtonDisabled = true;
         const trial = {
@@ -88,9 +107,9 @@ export default class AddNewTrialModalController extends ModalController {
         };
         const result = await this.trialsService.createTrial(trial);
         this.model.submitButtonDisabled = false;
-        this.responseCallback(undefined, result);
+        this.send('confirmed', result);
       } catch (error) {
-        this.responseCallback(error, undefined);
+        this.send('closed', new Error('There was an issue creating the trial'));
         console.log(error);
       }
     });

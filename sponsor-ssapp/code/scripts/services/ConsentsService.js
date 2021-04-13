@@ -47,11 +47,14 @@ export default class ConsentsService {
 
   async createConsent(data, trialKeySSI) {
     const consentKeySSI = await this.createSSIAndMount(`${this.CONSENTS_PATH}/${trialKeySSI}`);
-    const attachmentKeySSI = await this.uploadFile(this.getDsuStoragePath(trialKeySSI, consentKeySSI), data.file);
+    const attachmentKeySSI = await this.uploadFile(
+      this.getDsuStoragePath(trialKeySSI, consentKeySSI) + '/consent/' + data.file.name,
+      data.file
+    );
     data.keySSI = consentKeySSI;
     data.attachmentKeySSI = attachmentKeySSI;
     data.attachment = data.file.name;
-    const consent = await this.setItem(this.getDsuStoragePath(trialKeySSI, consentKeySSI), data);
+    const consent = await this.setItem(this.getDsuStoragePath(trialKeySSI, consentKeySSI) + '/data.json', data);
     await this.addConsentToList(
       {
         id: data.id,
@@ -64,6 +67,11 @@ export default class ConsentsService {
       },
       trialKeySSI
     );
+
+    const list = await this.readConsentsList(trialKeySSI);
+    if (list && list.table && list.table.length === 1) {
+      await this.mountConsent(trialKeySSI, consentKeySSI);
+    }
     return consent;
   }
 
@@ -171,6 +179,19 @@ export default class ConsentsService {
           return;
         }
         resolve(result);
+      });
+    });
+  }
+
+  mountConsent(trialKeySSI, consentKeySSI) {
+    return new Promise((resolve, reject) => {
+      const path = this.TRIALS_PATH + '/' + trialKeySSI + '/' + 'consent';
+      this.DSUStorage.call('mount', path, consentKeySSI, async (err, keySSI) => {
+        if (err) {
+          reject(new Error(err));
+          return;
+        }
+        resolve(keySSI);
       });
     });
   }

@@ -1,15 +1,17 @@
-import ContainerController from '../../cardinal/controllers/base-controllers/ContainerController.js';
 import TrialsService from '../services/TrialsService.js';
 import { trialStatusesEnum, trialTableHeaders } from '../constants/trial.js';
-import CommunicationService from "../services/CommunicationService.js";
+import CommunicationService from '../services/CommunicationService.js';
 
-export default class ListTrialsController extends ContainerController {
+// eslint-disable-next-line no-undef
+const { WebcController } = WebCardinal.controllers;
+
+export default class ListTrialsController extends WebcController {
   statusesArray = Object.entries(trialStatusesEnum).map(([k, v]) => v);
   itemsPerPageArray = [5, 10, 15, 20, 30];
 
   headers = trialTableHeaders;
 
-  countriesModel = {
+  countries = {
     label: 'Select country',
     placeholder: 'Please select an option',
     required: false,
@@ -63,13 +65,15 @@ export default class ListTrialsController extends ContainerController {
 
     this.setModel({
       statuses: this.statuses,
-      countries: this.countriesModel,
+      countries: this.countries,
       search: this.search,
       trials: [],
       pagination: this.pagination,
       headers: this.headers,
       clearButtonDisabled: true,
     });
+
+    console.log(this.model.statuses.options);
 
     this.attachEvents();
 
@@ -99,7 +103,7 @@ export default class ListTrialsController extends ContainerController {
       trial.countries.forEach((country) => !countries.includes(country) && countries.push(country))
     );
 
-    this.model.countries = { ...this.countriesModel, options: countries.map((x) => ({ label: x, value: x })) };
+    this.model.countries = { ...this.countries, options: countries.map((x) => ({ label: x, value: x })) };
   }
 
   paginateTrials(trials, page = 1) {
@@ -151,6 +155,7 @@ export default class ListTrialsController extends ContainerController {
   }
 
   filterData() {
+    console.log(this.model.statuses.value);
     let result = this.trials;
 
     if (this.model.countries.value) {
@@ -222,19 +227,41 @@ export default class ListTrialsController extends ContainerController {
       this.feedbackEmitter = e.detail;
     });
 
-    this.on('add-trial', async (event) => {
-      debugger;
-
-      this.showModal('addNewTrialModal', {}, (err, response) => {
-
-        if (err) {
-          console.log(err);
-          return this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new trial', 'toast');
+    this.onTagClick('add-trial', async (event) => {
+      this.showModalFromTemplate(
+        'add-new-trial',
+        (event) => {
+          const response = event.detail;
+          this.getTrials();
+          // this.sendMessageToHco('add-trial', response.keySSI, 'New trial' + response.id);
+          this.showFeedbackToast('Result', 'Trial added successfully', 'toast');
+        },
+        (event) => {
+          const error = event.detail || null;
+          if (error instanceof Error) {
+            console.log(error);
+            this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new trial', 'toast');
+          }
+        },
+        {
+          controller: 'AddNewTrialModalController',
+          disableExpanding: true,
+          disableBackdropClosing: false,
         }
-        this.getTrials();
-        this.sendMessageToHco( "add-trial", response.keySSI, "New trial"+response.number);
-        this.showFeedbackToast('Result', 'Trial added successfully', 'toast');
-      });
+      );
+
+      // this.createWebcModal({
+      //   template: 'add-new-trial',
+      //   controller: 'AddNewTrialModalController',
+      //   disableBackdropClosing: true,
+      //   disableFooter: true,
+      //   disableHeader: false,
+      //   disableExpanding: true,
+      //   disableClosing: false,
+      //   disableCancelButton: true,
+      //   expanded: false,
+      //   centered: true,
+      // });
     });
 
     this.on('delete-trial', async (event) => {
@@ -242,8 +269,7 @@ export default class ListTrialsController extends ContainerController {
         await this.trialsService.deleteTrial(event.data);
         this.showFeedbackToast('Result', 'Trial deleted successfully', 'toast');
         this.getTrials();
-        this.sendMessageToHco( "delete-trial", event.data, "the trial was removed ");
-
+        this.sendMessageToHco('delete-trial', event.data, 'the trial was removed ');
       } catch (error) {
         this.showFeedbackToast('Result', 'ERROR: The was an error, trial cannot be deleted right now', 'toast');
       }
@@ -251,7 +277,7 @@ export default class ListTrialsController extends ContainerController {
 
     this.on('view-trial', async (event) => {
       console.log(this.trials.find((x) => x.id === event.data));
-      this.History.navigateToPageByTag('trial', {
+      this.navigateToPageTag('trial', {
         id: event.data,
         keySSI: this.trials.find((x) => x.id === event.data).keySSI,
       });
@@ -262,7 +288,7 @@ export default class ListTrialsController extends ContainerController {
       this.filterData();
     });
 
-    this.on('filters-cleared', async (event) => {
+    this.onTagClick('filters-cleared', async (event) => {
       this.model.clearButtonDisabled = true;
       this.model.countries.value = null;
       this.model.statuses.value = null;
@@ -319,14 +345,11 @@ export default class ListTrialsController extends ContainerController {
     });
   }
 
-  sendMessageToHco(operation, ssi, shortMessage){
-    debugger;
-    this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY,
-        {
-            operation: operation,
-            ssi: ssi,
-            shortDescription: shortMessage
-
-        });
+  sendMessageToHco(operation, ssi, shortMessage) {
+    this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, {
+      operation: operation,
+      ssi: ssi,
+      shortDescription: shortMessage,
+    });
   }
 }
