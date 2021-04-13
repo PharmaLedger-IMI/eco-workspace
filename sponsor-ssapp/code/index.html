@@ -5,13 +5,14 @@
     <title>PSK App Core</title>
     PLACEHOLDER_THAT_WILL_BE_REPLACED_BY_SW_OR_SERVER_WITH_BASE_TAG
     <link href="resources/css/main.css" rel="stylesheet" type="text/css" />
-    <link href="resources/css/custom.css" rel="stylesheet" type="text/css" />
+    <link href="resources/css/general.css" rel="stylesheet" type="text/css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <script src="scripts/bundles/iframeBoot.js"></script>
     <script src="scripts/bundles/webshims.js"></script>
+    <link rel="stylesheet" href="webcardinal/webcardinal.css" />
     <script src="scripts/bundles/pskruntime.js"></script>
-    <script type="module" src="cardinal/cardinal.esm.js"></script>
+    <script type="module" src="webcardinal/webcardinal.js"></script>
 
     <script>
       if (window.frameElement) {
@@ -31,15 +32,15 @@
   </head>
 
   <body>
-    <psk-app-root class="" style="display: flex; width: 100%; align-items: stretch">
+    <webc-app-root class="" style="display: flex; width: 100%; align-items: stretch">
       <aside class="sponsor-navbar">
         <div class="side-menu-logo">
           <img src="/assets/svg/pharmaledger-logo-negative.svg" alt="pharmaledger logo" />
         </div>
-        <psk-app-menu class="sponsor-navbar"> </psk-app-menu>
+        <webc-app-menu class="sponsor-navbar"> </webc-app-menu>
       </aside>
-      <psk-app-router style="width: 100%" failRedirectTo="/home"></psk-app-router>
-    </psk-app-root>
+      <webc-app-router style="width: 100%" failRedirectTo="/home"></webc-app-router>
+    </webc-app-root>
 
     <!-- <psk-app-root>
       <div class="global_container">

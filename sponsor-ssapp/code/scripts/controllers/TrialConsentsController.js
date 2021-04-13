@@ -1,8 +1,11 @@
-import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
 import { consentTypeEnum, consentTableHeaders } from '../constants/consent.js';
 import ConsentsService from '../services/ConsentsService.js';
+import CommunicationService from '../services/CommunicationService.js';
 
-export default class TrialConsentsController extends ContainerController {
+// eslint-disable-next-line no-undef
+const { WebcController } = WebCardinal.controllers;
+
+export default class TrialConsentsController extends WebcController {
   typesArray = Object.entries(consentTypeEnum).map(([k, v]) => v);
   itemsPerPageArray = [5, 10, 15, 20, 30];
   headers = consentTableHeaders;
@@ -37,18 +40,30 @@ export default class TrialConsentsController extends ContainerController {
 
   constructor(element, history) {
     super(element, history);
-    let { id, keySSI } = this.History.getState();
+    let { id, keySSI } = this.history.location.state;
 
     // console.log(id, keySSI);
 
     this.keySSI = keySSI;
     this.consentsService = new ConsentsService(this.DSUStorage);
+    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.SPONSOR_IDENTITY);
     this.feedbackEmitter = null;
 
     this.setModel({
       consents: [],
       pagination: this.pagination,
       headers: this.headers,
+      search: this.search,
+      testing: {
+        templateInput: {
+          type: 'text',
+          value: 2,
+          style: 'border: 1px solid red',
+        },
+        templateLabel: {
+          text: 'Inner template label',
+        },
+      },
     });
 
     this.attachEvents();
@@ -101,11 +116,6 @@ export default class TrialConsentsController extends ContainerController {
         : pages;
     this.model.pagination.currentPage = page;
     this.model.pagination.totalPages = pages.length;
-    // this.model.pagination.pages.value = page.toString();
-    // console.log('TEST:', this.model.test, typeof this.model.test);
-
-    // this.model.test = '8';
-    // console.log('TEST:', this.model.test);
   }
 
   setConsentsModel(consents) {
@@ -182,26 +192,35 @@ export default class TrialConsentsController extends ContainerController {
       this.feedbackEmitter = e.detail;
     });
 
-    this.on('add-consent', async (event) => {
-      this.showModal('addNewConsentModal', {}, (err, response) => {
-        if (err) {
-          console.log(err);
-          return this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new consent', 'toast');
+    this.onTagClick('test', (e) => {
+      console.log('Testing fired');
+    });
+
+    this.onTagClick('add-consent', async (event) => {
+      console.log('running add consent');
+      this.showModalFromTemplate(
+        'add-new-consent',
+        (event) => {
+          const response = event.detail;
+          this.getConsents();
+          this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
+          this.sendMessageToHco('add-trial', this.keySSI, 'New trial' + response.id);
+        },
+        (event) => {
+          const error = event.detail || null;
+          if (error instanceof Error) {
+            console.log(error);
+            this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new consent', 'toast');
+          }
+        },
+        {
+          controller: 'AddNewConsentModalController',
+          disableExpanding: true,
+          disableBackdropClosing: false,
         }
-        this.getConsents();
-        this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-      });
+      );
     });
-    this.on('update-consent', async (event) => {
-      // this.showModal('addNewConsentModal', {}, (err, response) => {
-      //   if (err) {
-      //     console.log(err);
-      //     return this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new consent', 'toast');
-      //   }
-      //   this.getConsents();
-      //   this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-      // });
-    });
+    this.on('update-consent', async (event) => {});
     this.on('delete-consent', async (event) => {
       try {
         await this.consentsService.deleteConsent(this.keySSI, event.data);
@@ -211,16 +230,7 @@ export default class TrialConsentsController extends ContainerController {
         this.showFeedbackToast('Result', 'ERROR: The was an error, consent cannot be deleted right now', 'toast');
       }
     });
-    this.on('set-as-current', async (event) => {
-      // this.showModal('addNewConsentModal', {}, (err, response) => {
-      //   if (err) {
-      //     console.log(err);
-      //     return this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new consent', 'toast');
-      //   }
-      //   this.getConsents();
-      //   this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-      // });
-    });
+    this.on('set-as-current', async (event) => {});
 
     this.on('filters-changed', async (event) => {
       this.filterData();
@@ -272,6 +282,14 @@ export default class TrialConsentsController extends ContainerController {
 
     this.on('sort-column', async (event) => {
       this.sortColumn(event.data);
+    });
+  }
+
+  sendMessageToHco(operation, ssi, shortMessage) {
+    this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, {
+      operation: operation,
+      ssi: ssi,
+      shortDescription: shortMessage,
     });
   }
 }
