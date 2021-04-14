@@ -24,6 +24,18 @@ export default class AddTrialParticipantController extends WebcController {
         required: true,
         value: '',
     }
+    male = {
+        label: 'Male',
+        name: 'male',
+        required: false,
+        value: 'false',
+    }
+    female = {
+        label: 'Female',
+        name: 'female',
+        required: false,
+        value: 'true',
+    }
 
     constructor(element, history) {
         super(element, history);
@@ -35,7 +47,7 @@ export default class AddTrialParticipantController extends WebcController {
 
                 number: this.number,
                 birthdate: this.birthdate,
-                sex: this.sex,
+                sex: 'female',
             },
 
         });
@@ -50,6 +62,13 @@ export default class AddTrialParticipantController extends WebcController {
                 event.stopImmediatePropagation();
                 debugger;
                 console.log(this.model.tp.birthdate.value);
+            const tp = {
+                number: this.model.tp.number.value,
+                birthdate: this.model.tp.birthdate.value,
+                sex: this.model.sex,
+
+            };
+            this.send('confirmed', tp);
 
             }
         )
