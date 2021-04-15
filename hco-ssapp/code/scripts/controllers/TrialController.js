@@ -41,6 +41,7 @@ export default class TrialController extends WebcController {
             }
 
             console.log("All TPS " + data);
+            debugger;
             this.model.trialParticipants = data.tps;
         });
     }
@@ -83,6 +84,7 @@ export default class TrialController extends WebcController {
                 return;
             }
             console.log("New tp added " + tp);
+            this.model.trialParticipants.push(tp);
             this.sendMessageToPatient("add-to-trial", this.keyssi, "you were added to trial");
         });
 

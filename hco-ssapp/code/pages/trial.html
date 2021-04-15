@@ -34,22 +34,23 @@
         <div class="tp-wrapper">
             <div class="left">
                 <psk-label class="trial-title" label="Trial Participants"></psk-label>
-                <table class="tp-table">
-                    <thead>
-                    <tr>
-                        <th width="60%">TP NUMBER</th>
-                        <th width="40%">STATUS</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr data-for="@trialParticipants">
-                    <tr>
-                        <td>{{@number}}</td>
-                        <td>{{@status}}</td>
-                    </tr>
+                <div class="tp-table">
+                    <psk-layout columns="3" class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell">TP Number</psk-label>
+                        <psk-label class="table-cell">Status</psk-label>
 
-                    </tbody>
-                </table>
+                    </psk-layout>
+                    <hr/>
+                </div>
+
+                <div  class="tp-table" data-for="@trialParticipants">
+                    <psk-layout columns="3" class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell">{{@number}}</psk-label>
+                        <psk-label class="table-cell">{{@status}}</psk-label>
+                        <button data-tag="home:trial" data="@id" >>></button>
+                    </psk-layout>
+                    <hr/>
+                </div>
 
             </div>
             <div class="right">

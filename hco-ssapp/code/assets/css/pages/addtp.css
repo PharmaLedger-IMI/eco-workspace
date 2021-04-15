@@ -10,6 +10,14 @@
 
 }
 
+.tp-input{
+    width: 90%;
+}
+
+.tp-date{
+    width: 60%;
+}
+
 .tp-title {
     font-size: 22px;
     color: #00345b;

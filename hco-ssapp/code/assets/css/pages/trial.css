@@ -79,4 +79,12 @@
 .tp-table{
     width: 80%;
 
+
+}
+
+.table-cell {
+    font-size: 20px;
+    color: #00345b;
+    font-weight: bold;
+
 }

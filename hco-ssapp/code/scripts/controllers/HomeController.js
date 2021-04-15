@@ -63,6 +63,7 @@ export default class HomeController extends WebcController {
 
         });
 
+        debugger;
         this.model.trials.push ({number:'aaaa', status:'bbbb',name:'ccccc',id:'1',keySSI:'aaa'});
 
         this._attachHandlerTrialDetails();

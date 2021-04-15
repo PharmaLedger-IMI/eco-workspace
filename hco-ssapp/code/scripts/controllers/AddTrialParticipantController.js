@@ -12,7 +12,7 @@ export default class AddTrialParticipantController extends WebcController {
     };
 
     birthdate= {
-        label: "Please indicate the date of the activity",
+        label: "Birthdate:",
         name: "date",
         required: true,
         dataFormat: "DD MM YYYY",
