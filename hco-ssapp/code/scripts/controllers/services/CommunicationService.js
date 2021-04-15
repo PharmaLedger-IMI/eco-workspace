@@ -3,6 +3,7 @@ const w3cDID = opendsu.loadAPI('w3cdid');
 
 const SPONSOR_IDENTITY = "sponsorIdentity";
 const HCO_IDENTITY = "hcoIdentity";
+const PATIENT_IDENTITY = "patientIdentity";
 
 class CommunicationService {
 
@@ -28,6 +29,7 @@ class CommunicationService {
             message: message
         }
         const recipientIdentity = this.DEFAULT_FORMAT_IDENTIFIER + ':' + this.DEMO_METHOD_NAME + ':' + destinationIdentity;
+        debugger;
         this.didDocument.sendMessage(JSON.stringify(toSentObject), recipientIdentity, (err) => {
             if (err) {
                 throw err;
@@ -71,6 +73,7 @@ export default {
     getInstance,
     identities: {
         SPONSOR_IDENTITY,
-        HCO_IDENTITY
+        HCO_IDENTITY,
+        PATIENT_IDENTITY
     }
 };

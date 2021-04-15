@@ -60,8 +60,10 @@ export default class HomeController extends WebcController {
                 }
                 this.model.trials.push(trial);
             });
-            this.addMessageToNotificationDsu(data);
+
         });
+
+        this.model.trials.push ({number:'aaaa', status:'bbbb',name:'ccccc',id:'1',keySSI:'aaa'});
 
         this._attachHandlerTrialDetails();
 

@@ -1,30 +1,19 @@
-<h2 slot="title">New Trial</h2>
 <link rel="stylesheet" href="/assets/css/pages/addtp.css">
-<webc-container controller="AddTrialParticipantController">
-    <div class="subheader">
-        <psk-label class="trial-title" label="Add Trial Participant"></psk-label>
-    </div>
-    <div class="top">
+<webc-skin href="/assets/css/pages/addtp.css">
+    <webc-container class="maxw" controller="AddTrialParticipantController">
 
-        <div class="line">
-            <label class="tp-title">{{@tp.number.label}}</label>
-            <input data-view-model="@tp.number" data-tag="inputs-changed"/>
+        <div class="top">
+            <div class="line">
+                <psk-input view-model="@tp.number"/>
+            </div>
+            <div class="line">
+                <psk-date-input view-model="@tp.birthdate"></psk-date-input>
+            </div>
+            <div class="line">
+                <psk-radio-group view-model="@tp.gender"></psk-radio-group>
+            </div>
+            <button class="tp-button" slot="footer" data-tag="tp:submit">Submit</button>
+            <button class="tp-button" slot="footer" data-tag="tp:cancel">Cancel</button>
         </div>
-
-
-        <div class="line">
-            <label class="tp-title" for="birthday">{{@tp.birthday.label}}</label>
-            <input type="date" data-view-model="@tp.birthday" id="birthday">
-        </div>
-
-        <div class="line">
-            <label class="tp-title">{{@tp.sex.label}}</label>
-            <input type="radio" id="sex-m" value="m">
-            <label for="sex-m">Male</label>
-            <input type="radio" id="sex-f" value="f">
-            <label for="sex-f">Female</label>
-        </div>
-        <button class="tp-button" slot="footer" data-tag="tp:submit">Submit</button>
-        <button class="tp-button" slot="footer" data-tag="tp:cancel">Cancel</button>
-    </div>
-</webc-container>
+    </webc-container>
+</webc-skin>

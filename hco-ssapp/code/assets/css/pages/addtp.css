@@ -1,6 +1,7 @@
 
 .top {
     display: block;
+
     width: 100%;
 }
 
@@ -8,17 +9,19 @@
     display: flex;
 
 }
+
 .tp-title {
     font-size: 22px;
     color: #00345b;
     font-weight: bold;
-    text-align:center;
-    vertical-align:middle;
-    display:table-cell;
+    text-align: center;
+    vertical-align: middle;
+    display: table-cell;
     width: 50%;
     margin-left: 20px;
 }
-.tp-button{
+
+.tp-button {
     background-color: #00345b;
     border: none;
     color: white;
@@ -27,8 +30,16 @@
     text-decoration: none;
     display: inline-block;
     text-transform: uppercase;
+
     vertical-align: center;
 
     font-size: 16px;
     margin-right: 30px;
+}
+
+
+webc-modal[data-shadow] .webc-modal .webc-modal-dialog.centered {
+
+    min-width: 80%;
+
 }

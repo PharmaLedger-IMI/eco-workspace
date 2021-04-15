@@ -1,6 +1,7 @@
 import TrialService from "./services/TrialService.js";
-import Trial from "./services/TrialService.js";
 import TrialParticipantsService from "./services/TrialParticipantsService.js";
+import CommunicationService from "./services/CommunicationService.js";
+
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -9,11 +10,14 @@ export default class TrialController extends WebcController {
         super(element, history);
         this.TrialService = new TrialService(this.DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(this.DSUStorage);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
         this.setModel({trial: {}, trialParticipants: []});
         this.mountData();
         this.keyssi = this.history.win.history.state.state;
-        debugger;
 
+        this.on('openFeedback', (e) => {
+            this.feedbackEmitter = e.detail;
+        });
 
         this._attachHandlerAddTrialParticipant();
     }
@@ -49,6 +53,7 @@ export default class TrialController extends WebcController {
                 this.showModalFromTemplate('add-new-tp', (event) => {
                         const response = event.detail;
                         this.createTpDsu(event.detail);
+                        this.showFeedbackToast('Result', 'Trial participant added successfully!', 'toast');
                         console.log(response);
                     },
                     (event) => {
@@ -60,6 +65,7 @@ export default class TrialController extends WebcController {
                     controller: 'AddTrialParticipantController',
                     disableExpanding: false,
                     disableBackdropClosing: false,
+                    title: 'Add Trial Participant',
                 }
 
             }
@@ -73,10 +79,26 @@ export default class TrialController extends WebcController {
             debugger;
             if (err) {
                 console.log(err);
+                this.showFeedbackToast('Result', 'ERROR: There was an issue creating the trial participant', 'toast');
                 return;
             }
             console.log("New tp added " + tp);
+            this.sendMessageToPatient("add-to-trial", this.keyssi, "you were added to trial");
         });
 
+    }
+
+    sendMessageToPatient(operation, ssi, shortMessage) {
+        this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
+            operation: operation,
+            ssi: ssi,
+            shortDescription: shortMessage,
+        });
+    }
+
+    showFeedbackToast(title, message, alertType) {
+        if (typeof this.feedbackEmitter === 'function') {
+            this.feedbackEmitter(message, title, alertType);
+        }
     }
 }

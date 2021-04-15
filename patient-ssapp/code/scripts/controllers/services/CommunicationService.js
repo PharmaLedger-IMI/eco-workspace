@@ -18,6 +18,7 @@ class CommunicationService {
                 throw err;
             }
             this.didDocument = didDocument;
+            debugger;
             console.log(`Identity ${didDocument.getIdentifier()} created successfully.`)
         });
     }
@@ -29,7 +30,6 @@ class CommunicationService {
             message: message
         }
         const recipientIdentity = this.DEFAULT_FORMAT_IDENTIFIER + ':' + this.DEMO_METHOD_NAME + ':' + destinationIdentity;
-        debugger;
         this.didDocument.sendMessage(JSON.stringify(toSentObject), recipientIdentity, (err) => {
             if (err) {
                 throw err;

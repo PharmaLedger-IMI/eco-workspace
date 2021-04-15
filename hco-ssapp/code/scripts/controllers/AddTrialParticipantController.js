@@ -11,43 +11,40 @@ export default class AddTrialParticipantController extends WebcController {
         value: '',
     };
 
-    birthdate = {
-        label: 'Trial Number/ID',
-        name: 'id',
+    birthdate= {
+        label: "Please indicate the date of the activity",
+        name: "date",
         required: true,
-        value: '',
+        dataFormat: "DD MM YYYY",
+        placeholder: "DD MM YYYY",
+        value: ''
     };
-
-    sex = {
-        label: 'Sex',
-        name: 'sex',
+    gender = {
+        label: "Select your gender",
         required: true,
-        value: '',
+        options: [{
+            label: "Male",
+            value: 'M'
+        },
+            {
+                label: "Female",
+                value: "F"
+            }
+        ],
+        value: ''
     }
-    male = {
-        label: 'Male',
-        name: 'male',
-        required: false,
-        value: 'false',
-    }
-    female = {
-        label: 'Female',
-        name: 'female',
-        required: false,
-        value: 'true',
-    }
-
     constructor(element, history) {
         super(element, history);
 
 
         debugger;
         this.setModel({
+
             tp: {
 
                 number: this.number,
                 birthdate: this.birthdate,
-                sex: 'female',
+                gender: this.gender,
             },
 
         });
@@ -62,16 +59,18 @@ export default class AddTrialParticipantController extends WebcController {
                 event.stopImmediatePropagation();
                 debugger;
                 console.log(this.model.tp.birthdate.value);
-            const tp = {
-                number: this.model.tp.number.value,
-                birthdate: this.model.tp.birthdate.value,
-                sex: this.model.sex,
+                const tp = {
+                    number: this.model.tp.number.value,
+                    birthdate: this.model.tp.birthdate.value,
+                    gender: this.model.tp.gender.value,
 
-            };
-            this.send('confirmed', tp);
+                };
+                this.send('confirmed', tp);
 
             }
         )
     }
+
+
 
 }
