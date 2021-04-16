@@ -1,18 +1,19 @@
 import TrialDataService from "./services/TrialDataService.js";
 import CommunicationService from "./services/CommunicationService.js";
 import TrialService from "./services/TrialService.js";
+
 const {WebcController} = WebCardinal.controllers;
 export default class HomeController extends WebcController {
     constructor(element, history) {
         super(element, history);
 
         this.setModel({});
-        debugger;
-        this.model.trials =[];
+
+        this.model.trials = [];
 
         this.TrialDataService = new TrialDataService(this.DSUStorage);
         this.TrialDataService.getTrials((err, data) => {
-            if(err) {
+            if (err) {
                 return console.log(err);
             }
             //this.model.trials = data;
@@ -31,13 +32,24 @@ export default class HomeController extends WebcController {
                 return console.error(err);
             }
             data = JSON.parse(data);
-            console.log("data in patient "+ data);
+            console.log("data in patient " + data);
             debugger;
-            this.TrialService.mountTrial(data.message.ssi,(err, trial) => {
+            this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                 if (err) {
                     return console.log(err);
+                    debugger;
                 }
                 this.model.trials.push(trial);
+                this.TrialService.getEconsents(trial.keySSI, (err, data) => {
+                    if (err) {
+                        return console.log(err);
+                        debugger;
+                    }
+                    debugger;
+                    console.log(data.econsents);
+                })
+                console.log(trial);
+                debugger;
             });
         });
 
@@ -52,29 +64,37 @@ export default class HomeController extends WebcController {
 
     }
 
-    _attachHandlerTrialClick(){
+    _attachHandlerTrialClick() {
 
-        this.onTagClick('home:trial-details', (model, target, event) => {
-                    this.navigateToPageTag('trial')
+        this.onTagEvent('home:trial', 'click', (model, target, event) => {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                debugger
+                let trial = this.model.trials.find(trial => trial.id == target.attributes['data'].value)
+                this.navigateToPageTag('trial',trial.keySSI);
+
+                console.log(target.attributes['data'].value)
             }
         )
     }
 
-    _attachHandlerEDiary(){
+    _attachHandlerEDiary() {
         this.onTagClick('home:ediary', (event) => {
             this.navigateToPageTag('ediary');
         });
     }
 
-    _attachHandlerSites(){
+    _attachHandlerSites() {
         this.onTagClick('home:site', (event) => {
             this.navigateToPageTag('site');
         });
     }
 
-    _attachHandlerNotifications(){
+    _attachHandlerNotifications() {
         this.onTagClick('home:notifications', (event) => {
             this.navigateToPageTag('notifications');
         });
     }
+
+
 }

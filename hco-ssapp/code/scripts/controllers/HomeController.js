@@ -63,7 +63,7 @@ export default class HomeController extends WebcController {
 
         });
 
-        debugger;
+
         this.model.trials.push ({number:'aaaa', status:'bbbb',name:'ccccc',id:'1',keySSI:'aaa'});
 
         this._attachHandlerTrialDetails();
@@ -89,7 +89,7 @@ export default class HomeController extends WebcController {
     addMessageToNotificationDsu (message){
 
         this.NotificationsService.saveNotification( message.message,(err, notification) => {
-            debugger;
+
             if (err) {
                 console.log(err);
                 return;

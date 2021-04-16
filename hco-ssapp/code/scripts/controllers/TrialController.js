@@ -12,8 +12,9 @@ export default class TrialController extends WebcController {
         this.TrialParticipantService = new TrialParticipantsService(this.DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
         this.setModel({trial: {}, trialParticipants: []});
-        this.mountData();
         this.keyssi = this.history.win.history.state.state;
+        this.getTrial();
+
 
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
@@ -22,28 +23,31 @@ export default class TrialController extends WebcController {
         this._attachHandlerAddTrialParticipant();
     }
 
-    mountData() {
+    getTrial() {
 
-        this.TrialService.mountTrial(this.keyssi, (err, trial) => {
+        this.TrialService.getTrial(this.keyssi, (err, trial) => {
             if (err) {
                 debugger;
                 return console.log(err);
             }
             debugger;
             this.model.trial = trial;
-        });
 
-        this.TrialParticipantService.getTPS((err, data) => {
-            if (err) {
-                console.log(err);
+
+            this.TrialParticipantService.getTPS(trial.number, (err, data) => {
+                if (err) {
+                    console.log(err);
+                    debugger;
+                    return;
+                }
+
+                console.log("All TPS " + data);
                 debugger;
-                return;
-            }
+                this.model.trialParticipants = data.tps;
+            });
 
-            console.log("All TPS " + data);
-            debugger;
-            this.model.trialParticipants = data.tps;
         });
+
     }
 
     _attachHandlerAddTrialParticipant() {
