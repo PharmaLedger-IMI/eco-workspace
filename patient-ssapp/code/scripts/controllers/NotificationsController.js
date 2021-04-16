@@ -1,5 +1,6 @@
 import TrialDataService from "./services/TrialDataService.js";
 import Constants from "./Constants.js";
+import NotificationsService from "./services/NotificationsService.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -11,15 +12,23 @@ export default class NotificationsController extends WebcController {
         this.model.notifications = [];
 
         this.TrialDataService = new TrialDataService(this.DSUStorage);
-        this.TrialDataService.getNotifications((err, data) => {
+        this.NotificationsService = new NotificationsService(this.DSUStorage);
+
+        this.NotificationsService.getNotifications((err, data) => {
+            debugger
             if(err) {
                 return console.log(err);
             }
-
-            this.model.notifications.push(...data.map(notification => {
+            this.model.notifications.push(...data.notifications.map(notification => {
                 return {
-                    ...notification,
-                    icon: Constants.getIconByNotificationType(notification.type)
+                    id: notification.uid,
+                    entitySSI: notification.ssi,
+                    name: notification.title,
+                    details: notification.shortDescription,
+                    startDate: notification.startDate,
+                    viewed: notification.viewed,
+                    type: notification.page,
+                    icon: Constants.getIconByNotificationType(notification.page)
                 }
             }));
         })
@@ -28,20 +37,21 @@ export default class NotificationsController extends WebcController {
     }
 
     attachNotificationNavigateHandler(){
-        this.on('go-to-notification', (event) => {
-            let notificationId = event.data;
+        this.onTagEvent('go-to-notification', 'click', (model, target, event) => {
+            debugger
+            let notificationId = model.id;
             let notification = this.model.notifications.find(notification => notification.id === notificationId);
             let page = Constants.getPageByNotificationType(notification.type)
             if (!notification.viewed) {
                 notification.viewed = true;
-                this.TrialDataService.updateNotification(notification, (err, data) => {
+                this.NotificationsService.updateNotification(notification, (err, data) => {
                     if (err) {
                         return console.log(err);
                     }
-                    this.History.navigateToPageByTag(page, notification.entityId);
+                    this.navigateToPageTag(page, notification.entitySSI);
                 });
             } else {
-                this.History.navigateToPageByTag(page, notification.entityId);
+                this.navigateToPageTag(page, notification.entitySSI);
             }
         });
     }

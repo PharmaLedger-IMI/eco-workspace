@@ -13,8 +13,7 @@
                     <div class="dispay-flex date-div justify-content-space-between">
                         <div class="dispay-flex">
                             <div class="left-image padding-image">
-                                <psk-img class="left-image" src="@icon"
-                                         height='50' width='50'></psk-img>
+                                <img src="@icon"  class="left-image" width="50" height="60">
                             </div>
                             <div class="right-text" data-if="@viewed">
                                 <container slot="true">
@@ -46,8 +45,11 @@
                                 </container>
 
                             </div>
+
+
+
                             <psk-button-link icon="arrow-right" class="go-back-link padding-top-35"
-                                             event-name="go-to-notification" event-data="@id"></psk-button-link>
+                                             data-tag="go-to-notification"></psk-button-link>
                         </div>
                     </div>
                 </div>

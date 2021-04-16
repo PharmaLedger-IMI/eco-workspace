@@ -18,7 +18,6 @@ class CommunicationService {
                 throw err;
             }
             this.didDocument = didDocument;
-            debugger;
             console.log(`Identity ${didDocument.getIdentifier()} created successfully.`)
         });
     }

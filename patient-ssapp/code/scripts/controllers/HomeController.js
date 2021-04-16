@@ -1,6 +1,7 @@
 import TrialDataService from "./services/TrialDataService.js";
 import CommunicationService from "./services/CommunicationService.js";
 import TrialService from "./services/TrialService.js";
+import NotificationsService from "./services/NotificationsService.js";
 
 const {WebcController} = WebCardinal.controllers;
 export default class HomeController extends WebcController {
@@ -25,35 +26,32 @@ export default class HomeController extends WebcController {
         this._attachHandlerSites();
         this._attachHandlerNotifications();
 
+        this.TrialService = new TrialService(this.DSUStorage);
+        this.NotificationsService = new NotificationsService(this.DSUStorage);
+
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
         this.CommunicationService.listenForMessages((err, data) => {
-
             if (err) {
                 return console.error(err);
             }
             data = JSON.parse(data);
+            this.addMessageToNotificationDsu(data);
             console.log("data in patient " + data);
-            debugger;
             this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                 if (err) {
                     return console.log(err);
-                    debugger;
                 }
                 this.model.trials.push(trial);
                 this.TrialService.getEconsents(trial.keySSI, (err, data) => {
                     if (err) {
                         return console.log(err);
-                        debugger;
                     }
-                    debugger;
                     console.log(data.econsents);
                 })
                 console.log(trial);
-                debugger;
             });
-        });
 
-        this.TrialService = new TrialService(this.DSUStorage);
+        });
         // this.TrialService.getServiceModel((err, data) => {
         //     if(err) {
         //         return console.error(err);
@@ -64,6 +62,18 @@ export default class HomeController extends WebcController {
 
     }
 
+    addMessageToNotificationDsu(message) {
+        this.NotificationsService.saveNotification({
+            ...message.message,
+            viewed: false,
+            startDate: new Date().toLocaleDateString("sw")
+        }, (err, data) => {
+            if (err) {
+                return console.log(err);
+            }
+        })
+    }
+
     _attachHandlerTrialClick() {
 
         this.onTagEvent('home:trial', 'click', (model, target, event) => {
@@ -71,7 +81,7 @@ export default class HomeController extends WebcController {
                 event.stopImmediatePropagation();
                 debugger
                 let trial = this.model.trials.find(trial => trial.id == target.attributes['data'].value)
-                this.navigateToPageTag('trial',trial.keySSI);
+                this.navigateToPageTag('trial', trial.keySSI);
 
                 console.log(target.attributes['data'].value)
             }

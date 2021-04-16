@@ -10,7 +10,7 @@ export default class TrialController extends WebcController {
         super(element, history);
         this.TrialService = new TrialService(this.DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(this.DSUStorage);
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
         this.setModel({trial: {}, trialParticipants: []});
         this.keyssi = this.history.win.history.state.state;
         this.getTrial();
