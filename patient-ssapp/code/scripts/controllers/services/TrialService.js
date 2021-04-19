@@ -60,6 +60,19 @@ export default class TrialService {
         })
     }
 
+    getEconsent(uid, econsentKey, callback) {
+        this.DSUStorage.getItem(this._getEconsentDsuPath(uid, econsentKey), (err, content) => {
+            if (err) {
+                callback(err, undefined);
+                return;
+            }
+            let textDecoder = new TextDecoder("utf-8");
+            let econsent = JSON.parse(textDecoder.decode(content));
+
+            callback(undefined, econsent);
+        })
+    }
+
     saveTrial(data, callback) {
         debugger
         this.DSUStorage.call('createSSIAndMount', this.SERVICE_PATH, (err, keySSI) => {
@@ -74,20 +87,22 @@ export default class TrialService {
     }
 
     mountTrial(keySSI, callback) {
-        this.DSUStorage.call('mount', this.SERVICE_PATH, keySSI, (err) => {
-            if (err) {
-                return callback(err, undefined);
-            }
-
+        let getTrial = (keySSI) => {
             this.getTrial(keySSI, (err, trial) => {
-                debugger
                 if (err) {
                     return callback(err, undefined);
                 }
                 callback(undefined, trial);
             })
-
-
+        }
+        this.DSUStorage.call('mount', this.SERVICE_PATH, keySSI, (err) => {
+            if (err) {
+                if (err.alreadyExists) {
+                    return getTrial(keySSI);
+                }
+                return callback(err, undefined);
+            }
+            return getTrial(keySSI);
         })
     }
 

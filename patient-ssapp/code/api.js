@@ -26,10 +26,13 @@ function createSSIAndMount(path, callback) {
     });
 }
 
-function mount(path,keySSI, callback){
-    mainDSU.mount(path+"/"+keySSI, keySSI, (err) =>{
-        if (err)
-        {
+function mount(path, keySSI, callback) {
+    debugger;
+    mainDSU.mount(path + "/" + keySSI, keySSI, (err) => {
+        if (err) {
+            if (err.message === "Tried to mount in a non-empty folder") {
+                return callback({alreadyExists: true})
+            }
             return callback(err);
         }
         callback(undefined);

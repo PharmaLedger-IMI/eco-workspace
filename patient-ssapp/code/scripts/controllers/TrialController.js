@@ -53,6 +53,7 @@ export default class TrialController extends WebcController {
         this.keyssi = this.history.win.history.state.state;
         this.mountData();
         debugger;
+        this._attachHandlerConsentClick();
 
         // this.TrialDataService = new TrialDataService(this.DSUStorage);
         // this.TrialDataService.getTrial(1, (err, data) => {
@@ -75,12 +76,23 @@ export default class TrialController extends WebcController {
         })
 
 
-        this.onTagClick('go-to-econsent', (model, target, event) => {
-                this.navigateToPageTag('econsent')
+
+
+
+    }
+
+    _attachHandlerConsentClick() {
+
+        this.onTagEvent('home:trial', 'click', (model, target, event) => {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                debugger
+                let eco = this.model.trial.econsents.find(econsent => econsent.id == target.attributes['data'].value)
+                this.navigateToPageTag('econsent', {trialuid: this.keyssi, ecoId: eco.keySSI});
+
+                console.log(target.attributes['data'].value)
             }
         )
-
-
     }
 
     mountData() {
