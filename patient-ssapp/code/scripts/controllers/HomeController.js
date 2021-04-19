@@ -52,19 +52,12 @@ export default class HomeController extends WebcController {
             });
 
         });
-        // this.TrialService.getServiceModel((err, data) => {
-        //     if(err) {
-        //         return console.error(err);
-        //     }
-        //     this.model.trials = data.trials;
-        // })
-
-
     }
 
     addMessageToNotificationDsu(message) {
         this.NotificationsService.saveNotification({
             ...message.message,
+            uid: message.message.ssi,
             viewed: false,
             startDate: new Date().toLocaleDateString("sw")
         }, (err, data) => {

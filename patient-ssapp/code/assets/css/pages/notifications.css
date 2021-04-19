@@ -34,3 +34,7 @@
     padding-top: 15px;
 }
 
+.gray-filter {
+    filter: opacity(50%);
+}
+

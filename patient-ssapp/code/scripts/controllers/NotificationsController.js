@@ -21,12 +21,10 @@ export default class NotificationsController extends WebcController {
             }
             this.model.notifications.push(...data.notifications.map(notification => {
                 return {
-                    id: notification.uid,
+                    ...notification,
                     entitySSI: notification.ssi,
                     name: notification.title,
                     details: notification.shortDescription,
-                    startDate: notification.startDate,
-                    viewed: notification.viewed,
                     type: notification.page,
                     icon: Constants.getIconByNotificationType(notification.page)
                 }
@@ -39,19 +37,17 @@ export default class NotificationsController extends WebcController {
     attachNotificationNavigateHandler(){
         this.onTagEvent('go-to-notification', 'click', (model, target, event) => {
             debugger
-            let notificationId = model.id;
-            let notification = this.model.notifications.find(notification => notification.id === notificationId);
-            let page = Constants.getPageByNotificationType(notification.type)
-            if (!notification.viewed) {
-                notification.viewed = true;
-                this.NotificationsService.updateNotification(notification, (err, data) => {
+            let page = Constants.getPageByNotificationType(model.type)
+            if (!model.viewed) {
+                model.viewed = true;
+                this.NotificationsService.updateNotification(model, (err, data) => {
                     if (err) {
                         return console.log(err);
                     }
-                    this.navigateToPageTag(page, notification.entitySSI);
+                    this.navigateToPageTag(page, model.entitySSI);
                 });
             } else {
-                this.navigateToPageTag(page, notification.entitySSI);
+                this.navigateToPageTag(page, model.entitySSI);
             }
         });
     }
