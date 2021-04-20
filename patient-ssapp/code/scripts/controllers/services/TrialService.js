@@ -168,6 +168,9 @@ export default class TrialService {
 
     }
 
+    getEconsentFilePath (trialSSI, consentSSI, fileName ){
+        return this.SERVICE_PATH + '/' + trialSSI + '/consent/' + econsentSSI + '/consent/'+fileName;
+    }
     _getDsuTrialPath(keySSI) {
         return this.SERVICE_PATH + '/' + keySSI + '/data.json';
     }
@@ -179,4 +182,6 @@ export default class TrialService {
     _getEconsentDsuPath(trialSSI, econsentSSI) {
         return this.SERVICE_PATH + '/' + trialSSI + '/consent/' + econsentSSI + '/data.json';
     }
+
+
 }

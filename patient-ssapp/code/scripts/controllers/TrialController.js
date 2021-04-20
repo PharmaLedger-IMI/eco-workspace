@@ -53,42 +53,22 @@ export default class TrialController extends WebcController {
         this.keyssi = this.history.win.history.state.state;
         this.mountData();
         debugger;
+
         this._attachHandlerConsentClick();
-
-        // this.TrialDataService = new TrialDataService(this.DSUStorage);
-        // this.TrialDataService.getTrial(1, (err, data) => {
-        //     if (err) {
-        //         return console.log(err);
-        //     }
-        //     debugger
-        //
-        //     this.model.trial = data;
-        //     this.model.trial.color = Constants.getColorByTrialStatus(this.model.trial.status);
-        //     this.model.econsents.push(...data.econsents);
-        //     console.log("data" + data);
-        //     console.log("ECONSENTS" + data.econsents);
-        //
-        // })
-
 
         this.on('go-to-site', (event) => {
             this.navigateToPageByTag('site', event.data);
         })
-
-
-
-
-
     }
 
     _attachHandlerConsentClick() {
 
-        this.onTagEvent('home:trial', 'click', (model, target, event) => {
+        this.onTagEvent('go-to-econsent', 'click', (model, target, event) => {
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 debugger
-                let eco = this.model.trial.econsents.find(econsent => econsent.id == target.attributes['data'].value)
-                this.navigateToPageTag('econsent', {trialuid: this.keyssi, ecoId: eco.keySSI});
+
+                this.navigateToPageTag('econsent', {trialuid: this.keyssi, ecoId:  target.attributes['data'].value});
 
                 console.log(target.attributes['data'].value)
             }
@@ -99,10 +79,8 @@ export default class TrialController extends WebcController {
 
         this.TrialService.getTrial(this.keyssi, (err, trial) => {
             if (err) {
-                debugger;
                 return console.log(err);
             }
-            debugger;
             this.model.trial = trial;
             this.model.trial.color = Constants.getColorByTrialStatus(this.model.trial.status);
             this.TrialService.getEconsents(trial.keySSI, (err, data) => {

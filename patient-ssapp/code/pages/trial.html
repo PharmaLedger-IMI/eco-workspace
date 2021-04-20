@@ -63,29 +63,47 @@
                                 <psk-img class="left-image" src="assets/images/document_black.png"
                                          height='40' width='40'></psk-img>
                             </div>
-                            <div class="right-text">
-                                <strong>
-                                    <psk-label class="econsent-name">{{@name}}</psk-label>
-                                    {{@type}}
-                                    <psk-echo value="Version"></psk-echo>
-                                    {{@version}}
-                                    <psk-echo value="Version Date "></psk-echo>
-                                    {{@versionDate}}
-                                    <psk-echo value="Signed"></psk-echo>
-                                    NA
-                                    <psk-echo value="Attachment Name"></psk-echo>
-                                    NA
-                                   {{@attachment}}
-                                </strong>
+                            <div class="padding-sides">
+                                <div>
+                                    <strong>
+                                        <psk-label class="econsent-name">{{@name}}</psk-label>
+                                        {{@type}}
+                                    </strong>
+                                </div>
+                                <div>
+                                    <strong>
+                                        <psk-echo value="Version"></psk-echo>
+                                        {{@version}}
+                                    </strong>
+                                </div>
+                                <div>
+                                    <strong>
+                                        <psk-echo value="Version Date "></psk-echo>
+                                        {{@versionDate}}
+                                    </strong>
+                                </div>
+                                <div>
+                                    <strong>
+                                        <psk-echo value="Signed"></psk-echo>
+                                        NA
+                                    </strong>
+                                </div>
+                                <div>
+                                    <strong>
+                                        <psk-echo value="Attachment Name"></psk-echo>
+                                        {{@attachment}}
+                                    </strong>
+                                </div>
                             </div>
                         </div>
-                        <psk-button-link icon="arrow-right" class="go-back-link"
-                                         data-tag="go-to-econsent" event-data="@id"></psk-button-link>
                     </div>
-                    <hr>
-
+                    <button data-tag="go-to-econsent" data="@keySSI">>></button>
+<!--                    <psk-button-link icon="arrow-right" data-tag="go-to-econsent" data="@name" ></psk-button-link>-->
                 </div>
+                <hr>
+
             </div>
+
 
 
         </webc-container>
