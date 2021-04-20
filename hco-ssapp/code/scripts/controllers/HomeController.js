@@ -78,7 +78,7 @@ export default class HomeController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
             let trial = this.model.trials.find(trial => trial.id == target.attributes['data'].value)
-            this.navigateToPageTag('trial',trial.keySSI);
+            this.navigateToPageTag('trial', trial.keySSI);
 
             console.log(target.attributes['data'].value)
             }
