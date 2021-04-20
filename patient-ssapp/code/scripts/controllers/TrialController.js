@@ -66,11 +66,8 @@ export default class TrialController extends WebcController {
         this.onTagEvent('go-to-econsent', 'click', (model, target, event) => {
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                debugger
+                this.navigateToPageTag('econsent', {trialuid: this.keyssi, ecoId: target.attributes['data'].value});
 
-                this.navigateToPageTag('econsent', {trialuid: this.keyssi, ecoId:  target.attributes['data'].value});
-
-                console.log(target.attributes['data'].value)
             }
         )
     }
@@ -86,16 +83,12 @@ export default class TrialController extends WebcController {
             this.TrialService.getEconsents(trial.keySSI, (err, data) => {
                 if (err) {
                     return console.log(err);
-                    debugger;
                 }
-                debugger;
 
                 this.model.econsents.push(...data.econsents);
                 console.log(data.econsents);
             })
-
         });
-
     }
 
 }

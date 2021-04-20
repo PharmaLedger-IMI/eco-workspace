@@ -13,17 +13,17 @@ export default class EconsentController extends WebcController {
         this.model.econsent = {};
 
         this.TrialService = new TrialService(this.DSUStorage);
-        let data = this.history.win.history.state.state;
+        this.historyData = this.history.win.history.state.state;
 
         this.TrialDataService = new TrialDataService(this.DSUStorage);
 
 
-        this.TrialService.getEconsent(data.trialuid, data.ecoId, (err, econsent) => {
+        this.TrialService.getEconsent(this.historyData.trialuid, this.historyData.ecoId, (err, econsent) => {
             if (err) {
                 return console.log(err);
             }
             this.model.econsent = econsent;
-            this.fileDownloader = new FileDownloader(this.getEconsentFilePath(data.trialuid, data.ecoId, econsent.attachment), econsent.attachment);
+            this.fileDownloader = new FileDownloader(this.getEconsentFilePath(this.historyData.trialuid, this.historyData.ecoId, econsent.attachment), econsent.attachment);
 
             this._downloadFile();
             console.log("File downloader" + this.fileDownloader);
@@ -56,11 +56,7 @@ export default class EconsentController extends WebcController {
             });
         })
 
-        this.onTagClick('econsent:read', (model, target, event) => {
-                this.navigateToPageTag('sign-econsent')
-            }
-        )
-
+        this.attachHandlerReadEconsent();
         this.attachHandlerDownload();
     }
 
@@ -78,8 +74,17 @@ export default class EconsentController extends WebcController {
         })
     }
 
-    getEconsentFilePath (trialSSI, consentSSI, fileName ){
-        return "/trials/" + trialSSI + '/consent/' + consentSSI + '/consent/'+fileName;
+    attachHandlerReadEconsent() {
+        this.onTagClick('econsent:read', (model, target, event) => {
+            this.navigateToPageTag('sign-econsent', {
+                trialuid: this.historyData.trialuid,
+                ecoId: this.historyData.ecoId
+            })
+        });
+    }
+
+    getEconsentFilePath(trialSSI, consentSSI, fileName) {
+        return "/trials/" + trialSSI + '/consent/' + consentSSI + '/consent/' + fileName;
     }
 
     _downloadFile = () => {

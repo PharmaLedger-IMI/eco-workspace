@@ -3,8 +3,8 @@
         <link rel="stylesheet" href="/assets/css/pages/trial.css">
         <webc-container controller="EconsentController">
             <div class="header-title">
-                <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
-                <psk-label class="scan-error-title" label="@econsent.name"></psk-label>
+                <button icon="arrow-left" class="go-back-link" data-tag="go-back"></button>
+                <psk-label class="header-text" label="@econsent.name"></psk-label>
             </div>
             <hr/>
             <div class="">
@@ -45,42 +45,12 @@
                     <psk-label class="subheader" label="@econsent.version"></psk-label>
                 </div>
                 <div class="padding-sides">
-                    <!--                    <div>-->
-                    <!--                        <psk-echo value="Econsent Name: "></psk-echo>-->
-                    <!--                        <strong>-->
-                    <!--                            <psk-echo value="@econsent.name"></psk-echo>-->
-                    <!--                        </strong>-->
-                    <!--                    </div>-->
-                    <!--                    <div>-->
-                    <!--                        <psk-echo value="Econsent Version: "></psk-echo>-->
-                    <!--                        <strong>-->
-                    <!--                            <psk-echo value="@econsent.version"></psk-echo>-->
-                    <!--                        </strong>-->
-                    <!--                    </div>-->
-                    <!--                    <div>-->
-                    <!--                        <psk-echo value="File: "></psk-echo>-->
-                    <!--                        <strong>-->
-                    <!--                            <psk-echo value="@econsent.file"></psk-echo>-->
-                    <!--                        </strong>-->
-                    <!--                    </div>-->
-                    <div>
+                     <div>
                         <psk-echo value="Document date: "></psk-echo>
                         <strong>
-                            <psk-echo value="@econsent.documentDate"></psk-echo>
+                            <psk-echo value="@econsent.versionDate"></psk-echo>
                         </strong>
                     </div>
-                    <!--                    <div>-->
-                    <!--                        <psk-echo value="Provided date: "></psk-echo>-->
-                    <!--                        <strong>-->
-                    <!--                            <psk-echo value="@econsent.providedDate"></psk-echo>-->
-                    <!--                        </strong>-->
-                    <!--                    </div>-->
-                    <!--                    <div>-->
-                    <!--                        <psk-echo value="HCP confirmation date: "></psk-echo>-->
-                    <!--                        <strong>-->
-                    <!--                            <psk-echo value="@econsent.hcpDate"></psk-echo>-->
-                    <!--                        </strong>-->
-                    <!--                    </div>-->
                 </div>
                 <div class="econsent-actions">
                     <div class="dispay-flex">
@@ -93,49 +63,6 @@
                     </div>
                 </div>
             </div>
-            <!--            <div class="">-->
-            <!--                <div class="subheader">-->
-            <!--                    <psk-label class="subheader" label="Consent Version"></psk-label>-->
-            <!--                </div>-->
-            <!--                <div class="dispay-flex padding-sides justify-content-space-between">-->
-            <!--                    <div>-->
-            <!--                        <psk-textarea  view-model="@econsentTA"></psk-textarea>-->
-            <!--&lt;!&ndash;                        <div class="dispay-flex margin-left-10">&ndash;&gt;-->
-            <!--&lt;!&ndash;                            <psk-condition condition="@econsent.signed">&ndash;&gt;-->
-            <!--&lt;!&ndash;                                <psk-icon slot="condition-true" class="trial-icon" icon="check" color="green">&ndash;&gt;-->
-            <!--&lt;!&ndash;                                </psk-icon>&ndash;&gt;-->
-            <!--&lt;!&ndash;                                <psk-icon slot="condition-false" class="trial-icon" icon="times" color="red">&ndash;&gt;-->
-            <!--&lt;!&ndash;                                </psk-icon>&ndash;&gt;-->
-            <!--&lt;!&ndash;                            </psk-condition>&ndash;&gt;-->
-            <!--&lt;!&ndash;                            <div class="padding-top">&ndash;&gt;-->
-            <!--&lt;!&ndash;                                <psk-echo value="Econsent"></psk-echo>&ndash;&gt;-->
-            <!--&lt;!&ndash;                                <strong>&ndash;&gt;-->
-            <!--&lt;!&ndash;                                    <psk-condition condition="@econsent.signed">&ndash;&gt;-->
-            <!--&lt;!&ndash;                                        <psk-echo slot="condition-false" value="not"></psk-echo>&ndash;&gt;-->
-            <!--&lt;!&ndash;                                    </psk-condition>&ndash;&gt;-->
-
-            <!--&lt;!&ndash;                                    <psk-echo value="signed"></psk-echo>&ndash;&gt;-->
-            <!--&lt;!&ndash;                                </strong>&ndash;&gt;-->
-            <!--&lt;!&ndash;                            </div>&ndash;&gt;-->
-            <!--&lt;!&ndash;                        </div>&ndash;&gt;-->
-            <!--                        <div class="dispay-flex">-->
-            <!--                            <psk-condition condition="@econsent.signed">-->
-            <!--                                <psk-button slot="condition-false" class="invisible-button gray-and-black"-->
-            <!--                                            event-name="econsent:read">-->
-            <!--                                    <psk-icon class="trial-icon" icon="check" color="green"></psk-icon>-->
-            <!--                                    <psk-echo class="margin-top-10" value="Sign Econsent" ></psk-echo>-->
-            <!--                                </psk-button>-->
-            <!--                                <psk-button slot="condition-true" class="invisible-button gray-and-black"-->
-            <!--                                            event-name="econsent:withdraw">-->
-            <!--                                    <psk-icon class="trial-icon" icon="times" color="red"></psk-icon>-->
-            <!--                                    <psk-echo class="margin-top-10" value="Withdraw Econsent"></psk-echo>-->
-            <!--                                </psk-button>-->
-            <!--                            </psk-condition>-->
-            <!--                        </div>-->
-            <!--                    </div>-->
-            <!--                </div>-->
-            <!--            </div>-->
-
             <psk-button class="patient-general-button econsents-button"
                         event-name="econsent:versions" style="bottom: 80px;">Consent History Trial
             </psk-button>
