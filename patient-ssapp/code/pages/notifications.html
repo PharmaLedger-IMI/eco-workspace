@@ -13,7 +13,15 @@
                     <div class="dispay-flex date-div justify-content-space-between">
                         <div class="dispay-flex">
                             <div class="left-image padding-image">
-                                <img src="@icon"  class="left-image" width="50" height="60">
+                                <div data-if="@viewed">
+                                    <container slot="true">
+                                        <img src="@icon"  class="left-image gray-filter" width="50" height="60">
+                                    </container>
+                                    <container slot="false">
+                                        <img src="@icon"  class="left-image" width="50" height="60">
+                                    </container>
+
+                                </div>
                             </div>
                             <div class="right-text" data-if="@viewed">
                                 <container slot="true">
