@@ -114,7 +114,7 @@ export default class TrialService {
         });
     }
 
-    getEconsents(trialSSI) {
+    getEconsents(trialSSI, callback) {
         this.DSUStorage.call('listDSUs', this._getEconsentsDsuList(trialSSI), (err, dsuList) => {
             if (err) {
                 callback(err, undefined);

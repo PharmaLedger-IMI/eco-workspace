@@ -1,0 +1,17 @@
+.econsent-row-blue {
+    background-color: #00345b;
+}
+
+.econsent-row-red {
+    background-color: red;
+}
+
+.econsent-list {
+    padding: 10px;
+}
+
+.econsent-list psk-layout {
+    padding: 5px 10px;
+    color: white;
+    font-weight: bold;
+}

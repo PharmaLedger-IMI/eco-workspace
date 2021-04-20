@@ -15,11 +15,10 @@ export default class NotificationsController extends WebcController {
         this.NotificationsService = new NotificationsService(this.DSUStorage);
 
         this.NotificationsService.getNotifications((err, data) => {
-            debugger
             if(err) {
                 return console.log(err);
             }
-            this.model.notifications.push(...data.notifications.map(notification => {
+            let notificationsMappedAndSorted = data.notifications.map(notification => {
                 return {
                     ...notification,
                     entitySSI: notification.ssi,
@@ -28,7 +27,16 @@ export default class NotificationsController extends WebcController {
                     type: notification.page,
                     icon: Constants.getIconByNotificationType(notification.page)
                 }
-            }));
+            }).sort(function (a, b) {
+                if (!a.viewed && b.viewed) {
+                    return -1;
+                }
+                if (!b.viewed && a.viewed) {
+                    return 1;
+                }
+                return (new Date(a.startDate)).getMilliseconds() - (new Date(b.startDate)).getMilliseconds();
+            });
+            this.model.notifications.push(...notificationsMappedAndSorted);
         })
 
         this.attachNotificationNavigateHandler();

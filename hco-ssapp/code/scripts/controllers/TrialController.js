@@ -2,77 +2,71 @@ import TrialService from "./services/TrialService.js";
 import TrialParticipantsService from "./services/TrialParticipantsService.js";
 import CommunicationService from "./services/CommunicationService.js";
 
-
 const {WebcController} = WebCardinal.controllers;
 
 export default class TrialController extends WebcController {
     constructor(element, history) {
         super(element, history);
+
         this.TrialService = new TrialService(this.DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(this.DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
-        this.setModel({trial: {}, trialParticipants: []});
-        this.keyssi = this.history.win.history.state.state;
-        this.getTrial();
 
+        this.setModel({trial: {}, trialParticipants: []});
+        let keySSI = this.history.win.history.state.state;
+        this.model.trialSSI = keySSI;
+        this.initTrial(keySSI);
 
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
 
         this._attachHandlerAddTrialParticipant();
+        this._attachHandlerNavigateToParticipant();
     }
 
-    getTrial() {
-
-        this.TrialService.getTrial(this.keyssi, (err, trial) => {
+    initTrial(keySSI) {
+        this.TrialService.getTrial(keySSI, (err, trial) => {
             if (err) {
-                debugger;
                 return console.log(err);
             }
-            debugger;
             this.model.trial = trial;
-
-
             this.TrialParticipantService.getTPS(trial.number, (err, data) => {
                 if (err) {
-                    console.log(err);
-                    debugger;
-                    return;
+                    return console.log(err);
                 }
-
-                console.log("All TPS " + data);
-                debugger;
                 this.model.trialParticipants = data.tps;
             });
-
         });
+    }
 
+    _attachHandlerNavigateToParticipant() {
+        this.onTagEvent('navigate:tp', 'click', (model, target, event) => {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                debugger
+                this.navigateToPageTag('trial-participant', this.model.trialSSI);
+            }
+        )
     }
 
     _attachHandlerAddTrialParticipant() {
-
         this.onTagEvent('add:tp', 'click', (model, target, event) => {
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 this.showModalFromTemplate('add-new-tp', (event) => {
                         const response = event.detail;
-                        this.createTpDsu(event.detail);
+                        this.createTpDsu(response);
                         this.showFeedbackToast('Result', 'Trial participant added successfully!', 'toast');
-                        console.log(response);
                     },
                     (event) => {
                         const response = event.detail;
-
-                        console.log(response);
-
                     }), {
                     controller: 'AddTrialParticipantController',
                     disableExpanding: false,
                     disableBackdropClosing: false,
                     title: 'Add Trial Participant',
                 }
-
             }
         )
     }
@@ -81,13 +75,10 @@ export default class TrialController extends WebcController {
         tp.trialNumber = this.model.trial.number;
         tp.status = "enrolled";
         this.TrialParticipantService.saveTrialParticipant(tp, (err, tp) => {
-            debugger;
             if (err) {
-                console.log(err);
                 this.showFeedbackToast('Result', 'ERROR: There was an issue creating the trial participant', 'toast');
-                return;
+                return console.log(err);
             }
-            console.log("New tp added " + tp);
             this.model.trialParticipants.push(tp);
             this.sendMessageToPatient("add-to-trial", this.keyssi, "you were added to trial");
         });
