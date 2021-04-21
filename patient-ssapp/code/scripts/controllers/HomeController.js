@@ -37,6 +37,7 @@ export default class HomeController extends WebcController {
             data = JSON.parse(data);
             this.addMessageToNotificationDsu(data);
             console.log("data in patient " + data);
+            debugger;
             this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                 if (err) {
                     return console.log(err);

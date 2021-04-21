@@ -80,7 +80,7 @@ export default class TrialController extends WebcController {
                 return console.log(err);
             }
             this.model.trialParticipants.push(tp);
-            this.sendMessageToPatient("add-to-trial", this.keyssi, "you were added to trial");
+            this.sendMessageToPatient("add-to-trial",  this.model.trialSSI, "you were added to trial");
         });
 
     }
