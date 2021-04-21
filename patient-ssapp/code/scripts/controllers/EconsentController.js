@@ -23,6 +23,8 @@ export default class EconsentController extends WebcController {
                 return console.log(err);
             }
             this.model.econsent = econsent;
+            this.model.econsent.versionDate = new Date(econsent.versionDate).toLocaleDateString("sw");
+
             this.fileDownloader = new FileDownloader(this.getEconsentFilePath(this.historyData.trialuid, this.historyData.ecoId, econsent.attachment), econsent.attachment);
 
             this._downloadFile();
