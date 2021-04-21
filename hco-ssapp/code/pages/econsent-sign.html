@@ -1,0 +1,29 @@
+<psk-page title="Trial Participant">
+    <link rel="stylesheet" href="/assets/css/pages/econsent-sign.css">
+    <webc-container controller="EconsentSignController">
+
+        <div class="header-title subheader row">
+            <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
+            <psk-label class="trial-title">{{@econsent.name}}</psk-label>
+            <psk-label class="trial-title">{{@econsent.type}}</psk-label>
+            <psk-label class="trial-title">{{@econsent.versionDateAsString}}</psk-label>
+        </div>
+        <hr/>
+
+        <psk-textarea class="read-box" view-model="@econsentTa"></psk-textarea>
+        <div class="econsent-actions">
+            <div class="dispay-flex">
+                <psk-button class="econsent-read"
+                            data-tag="econsent:decline" >Decline
+                </psk-button>
+                <psk-button class="econsent-read"
+                            data-tag="econsent:sign">Sign
+                </psk-button>
+            </div>
+        </div>
+
+        <psk-list-feedbacks messages-to-display="5" time-alive="3000"></psk-list-feedbacks>
+    </webc-container>
+</psk-page>
+
+

@@ -2,6 +2,7 @@ import TrialDataService from "./services/TrialDataService.js";
 import CommunicationService from "./services/CommunicationService.js";
 import TrialService from "./services/TrialService.js";
 import NotificationsService from "./services/NotificationsService.js";
+import DateTimeService from "./services/DateTimeService.js";
 
 const {WebcController} = WebCardinal.controllers;
 export default class HomeController extends WebcController {
@@ -60,7 +61,7 @@ export default class HomeController extends WebcController {
             ...message.message,
             uid: message.message.ssi,
             viewed: false,
-            startDate: new Date().toLocaleDateString("sw")
+            startDate: DateTimeService.convertStringToLocaleDate()
         }, (err, data) => {
             if (err) {
                 return console.log(err);
