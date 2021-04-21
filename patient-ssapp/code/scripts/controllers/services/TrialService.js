@@ -16,6 +16,7 @@ export default class TrialService {
             }
             let organisations = [];
             let getServiceDsu = (dsuItem) => {
+                debugger;
                 this.DSUStorage.getItem(this._getDsuTrialPath(dsuItem.identifier), (err, content) => {
                     if (err) {
                         organisations.slice(0);

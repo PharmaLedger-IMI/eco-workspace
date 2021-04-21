@@ -4,9 +4,9 @@
         <webc-container controller="EconsentController">
             <div class="header-title">
                 <button icon="arrow-left" class="go-back-link" data-tag="go-back"></button>
-                <psk-label class="header-text" label="@econsent.name"></psk-label>
+                <psk-label class="scan-error-title" label="@econsent.name"></psk-label>
             </div>
-            <hr/>
+
             <div class="">
                 <div class="subheader">
                     <psk-label class="subheader" label="Consent Status"></psk-label>
@@ -54,10 +54,10 @@
                 </div>
                 <div class="econsent-actions">
                     <div class="dispay-flex">
-                        <psk-button class="econsent-read"
-                                data-tag="econsent:read" >Read
-                        </psk-button>
                         <button class="econsent-read"
+                                data-tag="econsent:read" >Read
+                        </button>
+                        <button class="econsent-read right"
                                 data-tag="econsent:download" >Download
                         </button>
                     </div>

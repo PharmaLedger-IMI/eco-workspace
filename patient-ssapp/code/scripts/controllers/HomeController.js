@@ -1,4 +1,4 @@
-import TrialDataService from "./services/TrialDataService.js";
+
 import CommunicationService from "./services/CommunicationService.js";
 import TrialService from "./services/TrialService.js";
 import NotificationsService from "./services/NotificationsService.js";
@@ -13,23 +13,16 @@ export default class HomeController extends WebcController {
 
         this.model.trials = [];
 
-        this.TrialDataService = new TrialDataService(this.DSUStorage);
-        this.TrialDataService.getTrials((err, data) => {
-            if (err) {
-                return console.log(err);
-            }
-            //this.model.trials = data;
-            this.model.trials.push(...data);
-        })
-
-        this._attachHandlerTrialClick();
-        this._attachHandlerEDiary();
-        this._attachHandlerSites();
-        this._attachHandlerNotifications();
 
         this.TrialService = new TrialService(this.DSUStorage);
         this.NotificationsService = new NotificationsService(this.DSUStorage);
 
+        this.TrialService.getServiceModel((err, data) => {
+            if(err) {
+                return console.error(err);
+            }
+            this.model.trials.push(...data.trials);
+        })
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
         this.CommunicationService.listenForMessages((err, data) => {
             if (err) {
@@ -37,7 +30,6 @@ export default class HomeController extends WebcController {
             }
             data = JSON.parse(data);
             this.addMessageToNotificationDsu(data);
-            console.log("data in patient " + data);
             debugger;
             this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                 if (err) {
@@ -54,6 +46,10 @@ export default class HomeController extends WebcController {
             });
 
         });
+
+        this._attachHandlerTrialClick();
+        this._attachHandlerSites();
+        this._attachHandlerNotifications();
     }
 
     addMessageToNotificationDsu(message) {
@@ -83,12 +79,6 @@ export default class HomeController extends WebcController {
         )
     }
 
-    _attachHandlerEDiary() {
-        this.onTagClick('home:ediary', (event) => {
-            this.navigateToPageTag('ediary');
-        });
-    }
-
     _attachHandlerSites() {
         this.onTagClick('home:site', (event) => {
             this.navigateToPageTag('site');
@@ -100,6 +90,5 @@ export default class HomeController extends WebcController {
             this.navigateToPageTag('notifications');
         });
     }
-
 
 }
