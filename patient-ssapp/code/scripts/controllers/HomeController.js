@@ -30,21 +30,25 @@ export default class HomeController extends WebcController {
             }
             data = JSON.parse(data);
             this.addMessageToNotificationDsu(data);
-            debugger;
             this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                 if (err) {
                     return console.log(err);
                 }
-                this.model.trials.push(trial);
-                this.TrialService.getEconsents(trial.keySSI, (err, data) => {
+                this.TrialService.updateTrial({...trial, tpNumber: data.message.useCaseSpecifics.tpNumber}, (err, trial) => {
                     if (err) {
                         return console.log(err);
                     }
-                    console.log(data.econsents);
+                    debugger
+                    this.model.trials.push(trial);
+                    this.TrialService.getEconsents(trial.keySSI, (err, data) => {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        console.log(data.econsents);
+                    })
+                    console.log(trial);
                 })
-                console.log(trial);
             });
-
         });
 
         this._attachHandlerTrialClick();
@@ -71,11 +75,12 @@ export default class HomeController extends WebcController {
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 debugger
-                let trial = this.model.trials.find(trial => trial.id == target.attributes['data'].value)
-                this.navigateToPageTag('trial', trial.keySSI);
-
-                console.log(target.attributes['data'].value)
-            }
+                let trial = model
+                this.navigateToPageTag('trial', {
+                    trialSSI: trial.keySSI,
+                    tpNumber: trial.tpNumber
+                });
+         }
         )
     }
 

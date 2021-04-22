@@ -17,7 +17,6 @@ export default class EconsentController extends WebcController {
 
         this.TrialDataService = new TrialDataService(this.DSUStorage);
 
-
         this.TrialService.getEconsent(this.historyData.trialuid, this.historyData.ecoId, (err, econsent) => {
             if (err) {
                 return console.log(err);
@@ -78,7 +77,9 @@ export default class EconsentController extends WebcController {
 
     attachHandlerReadEconsent() {
         this.onTagClick('econsent:read', (model, target, event) => {
+            debugger
             this.navigateToPageTag('sign-econsent', {
+                tpNumber: this.historyData.tpNumber,
                 trialuid: this.historyData.trialuid,
                 ecoId: this.historyData.ecoId
             })

@@ -50,7 +50,10 @@ export default class TrialController extends WebcController {
 
         this.TrialService = new TrialService(this.DSUStorage);
 
-        this.keyssi = this.history.win.history.state.state;
+        let receivedObject = this.history.win.history.state.state
+        this.model.keyssi = receivedObject.trialSSI;
+        this.model.tpNumber = receivedObject.tpNumber;
+
         this.mountData();
         debugger;
 
@@ -66,18 +69,22 @@ export default class TrialController extends WebcController {
         this.onTagEvent('go-to-econsent', 'click', (model, target, event) => {
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                this.navigateToPageTag('econsent', {trialuid: this.keyssi, ecoId: target.attributes['data'].value});
-
+                debugger
+                this.navigateToPageTag('econsent', {
+                    tpNumber: this.model.tpNumber,
+                    trialuid: this.model.keyssi,
+                    ecoId: target.attributes['data'].value
+                });
             }
         )
     }
 
     mountData() {
-
-        this.TrialService.getTrial(this.keyssi, (err, trial) => {
+        this.TrialService.getTrial(this.model.keyssi, (err, trial) => {
             if (err) {
                 return console.log(err);
             }
+            debugger
             this.model.trial = trial;
             this.model.trial.color = Constants.getColorByTrialStatus(this.model.trial.status);
             this.TrialService.getEconsents(trial.keySSI, (err, data) => {

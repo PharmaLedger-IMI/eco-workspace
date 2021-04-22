@@ -54,10 +54,7 @@ export default class EconsentSignController extends WebcController {
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 debugger
-                this.navigateToPageTag('econsent-sign', {
-                    trialSSI: this.model.trialSSI,
-                    econsentSSI: this.model.econsentSSI
-                });
+
             }
         )
     }
@@ -68,10 +65,13 @@ export default class EconsentSignController extends WebcController {
         }
     }
 
-    sendMessageToSponsor(operation, ssi, shortMessage) {
+    sendMessageToSponsor(operation, ssi, tpNumber, shortMessage) {
         this.CommunicationService.sendMessage(CommunicationService.identities.SPONSOR_IDENTITY, {
             operation: operation,
             ssi: ssi,
+            useCaseSpecifics: {
+                tpNumber: tpNumber,
+            },
             shortDescription: shortMessage,
         });
     }

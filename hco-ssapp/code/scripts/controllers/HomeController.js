@@ -25,9 +25,7 @@ const initialTrialModel = {
 
 const initModel = {
     title: 'HomePage',
-    trials: [
-
-    ],
+    trials: [],
     trialsModel: JSON.parse(JSON.stringify(initialTrialModel))
 }
 
@@ -40,62 +38,72 @@ export default class HomeController extends WebcController {
 
         this.TrialService = new TrialService(this.DSUStorage);
         this.TrialService.getServiceModel((err, data) => {
-            if(err) {
+            if (err) {
                 return console.error(err);
             }
             this.model.trials = data.trials;
         })
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
         this.CommunicationService.listenForMessages((err, data) => {
-            
-            if(err) {
+            debugger
+            if (err) {
                 return console.error(err);
             }
             data = JSON.parse(data);
-            this.addMessageToNotificationDsu (data);
-
-            this.TrialService.mountTrial(data.message.ssi,(err, trial) => {
-                if (err) {
-                    return console.log(err);
+            this.addMessageToNotificationDsu(data);
+            switch (data.message.operation) {
+                case 'add-trial': {
+                    this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        this.model.trials.push(trial);
+                    });
+                    break;
                 }
-                this.model.trials.push(trial);
-            });
+                case 'delete-trial': {
+                    break;
+                }
+                case 'sign-econsent': {
+                    /*
+                        shortDescription: "TP signed econsent "
+                        ssi: "3JstiXPCRm1hcgG352y3gkci8b2qDsd1ATPJMjc8VcQGiD62TNXHo35RRuptdL4h8JyB6npqYK3E79nM9Ha1FfzX"
+                        useCaseSpecifics: {tpNumber: "ger"}
 
+                     */
+                    break;
+                }
+                case 'withdraw-econsent': {
+                    break;
+                }
+            }
         });
 
-
-        this.model.trials.push ({number:'aaaa', status:'bbbb',name:'ccccc',id:'1',keySSI:'aaa'});
+        this.model.trials.push({number: 'aaaa', status: 'bbbb', name: 'ccccc', id: '1', keySSI: 'aaa'});
 
         this._attachHandlerTrialDetails();
-
     }
 
-
-
     _attachHandlerTrialDetails() {
-
         this.onTagEvent('home:trial', 'click', (model, target, event) => {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            let trial = this.model.trials.find(trial => trial.id == target.attributes['data'].value)
-            this.navigateToPageTag('trial', trial.keySSI);
-
-            console.log(target.attributes['data'].value)
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                this.navigateToPageTag('trial', model.keySSI);
             }
         )
     }
 
 
-    addMessageToNotificationDsu (message){
+    addMessageToNotificationDsu(message) {
 
-        this.NotificationsService.saveNotification( message.message,(err, notification) => {
+        this.NotificationsService.saveNotification(message.message, (err, notification) => {
 
             if (err) {
                 console.log(err);
                 return;
             }
 
-            });
+        });
     }
 
 }
