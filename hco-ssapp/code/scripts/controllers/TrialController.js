@@ -80,15 +80,19 @@ export default class TrialController extends WebcController {
                 return console.log(err);
             }
             this.model.trialParticipants.push(tp);
-            this.sendMessageToPatient("add-to-trial",  this.model.trialSSI, "you were added to trial");
+            debugger
+            this.sendMessageToPatient("add-to-trial",  this.model.trialSSI, tp.number,"you were added to trial");
         });
 
     }
 
-    sendMessageToPatient(operation, ssi, shortMessage) {
+    sendMessageToPatient(operation, ssi, trialParticipantNumber, shortMessage) {
         this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
             operation: operation,
             ssi: ssi,
+            useCaseSpecifics: {
+                tpNumber: trialParticipantNumber,
+            },
             shortDescription: shortMessage,
         });
     }

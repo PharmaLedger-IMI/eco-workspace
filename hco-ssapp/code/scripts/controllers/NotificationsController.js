@@ -9,11 +9,8 @@ export default class NotificationsController extends WebcController {
         this.NotificationsService = new NotificationsService(this.DSUStorage);
         this.NotificationsService.getNotifications((err, data) => {
             if (err) {
-                console.log(err);
-                debugger;
-                return;
+                return console.log(err);
             }
-
             console.log("All Notifications " + data);
             this.model.notifications = data.notifications;
         });
@@ -21,7 +18,5 @@ export default class NotificationsController extends WebcController {
 
     getNotifications (){
         debugger;
-
-
     }
 }

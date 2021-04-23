@@ -97,15 +97,17 @@ export default class ReadEconsentController extends WebcController {
                 debugger
                 this.navigateToPageTag('home');
                 debugger;
-                this.sendMessageToHCO('withdrow-econsent', this.model.econsent.keySSI, 'TP withdrow econsent ');
+                this.sendMessageToHCO('withdraw-econsent', this.model.econsent.keySSI,'TP withdrow econsent ');
             }
         )
     }
 
     sendMessageToHCO(operation, ssi, shortMessage) {
+        debugger
         this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, {
             operation: operation,
             ssi: ssi,
+            useCaseSpecifics: {...this.model.historyData},
             shortDescription: shortMessage,
         });
     }

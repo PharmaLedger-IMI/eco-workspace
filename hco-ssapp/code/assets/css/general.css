@@ -1,3 +1,7 @@
+.row {
+    display: flex;
+}
+
 .subheader {
     height: 60px;
     width: 100%;

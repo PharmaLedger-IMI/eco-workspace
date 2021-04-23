@@ -153,6 +153,17 @@ export default class TrialService {
 
     }
 
+    getEconsent(trialSSI, econsentSSI, callback) {
+        this.DSUStorage.getItem(this._getEconsentDsuPath(trialSSI, econsentSSI), (err, content) => {
+            if (err) {
+                return callback(err, undefined);
+            }
+            let textDecoder = new TextDecoder("utf-8");
+            let trial = JSON.parse(textDecoder.decode(content));
+            callback(undefined, trial);
+        })
+    }
+
     _getDsuTrialPath(keySSI) {
         return this.SERVICE_PATH + '/' + keySSI + '/data.json';
     }
