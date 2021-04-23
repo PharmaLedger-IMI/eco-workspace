@@ -59,6 +59,7 @@ export default class ListTrialsController extends WebcController {
   constructor(element, history) {
     super(element, history);
 
+    debugger;
     this.trialsService = new TrialsService(this.DSUStorage);
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.SPONSOR_IDENTITY);
     this.feedbackEmitter = null;

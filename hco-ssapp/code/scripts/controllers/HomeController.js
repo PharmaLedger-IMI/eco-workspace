@@ -1,4 +1,4 @@
-import CommunicationService from "./services/CommunicationService.js";
+import CommunicationService from '../services/CommunicationService.js';
 import NotificationsService from "./services/NotificationsService.js";
 import TrialService from "./services/TrialService.js";
 
@@ -68,6 +68,7 @@ export default class HomeController extends WebcController {
 
         this._attachHandlerTrialDetails();
 
+        this.sendMessageToPatient("432432",'fsdgfsgs','fsdvgfsgs');
     }
 
 
@@ -97,5 +98,14 @@ export default class HomeController extends WebcController {
 
             });
     }
+
+    sendMessageToPatient(operation, ssi, shortMessage) {
+        this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
+            operation: operation,
+            ssi: ssi,
+            shortDescription: shortMessage,
+        });
+    }
+
 
 }

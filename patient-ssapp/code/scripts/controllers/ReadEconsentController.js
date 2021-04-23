@@ -1,6 +1,7 @@
 import TrialService from "./services/TrialService.js";
 import FileDownloader from "../utils/FileDownloader.js";
-import CommunicationService from "./services/CommunicationService.js";
+
+import CommunicationService from "../services/CommunicationService.js";
 
 const {WebcController} = WebCardinal.controllers;
 

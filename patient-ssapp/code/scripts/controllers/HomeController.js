@@ -1,7 +1,7 @@
 
-import CommunicationService from "./services/CommunicationService.js";
 import TrialService from "./services/TrialService.js";
 import NotificationsService from "./services/NotificationsService.js";
+import CommunicationService from "../services/CommunicationService.js";
 
 const {WebcController} = WebCardinal.controllers;
 export default class HomeController extends WebcController {

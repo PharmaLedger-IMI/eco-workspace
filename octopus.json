@@ -35,6 +35,10 @@
         }
       ]
     },
+
+
+
+
     {
       "name": "privatesky",
       "src": "http://github.com/privatesky/privatesky.git",
@@ -265,6 +269,36 @@
         {
           "type": "execute",
           "cmd": "cd webcardinal && npm run build-dossier"
+        }
+      ]
+    },
+    {
+      "name": "utilitaries",
+      "actions": [
+
+        {
+          "type": "copy",
+          "src": "./utilitaries",
+          "target": "./hco-ssapp/",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "./utilitaries",
+          "target": "./patient-ssapp/",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "./utilitaries",
+          "target": "./sponsor-ssapp/",
+          "options": {
+            "overwrite": true
+          }
         }
       ]
     },

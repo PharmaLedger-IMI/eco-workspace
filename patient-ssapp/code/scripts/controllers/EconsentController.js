@@ -96,13 +96,6 @@ export default class EconsentController extends WebcController {
             this.blob = new Blob([this.rawBlob], {
                 type: this.mimeType
             });
-
-            // if (this.mimeType.indexOf(TEXT_MIME_TYPE) !== -1) {
-            //     this._prepareTextEditorViewModel();
-            // } else {
-            //     this._displayFile();
-            //     this._clearUnsavedFileSection();
-            // }
         });
     }
 }
