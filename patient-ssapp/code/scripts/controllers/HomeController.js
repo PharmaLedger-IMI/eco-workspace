@@ -34,6 +34,7 @@ export default class HomeController extends WebcController {
                 if (err) {
                     return console.log(err);
                 }
+                trial.uid = trial.keySSI;
                 this.TrialService.updateTrial({...trial, tpNumber: data.message.useCaseSpecifics.tpNumber}, (err, trial) => {
                     if (err) {
                         return console.log(err);

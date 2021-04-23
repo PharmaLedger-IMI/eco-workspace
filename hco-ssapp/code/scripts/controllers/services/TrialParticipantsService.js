@@ -10,7 +10,7 @@ export default class TrialParticipantsService {
     }
 
     getTPS(path, callback) {
-        this.DSUStorage.call('listDSUs', this.TPS_PATH +'/'+ path, (err, dsuList) => {
+        this.DSUStorage.call('listDSUs', this.TPS_PATH + '/' + path, (err, dsuList) => {
             if (err) {
                 callback(err, undefined);
                 return;
@@ -63,9 +63,7 @@ export default class TrialParticipantsService {
 
 
     saveTrialParticipant(tp, callback) {
-
-
-        this.DSUStorage.call('createSSIAndMount', this.TPS_PATH+'/'+tp.trialNumber, (err, keySSI) => {
+        this.DSUStorage.call('createSSIAndMount', this.TPS_PATH + '/' + tp.trialNumber, (err, keySSI) => {
             if (err) {
                 callback(err, undefined);
                 return;

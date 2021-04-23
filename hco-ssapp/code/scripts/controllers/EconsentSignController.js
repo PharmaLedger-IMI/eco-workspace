@@ -1,7 +1,8 @@
 import TrialService from "./services/TrialService.js";
 import TrialParticipantsService from "./services/TrialParticipantsService.js";
-import CommunicationService from "./services/CommunicationService.js";
+import CommunicationService from "../services/CommunicationService.js";
 import DateTimeService from "./services/DateTimeService.js";
+import FileDownloader from "../utils/FileDownloader.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -34,19 +35,52 @@ export default class EconsentSignController extends WebcController {
     }
 
     initConsent() {
-        this.TrialService.getEconsent(this.model.trialSSI, this.model.econsentSSI, (err, data) => {
+        this.TrialService.getEconsent(this.model.trialSSI, this.model.econsentSSI, (err, econsent) => {
             debugger
             if (err) {
                 return console.log(err);
             }
             this.model.econsent = {
-                ...data,
-                versionDateAsString: DateTimeService.convertStringToLocaleDate(data.versionDate)
+                ...econsent,
+                versionDateAsString: DateTimeService.convertStringToLocaleDate(econsent.versionDate)
             };
+            this.fileDownloader = new FileDownloader(this.getEconsentFilePath(this.model.trialSSI, this.model.econsentSSI, econsent.attachment), econsent.attachment);
+
+            this._downloadFile();
+            console.log("File downloader" + this.fileDownloader);
             debugger
         });
     }
 
+    _downloadFile = () => {
+        this.fileDownloader.downloadFile((downloadedFile) => {
+            this.rawBlob = downloadedFile.rawBlob;
+            this.mimeType = downloadedFile.contentType;
+            this.blob = new Blob([this.rawBlob], {
+                type: this.mimeType
+            });
+
+            this._readFile();
+            if (this.mimeType.indexOf(TEXT_MIME_TYPE) !== -1) {
+                this._prepareTextEditorViewModel();
+            } else {
+                this._displayFile();
+                this._clearUnsavedFileSection();
+            }
+        });
+    }
+
+    _readFile() {
+        const reader = new FileReader();
+        reader.onload = () => {
+            this.model.econsentTa.value = reader.result;
+        }
+        reader.readAsText(this.blob);
+    }
+
+    getEconsentFilePath(trialSSI, consentSSI, fileName) {
+        return "/trials/" + trialSSI + '/consent/' + consentSSI + '/consent/' + fileName;
+    }
 
     _attachHandlerEconsentSign() {
         this.onTagEvent('econsent:sign', 'click', (model, target, event) => {

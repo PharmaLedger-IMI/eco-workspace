@@ -94,10 +94,8 @@ export default class ReadEconsentController extends WebcController {
         this.onTagEvent('econsent:decline', 'click', (model, target, event) => {
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                debugger
                 this.navigateToPageTag('home');
-                debugger;
-                this.sendMessageToHCO('withdraw-econsent', this.model.econsent.keySSI,'TP withdrow econsent ');
+                this.sendMessageToHCO('withdraw-econsent', this.model.econsent.keySSI, 'TP withdrow econsent ');
             }
         )
     }
@@ -107,7 +105,10 @@ export default class ReadEconsentController extends WebcController {
         this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, {
             operation: operation,
             ssi: ssi,
-            useCaseSpecifics: {...this.model.historyData},
+            useCaseSpecifics: {
+                trialSSI: this.model.historyData.trialuid,
+                tpNumber: this.model.historyData.tpNumber
+            },
             shortDescription: shortMessage,
         });
     }
