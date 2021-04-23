@@ -2,107 +2,97 @@
 import CommunicationService from "../services/CommunicationService.js";
 import TrialService from "./services/TrialService.js";
 import NotificationsService from "./services/NotificationsService.js";
+import DateTimeService from "./services/DateTimeService.js";
 
 const {WebcController} = WebCardinal.controllers;
-
-const initialTrialModel = {
-    title: {
-        name: 'trial',
-        label: 'Trial',
-        value: 'Trial1',
-    },
-    date: {
-        name: 'date',
-        label: 'Date',
-        value: 'dd.mm.yyyy',
-    },
-    description: {
-        name: 'description',
-        label: 'Description',
-        value: 'Loren ipsum test test test test test test 1 ',
-    }
-}
-
-
-const initModel = {
-    title: 'HomePage',
-    trials: [],
-    trialsModel: JSON.parse(JSON.stringify(initialTrialModel))
-}
-
 export default class HomeController extends WebcController {
     constructor(element, history) {
         super(element, history);
 
-        this.setModel(initModel);
-        this.NotificationsService = new NotificationsService(this.DSUStorage);
+        this.setModel({});
+
+        this.model.trials = [];
+
 
         this.TrialService = new TrialService(this.DSUStorage);
+        this.NotificationsService = new NotificationsService(this.DSUStorage);
+
         this.TrialService.getServiceModel((err, data) => {
-            if (err) {
+            if(err) {
                 return console.error(err);
             }
-            this.model.trials = data.trials;
+            this.model.trials.push(...data.trials);
         })
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
         this.CommunicationService.listenForMessages((err, data) => {
-            debugger
             if (err) {
                 return console.error(err);
             }
             data = JSON.parse(data);
             this.addMessageToNotificationDsu(data);
-            switch (data.message.operation) {
-                case 'add-trial': {
-                    this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
+            this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
+                if (err) {
+                    return console.log(err);
+                }
+                this.TrialService.updateTrial({...trial, tpNumber: data.message.useCaseSpecifics.tpNumber}, (err, trial) => {
+                    if (err) {
+                        return console.log(err);
+                    }
+                    debugger
+                    this.model.trials.push(trial);
+                    this.TrialService.getEconsents(trial.keySSI, (err, data) => {
                         if (err) {
                             return console.log(err);
                         }
-                        this.model.trials.push(trial);
-                    });
-                    break;
-                }
-                case 'delete-trial': {
-                    break;
-                }
-                case 'sign-econsent': {
-                    /*
-                        shortDescription: "TP signed econsent "
-                        ssi: "3JstiXPCRm1hcgG352y3gkci8b2qDsd1ATPJMjc8VcQGiD62TNXHo35RRuptdL4h8JyB6npqYK3E79nM9Ha1FfzX"
-                        useCaseSpecifics: {tpNumber: "ger"}
-                     */
-                    break;
-                }
-                case 'withdraw-econsent': {
-                    break;
-                }
-            }
+                        console.log(data.econsents);
+                    })
+                    console.log(trial);
+                })
+            });
         });
 
-        this.model.trials.push({number: 'aaaa', status: 'bbbb', name: 'ccccc', id: '1', keySSI: 'aaa'});
-
-        this._attachHandlerTrialDetails();
+        this._attachHandlerTrialClick();
+        this._attachHandlerSites();
+        this._attachHandlerNotifications();
     }
 
-    _attachHandlerTrialDetails() {
+    addMessageToNotificationDsu(message) {
+        this.NotificationsService.saveNotification({
+            ...message.message,
+            uid: message.message.ssi,
+            viewed: false,
+            startDate: DateTimeService.convertStringToLocaleDate()
+        }, (err, data) => {
+            if (err) {
+                return console.log(err);
+            }
+        })
+    }
+
+    _attachHandlerTrialClick() {
+
         this.onTagEvent('home:trial', 'click', (model, target, event) => {
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                this.navigateToPageTag('trial', model.keySSI);
+                debugger
+                let trial = model
+                this.navigateToPageTag('trial', {
+                    trialSSI: trial.keySSI,
+                    tpNumber: trial.tpNumber
+                });
             }
         )
     }
 
+    _attachHandlerSites() {
+        this.onTagClick('home:site', (event) => {
+            this.navigateToPageTag('site');
+        });
+    }
 
-    addMessageToNotificationDsu(message) {
-
-        this.NotificationsService.saveNotification(message.message, (err, notification) => {
-
-            if (err) {
-                console.log(err);
-                return;
-            }
-
+    _attachHandlerNotifications() {
+        this.onTagClick('home:notifications', (event) => {
+            this.navigateToPageTag('notifications');
         });
     }
 
