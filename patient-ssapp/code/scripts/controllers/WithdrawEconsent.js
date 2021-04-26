@@ -3,22 +3,12 @@ const {WebcController} = WebCardinal.controllers;
 export default class WithdrawEconsent extends WebcController {
     constructor(element, history) {
         super(element, history);
-        this.setModel({
-            reason: {
-                label: "Please fill the reason bellow",
-                name: "reason",
-                required: true,
-                value: ''
-            },
-            error: {
-                name:"error",
-                value: ''
-            }
-        })
+        this.setModel({})
         this.on('openFeedback', (evt) => {
             this.feedbackEmitter = evt.detail;
         });
         this.withdrawOnClick();
+        this.attachHandlerCancel();
 
     }
 
@@ -27,7 +17,18 @@ export default class WithdrawEconsent extends WebcController {
             if (this.__displayErrorRequiredField(event)) {
                 console.log('withdraw')
                 this._finishProcess(event, {
-                    reason: this.model.reason.value,
+                    withdrow: true,
+                });
+            }
+        });
+    }
+
+    attachHandlerCancel (){
+        this.on('cancel', (event) => {
+            if (this.__displayErrorRequiredField(event)) {
+                console.log('withdraw')
+                this._finishProcess(event, {
+                    withdrow: false,
                 });
             }
         });
