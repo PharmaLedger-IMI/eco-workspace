@@ -67,14 +67,6 @@ export default class ReadEconsentController extends WebcController {
         });
     }
 
-    _readFile() {
-        const reader = new FileReader();
-        reader.onload = () => {
-            this.model.econsentTa.value = reader.result;
-        }
-        reader.readAsText(this.blob);
-    }
-
     getEconsentFilePath(trialSSI, consentSSI, fileName) {
         return "/trials/" + trialSSI + '/consent/' + consentSSI + '/consent/' + fileName;
     }
