@@ -1,6 +1,6 @@
-import ModalController from '../../../cardinal/controllers/base-controllers/ModalController.js';
 
-export default class WithdrawEconsent extends ModalController {
+const {WebcController} = WebCardinal.controllers;
+export default class WithdrawEconsent extends WebcController {
     constructor(element, history) {
         super(element, history);
         this.setModel({

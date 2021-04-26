@@ -94,11 +94,20 @@ export default class ReadEconsentController extends WebcController {
         this.onTagEvent('econsent:decline', 'click', (model, target, event) => {
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                debugger
-                this.navigateToPageTag('home');
-                debugger;
-                this.sendMessageToHCO('withdraw-econsent', this.model.econsent.keySSI,'TP withdrow econsent ');
-            }
+
+                this.showModalFromTemplate('withdraw-econsent', (event) => {
+                        const response = event.detail;
+                        this.sendMessageToHCO('withdraw-econsent', this.model.econsent.keySSI, 'TP withdrow econsent ');
+                    },
+                    (event) => {
+                        const response = event.detail;
+                    }), {
+                    controller: 'WithdrawEconsent',
+                    disableExpanding: false,
+                    disableBackdropClosing: false,
+                    title: 'Decline Econsent',
+                }
+        }
         )
     }
 
