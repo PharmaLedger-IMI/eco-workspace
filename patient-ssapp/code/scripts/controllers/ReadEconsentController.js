@@ -5,6 +5,8 @@ import CommunicationService from "../services/CommunicationService.js";
 
 const {WebcController} = WebCardinal.controllers;
 
+const TEXT_MIME_TYPE = "text/";
+
 export default class ReadEconsentController extends WebcController {
     constructor(element, history) {
         super(element, history);
@@ -84,7 +86,7 @@ export default class ReadEconsentController extends WebcController {
                 event.stopImmediatePropagation();
                 debugger
                 this.navigateToPageTag('home');
-                this.sendMessageToHCO('sign-econsent', this.model.econsent.keySSI, 'TP signed econsent ');
+                this.sendMessageToSponsorAndHCO('sign-econsent', this.model.econsent.keySSI, 'TP signed econsent ');
             }
         )
     }
@@ -97,7 +99,7 @@ export default class ReadEconsentController extends WebcController {
 
                 this.showModalFromTemplate('withdraw-econsent', (event) => {
                         const response = event.detail;
-                        this.sendMessageToHCO('withdraw-econsent', this.model.econsent.keySSI, 'TP withdrow econsent ');
+                        this.sendMessageToSponsorAndHCO('withdraw-econsent', this.model.econsent.keySSI, 'TP withdrow econsent ');
                     },
                     (event) => {
                         const response = event.detail;
@@ -111,16 +113,18 @@ export default class ReadEconsentController extends WebcController {
         )
     }
 
-    sendMessageToHCO(operation, ssi, shortMessage) {
-        debugger
-        this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, {
+    sendMessageToSponsorAndHCO(operation, ssi, shortMessage) {
+        let sendObject = {
             operation: operation,
             ssi: ssi,
             useCaseSpecifics: {
                 trialSSI: this.model.historyData.trialuid,
-                tpNumber: this.model.historyData.tpNumber
+                tpNumber: this.model.historyData.tpNumber,
+                operationDate: (new Date()).toISOString()
             },
             shortDescription: shortMessage,
-        });
+        };
+        this.CommunicationService.sendMessage(CommunicationService.identities.SPONSOR_IDENTITY, sendObject);
+        this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, sendObject);
     }
 }

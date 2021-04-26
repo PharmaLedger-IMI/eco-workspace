@@ -69,8 +69,16 @@ export default class ListTrialsController extends WebcController {
       data = JSON.parse(data);
       switch (data.message.operation) {
         case 'sign-econsent': {
-          console.log(data)
-          break;
+          switch (data.sender) {
+            case CommunicationService.identities.PATIENT_IDENTITY: {
+              console.log('PATIENT_IDENTITY', data);
+              break;
+            }
+            case CommunicationService.identities.HCO_IDENTITY: {
+              console.log('HCO_IDENTITY', data);
+              break;
+            }
+          }
         }
       }
     });

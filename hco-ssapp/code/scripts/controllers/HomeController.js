@@ -66,6 +66,7 @@ export default class HomeController extends WebcController {
                 }
                 case 'sign-econsent': {
                     const message = data.message;
+                    message.useCaseSpecifics.operationDate = (new Date()).toISOString();
                     this.CommunicationService.sendMessage(CommunicationService.identities.SPONSOR_IDENTITY, message);
                     break;
                 }
