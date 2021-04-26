@@ -49,22 +49,7 @@ export default class ReadEconsentController extends WebcController {
         this.responseCallback(undefined, response);
     };
 
-    _downloadFile = () => {
-        this.fileDownloader.downloadFile((downloadedFile) => {
-            this.rawBlob = downloadedFile.rawBlob;
-            this.mimeType = downloadedFile.contentType;
-            this.blob = new Blob([this.rawBlob], {
-                type: this.mimeType
-            });
 
-
-            if (this.mimeType.indexOf(TEXT_MIME_TYPE) !== -1) {
-                this._prepareTextEditorViewModel();
-            } else {
-                this._displayFile();
-            }
-        });
-    }
 
     getEconsentFilePath(trialSSI, consentSSI, fileName) {
         return "/trials/" + trialSSI + '/consent/' + consentSSI + '/consent/' + fileName;
@@ -121,7 +106,24 @@ export default class ReadEconsentController extends WebcController {
         this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, sendObject);
     }
 
-    _loadOtherFile = () => {
+    _downloadFile = () => {
+        this.fileDownloader.downloadFile((downloadedFile) => {
+            this.rawBlob = downloadedFile.rawBlob;
+            this.mimeType = downloadedFile.contentType;
+            this.blob = new Blob([this.rawBlob], {
+                type: this.mimeType
+            });
+
+
+            if (this.mimeType.indexOf(TEXT_MIME_TYPE) !== -1) {
+                this._prepareTextEditorViewModel();
+            } else {
+                this._displayFile();
+            }
+        });
+    }
+
+    _loadPdfOrTextFile = () => {
         this._loadBlob((base64Blob) => {
             const obj = document.createElement("object");
             obj.type = this.mimeType;
@@ -130,6 +132,7 @@ export default class ReadEconsentController extends WebcController {
             this._appendAsset(obj);
         });
     }
+
     _loadBlob = (callback) => {
         const reader = new FileReader();
         reader.readAsDataURL(this.blob);
@@ -149,7 +152,7 @@ export default class ReadEconsentController extends WebcController {
     }
 
     _displayFile = () => {
-        debugger
+
         if (window.navigator && window.navigator.msSaveOrOpenBlob) {
             const file = new File([this.rawBlob], this.fileName);
             window.navigator.msSaveOrOpenBlob(file);
@@ -165,7 +168,7 @@ export default class ReadEconsentController extends WebcController {
                 break;
             }
             default: {
-                this._loadOtherFile();
+                this._loadPdfOrTextFile();
                 break;
             }
         }

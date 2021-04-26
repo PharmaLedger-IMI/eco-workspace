@@ -5,7 +5,7 @@ import DateTimeService from "./services/DateTimeService.js";
 import FileDownloader from "../utils/FileDownloader.js";
 
 const {WebcController} = WebCardinal.controllers;
-
+const TEXT_MIME_TYPE = "text/";
 export default class EconsentSignController extends WebcController {
     constructor(element, history) {
         super(element, history);
@@ -52,31 +52,7 @@ export default class EconsentSignController extends WebcController {
         });
     }
 
-    _downloadFile = () => {
-        this.fileDownloader.downloadFile((downloadedFile) => {
-            this.rawBlob = downloadedFile.rawBlob;
-            this.mimeType = downloadedFile.contentType;
-            this.blob = new Blob([this.rawBlob], {
-                type: this.mimeType
-            });
 
-            this._readFile();
-            if (this.mimeType.indexOf(TEXT_MIME_TYPE) !== -1) {
-                this._prepareTextEditorViewModel();
-            } else {
-                this._displayFile();
-                this._clearUnsavedFileSection();
-            }
-        });
-    }
-
-    _readFile() {
-        const reader = new FileReader();
-        reader.onload = () => {
-            this.model.econsentTa.value = reader.result;
-        }
-        reader.readAsText(this.blob);
-    }
 
     getEconsentFilePath(trialSSI, consentSSI, fileName) {
         return "/trials/" + trialSSI + '/consent/' + consentSSI + '/consent/' + fileName;
@@ -108,5 +84,72 @@ export default class EconsentSignController extends WebcController {
             },
             shortDescription: shortMessage,
         });
+    }
+    _downloadFile = () => {
+        this.fileDownloader.downloadFile((downloadedFile) => {
+            this.rawBlob = downloadedFile.rawBlob;
+            this.mimeType = downloadedFile.contentType;
+            this.blob = new Blob([this.rawBlob], {
+                type: this.mimeType
+            });
+
+
+            if (this.mimeType.indexOf(TEXT_MIME_TYPE) !== -1) {
+                this._prepareTextEditorViewModel();
+            } else {
+                this._displayFile();
+            }
+        });
+    }
+
+    _loadPdfOrTextFile = () => {
+        this._loadBlob((base64Blob) => {
+            const obj = document.createElement("object");
+            obj.type = this.mimeType;
+            obj.data = base64Blob;
+
+            this._appendAsset(obj);
+        });
+    }
+
+    _loadBlob = (callback) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(this.blob);
+        reader.onloadend = function () {
+            callback(reader.result);
+        }
+    }
+
+    _appendAsset = (assetObject) => {
+        let content = this.element.querySelector(".content");
+
+        if (content) {
+            content.append(assetObject);
+        }
+
+        //this.feedbackController.setLoadingState(false);
+    }
+
+    _displayFile = () => {
+
+        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+            const file = new File([this.rawBlob], this.fileName);
+            window.navigator.msSaveOrOpenBlob(file);
+            this.feedbackController.setLoadingState(true);
+            return;
+        }
+
+        window.URL = window.URL || window.webkitURL;
+        const fileType = this.mimeType.split("/")[0];
+        switch (fileType) {
+            case "image": {
+                this._loadImageFile();
+                break;
+            }
+            default: {
+                this._loadPdfOrTextFile();
+                break;
+            }
+        }
     }
 }
