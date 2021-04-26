@@ -62,7 +62,6 @@ export default class ReadEconsentController extends WebcController {
                 this._prepareTextEditorViewModel();
             } else {
                 this._displayFile();
-                this._clearUnsavedFileSection();
             }
         });
     }
@@ -103,7 +102,7 @@ export default class ReadEconsentController extends WebcController {
                     disableBackdropClosing: false,
                     title: 'Decline Econsent',
                 }
-        }
+            }
         )
     }
 
@@ -134,7 +133,7 @@ export default class ReadEconsentController extends WebcController {
     _loadBlob = (callback) => {
         const reader = new FileReader();
         reader.readAsDataURL(this.blob);
-        reader.onloadend = function() {
+        reader.onloadend = function () {
             callback(reader.result);
         }
     }
@@ -143,7 +142,6 @@ export default class ReadEconsentController extends WebcController {
         let content = this.element.querySelector(".content");
 
         if (content) {
-            content.setAttribute("style","height:500px");
             content.append(assetObject);
         }
 
@@ -162,13 +160,11 @@ export default class ReadEconsentController extends WebcController {
         window.URL = window.URL || window.webkitURL;
         const fileType = this.mimeType.split("/")[0];
         switch (fileType) {
-            case "image":
-            {
+            case "image": {
                 this._loadImageFile();
                 break;
             }
-            default:
-            {
+            default: {
                 this._loadOtherFile();
                 break;
             }
