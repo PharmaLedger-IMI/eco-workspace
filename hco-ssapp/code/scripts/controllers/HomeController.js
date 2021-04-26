@@ -50,9 +50,9 @@ export default class HomeController extends WebcController {
                 return console.error(err);
             }
             data = JSON.parse(data);
-            this.addMessageToNotificationDsu(data);
             switch (data.message.operation) {
                 case 'add-trial': {
+                    this.addMessageToNotificationDsu(data);
                     this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                         if (err) {
                             return console.log(err);
@@ -65,11 +65,8 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case 'sign-econsent': {
-                    /*
-                        shortDescription: "TP signed econsent "
-                        ssi: "3JstiXPCRm1hcgG352y3gkci8b2qDsd1ATPJMjc8VcQGiD62TNXHo35RRuptdL4h8JyB6npqYK3E79nM9Ha1FfzX"
-                        useCaseSpecifics: {tpNumber: "ger"}
-                     */
+                    const message = data.message;
+                    this.CommunicationService.sendMessage(CommunicationService.identities.SPONSOR_IDENTITY, message);
                     break;
                 }
                 case 'withdraw-econsent': {
@@ -92,17 +89,12 @@ export default class HomeController extends WebcController {
         )
     }
 
-
     addMessageToNotificationDsu(message) {
-
         this.NotificationsService.saveNotification(message.message, (err, notification) => {
-
             if (err) {
                 console.log(err);
                 return;
             }
-
         });
     }
-
 }

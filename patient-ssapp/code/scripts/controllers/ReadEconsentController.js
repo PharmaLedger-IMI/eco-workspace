@@ -116,7 +116,10 @@ export default class ReadEconsentController extends WebcController {
         this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, {
             operation: operation,
             ssi: ssi,
-            useCaseSpecifics: {...this.model.historyData},
+            useCaseSpecifics: {
+                trialSSI: this.model.historyData.trialuid,
+                tpNumber: this.model.historyData.tpNumber
+            },
             shortDescription: shortMessage,
         });
     }

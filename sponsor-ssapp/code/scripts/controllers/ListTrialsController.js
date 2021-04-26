@@ -62,6 +62,18 @@ export default class ListTrialsController extends WebcController {
     debugger;
     this.trialsService = new TrialsService(this.DSUStorage);
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.SPONSOR_IDENTITY);
+    this.CommunicationService.listenForMessages((err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      data = JSON.parse(data);
+      switch (data.message.operation) {
+        case 'sign-econsent': {
+          console.log(data)
+          break;
+        }
+      }
+    });
     this.feedbackEmitter = null;
 
     this.setModel({

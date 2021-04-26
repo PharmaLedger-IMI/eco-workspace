@@ -1,6 +1,6 @@
 import TrialService from "./services/TrialService.js";
 import TrialParticipantsService from "./services/TrialParticipantsService.js";
-import CommunicationService from "./services/CommunicationService.js";
+import CommunicationService from "../services/CommunicationService.js";
 import DateTimeService from "./services/DateTimeService.js";
 
 const {WebcController} = WebCardinal.controllers;
