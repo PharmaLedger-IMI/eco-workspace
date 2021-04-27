@@ -21,9 +21,13 @@
             <div class="tp-table econsent-list" data-for="@versions">
                 <psk-layout columns="4" class="justify-content-center align-items-center table-row econsent-row-blue">
                     <psk-label class="table-cell">{{@version}}</psk-label>
-                    <button data-tag="econsent:sign">
-                        {{@tpApproval}}
-                    </button>
+                    <div data-if="@tpSigned">
+                        <button slot="true" data-tag="econsent:sign">
+                            {{@tpApproval}}
+                        </button>
+                        <psk-label slot="false" class="table-cell">{{@tpApproval}}</psk-label>
+
+                    </div>
                     <psk-label class="table-cell">{{@tpCaregiveApproval}}</psk-label>
                     <psk-label class="table-cell">{{@hcpApproval}}</psk-label>
                 </psk-layout>
