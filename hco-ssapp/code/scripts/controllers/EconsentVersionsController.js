@@ -41,14 +41,24 @@ export default class EconsentVersionsController extends WebcController {
 
             let econsentVersion = {
                 ...data,
-                tpApproval: 'See approval',
-                tpCaregiveApproval: 'See approval',
-                hcpApproval: 'Signature Required'
+                tpSigned: false,
+                tpApproval: 'Not yet',
+                tpCaregiveApproval: 'Not yet',
+                hcpApproval: 'Not yet'
             };
+
+            if (data.patientSigned) {
+                econsentVersion = {
+                    ...data,
+                    tpSigned: true,
+                    tpApproval: 'See approval',
+                    tpCaregiveApproval: 'See approval',
+                    hcpApproval: 'Signature Required'
+                };
+            }
+
+
             this.model.versions.push(econsentVersion);
-            this.model.versions.push(econsentVersion); // TODO: REMOVE THIS, TESTING ONLY
-            this.model.versions.push(econsentVersion); // TODO: REMOVE THIS, TESTING ONLY
-            debugger
         });
     }
 
