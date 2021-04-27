@@ -1,26 +1,28 @@
-<h2 slot="title">New Trial</h2>
+<div>
+  <h2 slot="title">New Trial</h2>
 
-<div class="d-flex flex-column justify-content-between">
-  <div style="margin: 10px">
-    <label>{{@trial.name.label}}</label>
-    <input data-view-model="@trial.name" data-tag="inputs-changed" />
+  <div class="d-flex flex-column justify-content-between">
+    <div style="margin: 10px">
+      <label>{{@trial.name.label}}</label>
+      <input data-view-model="@trial.name" data-tag="inputs-changed" />
+    </div>
+    <div style="margin: 10px">
+      <label>{{@trial.id.label}}</label>
+      <input data-view-model="@trial.id" data-tag="inputs-changed" />
+    </div>
+    <div style="margin: 10px">
+      <label>{{@trial.status.label}}</label>
+      <select data-for="@trial.status.options" value="@trial.status.value">
+        <option value="@value">{{ @label }}</option>
+      </select>
+    </div>
+    <div style="margin: 10px">
+      <label>{{@trial.countries.label}}</label>
+      <select data-for="@trial.countries.options" value="@trial.countries.value" multiple>
+        <option value="@value">{{ @label }}</option>
+      </select>
+    </div>
   </div>
-  <div style="margin: 10px">
-    <label>{{@trial.id.label}}</label>
-    <input data-view-model="@trial.id" data-tag="inputs-changed" />
-  </div>
-  <div style="margin: 10px">
-    <label>{{@trial.status.label}}</label>
-    <select data-for="@trial.status.options" value="@trial.status.value">
-      <option value="@value">{{ @label }}</option>
-    </select>
-  </div>
-  <div style="margin: 10px">
-    <label>{{@trial.countries.label}}</label>
-    <select data-for="@trial.countries.options" value="@trial.countries.value" multiple>
-      <option value="@value">{{ @label }}</option>
-    </select>
-  </div>
+
+  <button class="btn btn-primary" slot="footer" data-tag="create-trial">Submit</button>
 </div>
-
-<button class="btn btn-primary" slot="footer" data-tag="create-trial">Submit</button>

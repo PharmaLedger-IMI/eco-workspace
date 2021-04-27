@@ -1,6 +1,8 @@
 import TrialsService from '../services/TrialsService.js';
 import { trialStatusesEnum, trialTableHeaders } from '../constants/trial.js';
 import CommunicationService from '../services/CommunicationService.js';
+import eventBusService from '../services/EventBusService.js';
+import { Topics } from '../constants/topics.js';
 
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
@@ -59,7 +61,6 @@ export default class ListTrialsController extends WebcController {
   constructor(element, history) {
     super(element, history);
 
-    debugger;
     this.trialsService = new TrialsService(this.DSUStorage);
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.SPONSOR_IDENTITY);
     this.CommunicationService.listenForMessages((err, data) => {
@@ -72,9 +73,21 @@ export default class ListTrialsController extends WebcController {
           switch (data.sender) {
             case CommunicationService.identities.PATIENT_IDENTITY: {
               console.log('PATIENT_IDENTITY', data);
+              if (data.message.operation === 'sign-econsent') {
+                eventBusService.emitEventListeners(
+                  Topics.RefreshParticipants + data.message.useCaseSpecifics.trialSSI,
+                  data
+                );
+              }
               break;
             }
             case CommunicationService.identities.HCO_IDENTITY: {
+              if (data.message.operation === 'sign-econsent') {
+                eventBusService.emitEventListeners(
+                  Topics.RefreshParticipants + data.message.useCaseSpecifics.trialSSI,
+                  data
+                );
+              }
               console.log('HCO_IDENTITY', data);
               break;
             }
@@ -367,6 +380,7 @@ export default class ListTrialsController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage) {
+    console.log('SENDING MESSAGE');
     this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, {
       operation: operation,
       ssi: ssi,

@@ -17,98 +17,30 @@
     <psk-tab title="Trial Tracking">Trial Tracking</psk-tab>
 
     <!-- *************** PARTICIPANTS ******************** -->
-    <psk-tab title="Participants">Participants</psk-tab>
-    <!-- <psk-tab title="Participants">
-      <psk-container controller-name="TrialParticipantsController">
-        <psk-layout columns="3" column-gap="20px" class="justify-content-center align-items-center">
-          <psk-card title="Total Trial Participants" class="card p-1">
-            <div>&nbsp;</div>
-            <div style="height: 150px !important; overflow: auto">
-              <psk-layout columns="3" class="justify-content-center align-items-center">
-                <psk-label label="Current Participants"></psk-label>
-                <psk-label label="@trial.currentParticipants"></psk-label>
-              </psk-layout>
-              <psk-layout columns="3" class="justify-content-center align-items-center">
-                <psk-label label="Participants withdrew"></psk-label>
-                <psk-label label="@trial.withdrewParticipants"></psk-label>
-              </psk-layout>
-              <psk-layout columns="3" class="justify-content-center align-items-center">
-                <psk-label label="Waiting re-consents"></psk-label>
-                <psk-label label="@trial.waitingParticipants"></psk-label>
-                <psk-button class="align-self-end" label="Remind" event-name="send-reminder"></psk-button>
-              </psk-layout>
-              <psk-layout columns="3" class="justify-content-center align-items-center">
-                <psk-label label="Total Participants"></psk-label>
-                <psk-label label="@trial.totalParticipants"></psk-label>
-              </psk-layout>
+    <psk-tab title="Participants">
+      <webc-container controller="TrialParticipantsController">
+        <!-- **************** PARTICIPANTS TOP BAR ************************* -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 mb-3" style="margin-bottom: 20px">
+          <div class="d-flex flex-column">
+            <div>
+              <label for="">{{ @search.label }}</label>
             </div>
-          </psk-card>
+            <input id="search-field-participants" data-view-model="@search" data-tag="filters-changed" />
+          </div>
+        </div>
 
-          <psk-card title="Trial Sites" class="card p-1">
-            <psk-layout columns="3" class="justify-content-center align-items-center">
-              <psk-label label="Name" class="bold"></psk-label>
-              <psk-label label="Country"></psk-label>
-              <psk-label label="Entered Trial"></psk-label>
-            </psk-layout>
-            <div style="height: 150px !important; overflow: auto">
-              <psk-for-each data-view-model="@trial.sites">
-                <psk-layout columns="3" class="justify-content-center align-items-center">
-                  <psk-label label="@name"></psk-label>
-                  <psk-label label="@country"></psk-label>
-                  <psk-label label="@enteredTrial"></psk-label>
-                </psk-layout>
-              </psk-for-each>
-            </div>
-          </psk-card>
-
-          <psk-card title="Trial Current Inform Consents" class="card p-1">
-            <psk-layout columns="3" class="justify-content-center align-items-center">
-              <psk-label label="Name"></psk-label>
-              <psk-label label="Version"></psk-label>
-              <psk-label label="Update"></psk-label>
-            </psk-layout>
-            <div style="height: 150px !important; overflow: auto">
-              <psk-for-each data-view-model="@trial.consents">
-                <psk-layout columns="3" class="justify-content-center align-items-center">
-                  <psk-label label="@name"></psk-label>
-                  <psk-label label="@version"></psk-label>
-                  <psk-label label="@update"></psk-label>
-                </psk-layout>
-              </psk-for-each>
-            </div>
-          </psk-card>
-        </psk-layout>
-
-        <psk-layout class="d-flex flex-wrap justify-content-between align-items-center mt-5">
-          <div>
-            <psk-select view-model="countries" event-name="filters-changed" event-data="country"></psk-select>
-          </div>
-          <div>
-            <psk-select view-model="sites" event-name="filters-changed" event-data="site"></psk-select>
-          </div>
-          <div>
-            <psk-select view-model="consents" event-name="filters-changed" event-data="consent"></psk-select>
-          </div>
-          <div>
-            <psk-select view-model="statuses" event-name="filters-changed" event-data="status"></psk-select>
-          </div>
-          <div>
-            <psk-input id="search-field" view-model="search" event-name="filters-changed" event-data="text"></psk-input>
-          </div>
-          <psk-button
-            class="align-self-end"
-            disabled="@clearButtonDisabled"
-            label="Clear filters"
-            event-name="filters-cleared"
-          ></psk-button>
-        </psk-layout>
-
-        <psk-condition condition="@trialNotEmpty">
+        <!-- *************** PARTICIPANTS TABLE ********************* -->
+        <psk-condition condition="@arrayNotEmpty">
           <div slot="condition-true">
-            <psk-layout class="background-primary table-row" columns="9">
+            <psk-layout class="background-primary table-row" columns="6">
               <psk-for-each data-view-model="@headers" class="display-contents" style="display: contents">
                 <span class="d-flex flex-row align-items-center justify-content-between pr-1 table-cell">
-                  <psk-button class="btn-bare" disabled="@notSortable" event-name="sort-column" event-data="@column">
+                  <psk-button
+                    class="btn-bare gray"
+                    disabled="@notSortable"
+                    event-name="sort-column"
+                    event-data="@column"
+                  >
                     <div class="background-primary d-flex flex-row align-items-center justify-content-between pr-1">
                       <psk-label label="@label"></psk-label>
                       <div>
@@ -136,18 +68,13 @@
               </psk-for-each>
             </psk-layout>
             <psk-for-each data-view-model="@pagination.items" style="display: contents">
-              <psk-layout columns="9" class="justify-content-center align-items-center table-row">
-                <psk-label class="table-cell" label="@id"></psk-label>
-                <psk-label class="table-cell" label="@country"></psk-label>
-                <psk-label class="table-cell" label="@site"></psk-label>
-                <psk-label class="table-cell" label="@consent"></psk-label>
+              <psk-layout columns="6" class="justify-content-center align-items-center table-row">
+                <psk-label class="table-cell" label="@participantId"></psk-label>
+                <psk-label class="table-cell" label="@consentName"></psk-label>
                 <psk-label class="table-cell" label="@consentVersion"></psk-label>
                 <psk-label class="table-cell" label="@consentStatus"></psk-label>
-                <psk-label class="table-cell" label="@patientSigned"></psk-label>
-                <psk-label class="table-cell" label="@hcpSigned"></psk-label>
-                <psk-button class="btn-bare table-cell" event-name="view-trial" event-data="@id">
-                  &#128269;
-                </psk-button>
+                <psk-label class="table-cell" label="@patientSignature"></psk-label>
+                <psk-label class="table-cell" label="@doctorSignature"></psk-label>
               </psk-layout>
             </psk-for-each>
 
@@ -205,13 +132,15 @@
                 <span>&nbsp;Items Per Page</span>
               </div>
             </div>
+            <!-- <h6>Template with complex binding</h6>
+            <webc-template template="webc-demo-template" data-model="@testing"></webc-template> -->
           </div>
           <div slot="condition-false">
-            <div>No trials available.</div>
+            <div>No participants consented.</div>
           </div>
         </psk-condition>
-      </psk-container>
-    </psk-tab> -->
+      </webc-container>
+    </psk-tab>
 
     <!-- *************** INFORM CONSENTS ******************** -->
     <psk-tab title="Inform Consents">
@@ -222,7 +151,7 @@
             <div>
               <label for="">{{ @search.label }}</label>
             </div>
-            <input id="search-field" data-view-model="@search" data-tag="filters-changed" />
+            <input id="search-field-consents" data-view-model="@search" data-tag="filters-changed" />
           </div>
           <button class="btn btn-primary" data-tag="add-consent">Add consent</button>
         </div>
@@ -233,7 +162,12 @@
             <psk-layout class="background-primary table-row" columns="7">
               <psk-for-each data-view-model="@headers" class="display-contents" style="display: contents">
                 <span class="d-flex flex-row align-items-center justify-content-between pr-1 table-cell">
-                  <psk-button class="btn-bare" disabled="@notSortable" event-name="sort-column" event-data="@column">
+                  <psk-button
+                    class="btn-bare gray"
+                    disabled="@notSortable"
+                    event-name="sort-column"
+                    event-data="@column"
+                  >
                     <div class="background-primary d-flex flex-row align-items-center justify-content-between pr-1">
                       <psk-label label="@label"></psk-label>
                       <div>

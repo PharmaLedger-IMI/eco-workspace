@@ -1,5 +1,4 @@
 import TrialsService from '../services/TrialsService.js';
-
 export default class ConsentsService {
   TRIALS_PATH = '/trials';
   CONSENTS_PATH = '/consents';
@@ -41,7 +40,9 @@ export default class ConsentsService {
   }
 
   async getConsent(trialKeySSI, consentKeySSI) {
-    const result = await this.getItem(this.getDsuStoragePath(trialKeySSI, consentKeySSI) + this.CONSENTS_DATA_FILENAME);
+    const result = await this.getItem(
+      this.getDsuStoragePath(trialKeySSI, consentKeySSI) + '/' + this.CONSENTS_DATA_FILENAME
+    );
     return result;
   }
 

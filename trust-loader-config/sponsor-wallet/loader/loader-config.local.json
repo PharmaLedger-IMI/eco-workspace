@@ -1,7 +1,7 @@
 {
-    "MODE": "autologin",
-    "LOGIN_EMAIL": "auto@autologin.autologin",
-    "LOGIN_USERNAME": "autologin.username",
-    "LOGIN_PASSWORD": "randomGeneratedAtRuntime",
-    "BLOCKCHAIN_DOMAIN": "vault"
+  "MODE": "autologin",
+  "LOGIN_EMAIL": "sponsor@email.com",
+  "LOGIN_USERNAME": "sponsor_username",
+  "LOGIN_PASSWORD": "sponsor_password",
+  "BLOCKCHAIN_DOMAIN": "vault"
 }
