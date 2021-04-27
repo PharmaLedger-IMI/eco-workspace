@@ -51,6 +51,12 @@
     text-align: right;
 }
 
+.line-text {
+    color: #00345b;
+    font-weight: bold;
+    font-size: 12px;
+}
+
 .header-text {
     color: #00345b;
     font-weight: bold;

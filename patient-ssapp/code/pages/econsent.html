@@ -12,30 +12,20 @@
                     <psk-label class="subheader" label="Consent Status"></psk-label>
                 </div>
                 <div class="status">
-                    <div class="dispay-flex">
-                        <div class="circle_selected">1</div>
-                        <div class="circle_selected">2</div>
-                        <div class="circle_unselected">3</div>
-                        <div class="circle_unselected">4</div>
-                        <div class="circle_unselected">5</div>
-                    </div>
+
                     <div class="dispay-flex  justify-content-space-between">
                         <div>
                             <div class="dispay-flex margin-left-10">
+                                <div data-if="@econsent.signed">
+                                    <container slot="true">
+                                        <psk-label class="title" label="Consent Signed"></psk-label>
+                                    </container>
+                                    <container slot="false">
+                                        <psk-label class="title" label="Consent Signature Required"></psk-label>
+                                    </container>
 
-                                <div class="padding-top">
-                                    <strong>
-                                        <psk-condition condition="@econsent.signed">
-                                            <psk-echo slot="condition-false"
-                                                      value="Consent Signature REQUIRED"></psk-echo>
-                                        </psk-condition>
-                                    </strong>
-                                    <strong>
-                                        <psk-condition condition="@econsent.signed">
-                                            <psk-echo slot="condition-true" value="Consent Signed"></psk-echo>
-                                        </psk-condition>
-                                    </strong>
                                 </div>
+
                             </div>
                         </div>
                     </div>

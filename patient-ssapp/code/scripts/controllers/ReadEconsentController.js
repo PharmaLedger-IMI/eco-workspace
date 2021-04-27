@@ -1,7 +1,9 @@
 import TrialService from "./services/TrialService.js";
+import EconsentService from "./services/EconsentService.js";
 import FileDownloader from "../utils/FileDownloader.js";
 
 import CommunicationService from "../services/CommunicationService.js";
+
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -22,6 +24,7 @@ export default class ReadEconsentController extends WebcController {
         this.model.econsentTa = econsentTA;
         debugger;
         this.TrialService = new TrialService(this.DSUStorage);
+        this.EconsentService = new EconsentService(this.DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
         this.model.historyData = this.history.win.history.state.state;
         this.readEconsent();
@@ -62,10 +65,12 @@ export default class ReadEconsentController extends WebcController {
                 event.stopImmediatePropagation();
                 debugger
                 this.navigateToPageTag('home');
+                this._saveEconsent ();
                 this.sendMessageToSponsorAndHCO('sign-econsent', this.model.econsent.keySSI, 'TP signed econsent ');
             }
         )
     }
+
 
     _attachHandlerDecline() {
 
@@ -172,5 +177,18 @@ export default class ReadEconsentController extends WebcController {
                 break;
             }
         }
+    }
+    _saveEconsent (){
+        debugger;
+        this.EconsentService.saveEconsent({
+            ...this.model.econsent,
+            uid:  this.model.econsent.keySSI,
+            signed: true,
+            signedDate: new Date()
+        }, (err, data) => {
+            if (err) {
+                return console.log(err);
+            }
+        })
     }
 }

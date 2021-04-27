@@ -5,7 +5,7 @@ export default class EconsentModel {
 
     _getWrapperData() {
         return {
-            trials: []
+            econsents: []
         };
     }
 }

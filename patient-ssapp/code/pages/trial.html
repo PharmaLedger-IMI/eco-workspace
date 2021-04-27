@@ -8,6 +8,9 @@
             </div>
             <hr/>
 
+            <div class="subheader">
+                <psk-label label="TP STATUS"></psk-label>
+            </div>
             <div class="status">
                 <div class="dispay-flex">
                     <div class="circle_unselected">1</div>
@@ -37,13 +40,13 @@
                 <div>
                     <psk-echo value="Sponsor: "></psk-echo>
                     <strong>
-                        {{@trial.sponsorName}}
+                        Sponsor Test
                     </strong>
                 </div>
                 <div>
                     <psk-echo value="Details: "></psk-echo>
                     <strong>
-                        {{@trial.details}}
+                        Status: {{@trial.status}}
                     </strong>
                 </div>
 
@@ -52,11 +55,12 @@
 
             <div class="">
                 <div class="subheader">
-                    <psk-label class="subheader" label="ECONSENTS"></psk-label>
+                    <psk-label class="subheader" label="CONSENT"></psk-label>
                 </div>
                 <div class="padding-sides" data-for="@econsents">
 
-                    <div class="dispay-flex date-div justify-content-space-between"  data-tag="go-to-econsent" data="@keySSI">
+                    <div class="dispay-flex date-div justify-content-space-between" data-tag="go-to-econsent"
+                         data="@keySSI">
                         <div class="dispay-flex">
 
                             <div class="left-image padding-image">
@@ -97,13 +101,10 @@
                             </div>
                         </div>
                     </div>
-                    <button icon="arrow-right" data-tag="go-to-econsent" data="@keySSI">>></button>
-<!--                    <psk-button-link icon="arrow-right" data-tag="go-to-econsent" data="@name" ></psk-button-link>-->
                 </div>
                 <hr>
 
             </div>
-
 
 
         </webc-container>

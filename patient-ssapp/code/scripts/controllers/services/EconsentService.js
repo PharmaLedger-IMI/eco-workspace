@@ -41,7 +41,7 @@ export default class EconsentService {
 
 
             if (dsuList.length === 0){
-                const model = new TrialModel()._getWrapperData();
+                const model = new EconsentModel()._getWrapperData();
                 callback(undefined, model);
                 return;
             }

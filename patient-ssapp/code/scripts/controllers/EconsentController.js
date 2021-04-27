@@ -1,7 +1,7 @@
 import TrialDataService from "./services/TrialDataService.js";
 import TrialService from "./services/TrialService.js";
 import FileDownloader from "../utils/FileDownloader.js";
-
+import EconsentService from "./services/EconsentService.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -14,21 +14,10 @@ export default class EconsentController extends WebcController {
 
         this.TrialService = new TrialService(this.DSUStorage);
         this.historyData = this.history.win.history.state.state;
-
+        this.EconsentService = new EconsentService(this.DSUStorage);
         this.TrialDataService = new TrialDataService(this.DSUStorage);
 
-        this.TrialService.getEconsent(this.historyData.trialuid, this.historyData.ecoId, (err, econsent) => {
-            if (err) {
-                return console.log(err);
-            }
-            this.model.econsent = econsent;
-            this.model.econsent.versionDate = new Date(econsent.versionDate).toLocaleDateString("sw");
-
-            this.fileDownloader = new FileDownloader(this.getEconsentFilePath(this.historyData.trialuid, this.historyData.ecoId, econsent.attachment), econsent.attachment);
-
-            this._downloadFile();
-            console.log("File downloader" + this.fileDownloader);
-        });
+        this._getData();
 
 
         this.on('econsent:versions', (event) => {
@@ -59,6 +48,35 @@ export default class EconsentController extends WebcController {
 
         this.attachHandlerReadEconsent();
         this.attachHandlerDownload();
+    }
+
+    _getData() {
+        debugger;
+        this.TrialService.getEconsent(this.historyData.trialuid, this.historyData.ecoId, (err, econsent) => {
+            if (err) {
+                return console.log(err);
+            }
+            this.model.econsent = econsent;
+            this.model.econsent.versionDate = new Date(econsent.versionDate).toLocaleDateString("sw");
+
+            this.fileDownloader = new FileDownloader(this.getEconsentFilePath(this.historyData.trialuid, this.historyData.ecoId, econsent.attachment), econsent.attachment);
+
+            this._downloadFile();
+            console.log("File downloader" + this.fileDownloader);
+            this.model.tpEconsents = [];
+            this.EconsentService.getServiceModel((err, data) => {
+                if (err) {
+                    return console.error(err);
+                }
+                this.model.tpEconsents.push(...data.econsents);
+                let ec = this.model.tpEconsents.find(ec => ec.id == this.model.econsent.id);
+                if (ec) {
+                    this.model.econsent.signed = ec.signed;
+                }
+            })
+        });
+
+
     }
 
     attachHandlerDownload() {
