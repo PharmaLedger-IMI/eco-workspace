@@ -80,7 +80,7 @@ export default class ReadEconsentController extends WebcController {
 
                 this.showModalFromTemplate('withdraw-econsent', (event) => {
                         const response = event.detail;
-                        if (response.withdrow) {
+                        if (response.withdraw) {
                             this.sendMessageToSponsorAndHCO('withdraw-econsent', this.model.econsent.keySSI, 'TP withdrow econsent ');
                         }
                     },
@@ -88,7 +88,7 @@ export default class ReadEconsentController extends WebcController {
                         const response = event.detail;
                     }), {
                     controller: 'WithdrawEconsent',
-                    disableExpanding: false,
+                    disableExpanding: true,
                     disableBackdropClosing: false,
                     title: 'Decline Econsent',
                 }
@@ -121,7 +121,7 @@ export default class ReadEconsentController extends WebcController {
 
 
             if (this.mimeType.indexOf(TEXT_MIME_TYPE) !== -1) {
-                this._prepareTextEditorViewModel();
+                //this._prepareTextEditorViewModel();
             } else {
                 this._displayFile();
             }

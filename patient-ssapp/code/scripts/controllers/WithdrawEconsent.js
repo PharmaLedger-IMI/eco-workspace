@@ -1,4 +1,3 @@
-
 const {WebcController} = WebCardinal.controllers;
 export default class WithdrawEconsent extends WebcController {
     constructor(element, history) {
@@ -9,28 +8,21 @@ export default class WithdrawEconsent extends WebcController {
         });
         this.withdrawOnClick();
         this.attachHandlerCancel();
-
     }
 
     withdrawOnClick() {
-        this.on('withdraw-on-click', (event) => {
-            if (this.__displayErrorRequiredField(event)) {
-                console.log('withdraw')
-                this._finishProcess(event, {
-                    withdrow: true,
-                });
-            }
+        this.onTagEvent('withdraw-on-click', 'click', (model, target, event) => {
+            this.send('confirmed', {
+                withdraw: true,
+            });
         });
     }
 
-    attachHandlerCancel (){
-        this.on('cancel', (event) => {
-            if (this.__displayErrorRequiredField(event)) {
-                console.log('withdraw')
-                this._finishProcess(event, {
-                    withdrow: false,
-                });
-            }
+    attachHandlerCancel() {
+        this.onTagEvent('cancel', 'click', (model, target, event) => {
+            this.send('closed', {
+                withdraw: false,
+            });
         });
     }
 
@@ -40,21 +32,12 @@ export default class WithdrawEconsent extends WebcController {
     };
 
 
-    __displayErrorRequiredField(event) {
-
-        debugger;
-        if (this.model.reason.value === undefined || this.model.reason.value === null || this.model.reason.value.length === 0) {
-            this._emitFeedback(event, 'Reason is required.', "alert-danger");
-            return true;
-        }
-        return false;
-    }
 
     _emitFeedback(event, message, alertType) {
         event.preventDefault();
         event.stopImmediatePropagation();
 
-        this.model.error.value= 'Reason is requiered';
+        this.model.error.value = 'Reason is requiered';
         if (typeof this.feedbackEmitter === 'function') {
             this.feedbackEmitter(message, "Validation", alertType)
         }

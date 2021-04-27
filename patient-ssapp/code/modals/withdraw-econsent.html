@@ -1,16 +1,12 @@
-<psk-example class="mobile-example">
-    <psk-mobile class="noPadding background" disable-header>
-        <link rel="stylesheet" href="/assets/css/pages/alerts.css">
-        <webc-container class="maxw" controller="WithdrawEconsent">
+<link rel="stylesheet" href="/assets/css/pages/alerts.css">
+<webc-container class="maxw" controller="WithdrawEconsent">
 
-<!--            <psk-label slot="title" class="bpd-modal-title" label="Withdraw Econsent"></psk-label>-->
-            <div class="content">
-                <psk-label class="econsent-question"
-                           label="If you are considering to withdrow from the study we recommend to announce your decision to the study investigator by clicking the button Intention"></psk-label>
-                <button class="withdrow-button" event-name="withdraw-on-click">WITHDROW INTENTION</button>
-                <button class="cancel-button" event-name="cancel">Cancel</button>
+    <div class="content">
+        <psk-label class="econsent-question"
+                   label="If you are considering to withdrow from the study we recommend to announce your decision to the study investigator by clicking the button Intention"></psk-label>
+    </div>
 
-            </div>
-        </webc-container>
-    </psk-mobile>
-</psk-example>
+    <button class="withdrow-button" data-tag="withdraw-on-click">WITHDRAW INTENTION</button>
+    <button class="cancel-button" data-tag="cancel">Cancel</button>
+    <div slot="footer"></div>
+</webc-container>
