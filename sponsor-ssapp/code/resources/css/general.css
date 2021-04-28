@@ -1,16 +1,16 @@
 .sponsor-navbar {
   background-color: var(--primary);
   display: fixed;
-  max-width: 250px !important;
-  min-width: 250px !important;
+  max-width: 220px !important;
+  min-width: 220px !important;
   height: 100vh;
   color: white !important;
   font-size: 1.2rem !important;
-  padding: 0.5rem 1rem !important;
+  /* padding: 0.5rem 1rem !important; */
 }
 
 .sponsor-navbar webc-app-menu-item {
-  padding: 0.5rem 0 !important;
+  /* padding: 0.5rem 0 !important; */
 }
 
 .side-menu-logo {
@@ -169,4 +169,27 @@ webc-app-identity {
 
 .background-primary {
   background-color: #f0f0f0;
+}
+
+/* Table fix background */
+
+.btn-bare.gray .btn.btn-primary {
+  background-color: rgba(247, 247, 247, 0.8) !important;
+  border: none;
+  text-shadow: 0 0 black;
+  border-radius: 0;
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: none;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+webc-app-menu > div > div > webc-app-menu-item {
+  border: none !important;
+}
+
+body > webc-app-root > aside > webc-app-menu {
+  background-color: var(--primary) !important;
 }

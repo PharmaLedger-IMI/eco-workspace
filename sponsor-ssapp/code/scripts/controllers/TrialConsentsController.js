@@ -204,7 +204,7 @@ export default class TrialConsentsController extends WebcController {
           const response = event.detail;
           this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          this.sendMessageToHco('add-trial', this.keySSI, 'New trial' + response.id);
+          this.sendMessageToHco('add-trial', this.keySSI, 'New trial');
         },
         (event) => {
           const error = event.detail || null;
@@ -236,7 +236,7 @@ export default class TrialConsentsController extends WebcController {
       this.filterData();
     });
 
-    const searchField = this.element.querySelector('#search-field');
+    const searchField = this.element.querySelector('#search-field-consents');
     searchField.addEventListener('keydown', () => {
       setTimeout(() => {
         this.model.clearButtonDisabled = false;

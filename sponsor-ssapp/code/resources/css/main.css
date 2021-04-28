@@ -6,6 +6,7 @@
 :root {
   --primary: #00345b;
   --secondary: #008898;
+  --webc-app-menu-vertical-background: #00345b;
 }
 
 body {

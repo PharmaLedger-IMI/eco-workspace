@@ -6,7 +6,7 @@ function createSSIAndMount(path, callback) {
   const resolver = opendsu.loadAPI('resolver');
   const keySSISpace = opendsu.loadAPI('keyssi');
 
-  const templateSSI = keySSISpace.buildTemplateSeedSSI('default');
+  const templateSSI = keySSISpace.createTemplateSeedSSI('default');
   resolver.createDSU(templateSSI, (err, dsuInstance) => {
     if (err) {
       console.log(err);
@@ -22,6 +22,33 @@ function createSSIAndMount(path, callback) {
         }
         callback(err, keySSI);
       });
+    });
+  });
+}
+
+function createSSI(path, callback) {
+  const opendsu = require('opendsu');
+  const resolver = opendsu.loadAPI('resolver');
+  const keySSISpace = opendsu.loadAPI('keyssi');
+
+  const templateSSI = keySSISpace.createTemplateSeedSSI('default');
+  resolver.createDSU(templateSSI, (err, dsuInstance) => {
+    if (err) {
+      console.log(err);
+      return callback(err);
+    }
+    dsuInstance.getKeySSIAsObject((err, keySSI) => {
+      if (err) {
+        return callback(err);
+      }
+      console.log('keySSI:', keySSI.getIdentifier(false));
+      callback(err, keySSI.getIdentifier(true));
+      // mainDSU.mount(path + '/' + keySSI, keySSI, (err) => {
+      //   if (err) {
+      //     console.log(err);
+      //   }
+      //   callback(err, keySSI);
+      // });
     });
   });
 }
@@ -61,6 +88,7 @@ function readFile(path, callback) {
 }
 
 module.exports = {
+  createSSI,
   readFile,
   listFolders,
   listFiles,

@@ -28,6 +28,7 @@ export default class EconsentSignController extends WebcController {
         this.model.econsentTa = econsentTA;
 
         this.initConsent();
+        this._attachHandlerEconsentSign();
 
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
@@ -63,8 +64,7 @@ export default class EconsentSignController extends WebcController {
                 debugger
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                debugger
-
+                this.sendMessageToSponsor('sign-econsent', 'HCO signed econsent');
             }
         )
     }
@@ -75,12 +75,14 @@ export default class EconsentSignController extends WebcController {
         }
     }
 
-    sendMessageToSponsor(operation, ssi, tpNumber, shortMessage) {
+    sendMessageToSponsor(operation, shortMessage) {
         this.CommunicationService.sendMessage(CommunicationService.identities.SPONSOR_IDENTITY, {
             operation: operation,
-            ssi: ssi,
+            ssi: this.model.econsentSSI,
             useCaseSpecifics: {
-                tpNumber: tpNumber,
+                tpNumber: this.model.tpNumber,
+                operationDate: (new Date()).toISOString(),
+                trialSSI: this.model.trialSSI,
             },
             shortDescription: shortMessage,
         });

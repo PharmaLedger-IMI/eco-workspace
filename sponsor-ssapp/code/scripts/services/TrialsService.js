@@ -1,3 +1,4 @@
+// import getSharedStorage from './SharedDBStorageService.js';
 export default class TrialsService {
   TRIALS_PATH = '/trials';
   TRIALS_LIST_FILENAME = 'trials.json';
@@ -5,6 +6,7 @@ export default class TrialsService {
 
   constructor(DSUStorage) {
     this.DSUStorage = DSUStorage;
+    // this.storageService = getSharedStorage(DSUStorage);
   }
 
   async getTrials() {

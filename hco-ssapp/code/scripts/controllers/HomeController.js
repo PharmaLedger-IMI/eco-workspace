@@ -66,8 +66,17 @@ export default class HomeController extends WebcController {
                 }
                 case 'sign-econsent': {
                     const message = data.message;
-                    message.useCaseSpecifics.operationDate = (new Date()).toISOString();
-                    this.CommunicationService.sendMessage(CommunicationService.identities.SPONSOR_IDENTITY, message);
+                    this.TrialService.getEconsent(message.useCaseSpecifics.trialSSI, message.ssi, (err, econsent) => {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        econsent.patientSigned = true;
+                        this.TrialService.updateEconsent(message.useCaseSpecifics.trialSSI, message.ssi, econsent, (err, response) => {
+                            if (err) {
+                                return console.log(err);
+                            }
+                        });
+                    })
                     break;
                 }
                 case 'withdraw-econsent': {

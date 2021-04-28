@@ -94,7 +94,7 @@ export default class TrialService {
     updateTrial(data, callback) {
         //Todo add file - read the file in a var and in set object the second param will be that var
         // uid is the same with keyssi
-        this.DSUStorage.setObject(this._getDsuTrialPath(data.uid), data, (err) => {
+        this.DSUStorage.setObject(this._getDsuTrialPath(data.keySSI), data, (err) => {
             if (err) {
                 callback(err, undefined);
                 return;
@@ -142,9 +142,7 @@ export default class TrialService {
                 })
             };
 
-
             if (dsuList.length === 0) {
-
                 callback(undefined, {econsents: []});
                 return;
             }
@@ -161,6 +159,16 @@ export default class TrialService {
             let textDecoder = new TextDecoder("utf-8");
             let trial = JSON.parse(textDecoder.decode(content));
             callback(undefined, trial);
+        })
+    }
+
+    updateEconsent(trialSSI, econsentSSI, data, callback) {
+        this.DSUStorage.setObject(this._getEconsentDsuPath(trialSSI, econsentSSI), data, (err) => {
+            if (err) {
+                callback(err, undefined);
+                return;
+            }
+            callback(undefined, data);
         })
     }
 
