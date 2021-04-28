@@ -12,22 +12,19 @@
                     <psk-label class="subheader" label="Consent Status"></psk-label>
                 </div>
                 <div class="status">
-
-                    <div class="dispay-flex  justify-content-space-between">
-                        <div>
-                            <div class="dispay-flex margin-left-10">
-                                <div data-if="@econsent.signed">
-                                    <container slot="true">
-                                        <psk-label class="title" label="Consent Signed"></psk-label>
-                                    </container>
-                                    <container slot="false">
-                                        <psk-label class="title" label="Consent Signature Required"></psk-label>
-                                    </container>
-
-                                </div>
-
-                            </div>
-                        </div>
+                    <div class="circle_selected">1</div>
+                    <div data-if="@signed">
+                        <container slot="true">
+                            <psk-label class="title" label="Entered- Main Consent Signed"></psk-label>
+                        </container>
+                        <container slot="false">
+                            <psk-label class="title" label="Consent Signature Required"></psk-label>
+                        </container>
+                    </div>
+                    <div data-if="@declined">
+                        <container slot="true">
+                            <psk-label class="title" label=" E-consent declined"></psk-label>
+                        </container>
                     </div>
                 </div>
 
@@ -35,7 +32,7 @@
                     <psk-label class="subheader" label="@econsent.version"></psk-label>
                 </div>
                 <div class="padding-sides">
-                     <div>
+                    <div>
                         <psk-echo value="Document date: "></psk-echo>
                         <strong>
                             <psk-echo value="@econsent.versionDate"></psk-echo>
@@ -45,10 +42,10 @@
                 <div class="econsent-actions">
                     <div class="dispay-flex">
                         <button class="econsent-read"
-                                data-tag="econsent:read" >Read
+                                data-tag="econsent:read">Read
                         </button>
                         <button class="econsent-read right"
-                                data-tag="econsent:download" >Download
+                                data-tag="econsent:download">Download
                         </button>
                     </div>
                 </div>

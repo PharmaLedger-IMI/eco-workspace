@@ -1,7 +1,7 @@
 import TrialDataService from "./services/TrialDataService.js";
 import Constants from "./Constants.js";
 import TrialService from "./services/TrialService.js";
-
+import EconsentService from "./services/EconsentService.js";
 const {WebcController} = WebCardinal.controllers;
 
 export default class TrialController extends WebcController {
@@ -69,9 +69,11 @@ export default class TrialController extends WebcController {
 
         this.model.trial = {};
         this.model.econsents = [];
+        this.model.signed = false;
+        this.model.declined= false;
 
         this.TrialService = new TrialService(this.DSUStorage);
-
+        this.EconsentService = new EconsentService(this.DSUStorage);
         let receivedObject = this.history.win.history.state.state
         this.model.keyssi = receivedObject.trialSSI;
         this.model.tpNumber = receivedObject.tpNumber;
@@ -108,6 +110,7 @@ export default class TrialController extends WebcController {
             }
             debugger
             this.model.trial = trial;
+            this.model.tpEconsents = [];
             this.model.trial.color = Constants.getColorByTrialStatus(this.model.trial.status);
             this.TrialService.getEconsents(trial.keySSI, (err, data) => {
                 if (err) {
@@ -115,6 +118,19 @@ export default class TrialController extends WebcController {
                 }
 
                 this.model.econsents.push(...data.econsents);
+                this.EconsentService.getServiceModel((err, data) => {
+                    if (err) {
+                        return console.error(err);
+                    }
+                    this.model.tpEconsents.push(...data.econsents);
+                    let ec = this.model.tpEconsents.find(ec => ec.id == this.model.econsents[0].id);
+                    if (ec) {
+                        this.model.econsents[0].signed =this.model.tpEconsents[this.model.tpEconsents.length-1].signed;
+                        this.model.signed = this.model.tpEconsents[this.model.tpEconsents.length-1].signed;
+                        this.model.econsents[0].declined = this.model.tpEconsents[this.model.tpEconsents.length-1].declined;
+                        this.model.declined = this.model.tpEconsents[this.model.tpEconsents.length-1].declined;
+                    }
+                })
                 console.log(data.econsents);
             })
         });

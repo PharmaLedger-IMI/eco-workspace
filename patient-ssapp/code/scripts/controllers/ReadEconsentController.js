@@ -53,7 +53,6 @@ export default class ReadEconsentController extends WebcController {
     };
 
 
-
     getEconsentFilePath(trialSSI, consentSSI, fileName) {
         return "/trials/" + trialSSI + '/consent/' + consentSSI + '/consent/' + fileName;
     }
@@ -65,7 +64,10 @@ export default class ReadEconsentController extends WebcController {
                 event.stopImmediatePropagation();
                 debugger
                 this.navigateToPageTag('home');
-                this._saveEconsent ();
+
+                this.model.econsent.signed = true;
+                this.model.econsent.declined = false;
+                this._saveEconsent();
                 this.sendMessageToSponsorAndHCO('sign-econsent', this.model.econsent.keySSI, 'TP signed econsent ');
             }
         )
@@ -81,6 +83,10 @@ export default class ReadEconsentController extends WebcController {
                 this.showModalFromTemplate('withdraw-econsent', (event) => {
                         const response = event.detail;
                         if (response.withdraw) {
+                            debugger;
+                            this.model.econsent.signed = false;
+                            this.model.econsent.declined = true;
+                            this._saveEconsent();
                             this.sendMessageToSponsorAndHCO('withdraw-econsent', this.model.econsent.keySSI, 'TP withdrow econsent ');
                         }
                     },
@@ -178,12 +184,14 @@ export default class ReadEconsentController extends WebcController {
             }
         }
     }
-    _saveEconsent (){
+
+    _saveEconsent() {
         debugger;
         this.EconsentService.saveEconsent({
             ...this.model.econsent,
-            uid:  this.model.econsent.keySSI,
-            signed: true,
+            uid: this.model.econsent.keySSI,
+            signed: this.model.econsent.signed,
+            declined: this.model.econsent.declined,
             signedDate: new Date()
         }, (err, data) => {
             if (err) {

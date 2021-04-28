@@ -1,6 +1,7 @@
 .left-image{
     float:left;
     margin-top: 10px;
+    margin-right: 10px;
 
 }
 .econsent-block {
@@ -30,7 +31,7 @@
 
 .date-div .left-image.padding-image {
     float: left;
-    padding-top: 25px;
+    /*padding-top: 25px;*/
 }
 
 .date-div .right-text {
@@ -54,7 +55,7 @@
 .line-text {
     color: #00345b;
     font-weight: bold;
-    font-size: 12px;
+    font-size: 16px;
 }
 
 .header-text {
@@ -96,22 +97,20 @@
 
     background-color: #00345b;
     font-size: 15px;
+    color: #f2f2f2;
     width: 30px;
     padding: 1rem;
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    margin-left: 10%;
+    margin: 0 10px;
     border-radius: 50%;
     height: 30px;
-
 }
 
 .status{
-    margin-top: 5px;
-    margin-bottom: 5px;
-    display:block;
-    height: 90px;
+    margin: 10px 0;
+    display:flex;
 }
 
 .econsent-actions{

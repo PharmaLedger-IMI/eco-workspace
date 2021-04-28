@@ -6,46 +6,53 @@
                 <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
                 <psk-label class="scan-error-title" label="Trial"></psk-label>
             </div>
-            <hr/>
-
             <div class="subheader">
                 <psk-label label="TP STATUS"></psk-label>
             </div>
             <div class="status">
-                <div class="dispay-flex">
-                    <div class="circle_unselected">1</div>
-                    <div class="circle_unselected">2</div>
-                    <div class="circle_unselected">3</div>
-                    <div class="circle_unselected">4</div>
-                    <div class="circle_unselected">5</div>
+                <div class="circle_selected">1</div>
+                <div data-if="@signed">
+                    <container slot="true">
+                        <psk-label class="title" label="Entered- Main Consent Signed"></psk-label>
+                    </container>
+                    <container slot="false">
+                        <psk-label class="title" label="Consent Signature Required"></psk-label>
+                    </container>
+
                 </div>
-                <psk-label class="trial-status" label="@trial.status"></psk-label>
+                <div data-if="@declined">
+                    <container slot="true">
+                        <psk-label class="title" label=" E-consent declined"></psk-label>
+                    </container>
+
+                </div>
             </div>
             <div class="subheader">
                 <psk-label label="General Data"></psk-label>
             </div>
             <div class="padding-sides">
                 <div>
-                    <psk-echo value="Trial Name: "></psk-echo>
-                    <strong>
+                    <psk-echo class="line-text" value="Trial Name: "></psk-echo>
+                    <strong class="line-text">
                         {{@trial.name}}
                     </strong>
                 </div>
                 <div>
-                    <psk-echo value="Trial number: "></psk-echo>
-                    <strong>
+                    <psk-echo class="line-text" value="Trial number: "></psk-echo>
+                    <strong class="line-text">
                         {{@trial.id}}
                     </strong>
                 </div>
                 <div>
-                    <psk-echo value="Sponsor: "></psk-echo>
-                    <strong>
+                    <psk-echo class="line-text"
+                              value="Sponsor: "></psk-echo>
+                    <strong class="line-text">
                         Sponsor Test
                     </strong>
                 </div>
                 <div>
-                    <psk-echo value="Details: "></psk-echo>
-                    <strong>
+                    <psk-echo class="line-text" value="Details: "></psk-echo>
+                    <strong class="line-text">
                         Status: {{@trial.status}}
                     </strong>
                 </div>
@@ -67,37 +74,26 @@
                                 <psk-img class="left-image" src="assets/images/document_black.png"
                                          height='40' width='40'></psk-img>
                             </div>
-                            <div class="padding-sides">
+                            <div>
                                 <div>
-                                    <strong>
-                                        <psk-label class="econsent-name">{{@name}}</psk-label>
+                                    <strong class="dispay-flex line-text">
+                                        {{@name}}
                                         {{@type}}
                                     </strong>
                                 </div>
                                 <div>
-                                    <strong>
-                                        <psk-echo value="Version"></psk-echo>
+                                    <strong class="line-text">
+                                        <psk-echo value="Version: "></psk-echo>
                                         {{@version}}
                                     </strong>
                                 </div>
                                 <div>
-                                    <strong>
-                                        <psk-echo value="Version Date "></psk-echo>
+                                    <strong class="line-text">
+                                        <psk-echo value="Version Date: "></psk-echo>
                                         {{@versionDate}}
                                     </strong>
                                 </div>
-                                <div>
-                                    <strong>
-                                        <psk-echo value="Signed"></psk-echo>
-                                        NA
-                                    </strong>
-                                </div>
-                                <div>
-<!--                                    <strong>-->
-<!--                                        <psk-echo value="Attachment Name"></psk-echo>-->
-<!--                                        {{@attachment}}-->
-<!--                                    </strong>-->
-                                </div>
+
                             </div>
                         </div>
                     </div>

@@ -11,7 +11,8 @@ export default class EconsentController extends WebcController {
 
         this.setModel({});
         this.model.econsent = {};
-
+        this.model.signed = false;
+        this.model.declined = false;
         this.TrialService = new TrialService(this.DSUStorage);
         this.historyData = this.history.win.history.state.state;
         this.EconsentService = new EconsentService(this.DSUStorage);
@@ -71,7 +72,10 @@ export default class EconsentController extends WebcController {
                 this.model.tpEconsents.push(...data.econsents);
                 let ec = this.model.tpEconsents.find(ec => ec.id == this.model.econsent.id);
                 if (ec) {
-                    this.model.econsent.signed = ec.signed;
+
+                    this.model.signed = this.model.tpEconsents[this.model.tpEconsents.length - 1].signed;
+
+                    this.model.declined = this.model.tpEconsents[this.model.tpEconsents.length - 1].declined;
                 }
             })
         });
