@@ -1,6 +1,6 @@
 import TrialsService from '../services/TrialsService.js';
 import ParticipantsService from '../services/ParticipantsService.js';
-import { trialTableHeaders, participantConsentStatusEnum, senderType } from '../constants/participant.js';
+import { trialTableHeaders, participantConsentStatusEnum } from '../constants/participant.js';
 import eventBusService from '../services/EventBusService.js';
 import { Topics } from '../constants/topics.js';
 
@@ -51,19 +51,7 @@ export default class TrialParticipantsController extends WebcController {
 
     eventBusService.addEventListener(Topics.RefreshParticipants + keySSI, async (data) => {
       console.log('Refreshing, participant status changed for this trial');
-
-      const list = await this.participantsService.updateParticipant(
-        {
-          participantId: data.message.useCaseSpecifics.tpNumber,
-          operationDate: data.message.useCaseSpecifics.operationDate,
-          trialSSI: data.message.useCaseSpecifics.trialSSI,
-          consentSSI: data.message.ssi,
-          type: data.sender === 'hcoIdentity' ? senderType.HCP : senderType.Patient,
-        },
-        this.keySSI
-      );
-
-      console.log(list);
+      console.log('THIS:::::', this);
 
       this.getParticipants();
     });
