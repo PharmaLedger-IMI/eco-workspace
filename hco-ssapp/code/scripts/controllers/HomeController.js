@@ -71,6 +71,7 @@ export default class HomeController extends WebcController {
                             return console.log(err);
                         }
                         econsent.patientSigned = true;
+                        econsent.tpNumber = message.useCaseSpecifics.tpNumber;
                         this.TrialService.updateEconsent(message.useCaseSpecifics.trialSSI, message.ssi, econsent, (err, response) => {
                             if (err) {
                                 return console.log(err);
