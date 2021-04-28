@@ -13,20 +13,6 @@ export default class ParticipantsService {
   }
 
   async getTrialParticipants(trialKeySSI) {
-    // return new Promise((resolve, reject) => {
-    //   setTimeout(() => {
-    //     resolve([
-    //       {
-    //         participantId: '12111',
-    //         consentName: 'test',
-    //         consentVersion: '1.1',
-    //         consentStatus: 'Consent',
-    //         patientSignature: new Date().toISOString(),
-    //         doctorSignature: new Date().toISOString(),
-    //       },
-    //     ]);
-    //   }, 400);
-    // });
     const result = await this.readParticipantsList(trialKeySSI);
     if (result && result.table) {
       return result.table.filter((x) => !x.deleted);

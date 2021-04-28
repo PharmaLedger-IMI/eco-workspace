@@ -67,7 +67,7 @@ export default class ListTrialsController extends WebcController {
     this.trialsService = new TrialsService(this.DSUStorage);
     this.participantsService = new ParticipantsService(this.DSUStorage);
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.SPONSOR_IDENTITY);
-    this.CommunicationService.listenForMessages((err, data) => {
+    this.CommunicationService.listenForMessages(async (err, data) => {
       if (err) {
         return console.error(err);
       }
@@ -78,7 +78,7 @@ export default class ListTrialsController extends WebcController {
             case CommunicationService.identities.PATIENT_IDENTITY: {
               console.log('PATIENT_IDENTITY', data);
               if (data.message.operation === 'sign-econsent') {
-                const list = this.participantsService.updateParticipant(
+                const list = await this.participantsService.updateParticipant(
                   {
                     participantId: data.message.useCaseSpecifics.tpNumber,
                     operationDate: data.message.useCaseSpecifics.operationDate,
@@ -99,7 +99,7 @@ export default class ListTrialsController extends WebcController {
             }
             case CommunicationService.identities.HCO_IDENTITY: {
               if (data.message.operation === 'sign-econsent') {
-                const list = this.participantsService.updateParticipant(
+                const list = await this.participantsService.updateParticipant(
                   {
                     participantId: data.message.useCaseSpecifics.tpNumber,
                     operationDate: data.message.useCaseSpecifics.operationDate,
