@@ -54,17 +54,16 @@ export default class EconsentSignController extends WebcController {
     }
 
 
-
     getEconsentFilePath(trialSSI, consentSSI, fileName) {
         return "/trials/" + trialSSI + '/consent/' + consentSSI + '/consent/' + fileName;
     }
 
     _attachHandlerEconsentSign() {
         this.onTagEvent('econsent:sign', 'click', (model, target, event) => {
-                debugger
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 this.sendMessageToSponsor('sign-econsent', 'HCO signed econsent');
+                this.navigateToPageTag('home');
             }
         )
     }
@@ -87,6 +86,7 @@ export default class EconsentSignController extends WebcController {
             shortDescription: shortMessage,
         });
     }
+
     _downloadFile = () => {
         this.fileDownloader.downloadFile((downloadedFile) => {
             this.rawBlob = downloadedFile.rawBlob;

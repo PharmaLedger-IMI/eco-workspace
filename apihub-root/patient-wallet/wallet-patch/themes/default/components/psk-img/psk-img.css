@@ -1,0 +1,34 @@
+.image_container {
+    text-align: center;
+}
+
+.image_description {
+    text-align: center;
+    padding: 10px;
+    font-style: italic;
+    font-size: 1rem;
+}
+.image_description::before{
+    content:"- ";
+}
+.image_description::after{
+    content:" -";
+}
+
+.image_wrapper{
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.wallet-top-image img {
+    width: 100%;
+    height: 170px;
+    padding: 20px;
+    background-color: white;
+}
+
+.wallet-top-image .image_wrapper {
+    margin-top: 0 !important;
+    background-color: white;
+    margin-bottom: 40px !important;
+}
