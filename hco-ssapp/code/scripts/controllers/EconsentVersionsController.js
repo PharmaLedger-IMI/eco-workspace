@@ -64,10 +64,8 @@ export default class EconsentVersionsController extends WebcController {
 
     _attachHandlerEconsentSign() {
         this.onTagEvent('econsent:sign', 'click', (model, target, event) => {
-                debugger
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                debugger
                 this.navigateToPageTag('econsent-sign', {
                     trialSSI: this.model.trialSSI,
                     econsentSSI: this.model.econsentSSI

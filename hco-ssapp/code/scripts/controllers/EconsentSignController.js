@@ -80,7 +80,7 @@ export default class EconsentSignController extends WebcController {
             operation: operation,
             ssi: this.model.econsentSSI,
             useCaseSpecifics: {
-                tpNumber: this.model.tpNumber,
+                tpNumber: this.model.econsent.tpNumber,
                 operationDate: (new Date()).toISOString(),
                 trialSSI: this.model.trialSSI,
             },
