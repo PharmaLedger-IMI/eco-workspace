@@ -303,3 +303,17 @@
     preparing diddemo
     preparing diddemo
     preparing diddemo
+    added default callback to showModal
+    Update Octopus
+    
+    Migrate to PrivateSky octopus
+    Add freeze for bundles
+    new release
+    extra info added into the landing page
+    fixed createMarketplace swarm
+    environment update
+    fixed view file and delete dsu functionalities
+    environment update
+    environment update
+    environment update
+    environment update

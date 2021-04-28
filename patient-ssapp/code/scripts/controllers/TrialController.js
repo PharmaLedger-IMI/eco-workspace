@@ -40,6 +40,28 @@ export default class TrialController extends WebcController {
 
     }
 
+    tpStatus = {
+        entered: {
+            name: 'Entered',
+            valueNumber: 1,
+            details: 'Main Consent Signed',
+            isSet :false,
+        },
+        enrolled: {
+            name: 'Enrolled',
+            valueNumber: 2,
+            details: 'Tp Seem eligible for the trial',
+            isSet :false,
+
+        },
+        completed: {
+            name: 'Completed',
+            valueNumber: 3,
+            details: 'Tp has completed the planed treatment',
+            isSet :false,
+        },
+
+    }
     constructor(element, history) {
         super(element, history);
 
