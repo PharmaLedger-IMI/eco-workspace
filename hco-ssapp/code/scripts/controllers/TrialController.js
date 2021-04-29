@@ -1,41 +1,53 @@
-import TrialService from "./services/TrialService.js";
-import TrialParticipantsService from "./services/TrialParticipantsService.js";
+const {WebcController} = WebCardinal.controllers;
+import Constants from "../utils/Constants.js";
+import TrialService from "../services/TrialService.js";
+import TrialParticipantsService from "../services/TrialParticipantsService.js";
 import CommunicationService from '../services/CommunicationService.js';
 
-const {WebcController} = WebCardinal.controllers;
+let getInitModel = () => {
+    return {
+        trial: {},
+        trialParticipants: []
+    }
+}
 
 export default class TrialController extends WebcController {
     constructor(element, history) {
         super(element, history);
+        this.setModel({
+            ...getInitModel(),
+            trialSSI: this.history.win.history.state.state
+        });
+        this._initServices(this.DSUStorage);
+        this._initHandlers();
+        this._initTrial(this.model.trialSSI);
+    }
 
-        this.TrialService = new TrialService(this.DSUStorage);
-        this.TrialParticipantService = new TrialParticipantsService(this.DSUStorage);
+    _initServices(DSUStorage) {
+        this.TrialService = new TrialService(DSUStorage);
+        this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+    }
 
-        this.setModel({trial: {}, trialParticipants: []});
-        let keySSI = this.history.win.history.state.state;
-        this.model.trialSSI = keySSI;
-        this.initTrial(keySSI);
-
+    _initHandlers() {
+        this._attachHandlerAddTrialParticipant();
+        this._attachHandlerNavigateToParticipant();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
-
-        this._attachHandlerAddTrialParticipant();
-        this._attachHandlerNavigateToParticipant();
     }
 
-    initTrial(keySSI) {
+    _initTrial(keySSI) {
         this.TrialService.getTrial(keySSI, (err, trial) => {
             if (err) {
                 return console.log(err);
             }
             this.model.trial = trial;
-            this.TrialParticipantService.getTPS(trial.number, (err, data) => {
+            this.TrialParticipantService.getTrialParticipants(keySSI, (err, data) => {
                 if (err) {
                     return console.log(err);
                 }
-                this.model.trialParticipants = data.tps;
+                this.model.trialParticipants = data;
             });
         });
     }
@@ -44,7 +56,6 @@ export default class TrialController extends WebcController {
         this.onTagEvent('navigate:tp', 'click', (model, target, event) => {
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                debugger
                 this.navigateToPageTag('trial-participant', this.model.trialSSI);
             }
         )
@@ -57,7 +68,7 @@ export default class TrialController extends WebcController {
                 this.showModalFromTemplate('add-new-tp', (event) => {
                         const response = event.detail;
                         this.createTpDsu(response);
-                        this.showFeedbackToast('Result', 'Trial participant added successfully!', 'toast');
+                        this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.SUCCESS.ADD_TRIAL_PARTICIPANT);
                     },
                     (event) => {
                         const response = event.detail;
@@ -73,17 +84,16 @@ export default class TrialController extends WebcController {
 
     createTpDsu(tp) {
         tp.trialNumber = this.model.trial.number;
-        tp.status = "enrolled";
-        this.TrialParticipantService.saveTrialParticipant(tp, (err, tp) => {
+        tp.status = "screened";
+        this.TrialParticipantService.saveTrialParticipant(this.model.trial.keySSI, tp, (err, trialParticipant) => {
             if (err) {
-                this.showFeedbackToast('Result', 'ERROR: There was an issue creating the trial participant', 'toast');
+                this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.ERROR.ADD_TRIAL_PARTICIPANT);
                 return console.log(err);
             }
-            this.model.trialParticipants.push(tp);
-            debugger
-            this.sendMessageToPatient("add-to-trial",  this.model.trialSSI, tp.number,"you were added to trial");
+            this.model.trialParticipants.push(trialParticipant);
+            this.sendMessageToPatient("add-to-trial", this.model.trialSSI, trialParticipant.number,
+                Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL);
         });
-
     }
 
     sendMessageToPatient(operation, ssi, trialParticipantNumber, shortMessage) {
@@ -97,7 +107,7 @@ export default class TrialController extends WebcController {
         });
     }
 
-    showFeedbackToast(title, message, alertType) {
+    _showFeedbackToast(title, message, alertType = 'toast') {
         if (typeof this.feedbackEmitter === 'function') {
             this.feedbackEmitter(message, title, alertType);
         }

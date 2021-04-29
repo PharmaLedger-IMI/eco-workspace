@@ -1,16 +1,15 @@
 <link rel="stylesheet" href="/assets/css/pages/addtp.css">
 <webc-skin href="/assets/css/pages/addtp.css">
     <webc-container class="maxw" controller="AddTrialParticipantController">
-
         <div class="top">
             <div class="line">
-                <psk-input class="tp-input" view-model="@tp.number"/>
+                <psk-input class="tp-input" view-model="@number"/>
             </div>
             <div class="line">
-                <psk-date-input class="tp-date" view-model="@tp.birthdate"></psk-date-input>
+                <psk-date-input class="tp-date" view-model="@birthdate"></psk-date-input>
             </div>
             <div class="line">
-                <psk-radio-group view-model="@tp.gender"></psk-radio-group>
+                <psk-radio-group view-model="@gender"></psk-radio-group>
             </div>
             <button class="tp-button" slot="footer" data-tag="tp:submit">Submit</button>
             <button class="tp-button" slot="footer" data-tag="tp:cancel">Cancel</button>

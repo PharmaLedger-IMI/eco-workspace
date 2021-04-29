@@ -1,76 +1,65 @@
 const {WebcController} = WebCardinal.controllers;
 
+let getInitModel = () => {
+    return {
+        number: {
+            label: 'Trial Participant Number',
+            name: 'number',
+            required: true,
+            placeholder: 'Please insert the trial participant number...',
+            value: '',
+        },
+        birthdate: {
+            label: "Birth Date:",
+            name: "date",
+            required: true,
+            dataFormat: "MM YYYY",
+            placeholder: "MM YYYY",
+            value: ''
+        },
+        gender: {
+            label: "Select your gender",
+            required: true,
+            options: [
+                {
+                    label: "Male",
+                    value: 'M'
+                },
+                {
+                    label: "Female",
+                    value: "F"
+                }
+            ],
+            value: ''
+        }
+    }
+}
 
 export default class AddTrialParticipantController extends WebcController {
 
-    number = {
-        label: 'Trial Participant Number',
-        name: 'number',
-        required: true,
-        placeholder: 'Please insert the trial participant number...',
-        value: '',
-    };
-
-    birthdate= {
-        label: "Birthdate:",
-        name: "date",
-        required: true,
-        dataFormat: "DD MM YYYY",
-        placeholder: "DD MM YYYY",
-        value: ''
-    };
-    gender = {
-        label: "Select your gender",
-        required: true,
-        options: [{
-            label: "Male",
-            value: 'M'
-        },
-            {
-                label: "Female",
-                value: "F"
-            }
-        ],
-        value: ''
-    }
     constructor(element, history) {
         super(element, history);
+        this.setModel(getInitModel());
+        this._initHandlers();
+    }
 
-
-        debugger;
-        this.setModel({
-
-            tp: {
-
-                number: this.number,
-                birthdate: this.birthdate,
-                gender: this.gender,
-            },
-
-        });
+    _initHandlers() {
         this._attachHandlerSubmit();
     }
 
     _attachHandlerSubmit() {
-
-        debugger;
         this.onTagEvent('tp:submit', 'click', (model, target, event) => {
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                debugger;
-                console.log(this.model.tp.birthdate.value);
-                const tp = {
-                    number: this.model.tp.number.value,
-                    birthdate: this.model.tp.birthdate.value,
-                    gender: this.model.tp.gender.value,
 
+                const trialParticipant = {
+                    number: this.model.number.value,
+                    birthdate: this.model.birthdate.value,
+                    gender: this.model.gender.value,
                 };
-                this.send('confirmed', tp);
-
+                this.send('confirmed', trialParticipant);
             }
         )
     }
-
-
 
 }

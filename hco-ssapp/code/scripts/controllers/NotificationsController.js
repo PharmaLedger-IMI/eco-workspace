@@ -1,22 +1,31 @@
-import NotificationsService from "./services/NotificationsService.js";
 const {WebcController} = WebCardinal.controllers;
+import NotificationsService from "../services/NotificationsService.js";
+
+let getInitModel = () => {
+    return {
+        notifications:[]
+    }
+}
 
 export default class NotificationsController extends WebcController {
     constructor(element, history) {
         super(element, history);
-        this.setModel({notifications:[]});
+        this.setModel(getInitModel());
 
-        this.NotificationsService = new NotificationsService(this.DSUStorage);
+        this._initServices(this.DSUStorage);
+        this._initNotifications();
+    }
+
+    _initServices(DSUStorage) {
+        this.NotificationsService = new NotificationsService(DSUStorage);
+    }
+
+    _initNotifications() {
         this.NotificationsService.getNotifications((err, data) => {
             if (err) {
                 return console.log(err);
             }
-            console.log("All Notifications " + data);
-            this.model.notifications = data.notifications;
+            this.model.notifications = data;
         });
-    }
-
-    getNotifications (){
-        debugger;
     }
 }

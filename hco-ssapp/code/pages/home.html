@@ -15,12 +15,11 @@
             <hr/>
         </div>
 
-        <div  class="trial-table" data-for="@trials">
-            <psk-layout columns="9" class="justify-content-center align-items-center table-row">
+        <div class="trial-table" data-for="@trials">
+            <psk-layout data-tag="home:trial" data="@id" columns="9" class="justify-content-center align-items-center table-row">
                 <psk-label class="table-cell">{{@name}}</psk-label>
                 <psk-label class="table-cell">{{@id}}</psk-label>
                 <psk-label class="table-cell">{{@status}}</psk-label>
-                <button data-tag="home:trial" data="@id" >>></button>
             </psk-layout>
             <hr/>
         </div>

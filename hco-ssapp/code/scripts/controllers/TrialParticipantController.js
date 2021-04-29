@@ -1,36 +1,49 @@
-import TrialService from "./services/TrialService.js";
-import TrialParticipantsService from "./services/TrialParticipantsService.js";
+import TrialService from "../services/TrialService.js";
+import TrialParticipantsService from "../services/TrialParticipantsService.js";
 import CommunicationService from "../services/CommunicationService.js";
-import DateTimeService from "./services/DateTimeService.js";
+import DateTimeService from "../services/DateTimeService.js";
 
 const {WebcController} = WebCardinal.controllers;
+
+let getInitModel = () => {
+    return {
+        econsents: []
+    }
+}
 
 export default class TrialParticipantController extends WebcController {
     constructor(element, history) {
         super(element, history);
 
-        this.TrialService = new TrialService(this.DSUStorage);
-        this.TrialParticipantService = new TrialParticipantsService(this.DSUStorage);
+        this.setModel({
+            ...getInitModel(),
+            trialSSI: this.history.win.history.state.state
+        });
+
+        this._initServices(this.DSUStorage);
+        this._initHandlers();
+        this._initConsents(this.model.trialSSI);
+    }
+
+    _initServices(DSUStorage) {
+        this.TrialService = new TrialService(DSUStorage);
+        this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+    }
 
-        this.setModel({econsents: []});
-        this.model.trialSSI = this.history.win.history.state.state;
-        this.initConsents(this.model.trialSSI);
-
+    _initHandlers() {
+        this._attachHandlerNavigateToEconsentVersions();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
-
-        this._attachHandlerNavigateToEconsentVersions();
     }
 
-    initConsents(keySSI) {
+    _initConsents(keySSI) {
         this.TrialService.getEconsents(keySSI, (err, data) => {
-            debugger
             if (err) {
                 return console.log(err);
             }
-            this.model.econsents = data.econsents.map(consent => {
+            this.model.econsents = data.map(consent => {
                 return {
                     ...consent,
                     versionDateAsString: DateTimeService.convertStringToLocaleDate(consent.versionDate)
@@ -51,7 +64,7 @@ export default class TrialParticipantController extends WebcController {
         )
     }
 
-    showFeedbackToast(title, message, alertType) {
+    _showFeedbackToast(title, message, alertType) {
         if (typeof this.feedbackEmitter === 'function') {
             this.feedbackEmitter(message, title, alertType);
         }

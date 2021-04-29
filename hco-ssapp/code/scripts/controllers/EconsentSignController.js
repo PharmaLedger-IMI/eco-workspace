@@ -1,43 +1,48 @@
-import TrialService from "./services/TrialService.js";
-import TrialParticipantsService from "./services/TrialParticipantsService.js";
-import CommunicationService from "../services/CommunicationService.js";
-import DateTimeService from "./services/DateTimeService.js";
-import FileDownloader from "../utils/FileDownloader.js";
-
 const {WebcController} = WebCardinal.controllers;
+import TrialService from "../services/TrialService.js";
+import TrialParticipantsService from "../services/TrialParticipantsService.js";
+import CommunicationService from "../services/CommunicationService.js";
+import DateTimeService from "../services/DateTimeService.js";
+import FileDownloader from "../utils/FileDownloader.js";
+import Constants from "../utils/Constants.js";
+
 const TEXT_MIME_TYPE = "text/";
+
+let getInitModel = () => {
+    return {
+        econsent: {}
+    }
+}
+
 export default class EconsentSignController extends WebcController {
     constructor(element, history) {
         super(element, history);
 
-        this.TrialService = new TrialService(this.DSUStorage);
-        this.TrialParticipantService = new TrialParticipantsService(this.DSUStorage);
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
-
         this.setModel({
-            econsent: {},
+            ...getInitModel(),
             ...this.history.win.history.state.state
         });
 
-        let econsentTA = {
-            name: "econsent",
-            required: true,
-            value: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum'
-        }
+        this._initServices(this.DSUStorage);
+        this._initHandlers();
+        this._initConsent();
+    }
 
-        this.model.econsentTa = econsentTA;
+    _initServices(DSUStorage) {
+        this.TrialService = new TrialService(DSUStorage);
+        this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+    }
 
-        this.initConsent();
+    _initHandlers() {
         this._attachHandlerEconsentSign();
-
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
     }
 
-    initConsent() {
+    _initConsent() {
         this.TrialService.getEconsent(this.model.trialSSI, this.model.econsentSSI, (err, econsent) => {
-            debugger
             if (err) {
                 return console.log(err);
             }
@@ -45,33 +50,10 @@ export default class EconsentSignController extends WebcController {
                 ...econsent,
                 versionDateAsString: DateTimeService.convertStringToLocaleDate(econsent.versionDate)
             };
-            this.fileDownloader = new FileDownloader(this.getEconsentFilePath(this.model.trialSSI, this.model.econsentSSI, econsent.attachment), econsent.attachment);
-
+            let attachment = econsent.attachment;
+            this.FileDownloader = new FileDownloader(this._getEconsentFilePath(this.model.trialSSI, this.model.econsentSSI, attachment), attachment);
             this._downloadFile();
-            console.log("File downloader" + this.fileDownloader);
-            debugger
         });
-    }
-
-
-    getEconsentFilePath(trialSSI, consentSSI, fileName) {
-        return "/trials/" + trialSSI + '/consent/' + consentSSI + '/consent/' + fileName;
-    }
-
-    _attachHandlerEconsentSign() {
-        this.onTagEvent('econsent:sign', 'click', (model, target, event) => {
-                event.preventDefault();
-                event.stopImmediatePropagation();
-                this.sendMessageToSponsor('sign-econsent', 'HCO signed econsent');
-                this.navigateToPageTag('home');
-            }
-        )
-    }
-
-    showFeedbackToast(title, message, alertType) {
-        if (typeof this.feedbackEmitter === 'function') {
-            this.feedbackEmitter(message, title, alertType);
-        }
     }
 
     sendMessageToSponsor(operation, shortMessage) {
@@ -80,21 +62,35 @@ export default class EconsentSignController extends WebcController {
             ssi: this.model.econsentSSI,
             useCaseSpecifics: {
                 tpNumber: this.model.econsent.tpNumber,
-                operationDate: (new Date()).toISOString(),
+                operationDate: DateTimeService.getCurrentDateAsISOString(),
                 trialSSI: this.model.trialSSI,
             },
             shortDescription: shortMessage,
         });
     }
 
+
+    _getEconsentFilePath(trialSSI, consentSSI, fileName) {
+        return "/trials/" + trialSSI + '/consent/' + consentSSI + '/consent/' + fileName;
+    }
+
+    _attachHandlerEconsentSign() {
+        this.onTagEvent('econsent:sign', 'click', (model, target, event) => {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                this.sendMessageToSponsor('sign-econsent', Constants.MESSAGES.HCO.COMMUNICATION.SPONSOR.SIGN_ECONSENT);
+                this.navigateToPageTag('home');
+            }
+        )
+    }
+
     _downloadFile = () => {
-        this.fileDownloader.downloadFile((downloadedFile) => {
+        this.FileDownloader.downloadFile((downloadedFile) => {
             this.rawBlob = downloadedFile.rawBlob;
             this.mimeType = downloadedFile.contentType;
             this.blob = new Blob([this.rawBlob], {
                 type: this.mimeType
             });
-
 
             if (this.mimeType.indexOf(TEXT_MIME_TYPE) !== -1) {
                 this._prepareTextEditorViewModel();
@@ -109,7 +105,6 @@ export default class EconsentSignController extends WebcController {
             const obj = document.createElement("object");
             obj.type = this.mimeType;
             obj.data = base64Blob;
-
             this._appendAsset(obj);
         });
     }
@@ -124,16 +119,12 @@ export default class EconsentSignController extends WebcController {
 
     _appendAsset = (assetObject) => {
         let content = this.element.querySelector(".content");
-
         if (content) {
             content.append(assetObject);
         }
-
-        //this.feedbackController.setLoadingState(false);
     }
 
     _displayFile = () => {
-
         if (window.navigator && window.navigator.msSaveOrOpenBlob) {
             const file = new File([this.rawBlob], this.fileName);
             window.navigator.msSaveOrOpenBlob(file);
@@ -152,6 +143,12 @@ export default class EconsentSignController extends WebcController {
                 this._loadPdfOrTextFile();
                 break;
             }
+        }
+    }
+
+    _showFeedbackToast(title, message, alertType) {
+        if (typeof this.feedbackEmitter === 'function') {
+            this.feedbackEmitter(message, title, alertType);
         }
     }
 }
