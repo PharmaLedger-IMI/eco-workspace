@@ -1,5 +1,5 @@
 import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
-import TrialDataService from "./services/TrialDataService.js";
+import TrialDataService from "../services/TrialDataService.js";
 
 const initModel = {}
 

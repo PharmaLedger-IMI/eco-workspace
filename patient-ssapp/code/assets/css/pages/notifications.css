@@ -13,13 +13,15 @@
     font-weight: bold;
     font-size: 20px;
 }
+
 .padding-sides {
     padding: 20px;
 }
 
-.dispay-flex {
+.display-flex {
     display: flex;
 }
+
 .date-div {
     margin-bottom: 20px;
 }

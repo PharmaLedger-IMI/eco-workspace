@@ -1,4 +1,4 @@
-import NotificationMapper from "../../utils/NotificationMapper.js";
+import NotificationMapper from "../utils/NotificationMapper.js";
 
 export default class NotificationsService {
 

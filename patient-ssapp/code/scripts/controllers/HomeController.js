@@ -1,29 +1,56 @@
-
 import CommunicationService from "../services/CommunicationService.js";
-import TrialService from "./services/TrialService.js";
-import NotificationsService from "./services/NotificationsService.js";
+import TrialService from "../services/TrialService.js";
+import NotificationsService from "../services/NotificationsService.js";
 import DateTimeService from "./services/DateTimeService.js";
 
 const {WebcController} = WebCardinal.controllers;
 export default class HomeController extends WebcController {
+
     constructor(element, history) {
         super(element, history);
-
         this.setModel({});
+        this._initServices(this.DSUStorage);
+        this._initHandlers();
+        this._initTrials();
+        this._handleMessages();
+    }
 
+    addMessageToNotificationDsu(message) {
+        this.NotificationsService.saveNotification({
+            ...message.message,
+            uid: message.message.ssi,
+            viewed: false,
+            startDate: DateTimeService.convertStringToLocaleDate()
+        }, (err, data) => {
+            if (err) {
+                return console.log(err);
+            }
+        })
+    }
+
+    _initServices(DSUStorage) {
+        this.TrialService = new TrialService(DSUStorage);
+        this.NotificationsService = new NotificationsService(DSUStorage);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
+    }
+
+    _initHandlers() {
+        this._attachHandlerTrialClick();
+        this._attachHandlerNotifications();
+        this._attachHandlerSites();
+    }
+
+    _initTrials() {
         this.model.trials = [];
-
-
-        this.TrialService = new TrialService(this.DSUStorage);
-        this.NotificationsService = new NotificationsService(this.DSUStorage);
-
-        this.TrialService.getServiceModel((err, data) => {
-            if(err) {
+        this.TrialService.getTrials((err, data) => {
+            if (err) {
                 return console.error(err);
             }
-            this.model.trials.push(...data.trials);
+            this.model.trials = data;
         })
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
+    }
+
+    _handleMessages() {
         this.CommunicationService.listenForMessages((err, data) => {
             if (err) {
                 return console.error(err);
@@ -35,7 +62,10 @@ export default class HomeController extends WebcController {
                     return console.log(err);
                 }
                 trial.uid = trial.keySSI;
-                this.TrialService.updateTrial({...trial, tpNumber: data.message.useCaseSpecifics.tpNumber}, (err, trial) => {
+                this.TrialService.updateTrial({
+                    ...trial,
+                    tpNumber: data.message.useCaseSpecifics.tpNumber
+                }, (err, trial) => {
                     if (err) {
                         return console.log(err);
                     }
@@ -51,23 +81,6 @@ export default class HomeController extends WebcController {
                 })
             });
         });
-
-        this._attachHandlerTrialClick();
-        this._attachHandlerSites();
-        this._attachHandlerNotifications();
-    }
-
-    addMessageToNotificationDsu(message) {
-        this.NotificationsService.saveNotification({
-            ...message.message,
-            uid: message.message.ssi,
-            viewed: false,
-            startDate: DateTimeService.convertStringToLocaleDate()
-        }, (err, data) => {
-            if (err) {
-                return console.log(err);
-            }
-        })
     }
 
     _attachHandlerTrialClick() {

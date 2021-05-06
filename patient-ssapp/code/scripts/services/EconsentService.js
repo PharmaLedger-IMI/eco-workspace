@@ -1,5 +1,5 @@
 
-import EconsentModel from "../../models/EconsentModel.js";
+import EconsentModel from "../models/EconsentModel.js";
 
 export default class EconsentService {
 

@@ -1,4 +1,4 @@
-import TrialDataService from "./services/TrialDataService.js";
+import TrialDataService from "../services/TrialDataService.js";
 
 const {WebcController} = WebCardinal.controllers;
 export default class SiteController  extends WebcController {

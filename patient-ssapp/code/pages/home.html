@@ -22,7 +22,8 @@
                     <psk-label class="user-name-title" label="TP NUMBER"></psk-label>
                     <div class="padding-sides" data-for="@trials">
 
-                        <div class="dispay-flex date-div justify-content-space-between" data-tag="home:trial" data="@id">
+                        <div class="dispay-flex date-div justify-content-space-between" data-tag="home:trial"
+                             data="@id">
                             <div class="dispay-flex">
                                 <div class="left-image padding-image">
                                     <psk-img class="ed-control-image" src="assets/images/hospital.png"
@@ -32,7 +33,7 @@
                                     <div>
                                         <div>
                                             <strong>
-                                                <psk-echo value="Trial Name: " ></psk-echo>
+                                                <psk-echo value="Trial Name: "></psk-echo>
                                                 {{@name}}
                                             </strong>
                                         </div>
@@ -51,16 +52,15 @@
                                     </div>
                                 </div>
                             </div>
-<!--                            <button data-tag="home:trial" data="@id" >>></button>-->
                         </div>
                         <hr>
 
                     </div>
 
                     <psk-card class="patient-button-row">
-                        <psk-button class="patient-general-button" data-tag="home:visits">Visits</psk-button>
-                        <psk-button class="patient-general-button" data-tag="home:site">Study Contact Information</psk-button>
-                        <psk-button class="patient-general-button" data-tag="home:questionnaire">FAQ</psk-button>
+                        <button class="long-button" data-tag="home:visits">Visits</button>
+                        <button class="long-button" data-tag="home:site">Study Contact Information</button>
+                        <button class="long-button" data-tag="home:questionnaire">FAQ</button>
                     </psk-card>
                 </psk-layout-item>
             </psk-layout>

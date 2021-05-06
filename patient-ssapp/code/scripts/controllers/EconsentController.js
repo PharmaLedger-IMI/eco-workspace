@@ -1,7 +1,6 @@
-import TrialDataService from "./services/TrialDataService.js";
-import TrialService from "./services/TrialService.js";
+import TrialService from "../services/TrialService.js";
 import FileDownloader from "../utils/FileDownloader.js";
-import EconsentService from "./services/EconsentService.js";
+import EconsentService from "../services/EconsentService.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -10,48 +9,31 @@ export default class EconsentController extends WebcController {
         super(element, history);
 
         this.setModel({});
+        this._initServices(this.DSUStorage);
+        this._initHandlers();
         this.model.econsent = {};
         this.model.signed = false;
         this.model.declined = false;
-        this.TrialService = new TrialService(this.DSUStorage);
+
         this.historyData = this.history.win.history.state.state;
-        this.EconsentService = new EconsentService(this.DSUStorage);
-        this.TrialDataService = new TrialDataService(this.DSUStorage);
+        this._initEconsent();
 
-        this._getData();
-
-
-        this.on('econsent:versions', (event) => {
-            console.log('econsent:versions')
-        })
-
-        this.on('econsent:question', (event) => {
-            console.log('econsent:question')
-        })
-
-        this.on('econsent:withdraw', (event) => {
-            this.showModal('withdrawEconsent', {}, (err, response) => {
-                if (err) {
-                    return console.log(err);
-                }
-                console.log('withdrawEconsent', response)
-                if (response) {
-                    this.model.econsent.signed = false;
-                }
-                this.EconsentService.saveEconsent(this.model.econsent, (err, response) => {
-                    if (err) {
-                        return console.log(err);
-                    }
-
-                })
-            });
-        })
-
-        this.attachHandlerReadEconsent();
-        this.attachHandlerDownload();
     }
 
-    _getData() {
+    _initServices(DSUStorage) {
+        this.TrialService = new TrialService(DSUStorage);
+        this.EconsentService = new EconsentService(DSUStorage);
+    }
+
+    _initHandlers() {
+        this._attachHandlerReadEconsent();
+        this._attachHandlerDownload();
+        this._attachHandlerQuestion();
+        this._attachHandlerVersions();
+        this._attachHandlerWithdraw();
+    }
+
+    _initEconsent() {
         debugger;
         this.TrialService.getEconsent(this.historyData.trialuid, this.historyData.ecoId, (err, econsent) => {
             if (err) {
@@ -83,7 +65,7 @@ export default class EconsentController extends WebcController {
 
     }
 
-    attachHandlerDownload() {
+    _attachHandlerDownload() {
         this.onTagClick('econsent:download', (model, target, event) => {
             console.log('econsent:download')
             event.preventDefault();
@@ -97,7 +79,7 @@ export default class EconsentController extends WebcController {
         })
     }
 
-    attachHandlerReadEconsent() {
+    _attachHandlerReadEconsent() {
         this.onTagClick('econsent:read', (model, target, event) => {
             debugger
             this.navigateToPageTag('sign-econsent', {
@@ -106,6 +88,38 @@ export default class EconsentController extends WebcController {
                 ecoId: this.historyData.ecoId
             })
         });
+    }
+
+    _attachHandlerVersions() {
+        this.on('econsent:versions', (event) => {
+            console.log('econsent:versions')
+        })
+    }
+
+    _attachHandlerQuestion() {
+        this.on('econsent:question', (event) => {
+            console.log('econsent:question')
+        })
+    }
+
+    _attachHandlerWithdraw() {
+        this.on('econsent:withdraw', (event) => {
+            this.showModal('withdrawEconsent', {}, (err, response) => {
+                if (err) {
+                    return console.log(err);
+                }
+                console.log('withdrawEconsent', response)
+                if (response) {
+                    this.model.econsent.signed = false;
+                }
+                this.EconsentService.saveEconsent(this.model.econsent, (err, response) => {
+                    if (err) {
+                        return console.log(err);
+                    }
+
+                })
+            });
+        })
     }
 
     getEconsentFilePath(trialSSI, consentSSI, fileName) {

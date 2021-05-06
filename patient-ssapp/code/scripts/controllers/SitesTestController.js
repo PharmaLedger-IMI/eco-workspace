@@ -1,6 +1,6 @@
 import ContainerController from '../../../cardinal/controllers/base-controllers/ContainerController.js';
-import EconsentService from "./services/EconsentService.js";
-import TrialDataService from "./services/TrialDataService.js";
+import EconsentService from "../services/EconsentService.js";
+import TrialDataService from "../services/TrialDataService.js";
 
 const initModel = {}
 

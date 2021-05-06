@@ -1,12 +1,12 @@
-.econsent-question {
+.consent-question {
     color: #00345b;
     font-weight: bold;
     font-size: 12px;
     float: right;
-    margin:10px
+    margin: 10px
 }
 
-.withdrow-button {
+.withdraw-button {
     background-color: #00345b !important;
     border: #00345b !important;
     box-shadow: none !important;
@@ -20,6 +20,7 @@
     margin-right: 10px;
     margin-left: 10px;
 }
+
 .cancel-button {
     background-color: white !important;
     border: #00345b !important;

@@ -1,7 +1,6 @@
-import TrialDataService from "./services/TrialDataService.js";
 import Constants from "./Constants.js";
-import TrialService from "./services/TrialService.js";
-import EconsentService from "./services/EconsentService.js";
+import TrialService from "../services/TrialService.js";
+import EconsentService from "../services/EconsentService.js";
 const {WebcController} = WebCardinal.controllers;
 
 export default class TrialController extends WebcController {
@@ -72,38 +71,25 @@ export default class TrialController extends WebcController {
         this.model.signed = false;
         this.model.declined= false;
 
-        this.TrialService = new TrialService(this.DSUStorage);
-        this.EconsentService = new EconsentService(this.DSUStorage);
-        let receivedObject = this.history.win.history.state.state
+       let receivedObject = this.history.win.history.state.state
         this.model.keyssi = receivedObject.trialSSI;
         this.model.tpNumber = receivedObject.tpNumber;
+        this._initServices(this.DSUStorage);
+        this._initTrial();
+        this._initHandlers();
+    }
 
-        this.mountData();
-        debugger;
+    _initServices(DSUStorage) {
+        this.TrialService = new TrialService(DSUStorage);
+        this.EconsentService = new EconsentService(this.DSUStorage);
+    }
 
+    _initHandlers() {
         this._attachHandlerConsentClick();
-
-        this.on('go-to-site', (event) => {
-            this.navigateToPageByTag('site', event.data);
-        })
+        this._attachHandlerSiteClick();
     }
 
-    _attachHandlerConsentClick() {
-
-        this.onTagEvent('go-to-econsent', 'click', (model, target, event) => {
-                event.preventDefault();
-                event.stopImmediatePropagation();
-                debugger
-                this.navigateToPageTag('econsent', {
-                    tpNumber: this.model.tpNumber,
-                    trialuid: this.model.keyssi,
-                    ecoId: target.attributes['data'].value
-                });
-            }
-        )
-    }
-
-    mountData() {
+    _initTrial() {
         this.TrialService.getTrial(this.model.keyssi, (err, trial) => {
             if (err) {
                 return console.log(err);
@@ -134,6 +120,27 @@ export default class TrialController extends WebcController {
                 console.log(data.econsents);
             })
         });
+    }
+
+    _attachHandlerConsentClick() {
+
+        this.onTagEvent('go-to-econsent', 'click', (model, target, event) => {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                debugger
+                this.navigateToPageTag('econsent', {
+                    tpNumber: this.model.tpNumber,
+                    trialuid: this.model.keyssi,
+                    ecoId: target.attributes['data'].value
+                });
+            }
+        )
+    }
+
+    _attachHandlerSiteClick (){
+        this.on('go-to-site', (event) => {
+            this.navigateToPageByTag('site', event.data);
+        })
     }
 
 }

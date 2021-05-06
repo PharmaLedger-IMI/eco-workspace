@@ -1,8 +1,9 @@
-import TrialService from "./services/TrialService.js";
-import EconsentService from "./services/EconsentService.js";
+import TrialService from "../services/TrialService.js";
+import EconsentService from "../services/EconsentService.js";
 import FileDownloader from "../utils/FileDownloader.js";
 
 import CommunicationService from "../services/CommunicationService.js";
+import NotificationsService from "../services/NotificationsService";
 
 
 const {WebcController} = WebCardinal.controllers;
@@ -14,25 +15,21 @@ export default class ReadEconsentController extends WebcController {
         super(element, history);
         this.setModel({});
         this.model.econsent = {};
-        let econsentTA = {
-
-            name: "econsent",
-            required: true,
-            value: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum'
-        }
-
-        this.model.econsentTa = econsentTA;
         debugger;
-        this.TrialService = new TrialService(this.DSUStorage);
-        this.EconsentService = new EconsentService(this.DSUStorage);
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
+        this._initServices(this.DSUStorage);
+
         this.model.historyData = this.history.win.history.state.state;
-        this.readEconsent();
-        this._attachHandlerDecline();
-        this._attachHandlerSign();
+        this._initConsent();
+        this._initHandlers();
     }
 
-    readEconsent() {
+    _initServices(DSUStorage) {
+        this.TrialService = new TrialService(DSUStorage);
+        this.EconsentService = new EconsentService(DSUStorage);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
+    }
+
+    _initConsent() {
         this.TrialService.getEconsent(this.model.historyData.trialuid, this.model.historyData.ecoId, (err, econsent) => {
             if (err) {
                 return console.log(err);
@@ -46,6 +43,10 @@ export default class ReadEconsentController extends WebcController {
 
     }
 
+    _initHandlers() {
+        this._attachHandlerDecline();
+        this._attachHandlerSign();
+    }
 
     _finishProcess(event, response) {
         event.stopImmediatePropagation();

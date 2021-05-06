@@ -4,7 +4,7 @@
     margin-right: 10px;
 
 }
-.econsent-block {
+.consent-block {
     display: flex;
     clear: both;
 }
@@ -22,7 +22,7 @@
     padding: 20px;
 }
 
-.dispay-flex {
+.display-flex {
     display: flex;
 }
 .date-div {
@@ -31,7 +31,6 @@
 
 .date-div .left-image.padding-image {
     float: left;
-    /*padding-top: 25px;*/
 }
 
 .date-div .right-text {
@@ -43,6 +42,7 @@
     width: 100%;
     background-color: #00345b;
 }
+
 .trial-status {
     color: #00345b;
     font-weight: bold;
@@ -71,8 +71,8 @@
     vertical-align: middle;
     border-radius: 10px;
 }
+
 .go-back-link  {
-    margin: 0;
     font-size: 25px;
     margin-right: 10px;
 }
@@ -88,13 +88,13 @@
     border-radius: 50%;
     height: 30px;
     background-color:  #595959;
-
 }
+
 .padding-sides {
     padding: 20px;
 }
-.circle_selected {
 
+.circle_selected {
     background-color: #00345b;
     font-size: 15px;
     color: #f2f2f2;
@@ -113,13 +113,14 @@
     display:flex;
 }
 
-.econsent-actions{
+.consent-actions{
     margin-top: 3px;
     display:block;
     margin-left: 10px;
     height: 70px;
 }
-.econsent-read{
+
+.consent-read{
     display: inline-flex;
     justify-content: center;
     background-color: #00345b;
@@ -130,6 +131,6 @@
     margin-left: 10%;
 }
 
-.econsent-read right {
+.consent-read right {
     margin-right: 10%;
 }

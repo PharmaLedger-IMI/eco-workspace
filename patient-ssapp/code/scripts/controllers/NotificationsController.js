@@ -1,21 +1,26 @@
-import TrialDataService from "./services/TrialDataService.js";
 import Constants from "./Constants.js";
-import NotificationsService from "./services/NotificationsService.js";
+import NotificationsService from "../services/NotificationsService.js";
+
 
 const {WebcController} = WebCardinal.controllers;
 
 export default class NotificationsController extends WebcController {
     constructor(element, history) {
         super(element, history);
-
         this.setModel({});
+        this._initServices(this.DSUStorage);
+        this._attachNotificationNavigationHandler();
+        this._initNotifications();
+    }
+
+    _initServices(DSUStorage) {
+        this.NotificationsService = new NotificationsService(DSUStorage);
+    }
+
+    _initNotifications() {
         this.model.notifications = [];
-
-        this.TrialDataService = new TrialDataService(this.DSUStorage);
-        this.NotificationsService = new NotificationsService(this.DSUStorage);
-
         this.NotificationsService.getNotifications((err, data) => {
-            if(err) {
+            if (err) {
                 return console.log(err);
             }
             let notificationsMappedAndSorted = data.notifications.map(notification => {
@@ -38,13 +43,10 @@ export default class NotificationsController extends WebcController {
             });
             this.model.notifications.push(...notificationsMappedAndSorted);
         })
-
-        this.attachNotificationNavigateHandler();
     }
 
-    attachNotificationNavigateHandler(){
+    _attachNotificationNavigationHandler() {
         this.onTagEvent('go-to-notification', 'click', (model, target, event) => {
-            debugger
             let page = Constants.getPageByNotificationType(model.type)
             if (!model.viewed) {
                 model.viewed = true;

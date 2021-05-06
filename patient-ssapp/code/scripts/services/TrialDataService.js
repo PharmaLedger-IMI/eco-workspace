@@ -1,5 +1,5 @@
-import Constants from "../Constants.js";
-import EcoAdaptorApi from "../../../EcoAdaptorApi.js";
+import Constants from "../controllers/Constants.js";
+import EcoAdaptorApi from "../../EcoAdaptorApi.js";
 
 export default class TrialDataService {
 

@@ -1,30 +1,24 @@
 <psk-example class="mobile-example">
     <psk-mobile class="noPadding background" disable-header>
-        <link rel="stylesheet" href="/assets/css/pages/econsent.css">
+        <link rel="stylesheet" href="/assets/css/pages/consent.css">
         <webc-container controller="ReadEconsentController">
             <div class="header-title">
                 <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
                 <psk-label class="scan-error-title" label="Trial"></psk-label>
             </div>
-            <hr/>
-
             <psk-label slot="title" class="bpd-modal-title" label="Sign Econsent"></psk-label>
-
             <div class='content'>
             </div>
-
-<!--            <psk-textarea class="read-box" view-model="@econsentTa"></psk-textarea>-->
             <div class="econsent-actions">
                 <div class="dispay-flex">
-                    <psk-button class="econsent-read"
-                                data-tag="econsent:decline" >Decline
+                    <psk-button class="consent-read"
+                                data-tag="econsent:decline">Decline
                     </psk-button>
-                    <psk-button class="econsent-read"
+                    <psk-button class="consent-read"
                                 data-tag="econsent:sign">Sign
                     </psk-button>
                 </div>
             </div>
-
         </webc-container>
     </psk-mobile>
 </psk-example>
