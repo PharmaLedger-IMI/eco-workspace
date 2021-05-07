@@ -102,9 +102,9 @@ export default class TrialController extends WebcController {
                 if (err) {
                     return console.log(err);
                 }
-
-                this.model.econsents.push(...data.econsents);
-                this.EconsentService.getServiceModel((err, data) => {
+                this.model.econsents =[];
+                this.model.econsents.push(...data);
+                this.EconsentService.getEconsents((err, data) => {
                     if (err) {
                         return console.error(err);
                     }

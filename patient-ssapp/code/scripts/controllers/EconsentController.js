@@ -15,7 +15,7 @@ export default class EconsentController extends WebcController {
         this.model.signed = false;
         this.model.declined = false;
 
-        this.historyData = this.history.win.history.state.state;
+        this.model.historyData = this.history.win.history.state.state;
         this._initEconsent();
 
     }
@@ -35,19 +35,19 @@ export default class EconsentController extends WebcController {
 
     _initEconsent() {
         debugger;
-        this.TrialService.getEconsent(this.historyData.trialuid, this.historyData.ecoId, (err, econsent) => {
+        this.TrialService.getEconsent(this.model.historyData.trialuid, this.model.historyData.ecoId, (err, econsent) => {
             if (err) {
                 return console.log(err);
             }
             this.model.econsent = econsent;
             this.model.econsent.versionDate = new Date(econsent.versionDate).toLocaleDateString("sw");
 
-            this.fileDownloader = new FileDownloader(this.getEconsentFilePath(this.historyData.trialuid, this.historyData.ecoId, econsent.attachment), econsent.attachment);
+            this.fileDownloader = new FileDownloader(this.getEconsentFilePath(this.model.historyData.trialuid, this.model.historyData.ecoId, econsent.attachment), econsent.attachment);
 
             this._downloadFile();
             console.log("File downloader" + this.fileDownloader);
             this.model.tpEconsents = [];
-            this.EconsentService.getServiceModel((err, data) => {
+            this.EconsentService.getEconsents((err, data) => {
                 if (err) {
                     return console.error(err);
                 }
@@ -83,9 +83,9 @@ export default class EconsentController extends WebcController {
         this.onTagClick('econsent:read', (model, target, event) => {
             debugger
             this.navigateToPageTag('sign-econsent', {
-                tpNumber: this.historyData.tpNumber,
-                trialuid: this.historyData.trialuid,
-                ecoId: this.historyData.ecoId
+                tpNumber: this.model.historyData.tpNumber,
+                trialuid: this.model.historyData.trialuid,
+                ecoId: this.model.historyData.ecoId
             })
         });
     }
@@ -116,7 +116,6 @@ export default class EconsentController extends WebcController {
                     if (err) {
                         return console.log(err);
                     }
-
                 })
             });
         })

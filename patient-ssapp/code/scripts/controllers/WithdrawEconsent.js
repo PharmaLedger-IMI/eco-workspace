@@ -1,16 +1,18 @@
 const {WebcController} = WebCardinal.controllers;
 export default class WithdrawEconsent extends WebcController {
+
     constructor(element, history) {
         super(element, history);
         this.setModel({})
-        this.on('openFeedback', (evt) => {
-            this.feedbackEmitter = evt.detail;
-        });
-        this.withdrawOnClick();
-        this.attachHandlerCancel();
+        this._initHandlers();
     }
 
-    withdrawOnClick() {
+    _initHandlers() {
+        this._attachHandlerCancel();
+        this._attachHandlerWithdraw();
+    }
+
+    _attachHandlerWithdraw() {
         this.onTagEvent('withdraw-on-click', 'click', (model, target, event) => {
             this.send('confirmed', {
                 withdraw: true,
@@ -18,7 +20,7 @@ export default class WithdrawEconsent extends WebcController {
         });
     }
 
-    attachHandlerCancel() {
+    _attachHandlerCancel() {
         this.onTagEvent('cancel', 'click', (model, target, event) => {
             this.send('closed', {
                 withdraw: false,
@@ -31,15 +33,4 @@ export default class WithdrawEconsent extends WebcController {
         this.responseCallback(undefined, response);
     };
 
-
-
-    _emitFeedback(event, message, alertType) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-
-        this.model.error.value = 'Reason is requiered';
-        if (typeof this.feedbackEmitter === 'function') {
-            this.feedbackEmitter(message, "Validation", alertType)
-        }
-    }
 }

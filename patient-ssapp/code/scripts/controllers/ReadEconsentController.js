@@ -1,21 +1,20 @@
 import TrialService from "../services/TrialService.js";
 import EconsentService from "../services/EconsentService.js";
 import FileDownloader from "../utils/FileDownloader.js";
-
 import CommunicationService from "../services/CommunicationService.js";
-import NotificationsService from "../services/NotificationsService";
-
 
 const {WebcController} = WebCardinal.controllers;
 
 const TEXT_MIME_TYPE = "text/";
 
 export default class ReadEconsentController extends WebcController {
+
     constructor(element, history) {
+        debugger;
         super(element, history);
         this.setModel({});
         this.model.econsent = {};
-        debugger;
+
         this._initServices(this.DSUStorage);
 
         this.model.historyData = this.history.win.history.state.state;
