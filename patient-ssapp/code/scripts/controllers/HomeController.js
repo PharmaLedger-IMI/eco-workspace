@@ -1,5 +1,6 @@
 import CommunicationService from "../services/CommunicationService.js";
 import TrialService from "../services/TrialService.js";
+import EconsentService from "../services/EconsentService.js";
 import NotificationsService from "../services/NotificationsService.js";
 import DateTimeService from "../services/DateTimeService.js";
 
@@ -32,6 +33,7 @@ export default class HomeController extends WebcController {
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.NotificationsService = new NotificationsService(DSUStorage);
+        this.EconsentService = new EconsentService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
     }
 
@@ -72,17 +74,19 @@ export default class HomeController extends WebcController {
                     }
                     debugger
                     this.model.trials.push(trial);
-                    this.TrialService.getEconsents(trial.keySSI, (err, data) => {
+                    this.TrialService.getEconsents(trial.keySSI, (err, consents) => {
                         if (err) {
                             return console.log(err);
                         }
-                        console.log(data.econsents);
+                        this._saveMandatoryConsent(consents);
                     })
+
                     console.log(trial);
                 })
             });
         });
     }
+
 
     _attachHandlerTrialClick() {
 
@@ -109,6 +113,22 @@ export default class HomeController extends WebcController {
         this.onTagClick('home:notifications', (event) => {
             this.navigateToPageTag('notifications');
         });
+    }
+
+    _saveMandatoryConsent(consents) {
+        // debugger;
+        // for (i = 0; i < consents.length; i++) {
+        if (consents[0].type === 'Mandatory') {
+            let consent = consents[0];
+            consent.actions = [{name: 'required'}];
+            consent.signed = false;
+            this.EconsentService.saveEconsent(consent, (err, response) => {
+                if (err) {
+                    return console.log(err);
+                }
+            })
+        }
+        // }
     }
 
 }

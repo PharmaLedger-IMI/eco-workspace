@@ -14,9 +14,7 @@ export default class ReadEconsentController extends WebcController {
         super(element, history);
         this.setModel({});
         this.model.econsent = {};
-
         this._initServices(this.DSUStorage);
-
         this.model.historyData = this.history.win.history.state.state;
         this._initConsent();
         this._initHandlers();
@@ -67,6 +65,7 @@ export default class ReadEconsentController extends WebcController {
 
                 this.model.econsent.signed = true;
                 this.model.econsent.declined = false;
+                this.model.econsent.actions.push({name:'signed'});
                 this._saveEconsent();
                 this.sendMessageToSponsorAndHCO('sign-econsent', this.model.econsent.keySSI, 'TP signed econsent ');
             }
@@ -187,7 +186,7 @@ export default class ReadEconsentController extends WebcController {
 
     _saveEconsent() {
         debugger;
-        this.EconsentService.saveEconsent({
+        this.EconsentService.updateEconsent({
             ...this.model.econsent,
             uid: this.model.econsent.keySSI,
             signed: this.model.econsent.signed,

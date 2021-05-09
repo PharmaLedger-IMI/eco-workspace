@@ -9,21 +9,10 @@
             <div class="subheader">
                 <psk-label label="TP STATUS"></psk-label>
             </div>
-            <div class="status">
+            <div class="status" data-for="@tpStatus">
                 <div class="circle_selected">1</div>
-                <div data-if="@signed">
-                    <container slot="true">
-                        <psk-label class="title" label="Entered- Main Consent Signed"></psk-label>
-                    </container>
-                    <container slot="false">
-                        <psk-label class="title" label="Consent Signature Required"></psk-label>
-                    </container>
-                </div>
-                <div data-if="@declined">
-                    <container slot="true">
-                        <psk-label class="title" label=" E-consent declined"></psk-label>
-                    </container>
-                </div>
+                {{@name}}
+                <psk-label class="title" label={{@name}}></psk-label>
             </div>
             <div class="subheader">
                 <psk-label label="General Data"></psk-label>

@@ -1,6 +1,7 @@
 import Constants from "./Constants.js";
 import TrialService from "../services/TrialService.js";
 import EconsentService from "../services/EconsentService.js";
+
 const {WebcController} = WebCardinal.controllers;
 
 export default class TrialController extends WebcController {
@@ -44,23 +45,24 @@ export default class TrialController extends WebcController {
             name: 'Entered',
             valueNumber: 1,
             details: 'Main Consent Signed',
-            isSet :false,
+            isSet: false,
         },
         enrolled: {
             name: 'Enrolled',
             valueNumber: 2,
             details: 'Tp Seem eligible for the trial',
-            isSet :false,
+            isSet: false,
 
         },
         completed: {
             name: 'Completed',
             valueNumber: 3,
             details: 'Tp has completed the planed treatment',
-            isSet :false,
+            isSet: false,
         },
 
     }
+
     constructor(element, history) {
         super(element, history);
 
@@ -68,10 +70,8 @@ export default class TrialController extends WebcController {
 
         this.model.trial = {};
         this.model.econsents = [];
-        this.model.signed = false;
-        this.model.declined= false;
-
-       let receivedObject = this.history.win.history.state.state
+        this.model.tpStatus = {};
+        let receivedObject = this.history.win.history.state.state
         this.model.keyssi = receivedObject.trialSSI;
         this.model.tpNumber = receivedObject.tpNumber;
         this._initServices(this.DSUStorage);
@@ -102,22 +102,15 @@ export default class TrialController extends WebcController {
                 if (err) {
                     return console.log(err);
                 }
-                this.model.econsents =[];
+                this.model.econsents = [];
                 this.model.econsents.push(...data);
                 this.EconsentService.getEconsents((err, data) => {
                     if (err) {
                         return console.error(err);
                     }
-                    this.model.tpEconsents.push(...data.econsents);
-                    let ec = this.model.tpEconsents.find(ec => ec.id == this.model.econsents[0].id);
-                    if (ec) {
-                        this.model.econsents[0].signed =this.model.tpEconsents[this.model.tpEconsents.length-1].signed;
-                        this.model.signed = this.model.tpEconsents[this.model.tpEconsents.length-1].signed;
-                        this.model.econsents[0].declined = this.model.tpEconsents[this.model.tpEconsents.length-1].declined;
-                        this.model.declined = this.model.tpEconsents[this.model.tpEconsents.length-1].declined;
-                    }
+                    this.model.tpStatus = data[0].actions;
                 })
-                console.log(data.econsents);
+
             })
         });
     }
@@ -137,7 +130,7 @@ export default class TrialController extends WebcController {
         )
     }
 
-    _attachHandlerSiteClick (){
+    _attachHandlerSiteClick() {
         this.on('go-to-site', (event) => {
             this.navigateToPageByTag('site', event.data);
         })

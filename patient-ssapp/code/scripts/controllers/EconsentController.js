@@ -12,9 +12,6 @@ export default class EconsentController extends WebcController {
         this._initServices(this.DSUStorage);
         this._initHandlers();
         this.model.econsent = {};
-        this.model.signed = false;
-        this.model.declined = false;
-
         this.model.historyData = this.history.win.history.state.state;
         this._initEconsent();
 
@@ -112,7 +109,7 @@ export default class EconsentController extends WebcController {
                 if (response) {
                     this.model.econsent.signed = false;
                 }
-                this.EconsentService.saveEconsent(this.model.econsent, (err, response) => {
+                this.EconsentService.updateEconsent(this.model.econsent, (err, response) => {
                     if (err) {
                         return console.log(err);
                     }
