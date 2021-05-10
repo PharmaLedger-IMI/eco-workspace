@@ -116,19 +116,19 @@ export default class HomeController extends WebcController {
     }
 
     _saveMandatoryConsent(consents) {
-        // debugger;
-        // for (i = 0; i < consents.length; i++) {
-        if (consents[0].type === 'Mandatory') {
-            let consent = consents[0];
-            consent.actions = [{name: 'required'}];
-            consent.signed = false;
+
+        consents.forEach((consent, i) => {
+            consent.actions = [];
+            if (consent.type === 'Mandatory') {
+                consent.actions.push({name: 'required'});
+                consent.signed = false;
+            }
             this.EconsentService.saveEconsent(consent, (err, response) => {
                 if (err) {
                     return console.log(err);
                 }
             })
-        }
-        // }
+        })
     }
 
 }
