@@ -6,9 +6,9 @@ export default class EconsentService extends DSUService {
         super(DSUStorage, '/econsents');
     }
 
-    getEconsents = (callback) => this.getEntities(callback);
+    getEconsentsStatuses = (callback) => this.getEntities(callback);
 
-    getEconsent = (uid, callback) => this.getEntity(uid, callback);
+    getEconsentStatus = (uid, callback) => this.getEntity(uid, callback);
 
     saveEconsent = (data, callback) => this.saveEntity(data, callback);
 

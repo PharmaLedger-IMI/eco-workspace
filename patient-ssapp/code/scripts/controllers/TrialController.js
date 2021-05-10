@@ -6,63 +6,6 @@ const {WebcController} = WebCardinal.controllers;
 
 export default class TrialController extends WebcController {
 
-    trialStatus = {
-        first: {
-            name: 'First',
-            color: '#00cc00',
-            value: 1,
-            background: ''
-        },
-        second: {
-            name: 'Second',
-            color: '#00cc00',
-            value: 2,
-            background: ''
-        },
-        third: {
-            name: 'Third',
-            color: '#00cc00',
-            value: 3,
-            background: ''
-        },
-        fourth: {
-            name: 'Forth',
-            color: '#00cc00',
-            value: 4,
-            background: ''
-        },
-        Completed: {
-            name: 'Completed',
-            color: '#00cc00',
-            value: 5,
-            background: ''
-        },
-
-    }
-
-    tpStatus = {
-        entered: {
-            name: 'Entered',
-            valueNumber: 1,
-            details: 'Main Consent Signed',
-            isSet: false,
-        },
-        enrolled: {
-            name: 'Enrolled',
-            valueNumber: 2,
-            details: 'Tp Seem eligible for the trial',
-            isSet: false,
-
-        },
-        completed: {
-            name: 'Completed',
-            valueNumber: 3,
-            details: 'Tp has completed the planed treatment',
-            isSet: false,
-        },
-
-    }
-
     constructor(element, history) {
         super(element, history);
 
@@ -70,7 +13,7 @@ export default class TrialController extends WebcController {
 
         this.model.trial = {};
         this.model.econsents = [];
-        this.model.tpStatus = {};
+        this.model.tpStatus = [];
         let receivedObject = this.history.win.history.state.state
         this.model.keyssi = receivedObject.trialSSI;
         this.model.tpNumber = receivedObject.tpNumber;
@@ -94,7 +37,6 @@ export default class TrialController extends WebcController {
             if (err) {
                 return console.log(err);
             }
-            debugger
             this.model.trial = trial;
             this.model.tpEconsents = [];
             this.model.trial.color = Constants.getColorByTrialStatus(this.model.trial.status);
@@ -104,13 +46,12 @@ export default class TrialController extends WebcController {
                 }
                 this.model.econsents = [];
                 this.model.econsents.push(...data);
-                this.EconsentService.getEconsents((err, data) => {
+                this.EconsentService.getEconsentsStatuses((err, data) => {
                     if (err) {
                         return console.error(err);
                     }
-                    this.model.tpStatus = data[0].actions;
+                    this._setTpStatus(data);
                 })
-
             })
         });
     }
@@ -120,7 +61,6 @@ export default class TrialController extends WebcController {
         this.onTagEvent('go-to-econsent', 'click', (model, target, event) => {
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                debugger
                 this.navigateToPageTag('econsent', {
                     tpNumber: this.model.tpNumber,
                     trialuid: this.model.keyssi,
@@ -134,6 +74,14 @@ export default class TrialController extends WebcController {
         this.on('go-to-site', (event) => {
             this.navigateToPageByTag('site', event.data);
         })
+    }
+
+    _setTpStatus(consents) {
+        consents.forEach((consent) => {
+            if (consent.type === 'Mandatory') {
+                this.model.tpStatus = consent.actions;
+            }
+        });
     }
 
 }

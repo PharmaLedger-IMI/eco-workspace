@@ -1,20 +1,19 @@
 import TrialService from "../services/TrialService.js";
 import FileDownloader from "../utils/FileDownloader.js";
 import EconsentService from "../services/EconsentService.js";
+import ConsentStatusMapper from "../utils/ConsentStatusMapper.js";
 
 const {WebcController} = WebCardinal.controllers;
 
 export default class EconsentController extends WebcController {
     constructor(element, history) {
         super(element, history);
-
         this.setModel({});
         this._initServices(this.DSUStorage);
         this._initHandlers();
         this.model.econsent = {};
         this.model.historyData = this.history.win.history.state.state;
         this._initEconsent();
-
     }
 
     _initServices(DSUStorage) {
@@ -31,35 +30,23 @@ export default class EconsentController extends WebcController {
     }
 
     _initEconsent() {
-        debugger;
         this.TrialService.getEconsent(this.model.historyData.trialuid, this.model.historyData.ecoId, (err, econsent) => {
             if (err) {
                 return console.log(err);
             }
             this.model.econsent = econsent;
-            this.model.econsent.versionDate = new Date(econsent.versionDate).toLocaleDateString("sw");
-
             this.fileDownloader = new FileDownloader(this.getEconsentFilePath(this.model.historyData.trialuid, this.model.historyData.ecoId, econsent.attachment), econsent.attachment);
-
+            this.model.econsent.versionDate = new Date(econsent.versionDate).toLocaleDateString("sw");
             this._downloadFile();
-            console.log("File downloader" + this.fileDownloader);
-            this.model.tpEconsents = [];
-            this.EconsentService.getEconsents((err, data) => {
+            this.EconsentService.getEconsentsStatuses((err, data) => {
                 if (err) {
                     return console.error(err);
                 }
-                this.model.tpEconsents.push(...data.econsents);
-                let ec = this.model.tpEconsents.find(ec => ec.id == this.model.econsent.id);
-                if (ec) {
-
-                    this.model.signed = this.model.tpEconsents[this.model.tpEconsents.length - 1].signed;
-
-                    this.model.declined = this.model.tpEconsents[this.model.tpEconsents.length - 1].declined;
-                }
+                this.model.status = data.find(element => element.foreignConsentId === this.model.historyData.ecoId);
+                this.model.signed = ConsentStatusMapper.isSigned(this.model.status.actions);
+                this.model.declined = ConsentStatusMapper.isDeclined(this.model.status.actions);
             })
         });
-
-
     }
 
     _attachHandlerDownload() {
@@ -67,8 +54,6 @@ export default class EconsentController extends WebcController {
             console.log('econsent:download')
             event.preventDefault();
             event.stopImmediatePropagation();
-            debugger;
-
             this.fileDownloader.downloadFileToDevice({
                 contentType: this.mimeType,
                 rawBlob: this.rawBlob
@@ -78,12 +63,7 @@ export default class EconsentController extends WebcController {
 
     _attachHandlerReadEconsent() {
         this.onTagClick('econsent:read', (model, target, event) => {
-            debugger
-            this.navigateToPageTag('sign-econsent', {
-                tpNumber: this.model.historyData.tpNumber,
-                trialuid: this.model.historyData.trialuid,
-                ecoId: this.model.historyData.ecoId
-            })
+            this.navigateToPageTag('sign-econsent', {... this.model.historyData});
         });
     }
 
@@ -105,11 +85,10 @@ export default class EconsentController extends WebcController {
                 if (err) {
                     return console.log(err);
                 }
-                console.log('withdrawEconsent', response)
                 if (response) {
-                    this.model.econsent.signed = false;
+                    this.model.status.actions.push({name: 'withdraw'});
                 }
-                this.EconsentService.updateEconsent(this.model.econsent, (err, response) => {
+                this.EconsentService.updateEconsent(this.model.status, (err, response) => {
                     if (err) {
                         return console.log(err);
                     }
