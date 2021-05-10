@@ -15,6 +15,7 @@ let getInitModel = () => {
             required: true,
             dataFormat: "MM YYYY",
             placeholder: "MM YYYY",
+            type: "month",
             value: ''
         },
         gender: {
@@ -61,5 +62,4 @@ export default class AddTrialParticipantController extends WebcController {
             }
         )
     }
-
 }
