@@ -78,7 +78,7 @@ export default class HomeController extends WebcController {
                         if (err) {
                             return console.log(err);
                         }
-                        this._saveMandatoryConsent(consents);
+                        this._saveConsentsStatuses(consents);
                     })
 
                     console.log(trial);
@@ -90,11 +90,9 @@ export default class HomeController extends WebcController {
 
     _attachHandlerTrialClick() {
 
-        this.onTagEvent('home:trial', 'click', (model, target, event) => {
+        this.onTagEvent('home:trial', 'click', (trial, target, event) => {
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                debugger
-                let trial = model
                 this.navigateToPageTag('trial', {
                     trialSSI: trial.keySSI,
                     tpNumber: trial.tpNumber
@@ -115,14 +113,13 @@ export default class HomeController extends WebcController {
         });
     }
 
-    _saveMandatoryConsent(consents) {
-
+    _saveConsentsStatuses(consents) {
         consents.forEach((consent, i) => {
             consent.actions = [];
             if (consent.type === 'Mandatory') {
                 consent.actions.push({name: 'required'});
-                consent.signed = false;
             }
+            consent.foreignConsentId = consent.keySSI;
             this.EconsentService.saveEconsent(consent, (err, response) => {
                 if (err) {
                     return console.log(err);

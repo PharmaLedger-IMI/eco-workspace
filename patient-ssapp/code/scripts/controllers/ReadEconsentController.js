@@ -2,6 +2,7 @@ import TrialService from "../services/TrialService.js";
 import EconsentService from "../services/EconsentService.js";
 import FileDownloader from "../utils/FileDownloader.js";
 import CommunicationService from "../services/CommunicationService.js";
+import ConsentStatusMapper from "../utils/ConsentStatusMapper.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -10,12 +11,12 @@ const TEXT_MIME_TYPE = "text/";
 export default class ReadEconsentController extends WebcController {
 
     constructor(element, history) {
-        debugger;
         super(element, history);
         this.setModel({});
         this.model.econsent = {};
         this._initServices(this.DSUStorage);
         this.model.historyData = this.history.win.history.state.state;
+        debugger;
         this._initConsent();
         this._initHandlers();
     }
@@ -33,11 +34,16 @@ export default class ReadEconsentController extends WebcController {
             }
             this.model.econsent = econsent;
             this.fileDownloader = new FileDownloader(this.getEconsentFilePath(this.model.historyData.trialuid, this.model.historyData.ecoId, econsent.attachment), econsent.attachment);
-
             this._downloadFile();
-            console.log("File downloader" + this.fileDownloader);
+            this.EconsentService.getEconsentsStatuses((err, data) => {
+                if (err) {
+                    return console.error(err);
+                }
+                this.model.status = data.find(element => element.foreignConsentId === this.model.historyData.ecoId);
+                this.model.signed = ConsentStatusMapper.isSigned(this.model.status.actions);
+                this.model.declined = ConsentStatusMapper.isDeclined(this.model.status.data.actions);
+            })
         });
-
     }
 
     _initHandlers() {
@@ -60,14 +66,8 @@ export default class ReadEconsentController extends WebcController {
         this.onTagEvent('econsent:sign', 'click', (model, target, event) => {
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                debugger
-                this.navigateToPageTag('home');
-
-                this.model.econsent.signed = true;
-                this.model.econsent.declined = false;
-                this.model.econsent.actions.push({name:'signed'});
+                this.model.status.actions.push({name: 'signed'});
                 this._saveEconsent();
-                this.sendMessageToSponsorAndHCO('sign-econsent', this.model.econsent.keySSI, 'TP signed econsent ');
             }
         )
     }
@@ -82,9 +82,7 @@ export default class ReadEconsentController extends WebcController {
                 this.showModalFromTemplate('withdraw-econsent', (event) => {
                         const response = event.detail;
                         if (response.withdraw) {
-                            debugger;
-                            this.model.econsent.signed = false;
-                            this.model.econsent.declined = true;
+                            this.model.econsent.actionns.push({name: 'withdraw'});
                             this._saveEconsent();
                             this.sendMessageToSponsorAndHCO('withdraw-econsent', this.model.econsent.keySSI, 'TP withdrow econsent ');
                         }
@@ -157,8 +155,6 @@ export default class ReadEconsentController extends WebcController {
         if (content) {
             content.append(assetObject);
         }
-
-        //this.feedbackController.setLoadingState(false);
     }
 
     _displayFile = () => {
@@ -185,17 +181,18 @@ export default class ReadEconsentController extends WebcController {
     }
 
     _saveEconsent() {
-        debugger;
         this.EconsentService.updateEconsent({
-            ...this.model.econsent,
-            uid: this.model.econsent.keySSI,
-            signed: this.model.econsent.signed,
-            declined: this.model.econsent.declined,
-            signedDate: new Date()
+            ...this.model.status
         }, (err, data) => {
             if (err) {
                 return console.log(err);
             }
+            this._finishActionSave();
         })
+    }
+
+    _finishActionSave() {
+        this.navigateToPageTag('home');
+        this.sendMessageToSponsorAndHCO('sign-econsent', this.model.econsent.keySSI, 'TP signed econsent ');
     }
 }
