@@ -32,6 +32,12 @@
       "tag": "sign-econsent"
     },
     {
+      "name": "SignManuallyEconsent",
+      "path": "/signmanually-econsent",
+      "src": "signmanually-econsent.html",
+      "tag": "signmanually-econsent"
+    },
+    {
       "name": "Site",
       "path": "/site",
       "src": "site.html",

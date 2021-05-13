@@ -10,8 +10,6 @@ class CommunicationService {
     DEFAULT_FORMAT_IDENTIFIER = "did";
     DEMO_METHOD_NAME = "demo";
 
-    listenerIsActive = false;
-
     constructor(identity) {
         w3cDID.createIdentity(this.DEMO_METHOD_NAME, identity, (err, didDocument) => {
             if (err) {
@@ -39,9 +37,7 @@ class CommunicationService {
     }
 
     readMessage(callback) {
-        this.listenerIsActive = true;
         this.didDocument.readMessage((err, msg) => {
-            this.listenerIsActive = false;
             if (err) {
                 return callback(err);
             }
@@ -51,11 +47,10 @@ class CommunicationService {
     }
 
     listenForMessages(callback) {
-        setInterval(() => {
-            if (!this.listenerIsActive) {
-                this.readMessage(callback)
-            }
-        }, 100);
+        this.readMessage((err, msg) => {
+            callback(err, msg);
+            this.listenForMessages(callback);
+        })
     }
 }
 

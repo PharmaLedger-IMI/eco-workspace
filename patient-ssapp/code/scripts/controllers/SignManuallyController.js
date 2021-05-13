@@ -8,20 +8,24 @@ const {WebcController} = WebCardinal.controllers;
 
 const TEXT_MIME_TYPE = "text/";
 
-export default class ReadEconsentController extends WebcController {
+export default class SignManuallyController extends WebcController {
+
+    attachment = {
+        label: 'Select signed consent',
+
+        listFiles: true,
+        filesAppend: false,
+        files: [],
+    };
 
     constructor(element, history) {
         super(element, history);
         this.setModel({});
         this.model.econsent = {};
+        this.model.status ={attachment : this.attachment};
         this._initServices(this.DSUStorage);
         this.model.historyData = this.history.win.history.state.state;
         debugger;
-        this.model.required = {};
-        this.model.declined = {};
-        this.model.signed = {};
-        this.model.withdraw = {};
-
         this._initConsent();
         this._initHandlers();
     }
@@ -45,20 +49,14 @@ export default class ReadEconsentController extends WebcController {
                     return console.error(err);
                 }
                 this.model.status = data.find(element => element.foreignConsentId === this.model.historyData.ecoId);
-                this.model.signed = ConsentStatusMapper.isSigned(this.model.status.actions);
-                this.model.declined = ConsentStatusMapper.isDeclined(this.model.status.actions);
-                this.model.required = ConsentStatusMapper.isRequired(this.model.status.actions);
-                this.model.withdraw = ConsentStatusMapper.isWithdraw(this.model.status.actions);
-
             })
         });
     }
 
     _initHandlers() {
-        this._attachHandlerDecline();
         this._attachHandlerSign();
-        this._attachHandlerManuallySign();
         this._attachHandlerDownload();
+        this._attachHandlerAddEconsentFile();
     }
 
     _finishProcess(event, response) {
@@ -82,31 +80,11 @@ export default class ReadEconsentController extends WebcController {
         )
     }
 
-
-    _attachHandlerDecline() {
-
-        this.onTagEvent('econsent:withdraw', 'click', (model, target, event) => {
-                event.preventDefault();
-                event.stopImmediatePropagation();
-
-                this.showModalFromTemplate('withdraw-econsent', (event) => {
-                        const response = event.detail;
-                        if (response.withdraw) {
-                            this.model.status.actions.push({name: 'withdraw'});
-                            this._saveEconsent();
-                            this.sendMessageToSponsorAndHCO('withdraw-econsent', this.model.econsent.keySSI, 'TP withdrow econsent ');
-                        }
-                    },
-                    (event) => {
-                        const response = event.detail;
-                    }), {
-                    controller: 'WithdrawEconsent',
-                    disableExpanding: true,
-                    disableBackdropClosing: false,
-                    title: 'Decline Econsent',
-                }
-            }
-        )
+    _attachHandlerAddEconsentFile (){
+        this.on('add-file', (event) => {
+            console.log(event.data);
+            if (event.data) this.file = event.data;
+        });
     }
 
     _attachHandlerDownload() {
@@ -119,12 +97,6 @@ export default class ReadEconsentController extends WebcController {
                 rawBlob: this.rawBlob
             });
         })
-    }
-
-    _attachHandlerManuallySign() {
-        this.onTagClick('manual:sign', (model, target, event) => {
-            this.navigateToPageTag('signmanually-econsent', {...this.model.historyData});
-        });
     }
 
     sendMessageToSponsorAndHCO(operation, ssi, shortMessage) {
@@ -150,63 +122,9 @@ export default class ReadEconsentController extends WebcController {
                 type: this.mimeType
             });
 
-
-            if (this.mimeType.indexOf(TEXT_MIME_TYPE) !== -1) {
-                //this._prepareTextEditorViewModel();
-            } else {
-                this._displayFile();
-            }
         });
     }
 
-    _loadPdfOrTextFile = () => {
-        this._loadBlob((base64Blob) => {
-            const obj = document.createElement("object");
-            obj.type = this.mimeType;
-            obj.data = base64Blob;
-
-            this._appendAsset(obj);
-        });
-    }
-
-    _loadBlob = (callback) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(this.blob);
-        reader.onloadend = function () {
-            callback(reader.result);
-        }
-    }
-
-    _appendAsset = (assetObject) => {
-        let content = this.element.querySelector(".content");
-
-        if (content) {
-            content.append(assetObject);
-        }
-    }
-
-    _displayFile = () => {
-
-        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-            const file = new File([this.rawBlob], this.fileName);
-            window.navigator.msSaveOrOpenBlob(file);
-            this.feedbackController.setLoadingState(true);
-            return;
-        }
-
-        window.URL = window.URL || window.webkitURL;
-        const fileType = this.mimeType.split("/")[0];
-        switch (fileType) {
-            case "image": {
-                this._loadImageFile();
-                break;
-            }
-            default: {
-                this._loadPdfOrTextFile();
-                break;
-            }
-        }
-    }
 
     _saveEconsent() {
         this.EconsentService.updateEconsent({

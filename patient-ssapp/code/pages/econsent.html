@@ -11,20 +11,10 @@
                 <div class="subheader">
                     <psk-label class="subheader" label="Consent Status"></psk-label>
                 </div>
-                <div class="status">
-                    <div class="circle_selected">1</div>
-                    <div data-if="@signed">
-                        <container slot="true">
-                            <psk-label class="title" label="Entered- Main Consent Signed"></psk-label>
-                        </container>
-                        <container slot="false">
-                            <psk-label class="title" label="Consent Signature Required"></psk-label>
-                        </container>
-                    </div>
-                    <div data-if="@declined">
-                        <container slot="true">
-                            <psk-label class="title" label=" E-consent declined"></psk-label>
-                        </container>
+                <div class="padding-10" data-for="@status.actions">
+                    <div class="status">
+                        <div class="circle_selected">1</div>
+                        {{@name}}
                     </div>
                 </div>
 
@@ -44,9 +34,10 @@
                         <button class="consent-read"
                                 data-tag="econsent:read">Read
                         </button>
-                        <button class="consent-read right"
-                                data-tag="econsent:download">Download
-                        </button>
+<!--                        This code is commented because is not yet clear if the pdf can be downloed from this page or not -->
+<!--                        <button class="consent-read right"-->
+<!--                                data-tag="econsent:download">Download-->
+<!--                        </button>-->
                     </div>
                 </div>
             </div>

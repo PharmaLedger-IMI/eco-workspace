@@ -10,10 +10,32 @@
 
 .content {
     width: 100%;
-    height: 80%;
+    height: 70%;
 }
 
 .content object {
     width: 100%;
     height: 100%;
+}
+
+.button {
+    margin-left:10px;
+
+}
+.padding {
+    margin: 10px;
+}
+
+.consent-read{
+    display: inline-flex;
+    justify-content: center;
+    background-color: #00345b;
+    width: 40%;
+    height: 45px;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    margin-top:5px;
+    font-size: 16px;
+    margin-left: 10%;
 }
