@@ -92,4 +92,13 @@ export default class ConsentStatusMapper {
         }
         return false;
     }
+
+    static isRequired(actions) {
+        if (actions) {
+            if (actions[actions.length - 1].name.toLowerCase() === this.consentStatuses['required'].name.toLowerCase()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

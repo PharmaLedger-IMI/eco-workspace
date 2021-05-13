@@ -10,14 +10,45 @@
             <div class='content'>
             </div>
             <div class="econsent-actions">
+                <button class="consent-read" style="width: 80%"
+                        data-tag="econsent:download">Download
+                </button>
                 <div class="dispay-flex">
-                    <psk-button class="consent-read"
-                                data-tag="econsent:decline">Decline
-                    </psk-button>
-                    <psk-button class="consent-read"
-                                data-tag="econsent:sign">Sign
-                    </psk-button>
+                    <div data-if="@required">
+                        <container slot="true">
+                            <div >
+                                <button class="consent-read"
+                                            data-tag="manual:sign">Manual Sign
+                                </button>
+                                <button class="consent-read"
+                                            data-tag="econsent:sign">Sign
+                                </button>
+                            </div>
+                            <button class="consent-read"
+                                        data-tag="econsent:decline">Decline
+                            </button>
+
+                        </container>
+
+                    </div>
                 </div>
+
+                <div data-if="@signed">
+                    <container slot="true">
+                        <button class="consent-read" style="background-color: red"
+                                    data-tag="econsent:withdraw">Withdraw
+                        </button>
+                    </container>
+                </div>
+
+                <div data-if="@withdraw">
+                    <container slot="true">
+                        <button class="consent-read"
+                                    data-tag="econsent:sign">Re-Sign
+                        </button>
+                    </container>
+                </div>
+
             </div>
         </webc-container>
     </psk-mobile>

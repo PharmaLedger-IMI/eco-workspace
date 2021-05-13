@@ -3,6 +3,7 @@ export default class WithdrawEconsent extends WebcController {
 
     constructor(element, history) {
         super(element, history);
+        debugger;
         this.setModel({})
         this._initHandlers();
     }
