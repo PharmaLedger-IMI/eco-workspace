@@ -6,9 +6,9 @@ export default class TrialParticipantsService extends DSUService {
         super(DSUStorage, '/tps');
     }
 
-    getTrialParticipants = (trialSSI, callback) => this.getEntities(callback, this._getTrialParticipantsPath(trialSSI))
+    getTrialParticipants = (trialSSI, callback) => this.getEntities(this._getTrialParticipantsPath(trialSSI), callback)
 
-    saveTrialParticipant = (trialSSI, trialParticipant, callback) => this.saveEntity(trialParticipant, callback, this._getTrialParticipantsPath(trialSSI));
+    saveTrialParticipant = (trialSSI, trialParticipant, callback) => this.saveEntity(trialParticipant, this._getTrialParticipantsPath(trialSSI), callback);
 
     _getTrialParticipantsPath = (keySSI) => this.PATH + '/' + keySSI;
 }
