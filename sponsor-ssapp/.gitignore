@@ -11,3 +11,8 @@ bundles
 package-lock.json
 .eslintrc.json
 CommunicationService.js
+DateTimeService.js
+DSUService.js
+Constants.js
+FileDownloader.js
+DSUServiceAsync.js

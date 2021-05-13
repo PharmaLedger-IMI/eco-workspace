@@ -1,13 +1,16 @@
 const KEYSSI_FILE_PATH = 'keyssi.json';
-const KEYSSI_PATH = '/sharedDB';
 const SHARED_DB = 'sharedDB';
 
+const keySSISpace = require('opendsu').loadApi('keyssi');
+
 class SharedStorage {
+  dbInit = false;
+
   constructor(dsuStorage) {
     this.DSUStorage = dsuStorage;
-    this.DSUStorage.enableDirectAccess(() => {
-      this.init();
-    });
+    // this.DSUStorage.enableDirectAccess(() => { // XXX: what this does?
+    this.init();
+    // });
   }
 
   async init() {
@@ -16,58 +19,117 @@ class SharedStorage {
       const sharedSSI = await this.getSharedSSI();
       let db = require('opendsu').loadAPI('db');
       this.myDb = db.getWalletDB(sharedSSI, SHARED_DB);
+      this.myDb.on('initialised', () => {
+        this.dbInit = true;
+      });
     } catch (error) {
       console.log(error);
-      alert('Wrong configuration as user/holder:');
     }
   }
 
   waitForDb(func, args) {
     func = func.bind(this);
     setTimeout(function () {
-      func(...args);
-    }, 10);
+      () => {
+        func(...args);
+      };
+    }, 2000);
   }
 
   dbReady() {
     return this.myDb !== undefined && this.myDb !== 'initializing';
   }
 
-  filter(tableName, query, sort, limit, callback) {
-    if (this.dbReady()) {
-      this.myDb.filter(tableName, query, sort, limit, callback);
-    } else {
-      this.waitForDb(this.filter, [tableName, query, sort, limit, callback]);
-    }
+  filter(tableName, query, sort, limit) {
+    return new Promise((resolve, reject) => {
+      const waitForDb = function () {
+        if (this.dbInit) {
+          this.myDb.filter(tableName, query, sort, limit, (err, result) => {
+            if (err) {
+              reject(err);
+            }
+            resolve(result);
+            return;
+          });
+        } else {
+          setTimeout(() => {
+            waitForDb();
+            return;
+          }, 30);
+        }
+      }.bind(this);
+      waitForDb();
+    });
   }
 
-  addSharedFile(path, value, callback) {
+  addSharedFile(path, value) {
     throw Error('Not implemented');
   }
 
-  getRecord(tableName, key, callback) {
-    if (this.dbReady()) {
-      this.myDb.getRecord(tableName, key, callback);
-    } else {
-      this.waitForDb(this.getRecord, [tableName, key, callback]);
-    }
+  getRecord(tableName, key) {
+    return new Promise((resolve, reject) => {
+      const waitForDb = function () {
+        if (this.dbInit) {
+          this.myDb.getRecord(tableName, key, (err, result) => {
+            if (err) {
+              reject(err);
+            }
+            resolve(result);
+            return;
+          });
+        } else {
+          setTimeout(() => {
+            waitForDb();
+            return;
+          }, 30);
+        }
+      }.bind(this);
+      waitForDb();
+    });
   }
 
-  insertRecord(tableName, key, record, callback) {
-    if (this.dbReady()) {
-      console.log('Insert Record:', tableName, key);
-      this.myDb.insertRecord(tableName, key, record, callback);
-    } else {
-      this.waitForDb(this.insertRecord, [tableName, key, record, callback]);
-    }
+  insertRecord(tableName, key, record) {
+    return new Promise((resolve, reject) => {
+      const waitForDb = function () {
+        if (this.dbInit) {
+          this.myDb.insertRecord(tableName, key, record, (err, result) => {
+            if (err) {
+              reject(err);
+            }
+            resolve(result);
+            return;
+          });
+        } else {
+          setTimeout(() => {
+            waitForDb();
+            return;
+          }, 30);
+        }
+      }.bind(this);
+      waitForDb();
+    });
   }
 
-  updateRecord(tableName, key, record, callback) {
-    if (this.dbReady()) {
-      this.myDb.updateRecord(tableName, key, record, callback);
-    } else {
-      this.waitForDb(this.updateRecord, [tableName, key, record, callback]);
-    }
+  updateRecord(tableName, key, record) {
+    return new Promise((resolve, reject) => {
+      const waitForDb = function () {
+        if (this.dbInit) {
+          this.myDb.updateRecord(tableName, key, record, (err, result) => {
+            if (err) {
+              reject(err);
+            }
+            resolve(result);
+            return;
+          });
+        } else {
+          setTimeout(() => {
+            waitForDb();
+            return;
+          }, 30);
+        }
+      }.bind(this);
+      waitForDb();
+    });
   }
 
   beginBatch() {
@@ -95,25 +157,21 @@ class SharedStorage {
   }
 
   async getSharedSSI() {
-    // const fileList = await this.listFiles('/');
-    // if (fileList.includes(KEYSSI_FILE_PATH)) {
-    //   const data = await this.getItem(KEYSSI_FILE_PATH);
-    //   return data.sharedSSI;
-    // } else {
-    //   const data = await this.createSharedSSI();
-    //   return data.sharedSSI;
-    // }
-    const result = await this.createSharedSSI();
-    return result;
+    const fileList = await this.listFiles('/');
+    if (fileList.includes(KEYSSI_FILE_PATH)) {
+      const data = await this.getItem(KEYSSI_FILE_PATH);
+      const parsed = keySSISpace.parse(data.sharedSSI);
+      return parsed;
+    } else {
+      const keyssi = await this.createSharedSSI();
+      return keyssi;
+    }
   }
 
   async createSharedSSI() {
-    const result = await this.createSSIAndMount(KEYSSI_PATH);
-    console.log('keySSI:', result.keySSIInstance);
-    // const result = await this.setItem(KEYSSI_FILE_PATH, { sharedSSI: keySSI });
-    // const test = await this.setItem(KEYSSI_PATH + '/test.json', { test: '' });
-    // const test2 = await this.setItem('/test.json', { test2: '' });
-    return result.keySSIInstance;
+    const ssi = keySSISpace.createSeedSSI('default');
+    await this.setItem(KEYSSI_FILE_PATH, { sharedSSI: ssi.derive().getIdentifier() });
+    return ssi;
   }
 
   getItem(path) {
@@ -133,28 +191,11 @@ class SharedStorage {
   setItem(path, content) {
     return new Promise((resolve, reject) => {
       this.DSUStorage.setObject(path, content, async (err) => {
-        console.log(path, content);
         if (err) {
           reject(new Error(err));
           return;
         }
         resolve(content);
-      });
-    });
-  }
-
-  createSSIAndMount(path) {
-    return new Promise((resolve, reject) => {
-      this.DSUStorage.call('createSSI', path, (err, keySSIObject) => {
-        if (err) {
-          reject(new Error(err));
-          return;
-        }
-
-        const keyssi = require('opendsu').loadApi('keyssi');
-
-        const result = keyssi.parse(keySSIObject);
-        resolve({ keySSIInstance: result });
       });
     });
   }

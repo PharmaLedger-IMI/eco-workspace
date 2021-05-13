@@ -1,127 +1,50 @@
-// import getSharedStorage from './SharedDBStorageService.js';
-export default class TrialsService {
-  TRIALS_PATH = '/trials';
-  TRIALS_LIST_FILENAME = 'trials.json';
-  TRIALS_LIST_PATH = this.TRIALS_PATH + '/' + this.TRIALS_LIST_FILENAME;
+import getSharedStorage from './SharedDBStorageService.js';
+import DSUServiceAsync from './DSUServiceAsync.js';
+
+export default class TrialsService extends DSUServiceAsync {
+  TRIALS_TABLE = 'trials';
 
   constructor(DSUStorage) {
+    super(DSUStorage, '/trials');
     this.DSUStorage = DSUStorage;
-    // this.storageService = getSharedStorage(DSUStorage);
+    this.storageService = getSharedStorage(DSUStorage);
   }
 
   async getTrials() {
-    const result = await this.readTrialList();
-    if (result && result.table) {
-      return result.table.filter((x) => !x.deleted);
+    const result = await this.storageService.filter(this.TRIALS_TABLE);
+    if (result) {
+      return result.filter((x) => !x.deleted);
     } else return [];
   }
 
   async getTrial(keySSI) {
-    const result = await this.getItem(this.getDsuStoragePath(keySSI));
+    const result = await this.getEntityAsync(keySSI);
     return result;
   }
 
   async createTrial(data) {
-    const keySSI = await this.createSSIAndMount(this.TRIALS_PATH);
-    data.keySSI = keySSI;
-    const trial = await this.setItem(this.getDsuStoragePath(data.keySSI), data);
-    await this.addTrialToList({
-      id: data.id,
-      keySSI: data.keySSI,
-      name: data.name,
-      status: data.status,
-      countries: data.countries,
+    const trial = await this.saveEntityAsync(data);
+    await this.addTrialToDB({
+      id: trial.id,
+      keySSI: trial.uid,
+      name: trial.name,
+      status: trial.status,
+      countries: trial.countries,
     });
     return trial;
   }
 
   async deleteTrial(id) {
-    await this.removeTrialFromList(id);
-  }
+    const selectedTrial = await this.storageService.getRecord(this.TRIALS_TABLE, id);
 
-  async removeTrialFromList(id) {
-    const trialList = await this.getItem(this.TRIALS_LIST_PATH);
-    const trial = trialList.table.find((x) => x.id === id);
-    trial['deleted'] = true;
-    const result = await this.setItem(this.TRIALS_LIST_PATH, trialList);
-    return result;
-  }
-
-  async addTrialToList(data) {
-    let trialList = await this.getItem(this.TRIALS_LIST_PATH);
-    trialList.table = [...trialList.table, data];
-    const result = await this.setItem(this.TRIALS_LIST_PATH, trialList);
-    return result;
-  }
-
-  async createTrialList() {
-    return await this.setItem(this.TRIALS_LIST_PATH, { table: [] });
-  }
-
-  async readTrialList() {
-    try {
-      const fileList = await this.listFiles(this.TRIALS_PATH);
-      if (fileList.includes(this.TRIALS_LIST_FILENAME)) {
-        return await this.getItem(this.TRIALS_LIST_PATH);
-      } else {
-        return await this.createTrialList();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  getItem(path) {
-    return new Promise((resolve, reject) => {
-      this.DSUStorage.getItem(path, (err, content) => {
-        if (err) {
-          reject(new Error(err));
-          return;
-        }
-        let textDecoder = new TextDecoder('utf-8');
-        let json = JSON.parse(textDecoder.decode(content));
-        resolve(json);
-      });
+    const updatedTrial = await this.storageService.updateRecord(this.TRIALS_TABLE, selectedTrial.id, {
+      ...selectedTrial,
+      deleted: true,
     });
   }
 
-  setItem(path, content) {
-    return new Promise((resolve, reject) => {
-      this.DSUStorage.setObject(path, content, async (err) => {
-        if (err) {
-          reject(new Error(err));
-          return;
-        }
-        resolve(content);
-      });
-    });
-  }
-
-  createSSIAndMount(path) {
-    return new Promise((resolve, reject) => {
-      this.DSUStorage.call('createSSIAndMount', path, async (err, keySSI) => {
-        if (err) {
-          reject(new Error(err));
-          return;
-        }
-        resolve(keySSI);
-      });
-    });
-  }
-
-  listFiles(path) {
-    return new Promise((resolve, reject) => {
-      this.DSUStorage.call('listFiles', path, async (err, result) => {
-        if (err) {
-          reject(new Error(err));
-          return;
-        }
-        resolve(result);
-      });
-    });
-  }
-
-  getDsuStoragePath(keySSI) {
-    return this.TRIALS_PATH + '/' + keySSI + '/data.json';
+  async addTrialToDB(data) {
+    const newRecord = await this.storageService.insertRecord(this.TRIALS_TABLE, data.id, data);
+    return newRecord;
   }
 }

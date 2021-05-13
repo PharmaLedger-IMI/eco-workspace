@@ -3,3 +3,8 @@ node_modules
 /code/constitution
 /code/scripts/bundles
 CommunicationService.js
+DateTimeService.js
+DSUService.js
+Constants.js
+FileDownloader.js
+DSUServiceAsync.js

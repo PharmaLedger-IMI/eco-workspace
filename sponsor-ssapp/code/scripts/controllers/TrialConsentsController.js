@@ -42,7 +42,7 @@ export default class TrialConsentsController extends WebcController {
     super(element, history);
     let { id, keySSI } = this.history.location.state;
 
-    // console.log(id, keySSI);
+    console.log('INSIDE CONSTRUCTOR', id, keySSI, this.history.location);
 
     this.keySSI = keySSI;
     this.consentsService = new ConsentsService(this.DSUStorage);
@@ -72,13 +72,19 @@ export default class TrialConsentsController extends WebcController {
   }
 
   async init() {
-    await this.getConsents();
-    this.paginateConsents(this.model.consents);
+    try {
+      await this.getConsents();
+      this.paginateConsents(this.model.consents);
+    } catch (error) {
+      console.log(error);
+      this.showFeedbackToast('ERROR: There was an issue accessing trials object', 'Result', 'toast');
+    }
   }
 
   async getConsents() {
     try {
       this.consents = await this.consentsService.getTrialConsents(this.keySSI);
+      console.log('CONSENTS RECEIVED:', this.consents);
       this.setConsentsModel(this.consents);
     } catch (error) {
       console.log(error);
@@ -204,6 +210,7 @@ export default class TrialConsentsController extends WebcController {
           const response = event.detail;
           this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
+          console.log('THIS.KEYSSI:', this.keySSI);
           this.sendMessageToHco('add-trial', this.keySSI, 'New trial');
         },
         (event) => {

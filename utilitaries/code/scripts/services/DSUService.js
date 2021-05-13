@@ -67,8 +67,8 @@ export default class DSUService {
         })
     }
 
-    mountEntity(keySSI, callback) {
-        this.DSUStorage.call('mount', this.PATH, keySSI, (err) => {
+    mountEntity(keySSI, callback, path = this.PATH) {
+        this.DSUStorage.call('mount', path, keySSI, (err) => {
             this.getEntity(keySSI, (err, entity) => {
                 if (err) {
                     return callback(err, undefined);
@@ -78,8 +78,8 @@ export default class DSUService {
         })
     }
 
-    unmountEntity(uid, callback) {
-        let unmountPath = this.PATH + '/' + uid;
+    unmountEntity(uid, callback, path = this.PATH) {
+        let unmountPath = path + '/' + uid;
         this.DSUStorage.call('unmount', unmountPath, (err, result) => {
             if (err) {
                 return callback(err, undefined);
