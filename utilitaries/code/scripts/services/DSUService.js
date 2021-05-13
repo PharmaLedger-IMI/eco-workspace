@@ -7,7 +7,11 @@ export default class DSUService {
         this.PATH = path;
     }
 
-    getEntities(callback, path = this.PATH) {
+    getEntities(path, callback) {
+        if (typeof path === 'function') {
+            callback = path;
+            path = this.PATH;
+        }
         this.DSUStorage.call('listDSUs', path, (err, dsuList) => {
             if (err) {
                 return callback(err, undefined);
@@ -37,7 +41,11 @@ export default class DSUService {
         })
     }
 
-    getEntity(uid, callback, path = this.PATH) {
+    getEntity(uid, path, callback) {
+        if (typeof path === 'function') {
+            callback = path;
+            path = this.PATH;
+        }
         this.DSUStorage.getItem(this._getDsuStoragePath(uid, path), (err, content) => {
             if (err) {
                 return callback(err, undefined);
@@ -47,18 +55,26 @@ export default class DSUService {
         })
     }
 
-    saveEntity(entity, callback, path = this.PATH) {
+    saveEntity(entity, path, callback) {
+        if (typeof path === 'function') {
+            callback = path;
+            path = this.PATH;
+        }
         this.DSUStorage.call('createSSIAndMount', path, (err, keySSI) => {
             if (err) {
                 return callback(err, undefined);
             }
             entity.KeySSI = keySSI;
             entity.uid = keySSI;
-            this.updateEntity(entity, callback, path);
+            this.updateEntity(entity, path, callback);
         })
     }
 
-    updateEntity(entity, callback, path = this.PATH) {
+    updateEntity(entity, path, callback) {
+        if (typeof path === 'function') {
+            callback = path;
+            path = this.PATH;
+        }
         this.DSUStorage.setObject(this._getDsuStoragePath(entity.uid, path), entity, (err) => {
             if (err) {
                 return callback(err, undefined);
