@@ -2,6 +2,7 @@ const {WebcController} = WebCardinal.controllers;
 import CommunicationService from "../services/CommunicationService.js";
 import NotificationsService from "../services/NotificationsService.js";
 import TrialService from "../services/TrialService.js";
+import getSharedStorage from '../services/SharedStorage.js';
 
 let getInitModel = () => {
     return {
@@ -50,6 +51,24 @@ export default class HomeController extends WebcController {
         this.TrialService = new TrialService(DSUStorage);
         this.NotificationsService = new NotificationsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+        this.StorageService = getSharedStorage(this.DSUStorage);
+        debugger;
+        this.StorageService.insertRecord('trials', 'abcd', {trial: 'abcd', number: '01111'}, (err, obj) => {
+
+            debugger;
+            if (err){
+                console.log(err);
+            }
+            console.log("Insert home controlele");
+            debugger;
+            this.StorageService.getRecord('trials', 'abcd', (err, prod) => {
+                console.log(err, prod);
+            });
+        });
+        this.StorageService.getRecord('trials', 'bb', (err, prod) => {
+            console.log(err, prod);
+        });
+
     }
 
     _initHandlers() {
@@ -120,4 +139,6 @@ export default class HomeController extends WebcController {
             }
         )
     }
+
+
 }
