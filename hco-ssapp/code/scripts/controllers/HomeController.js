@@ -2,7 +2,8 @@ const {WebcController} = WebCardinal.controllers;
 import CommunicationService from "../services/CommunicationService.js";
 import NotificationsService from "../services/NotificationsService.js";
 import TrialService from "../services/TrialService.js";
-import getSharedStorage from '../services/SharedStorage.js';
+import SharedStorage from "../services/SharedStorage.js";
+import TrialRepository from '../repositories/TrialRepository.js';
 
 let getInitModel = () => {
     return {
@@ -37,6 +38,38 @@ export default class HomeController extends WebcController {
         this._initHandlers();
         this._initTrial();
         this._handleMessages();
+        // TEST DATABASE ONLY => TODO: REMOVE THIS
+
+        let testObject = {
+            someKey: "someValue",
+            rms: 'delivers'
+        }
+        this.StorageService.insertRecord('testTable', 'testKey', testObject, (err, obj) => {
+            // if err is something like <Cannot read property 'originalMessage' of undefined> it means that this key already exist.
+            console.log('StorageService.insertRecord', err, obj);
+            this.StorageService.getRecord('testTable', 'testKey', (err, data) => {
+                console.log('StorageService.getRecord', err, data);
+            });
+        })
+
+        this.TrialRepository.create('somethingElse', testObject, (err, obj) => {
+            // if err is something like <Cannot read property 'originalMessage' of undefined> it means that this key already exist.
+            console.log('TrialRepository.create', err, obj);
+            this.TrialRepository.findBy('somethingElse', (err, data) => {
+                console.log('TrialRepository.findBy', err, data);
+            })
+        })
+
+        this.TrialRepository.findByAsync('somethingElse')
+            .then((result) => console.log('this.TrialRepository.findByAsync#Promise', result));
+
+        (async () => {
+            let result = await this.TrialRepository.findByAsync('somethingElse');
+            console.log('this.TrialRepository.findByAsync#await', result)
+        })()
+
+
+        // END DATABASE TESTING
     }
 
     addMessageToNotificationDsu(message) {
@@ -51,24 +84,8 @@ export default class HomeController extends WebcController {
         this.TrialService = new TrialService(DSUStorage);
         this.NotificationsService = new NotificationsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
-        this.StorageService = getSharedStorage(this.DSUStorage);
-        debugger;
-        this.StorageService.insertRecord('trials', 'abcd', {trial: 'abcd', number: '01111'}, (err, obj) => {
-
-            debugger;
-            if (err){
-                console.log(err);
-            }
-            console.log("Insert home controlele");
-            debugger;
-            this.StorageService.getRecord('trials', 'abcd', (err, prod) => {
-                console.log(err, prod);
-            });
-        });
-        this.StorageService.getRecord('trials', 'bb', (err, prod) => {
-            console.log(err, prod);
-        });
-
+        this.StorageService = SharedStorage.getInstance(DSUStorage);
+        this.TrialRepository = TrialRepository.getInstance(DSUStorage);
     }
 
     _initHandlers() {
