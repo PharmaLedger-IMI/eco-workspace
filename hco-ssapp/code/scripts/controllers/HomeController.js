@@ -152,7 +152,7 @@ export default class HomeController extends WebcController {
         this.onTagEvent('home:trial', 'click', (model, target, event) => {
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                this.navigateToPageTag('trial', model.keySSI);
+                this.navigateToPageTag('trial', model.KeySSI);
             }
         )
     }
