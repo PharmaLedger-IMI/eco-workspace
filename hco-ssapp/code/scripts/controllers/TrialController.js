@@ -3,6 +3,7 @@ import Constants from "../utils/Constants.js";
 import TrialService from "../services/TrialService.js";
 import TrialParticipantsService from "../services/TrialParticipantsService.js";
 import CommunicationService from '../services/CommunicationService.js';
+import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
 
 let getInitModel = () => {
     return {
@@ -27,6 +28,7 @@ export default class TrialController extends WebcController {
         this.TrialService = new TrialService(DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
     }
 
     _initHandlers() {
@@ -43,7 +45,7 @@ export default class TrialController extends WebcController {
                 return console.log(err);
             }
             this.model.trial = trial;
-            this.TrialParticipantService.getTrialParticipants(keySSI, (err, data) => {
+            this.TrialParticipantRepository.findAll( (err, data) => {
                 if (err) {
                     return console.log(err);
                 }
@@ -85,7 +87,7 @@ export default class TrialController extends WebcController {
     createTpDsu(tp) {
         tp.trialNumber = this.model.trial.number;
         tp.status = "screened";
-        this.TrialParticipantService.saveTrialParticipant(this.model.trial.keySSI, tp, (err, trialParticipant) => {
+        this.TrialParticipantRepository.create(tp, (err, trialParticipant) => {
             if (err) {
                 this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.ERROR.ADD_TRIAL_PARTICIPANT);
                 return console.log(err);

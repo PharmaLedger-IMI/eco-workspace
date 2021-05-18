@@ -14,7 +14,6 @@ let getInitModel = () => {
 export default class TrialParticipantController extends WebcController {
     constructor(element, history) {
         super(element, history);
-
         this.setModel({
             ...getInitModel(),
             trialSSI: this.history.win.history.state.state

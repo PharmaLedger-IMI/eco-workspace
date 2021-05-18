@@ -52,53 +52,36 @@ export default class ConsentStatusMapper {
         }
         let consent = Object.keys(this.consentStatuses)
             .find(key => this.consentStatuses[key].name.toLowerCase() === consentStatus.toLowerCase());
-        if (!consent) {
-            return undefined;
-        }
-        return this.consentStatuses[consent];
+        return !consent ? undefined : this.consentStatuses[consent];
     }
 
     static map(consentStatus) {
-        debugger
         let status = this.getStatus(consentStatus.name);
         consentStatus.details = status.details;
         consentStatus.valueNumber = status.valueNumber;
         return consentStatus;
     }
 
-    static isSigned(actions) {
-        if (actions) {
-            if (actions[actions.length - 1].name.toLowerCase() === this.consentStatuses['signed'].name.toLowerCase()) {
-                return true;
-            }
+    static isSigned = (actions) => this.actionHasLastStatus(actions, 'signed')
+
+    static isWithdraw = (actions) => this.actionHasLastStatus(actions, 'withdraw')
+
+    static isDeclined = (actions) => this.actionHasLastStatus(actions, 'decline');
+
+    static isRequired = (actions) => this.actionHasLastStatus(actions, 'required');
+
+    static actionHasLastStatus(actions, status) {
+        let latestActionStatusIndex = this.getLatestStatusIndexIfActionsAreValid(actions);
+        if (latestActionStatusIndex === -1) {
+            return false;
         }
-        return false;
+        return actions[latestActionStatusIndex].name.toLowerCase() === status;
     }
 
-    static isWithdraw(actions) {
-        if (actions) {
-            if (actions[actions.length - 1].name.toLowerCase() === this.consentStatuses['withdraw'].name.toLowerCase()) {
-                return true;
-            }
+    static getLatestStatusIndexIfActionsAreValid(actions) {
+        if (actions === undefined || actions.length === 0) {
+            return -1;
         }
-        return false;
-    }
-
-    static isDeclined(actions) {
-        if (actions) {
-            if (actions[actions.length - 1].name.toLowerCase() === this.consentStatuses['decline'].name.toLowerCase()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    static isRequired(actions) {
-        if (actions) {
-            if (actions[actions.length - 1].name.toLowerCase() === this.consentStatuses['required'].name.toLowerCase()) {
-                return true;
-            }
-        }
-        return false;
+        return actions.length === 1 ? 0 : actions.length - 1;
     }
 }

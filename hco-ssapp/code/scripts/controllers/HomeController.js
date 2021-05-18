@@ -38,6 +38,10 @@ export default class HomeController extends WebcController {
         this._initHandlers();
         this._initTrial();
         this._handleMessages();
+        this.testDatabase();
+    }
+
+    testDatabase() {
         // TEST DATABASE ONLY => TODO: REMOVE THIS
 
         let testObject = {
@@ -67,7 +71,6 @@ export default class HomeController extends WebcController {
             let result = await this.TrialRepository.findByAsync('somethingElse');
             console.log('this.TrialRepository.findByAsync#await', result)
         })()
-
 
         // END DATABASE TESTING
     }
@@ -152,7 +155,7 @@ export default class HomeController extends WebcController {
         this.onTagEvent('home:trial', 'click', (model, target, event) => {
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                this.navigateToPageTag('trial', model.KeySSI);
+                this.navigateToPageTag('trial', model.keySSI);
             }
         )
     }

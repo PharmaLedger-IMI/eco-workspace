@@ -23,8 +23,21 @@ class SharedStorage {
 
     getRecordAsync = async (tableName, key) => this.asyncMyFunction(this.getRecord, [tableName, key]);
 
-    insertRecord = (tableName, key, record, callback) => this.letDatabaseInit()
-        .then(() => this.mydb.insertRecord(tableName, key, record, callback)).catch(this.logError);
+    getAllRecords = (tableName, callback) => this.letDatabaseInit()
+        .then(() => this.filter(tableName, callback)).catch(this.logError);
+
+    getAllRecordsAsync = async (tableName) => this.asyncMyFunction(this.getAllRecords, [tableName]);
+
+    insertRecord = (tableName, key, record, callback) =>  {
+        if (typeof record === 'function') {
+            callback = record;
+            record = key;
+            key = this.generateGUID();
+            record.uid = key;
+        }
+        this.letDatabaseInit()
+            .then(() => this.mydb.insertRecord(tableName, key, record, callback)).catch(this.logError);
+    }
 
     insertRecordAsync = async (tableName, key, record) => this.asyncMyFunction(this.insertRecord, [tableName, key, record]);
 
@@ -32,6 +45,11 @@ class SharedStorage {
         .then(() => this.mydb.updateRecord(tableName, key, record, callback)).catch(this.logError);
 
     updateRecordAsync = async (tableName, key, record) => this.asyncMyFunction(this.updateRecord, [tableName, key, record]);
+
+    deleteRecord = (tableName, key, callback) => this.letDatabaseInit()
+        .then(() => this.mydb.deleteRecord(tableName, key, callback)).catch(this.logError);
+
+    deleteRecordAsync = async (tableName, key, record) => this.asyncMyFunction(this.deleteRecord, [tableName, key, record]);
 
     beginBatch = () => this.letDatabaseInit()
         .then(() => this.mydb.beginBatch()).catch(this.logError);
@@ -65,6 +83,7 @@ class SharedStorage {
     }
 
     asyncMyFunction = (func, params) => {
+        func = func.bind(this);
         return new Promise((resolve, reject) => {
             func(...params, (err, data) => {
                 if (err) {
@@ -92,6 +111,13 @@ class SharedStorage {
         const ssi = keySSISpace.createSeedSSI('default');
         let sharedSSIObject = {sharedSSI: ssi.derive().getIdentifier()};
         this.DSUStorage.setObject(databaseSharedSSIPath, sharedSSIObject, (err) => callback(err, ssi));
+    }
+
+    generateGUID = () => {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+        }
+        return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
     }
 }
 
