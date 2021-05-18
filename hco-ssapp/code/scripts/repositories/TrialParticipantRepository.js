@@ -10,9 +10,14 @@ class TrialParticipantRepository {
     create = (key, trialParticipant, callback) =>
         this.StorageService.insertRecord(this.tableName, key, trialParticipant, callback);
 
+    createAsync = (key, trialParticipant) =>
+        this.StorageService.insertRecordAsync(this.tableName, key, trialParticipant);
+
     findBy = (trialKey, trialParticipant, callback) => this.StorageService.getRecord(this.tableName, key, callback);
 
     findAll = (callback) => this.StorageService.getAllRecords(this.tableName, callback);
+
+    findAllAsync = async () => this.StorageService.getAllRecordsAsync(this.tableName);
 
 }
 

@@ -40,17 +40,12 @@ export default class TrialController extends WebcController {
     }
 
     _initTrial(keySSI) {
-        this.TrialService.getTrial(keySSI, (err, trial) => {
+        this.TrialService.getTrial(keySSI, async (err, trial) => {
             if (err) {
                 return console.log(err);
             }
             this.model.trial = trial;
-            this.TrialParticipantRepository.findAll( (err, data) => {
-                if (err) {
-                    return console.log(err);
-                }
-                this.model.trialParticipants = data;
-            });
+            this.model.trialParticipants = await this.TrialParticipantRepository.findAllAsync();
         });
     }
 
@@ -84,18 +79,13 @@ export default class TrialController extends WebcController {
         )
     }
 
-    createTpDsu(tp) {
+    async createTpDsu(tp) {
         tp.trialNumber = this.model.trial.number;
         tp.status = "screened";
-        this.TrialParticipantRepository.create(tp, (err, trialParticipant) => {
-            if (err) {
-                this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.ERROR.ADD_TRIAL_PARTICIPANT);
-                return console.log(err);
-            }
-            this.model.trialParticipants.push(trialParticipant);
-            this.sendMessageToPatient("add-to-trial", this.model.trialSSI, trialParticipant.number,
-                Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL);
-        });
+        let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
+        this.model.trialParticipants.push(trialParticipant);
+        this.sendMessageToPatient("add-to-trial", this.model.trialSSI, trialParticipant.number,
+            Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL);
     }
 
     sendMessageToPatient(operation, ssi, trialParticipantNumber, shortMessage) {

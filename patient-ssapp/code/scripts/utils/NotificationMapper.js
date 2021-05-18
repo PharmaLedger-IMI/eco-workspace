@@ -58,7 +58,6 @@ export default class NotificationMapper {
 
 
     static map(notification) {
-        debugger
         let notType = this.getType(notification.operation);
         notification.title = notType.title;
         notification.color = notType.color;

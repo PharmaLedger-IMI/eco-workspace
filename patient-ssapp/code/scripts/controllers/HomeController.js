@@ -72,7 +72,6 @@ export default class HomeController extends WebcController {
                     if (err) {
                         return console.log(err);
                     }
-                    debugger
                     this.model.trials.push(trial);
                     this.TrialService.getEconsents(trial.keySSI, (err, consents) => {
                         if (err) {

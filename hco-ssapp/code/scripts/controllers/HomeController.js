@@ -48,30 +48,30 @@ export default class HomeController extends WebcController {
             someKey: "someValue",
             rms: 'delivers'
         }
-        this.StorageService.insertRecord('testTable', 'testKey', testObject, (err, obj) => {
+        this.StorageService.insertRecord('testTable', testObject, (err, obj) => {
             // if err is something like <Cannot read property 'originalMessage' of undefined> it means that this key already exist.
             console.log('StorageService.insertRecord', err, obj);
-            this.StorageService.getRecord('testTable', 'testKey', (err, data) => {
+            this.StorageService.getRecord('testTable', obj.pk, (err, data) => {
                 console.log('StorageService.getRecord', err, data);
             });
         })
 
-        this.TrialRepository.create('somethingElse', testObject, (err, obj) => {
+        this.TrialRepository.create(testObject, (err, obj) => {
+            let tempPK = obj.pk;
             // if err is something like <Cannot read property 'originalMessage' of undefined> it means that this key already exist.
             console.log('TrialRepository.create', err, obj);
-            this.TrialRepository.findBy('somethingElse', (err, data) => {
+            this.TrialRepository.findBy(tempPK, (err, data) => {
                 console.log('TrialRepository.findBy', err, data);
             })
+
+            this.TrialRepository.findByAsync(tempPK)
+                .then((result) => console.log('this.TrialRepository.findByAsync#Promise', result));
+
+            (async () => {
+                let result = await this.TrialRepository.findByAsync(tempPK);
+                console.log('this.TrialRepository.findByAsync#await', result)
+            })()
         })
-
-        this.TrialRepository.findByAsync('somethingElse')
-            .then((result) => console.log('this.TrialRepository.findByAsync#Promise', result));
-
-        (async () => {
-            let result = await this.TrialRepository.findByAsync('somethingElse');
-            console.log('this.TrialRepository.findByAsync#await', result)
-        })()
-
         // END DATABASE TESTING
     }
 

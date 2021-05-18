@@ -41,7 +41,6 @@ export default class TrialController extends WebcController {
             this.model.tpEconsents = [];
             this.model.trial.color = Constants.getColorByTrialStatus(this.model.trial.status);
             this.TrialService.getEconsents(trial.keySSI, (err, data) => {
-                debugger;
                 if (err) {
                     return console.log(err);
                 }

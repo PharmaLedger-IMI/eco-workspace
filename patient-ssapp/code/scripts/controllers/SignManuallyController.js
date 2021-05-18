@@ -25,7 +25,6 @@ export default class SignManuallyController extends WebcController {
         this.model.status ={attachment : this.attachment};
         this._initServices(this.DSUStorage);
         this.model.historyData = this.history.win.history.state.state;
-        debugger;
         this._initConsent();
         this._initHandlers();
     }

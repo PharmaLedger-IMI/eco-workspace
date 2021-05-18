@@ -31,6 +31,8 @@ class SharedStorage {
     insertRecord = (tableName, key, record, callback) =>  {
         if (typeof record === 'function') {
             callback = record;
+        }
+        if ((typeof record === 'function') || (typeof record === 'undefined' && typeof callback === 'function')) {
             record = key;
             key = this.generateGUID();
             record.uid = key;

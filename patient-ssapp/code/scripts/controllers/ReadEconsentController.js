@@ -16,7 +16,6 @@ export default class ReadEconsentController extends WebcController {
         this.model.econsent = {};
         this._initServices(this.DSUStorage);
         this.model.historyData = this.history.win.history.state.state;
-        debugger;
         this.model.required = {};
         this.model.declined = {};
         this.model.signed = {};
@@ -33,7 +32,9 @@ export default class ReadEconsentController extends WebcController {
     }
 
     _initConsent() {
+        debugger
         this.TrialService.getEconsent(this.model.historyData.trialuid, this.model.historyData.ecoId, (err, econsent) => {
+            debugger
             if (err) {
                 return console.log(err);
             }
@@ -41,6 +42,7 @@ export default class ReadEconsentController extends WebcController {
             this.fileDownloader = new FileDownloader(this.getEconsentFilePath(this.model.historyData.trialuid, this.model.historyData.ecoId, econsent.attachment), econsent.attachment);
             this._downloadFile();
             this.EconsentService.getEconsentsStatuses((err, data) => {
+                debugger
                 if (err) {
                     return console.error(err);
                 }

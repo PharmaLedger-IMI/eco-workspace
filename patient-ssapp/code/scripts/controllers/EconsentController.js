@@ -64,7 +64,7 @@ export default class EconsentController extends WebcController {
 
     _attachHandlerReadEconsent() {
         this.onTagClick('econsent:read', (model, target, event) => {
-            this.navigateToPageTag('sign-econsent', {... this.model.historyData});
+            this.navigateToPageTag('sign-econsent', {...this.model.historyData});
         });
     }
 
