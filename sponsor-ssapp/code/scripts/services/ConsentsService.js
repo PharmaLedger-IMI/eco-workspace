@@ -1,7 +1,7 @@
 import getSharedStorage from './SharedDBStorageService.js';
-import DSUServiceAsync from './DSUServiceAsync.js';
+import DSUService from './DSUService.js';
 
-export default class ConsentsService extends DSUServiceAsync {
+export default class ConsentsService extends DSUService {
   CONSENTS_TABLE = 'consents';
   TRIALS_PATH = '/trials';
 

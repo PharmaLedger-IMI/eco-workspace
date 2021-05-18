@@ -39,7 +39,7 @@ export default class DSUService {
     }
 
     async getEntitiesAsync(path) {
-        return this.asyncMyFunction(this.getEntities, [...arguments])
+        return this.asyncMyFunction(this.getEntities.bind(this), [...arguments])
     }
 
     getEntity(uid, path, callback) {
@@ -54,7 +54,7 @@ export default class DSUService {
     }
 
     async getEntityAsync(uid, path) {
-        return this.asyncMyFunction(this.getEntity, [...arguments])
+        return this.asyncMyFunction(this.getEntity.bind(this), [...arguments])
     }
 
     saveEntity(entity, path, callback) {
@@ -70,7 +70,7 @@ export default class DSUService {
     }
 
     async saveEntityAsync(entity, path) {
-        return this.asyncMyFunction(this.saveEntity, [...arguments])
+        return this.asyncMyFunction(this.saveEntity.bind(this), [...arguments])
     }
 
     updateEntity(entity, path, callback) {
@@ -84,7 +84,7 @@ export default class DSUService {
     }
 
     async updateEntityAsync(entity, path) {
-        return this.asyncMyFunction(this.updateEntity, [...arguments])
+        return this.asyncMyFunction(this.updateEntity.bind(this), [...arguments])
     }
 
     mountEntity(keySSI, path, callback) {
@@ -100,7 +100,7 @@ export default class DSUService {
     }
 
     async mountEntityAsync(keySSI, path) {
-        return this.asyncMyFunction(this.mountEntity, [...arguments])
+        return this.asyncMyFunction(this.mountEntity.bind(this), [...arguments])
     }
 
     unmountEntity(uid, path, callback) {
@@ -115,7 +115,7 @@ export default class DSUService {
     }
 
     async unmountEntityAsync(uid, path) {
-        return this.asyncMyFunction(this.unmountEntity, [...arguments])
+        return this.asyncMyFunction(this.unmountEntity.bind(this), [...arguments])
     }
 
     _getDsuStoragePath(keySSI, path = this.PATH) {

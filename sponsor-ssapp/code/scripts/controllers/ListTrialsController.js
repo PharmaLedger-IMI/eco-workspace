@@ -308,7 +308,7 @@ export default class ListTrialsController extends WebcController {
         },
         {
           controller: 'AddNewTrialModalController',
-          disableExpanding: true,
+          disableExpanding: false,
           disableBackdropClosing: false,
         }
       );

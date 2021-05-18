@@ -1,9 +1,9 @@
 import ConsentsService from '../services/ConsentsService.js';
 import { participantConsentStatusEnum, senderType } from '../constants/participant.js';
 import getSharedStorage from './SharedDBStorageService.js';
-import DSUServiceAsync from './DSUServiceAsync.js';
+import DSUService from './DSUService.js';
 
-export default class ParticipantsService extends DSUServiceAsync {
+export default class ParticipantsService extends DSUService {
   PARTICIPANTS_TABLE = 'participants';
   PARTICIPANTS_PATH = '/participants';
   PARTICIPANT_LIST_FILENAME = 'participants.json';

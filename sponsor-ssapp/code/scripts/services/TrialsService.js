@@ -1,7 +1,7 @@
 import getSharedStorage from './SharedDBStorageService.js';
-import DSUServiceAsync from './DSUServiceAsync.js';
+import DSUService from './DSUService.js';
 
-export default class TrialsService extends DSUServiceAsync {
+export default class TrialsService extends DSUService {
   TRIALS_TABLE = 'trials';
 
   constructor(DSUStorage) {

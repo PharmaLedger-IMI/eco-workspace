@@ -24,10 +24,17 @@ export default class AddNewTrialModalController extends WebcController {
   };
 
   countries = {
-    label: 'Select countries',
+    label: 'List of countries',
     placeholder: 'Please select an option',
     required: true,
     options: this.trialCountriesArray,
+  };
+
+  selectedCountries = {
+    label: 'Selected countries',
+    placeholder: 'Please select an option',
+    required: true,
+    options: [{ label: '     ', value: '      ' }],
   };
 
   name = {
@@ -57,6 +64,7 @@ export default class AddNewTrialModalController extends WebcController {
         name: this.name,
         status: this.status,
         countries: this.countries,
+        selectedCountries: this.selectedCountries,
       },
       submitButtonDisabled: true,
     });
@@ -91,9 +99,26 @@ export default class AddNewTrialModalController extends WebcController {
     //   return;
     // });
 
+    this.onTagClick('add-country', (event) => {
+      if (!this.model.trial.countries.selectedValue) return;
+
+      console.log(this.model.trial.countries.selectedValue);
+      const selectedCountry = this.model.trial.countries.options.find(
+        (x) => x.value === this.model.trial.countries.selectedValue
+      );
+      if (!selectedCountry) return;
+      console.log(selectedCountry);
+      this.model.trial.selectedCountries.options.push(selectedCountry);
+
+      this.model.trial.countries.selectedValue = null;
+    });
+
+    this.onTagClick('remove-country', (event) => {});
+
     this.onTagClick('create-trial', async (event) => {
       try {
         this.model.submitButtonDisabled = true;
+        debugger;
         const trial = {
           name: this.model.trial.name.value,
           status: this.model.trial.status.value,

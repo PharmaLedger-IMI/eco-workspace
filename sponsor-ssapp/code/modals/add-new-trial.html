@@ -2,23 +2,42 @@
   <h2 slot="title">New Trial</h2>
 
   <div class="d-flex flex-column justify-content-between">
-    <div style="margin: 10px">
+    <div class="m-2">
       <label>{{@trial.name.label}}</label>
       <input data-view-model="@trial.name" data-tag="inputs-changed" />
     </div>
-    <div style="margin: 10px">
+    <div class="m-2">
       <label>{{@trial.id.label}}</label>
       <input data-view-model="@trial.id" data-tag="inputs-changed" />
     </div>
-    <div style="margin: 10px">
+    <div class="m-2">
       <label>{{@trial.status.label}}</label>
       <select data-for="@trial.status.options" value="@trial.status.value">
         <option value="@value">{{ @label }}</option>
       </select>
     </div>
-    <div style="margin: 10px">
+    <div class="d-flex justify-content-between m-2">
       <label>{{@trial.countries.label}}</label>
-      <select data-for="@trial.countries.options" value="@trial.countries.value" multiple>
+      <label>{{@trial.selectedCountries.label}}</label>
+    </div>
+    <div class="d-flex flex-row m-2">
+      <select class="flex-grow-1" data-for="@trial.countries.options" value="@trial.countries.selectedValue" multiple>
+        <option value="@value">{{ @label }}</option>
+      </select>
+      <div>
+        <button class="btn btn-primary m-1" data-tag="add-country">
+          <i class="fa fa-angle-right" aria-hidden="true"></i>
+        </button>
+        <button class="btn btn-primary m-1" data-tag="remove-country">
+          <i class="fa fa-angle-left" aria-hidden="true"></i>
+        </button>
+      </div>
+      <select
+        class="flex-grow-1"
+        data-for="@trial.selectedCountries.options"
+        value="@trial.selectedCountries.selectedValue"
+        multiple
+      >
         <option value="@value">{{ @label }}</option>
       </select>
     </div>
