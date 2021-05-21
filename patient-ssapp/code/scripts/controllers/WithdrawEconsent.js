@@ -10,12 +10,21 @@ export default class WithdrawEconsent extends WebcController {
     _initHandlers() {
         this._attachHandlerCancel();
         this._attachHandlerWithdraw();
+        this._attachHandlerWithdrawIntention();
     }
 
     _attachHandlerWithdraw() {
         this.onTagEvent('withdraw-on-click', 'click', (model, target, event) => {
             this.send('confirmed', {
                 withdraw: true,
+            });
+        });
+    }
+
+    _attachHandlerWithdrawIntention() {
+        this.onTagEvent('withdraw-intention-on-click', 'click', (model, target, event) => {
+            this.send('confirmed', {
+                withdrawIntention: true,
             });
         });
     }

@@ -43,7 +43,17 @@ export default class EconsentController extends WebcController {
                 if (err) {
                     return console.error(err);
                 }
-                this.model.status = data.find(element => element.foreignConsentId === this.model.historyData.ecoId);
+                let status = data.find(element => element.foreignConsentId === this.model.historyData.ecoId);
+                if (status === undefined) {
+                    return console.log(`Status not found for econsendId ${this.model.historyData.ecoId}`)
+                }
+                status.actions = status.actions.map((action, index) => {
+                    return {
+                        ...action,
+                        index: index + 1
+                    }
+                })
+                this.model.status = status;
                 this.model.signed = ConsentStatusMapper.isSigned(this.model.status.actions);
                 this.model.declined = ConsentStatusMapper.isDeclined(this.model.status.actions);
             })

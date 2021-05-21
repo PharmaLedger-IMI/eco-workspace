@@ -118,7 +118,6 @@ export default class AddNewTrialModalController extends WebcController {
     this.onTagClick('create-trial', async (event) => {
       try {
         this.model.submitButtonDisabled = true;
-        debugger;
         const trial = {
           name: this.model.trial.name.value,
           status: this.model.trial.status.value,

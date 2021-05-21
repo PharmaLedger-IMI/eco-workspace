@@ -8,28 +8,29 @@
         </div>
 
         <div class="tp-table">
-            <psk-layout columns="4" class="justify-content-center align-items-center table-row">
-                <psk-label class="table-cell">Consent Version</psk-label>
-                <psk-label class="table-cell">TP Approval</psk-label>
-                <psk-label class="table-cell">TP Caregive Approval</psk-label>
-                <psk-label class="table-cell">HCP Approval</psk-label>
+            <psk-layout columns="5" class="justify-content-center align-items-center table-row">
+                <psk-label class="table-cell">VERSION</psk-label>
+                <psk-label class="table-cell">TP CONSENT</psk-label>
+                <psk-label class="table-cell">TP CAREGIVE CONSENT</psk-label>
+                <psk-label class="table-cell">HCP CONSENT</psk-label>
+                <psk-label class="table-cell">TP WITHDRAW</psk-label>
             </psk-layout>
             <hr/>
         </div>
 
         <div class="tp-wrapper">
             <div class="tp-table econsent-list" data-for="@versions">
-                <psk-layout columns="4" class="justify-content-center align-items-center table-row econsent-row-blue">
+                <psk-layout columns="5" class="justify-content-center align-items-center table-row econsent-row-blue">
                     <psk-label class="table-cell">{{@version}}</psk-label>
                     <div data-if="@tpSigned">
                         <button slot="true" data-tag="econsent:sign">
                             {{@tpApproval}}
                         </button>
                         <psk-label slot="false" class="table-cell">{{@tpApproval}}</psk-label>
-
                     </div>
                     <psk-label class="table-cell">{{@tpCaregiveApproval}}</psk-label>
                     <psk-label class="table-cell">{{@hcpApproval}}</psk-label>
+                    <psk-label class="table-cell">{{@hcpWithdraw}}</psk-label>
                 </psk-layout>
                 <hr/>
             </div>

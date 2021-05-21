@@ -73,56 +73,23 @@ export default class ListTrialsController extends WebcController {
       }
       data = JSON.parse(data);
       switch (data.message.operation) {
-        case 'sign-econsent': {
-          switch (data.sender) {
-            case CommunicationService.identities.PATIENT_IDENTITY: {
-              console.log('PATIENT_IDENTITY', data);
-              if (data.message.operation === 'sign-econsent') {
-                const list = await this.participantsService.updateParticipant(
-                  {
-                    participantId: data.message.useCaseSpecifics.tpNumber,
-                    operationDate: data.message.useCaseSpecifics.operationDate,
-                    trialSSI: data.message.useCaseSpecifics.trialSSI,
-                    consentSSI: data.message.ssi,
-                    type: data.sender === 'hcoIdentity' ? senderType.HCP : senderType.Patient,
-                  },
-                  data.message.useCaseSpecifics.trialSSI
-                );
-
-                console.log(list);
-                eventBusService.emitEventListeners(
-                  Topics.RefreshParticipants + data.message.useCaseSpecifics.trialSSI,
-                  data
-                );
-              }
-              break;
-            }
-            case CommunicationService.identities.HCO_IDENTITY: {
-              if (data.message.operation === 'sign-econsent') {
-                const list = await this.participantsService.updateParticipant(
-                  {
-                    participantId: data.message.useCaseSpecifics.tpNumber,
-                    operationDate: data.message.useCaseSpecifics.operationDate,
-                    trialSSI: data.message.useCaseSpecifics.trialSSI,
-                    consentSSI: data.message.ssi,
-                    type: data.sender === 'hcoIdentity' ? senderType.HCP : senderType.Patient,
-                  },
-                  data.message.useCaseSpecifics.trialSSI
-                );
-
-                console.log(list);
-
-                eventBusService.emitEventListeners(
-                  Topics.RefreshParticipants + data.message.useCaseSpecifics.trialSSI,
-                  data
-                );
-              }
-              console.log('HCO_IDENTITY', data);
-              break;
-            }
-          }
+        case 'update-econsent': {
+          await this.participantsService.updateParticipant(
+              {
+                participantId: data.message.useCaseSpecifics.tpNumber,
+                action: data.message.useCaseSpecifics.action,
+                trialSSI: data.message.useCaseSpecifics.trialSSI,
+                consentSSI: data.message.ssi,
+                type: data.sender === 'hcoIdentity' ? senderType.HCP : senderType.Patient,
+              },
+              data.message.useCaseSpecifics.trialSSI
+          );
         }
       }
+      eventBusService.emitEventListeners(
+          Topics.RefreshParticipants + data.message.useCaseSpecifics.trialSSI,
+          data
+      );
     });
     this.feedbackEmitter = null;
 

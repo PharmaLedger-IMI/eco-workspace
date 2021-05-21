@@ -16,7 +16,7 @@ export default class TrialParticipantController extends WebcController {
         super(element, history);
         this.setModel({
             ...getInitModel(),
-            trialSSI: this.history.win.history.state.state
+            ...this.history.win.history.state.state
         });
 
         this._initServices(this.DSUStorage);
@@ -57,7 +57,8 @@ export default class TrialParticipantController extends WebcController {
                 event.stopImmediatePropagation();
                 this.navigateToPageTag('econsent-versions', {
                     trialSSI: this.model.trialSSI,
-                    econsentSSI: model.keySSI
+                    econsentSSI: model.keySSI,
+                    tpUid: this.model.tpUid
                 });
             }
         )

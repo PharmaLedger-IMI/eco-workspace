@@ -45,20 +45,37 @@ export default class EconsentVersionsController extends WebcController {
                 ...data,
                 versionDateAsString: DateTimeService.convertStringToLocaleDate(data.versionDate)
             };
-
             let econsentVersion = {
                 ...data,
-                tpApproval: 'Not yet',
-                tpCaregiveApproval: 'Not yet',
-                hcpApproval: 'Not yet'
+                tpApproval: '-',
+                tpCaregiveApproval: '-',
+                hcpApproval: '-',
+                hcpWithdraw: '-'
             };
-
-            if (data.patientSigned) {
-                econsentVersion.tpApproval = 'See approval';
-                econsentVersion.tpCaregiveApproval = 'See approval';
-                econsentVersion.hcpApproval = 'Signature Required';
+            econsentVersion.tpSigned = false;
+            data.actions.forEach(action => {
+                switch (action.name) {
+                    case 'sign': {
+                        econsentVersion.tpSigned = true;
+                        econsentVersion.tpApproval = action.toShowDate;
+                        econsentVersion.hcpApproval = 'Required';
+                        break;
+                    }
+                    case 'withdraw': {
+                        econsentVersion.hcpWithdraw = "TP Withdraw";
+                        break;
+                    }
+                    case 'withdraw-intention': {
+                        econsentVersion.hcpApproval = 'Contact TP';
+                        econsentVersion.hcpWithdraw = "Intention";
+                        break
+                    }
+                }
+            })
+            if (data.hcoSign) {
+                econsentVersion.hcpApproval = data.hcoSign.toShowDate;
+                econsentVersion.tpSigned = false;
             }
-            econsentVersion.tpSigned = data.patientSigned;
 
             this.model.versions.push(econsentVersion);
         });
@@ -70,7 +87,8 @@ export default class EconsentVersionsController extends WebcController {
                 event.stopImmediatePropagation();
                 this.navigateToPageTag('econsent-sign', {
                     trialSSI: this.model.trialSSI,
-                    econsentSSI: this.model.econsentSSI
+                    econsentSSI: this.model.econsentSSI,
+                    tpUid: this.model.tpUid
                 });
             }
         )

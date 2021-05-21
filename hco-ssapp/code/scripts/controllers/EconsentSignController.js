@@ -78,6 +78,16 @@ export default class EconsentSignController extends WebcController {
         this.onTagEvent('econsent:sign', 'click', (model, target, event) => {
                 event.preventDefault();
                 event.stopImmediatePropagation();
+                const currentDate = new Date();
+                this.model.econsent.hcoSign = {
+                    date: currentDate.toISOString(),
+                    toShowDate: currentDate.toLocaleDateString()
+                }
+                this.TrialService.updateEconsent(this.model.trialSSI, this.model.econsent, (err, response) => {
+                    if (err) {
+                        return console.log(err);
+                    }
+                });
                 this.sendMessageToSponsor('sign-econsent', Constants.MESSAGES.HCO.COMMUNICATION.SPONSOR.SIGN_ECONSENT);
                 this.navigateToPageTag('home');
             }

@@ -79,7 +79,12 @@ export default class TrialController extends WebcController {
     _setTpStatus(consents) {
         consents.forEach((consent) => {
             if (consent.type === 'Mandatory') {
-                this.model.tpStatus = consent.actions;
+                this.model.tpStatus = consent.actions.map((action, index) => {
+                    return {
+                        ... action,
+                        index: index + 1
+                    }
+                });
             }
         });
     }

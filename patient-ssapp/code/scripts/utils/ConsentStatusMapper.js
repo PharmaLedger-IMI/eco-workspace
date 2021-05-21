@@ -32,6 +32,12 @@ export default class ConsentStatusMapper {
             details: 'Tp has withdraw the consent',
             isSet: false,
         },
+        withdrawIntention: {
+            name: 'Withdraw Intention',
+            valueNumber: 4,
+            details: 'Tp intent to withdraw the consent',
+            isSet: false,
+        },
         decline: {
             name: 'Declined',
             valueNumber: 4,
@@ -65,6 +71,8 @@ export default class ConsentStatusMapper {
     static isSigned = (actions) => this.actionHasLastStatus(actions, 'signed')
 
     static isWithdraw = (actions) => this.actionHasLastStatus(actions, 'withdraw')
+
+    static isWithdrawIntention = (actions) => this.actionHasLastStatus(actions, 'withdraw-intention')
 
     static isDeclined = (actions) => this.actionHasLastStatus(actions, 'decline');
 

@@ -4,6 +4,7 @@ import NotificationsService from "../services/NotificationsService.js";
 import TrialService from "../services/TrialService.js";
 import SharedStorage from "../services/SharedStorage.js";
 import TrialRepository from '../repositories/TrialRepository.js';
+import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
 
 let getInitModel = () => {
     return {
@@ -89,6 +90,7 @@ export default class HomeController extends WebcController {
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
         this.StorageService = SharedStorage.getInstance(DSUStorage);
         this.TrialRepository = TrialRepository.getInstance(DSUStorage);
+        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
     }
 
     _initHandlers() {
@@ -127,28 +129,62 @@ export default class HomeController extends WebcController {
                 case 'delete-trial': {
                     break;
                 }
-                case 'sign-econsent': {
-                    const message = data.message;
-                    this.TrialService.getEconsent(message.useCaseSpecifics.trialSSI, message.ssi, (err, econsent) => {
-                        if (err) {
-                            return console.log(err);
-                        }
-                        econsent.patientSigned = true;
-                        econsent.tpNumber = message.useCaseSpecifics.tpNumber;
-                        econsent.uid = econsent.keySSI;
-                        this.TrialService.updateEconsent(message.useCaseSpecifics.trialSSI, econsent, (err, response) => {
-                            if (err) {
-                                return console.log(err);
-                            }
-                        });
-                    })
-                    break;
-                }
-                case 'withdraw-econsent': {
+                case 'update-econsent': {
+                    this._updateEconsentWithDetails(data.message);
                     break;
                 }
             }
         });
+    }
+
+    _updateEconsentWithDetails(message) {
+        this.TrialService.getEconsent(message.useCaseSpecifics.trialSSI, message.ssi, (err, econsent) => {
+            if (err) {
+                return console.log(err);
+            }
+            if (econsent.actions === undefined) {
+                econsent.actions = [];
+            }
+            econsent.actions.push(message.useCaseSpecifics.action);
+            let actionNeeded = "No action required";
+            switch (message.useCaseSpecifics.action.name) {
+                case 'withdraw': {
+                    actionNeeded = "TP Withdrawed";
+                    break;
+                }
+                case 'withdraw-intention': {
+                    actionNeeded = "Reconsent required";
+                    break;
+                }
+                case 'sign': {
+                    actionNeeded = "Acknowledgement required";
+                    break;
+                }
+            }
+            this.TrialParticipantRepository.findAll((err, data) => {
+                if (err) {
+                    return console.log(err);
+                }
+                let tpNumber = message.useCaseSpecifics.tpNumber;
+                let tp = data.find(elem => elem.number === tpNumber);
+                if (tp === undefined) {
+                    return console.log(`TP with number ${tpNumber} does not exist`);
+                }
+                tp.actionNeeded = actionNeeded;
+                this.TrialParticipantRepository.update(tp.uid, tp, (err, data) => {
+                    if (err) {
+                        return console.log(err);
+                    }
+                });
+            })
+            econsent.tpNumber = message.useCaseSpecifics.tpNumber;
+            econsent.uid = econsent.keySSI;
+            this.TrialService.updateEconsent(message.useCaseSpecifics.trialSSI, econsent, (err, response) => {
+                if (err) {
+                    return console.log(err);
+                }
+            });
+        })
     }
 
     _attachHandlerTrialDetails() {

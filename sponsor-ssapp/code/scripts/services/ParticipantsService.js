@@ -56,8 +56,8 @@ export default class ParticipantsService extends DSUService {
           consentName: consent.name,
           consentVersion: consent.version,
           consentStatus: participantConsentStatusEnum.Consent,
-          patientSignature: data.type === senderType.Patient ? data.operationDate : participant.patientSignature,
-          doctorSignature: data.type === senderType.HCP ? data.operationDate : participant.doctorSignature,
+          patientSignature: data.type === senderType.Patient ? data.action.date : participant.patientSignature,
+          doctorSignature: data.type === senderType.HCP ? data.action.date : participant.doctorSignature,
         };
 
         await this.storageService.updateRecord(this.getTableName(trialKeySSI), data.participantId, participant);
@@ -67,8 +67,8 @@ export default class ParticipantsService extends DSUService {
           consentName: consent.name,
           consentVersion: consent.version,
           consentStatus: participantConsentStatusEnum.Consent,
-          patientSignature: data.type === senderType.Patient ? data.operationDate : null,
-          doctorSignature: data.type === senderType.HCP ? data.operationDate : null,
+          patientSignature: data.type === senderType.Patient ? data.action.date : null,
+          doctorSignature: data.type === senderType.HCP ? data.action.date : null,
         };
 
         await this.storageService.insertRecord(this.getTableName(trialKeySSI), data.participantId, model);
