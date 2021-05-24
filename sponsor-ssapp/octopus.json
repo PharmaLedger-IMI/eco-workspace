@@ -53,6 +53,46 @@
       ]
     }
   ],
+  "with-ionic": [
+    {
+      "name": "PSK bundles",
+      "src": "",
+      "actions": [
+        {
+          "type": "copy",
+          "src": "./node_modules/@ionic/core/dist/ionic",
+          "target": "code/assets/ionic-core",
+          "options": {
+            "overwrite": false
+          }
+        },
+        {
+          "type": "copy",
+          "src": "./node_modules/@ionic/core/css",
+          "target": "code/assets/ionic-core/css",
+          "options": {
+            "overwrite": false
+          }
+        },
+        {
+          "type": "copy",
+          "src": "./node_modules/ionicons/dist/ionicons",
+          "target": "code/assets/ionic-core/ionicons",
+          "options": {
+            "overwrite": false
+          }
+        },
+        {
+          "type": "copy",
+          "src": "./node_modules/@ionic/pwa-elements/dist/ionicpwaelements",
+          "target": "code/assets/ionic-core/pwa-elements",
+          "options": {
+            "overwrite": false
+          }
+        }
+      ]
+    }
+  ],
   "postbuild": [
     {
       "name": "post build clean up",

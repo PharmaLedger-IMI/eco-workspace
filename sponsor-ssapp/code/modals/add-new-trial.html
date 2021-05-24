@@ -18,13 +18,13 @@
     </div>
     <div class="d-flex justify-content-between m-2">
       <label>{{@trial.countries.label}}</label>
-      <label>{{@trial.selectedCountries.label}}</label>
+      <!-- <label>{{@trial.selectedCountries.label}}</label> -->
     </div>
     <div class="d-flex flex-row m-2">
       <select class="flex-grow-1" data-for="@trial.countries.options" value="@trial.countries.selectedValue" multiple>
         <option value="@value">{{ @label }}</option>
       </select>
-      <div>
+      <!-- <div>
         <button class="btn btn-primary m-1" data-tag="add-country">
           <i class="fa fa-angle-right" aria-hidden="true"></i>
         </button>
@@ -39,7 +39,7 @@
         multiple
       >
         <option value="@value">{{ @label }}</option>
-      </select>
+      </select> -->
     </div>
   </div>
 
