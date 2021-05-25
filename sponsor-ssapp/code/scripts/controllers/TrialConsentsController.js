@@ -38,8 +38,8 @@ export default class TrialConsentsController extends WebcController {
     },
   };
 
-  constructor(element, history) {
-    super(element, history);
+  constructor(...props) {
+    super(...props);
     let { id, keySSI } = this.history.location.state;
 
     console.log('INSIDE CONSTRUCTOR', id, keySSI, this.history.location);
@@ -64,6 +64,8 @@ export default class TrialConsentsController extends WebcController {
           text: 'Inner template label',
         },
       },
+      type: 'consents',
+      tableLength: 7,
     });
 
     this.attachEvents();

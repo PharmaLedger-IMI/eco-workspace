@@ -40,8 +40,8 @@ export default class TrialParticipantsController extends WebcController {
     },
   };
 
-  constructor(element, history) {
-    super(element, history);
+  constructor(...props) {
+    super(...props);
     let { id, keySSI } = this.history.location.state;
 
     this.trialsService = new TrialsService(this.DSUStorage);
@@ -63,6 +63,8 @@ export default class TrialParticipantsController extends WebcController {
       pagination: this.pagination,
       headers: this.headers,
       search: this.search,
+      type: 'participants',
+      tableLength: 6,
     });
 
     this.attachAll();
@@ -137,7 +139,7 @@ export default class TrialParticipantsController extends WebcController {
 
   attachAll() {
     this.model.addExpression(
-      'arrayNotEmpty',
+      'participantsArrayNotEmpty',
       () => {
         return (
           this.model.pagination &&

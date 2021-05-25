@@ -4,8 +4,8 @@ const { WebcController } = WebCardinal.controllers;
 import getSharedStorage from '../services/SharedDBStorageService.js';
 
 export default class ProtocolController extends WebcController {
-  constructor(element, history) {
-    super(element, history);
+  constructor(...props) {
+    super(...props);
 
     this.storageService = getSharedStorage(this.DSUStorage);
 

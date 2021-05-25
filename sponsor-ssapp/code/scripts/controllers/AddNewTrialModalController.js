@@ -53,8 +53,8 @@ export default class AddNewTrialModalController extends WebcController {
     value: '',
   };
 
-  constructor(element, history) {
-    super(element, history);
+  constructor(...props) {
+    super(...props);
 
     this.trialsService = new TrialsService(this.DSUStorage);
 

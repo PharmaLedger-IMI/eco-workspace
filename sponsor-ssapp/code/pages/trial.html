@@ -30,7 +30,7 @@
         </div>
 
         <!-- *************** PARTICIPANTS TABLE ********************* -->
-        <psk-condition condition="@arrayNotEmpty">
+        <psk-condition condition="@participantsArrayNotEmpty">
           <div slot="condition-true">
             <psk-layout class="background-primary table-row" columns="6">
               <psk-for-each data-view-model="@headers" class="display-contents" style="display: contents">
@@ -138,6 +138,10 @@
           <div slot="condition-false">
             <div>No participants consented.</div>
           </div>
+
+          <psk-condition condition="@participantsArrayNotEmpty">
+            <webc-template template="table-template" data-view-model="@"></webc-template>
+          </psk-condition>
         </psk-condition>
       </webc-container>
     </psk-tab>
@@ -276,6 +280,10 @@
           <div slot="condition-false">
             <div>No consents available.</div>
           </div>
+        </psk-condition>
+
+        <psk-condition condition="@consentsArrayNotEmpty">
+          <webc-template template="table-template" data-view-model="@"></webc-template>
         </psk-condition>
       </webc-container>
     </psk-tab>

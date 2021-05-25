@@ -61,8 +61,8 @@ export default class ListTrialsController extends WebcController {
     },
   };
 
-  constructor(element, history) {
-    super(element, history);
+  constructor(...props) {
+    super(...props);
 
     this.trialsService = new TrialsService(this.DSUStorage);
     this.participantsService = new ParticipantsService(this.DSUStorage);
@@ -75,21 +75,18 @@ export default class ListTrialsController extends WebcController {
       switch (data.message.operation) {
         case 'update-econsent': {
           await this.participantsService.updateParticipant(
-              {
-                participantId: data.message.useCaseSpecifics.tpNumber,
-                action: data.message.useCaseSpecifics.action,
-                trialSSI: data.message.useCaseSpecifics.trialSSI,
-                consentSSI: data.message.ssi,
-                type: data.sender === 'hcoIdentity' ? senderType.HCP : senderType.Patient,
-              },
-              data.message.useCaseSpecifics.trialSSI
+            {
+              participantId: data.message.useCaseSpecifics.tpNumber,
+              action: data.message.useCaseSpecifics.action,
+              trialSSI: data.message.useCaseSpecifics.trialSSI,
+              consentSSI: data.message.ssi,
+              type: data.sender === 'hcoIdentity' ? senderType.HCP : senderType.Patient,
+            },
+            data.message.useCaseSpecifics.trialSSI
           );
         }
       }
-      eventBusService.emitEventListeners(
-          Topics.RefreshParticipants + data.message.useCaseSpecifics.trialSSI,
-          data
-      );
+      eventBusService.emitEventListeners(Topics.RefreshParticipants + data.message.useCaseSpecifics.trialSSI, data);
     });
     this.feedbackEmitter = null;
 
@@ -101,9 +98,9 @@ export default class ListTrialsController extends WebcController {
       pagination: this.pagination,
       headers: this.headers,
       clearButtonDisabled: true,
+      type: 'trials',
+      tableLength: 5,
     });
-
-    console.log(this.model.statuses.options);
 
     this.attachEvents();
 
@@ -112,7 +109,6 @@ export default class ListTrialsController extends WebcController {
 
   async init() {
     await this.getTrials();
-    this.paginateTrials(this.model.trials);
   }
 
   async getTrials() {
@@ -136,43 +132,6 @@ export default class ListTrialsController extends WebcController {
     this.model.countries = { ...this.countries, options: countries.map((x) => ({ label: x, value: x })) };
   }
 
-  paginateTrials(trials, page = 1) {
-    const itemsPerPage = this.model.pagination.itemsPerPage;
-    const length = trials.length;
-    const numberOfPages = Math.ceil(length / itemsPerPage);
-    const pages = Array.from({ length: numberOfPages }, (_, i) => i + 1).map((x) => ({
-      label: x,
-      value: x,
-      active: page === x,
-    }));
-
-    this.model.pagination.previous = page > 1 && pages.length > 1 ? false : true;
-    this.model.pagination.next = page < pages.length && pages.length > 1 ? false : true;
-    this.model.pagination.items = trials.slice(itemsPerPage * (page - 1), itemsPerPage * page);
-    this.model.pagination.pages = {
-      ...this.model.pagination.pages,
-      options: pages.map((x) => ({
-        label: x.label,
-        value: x.value,
-      })),
-    };
-    this.model.pagination.slicedPages =
-      pages.length > 5 && page - 3 >= 0 && page + 3 <= pages.length
-        ? pages.slice(page - 3, page + 2)
-        : pages.length > 5 && page - 3 < 0
-        ? pages.slice(0, 5)
-        : pages.length > 5 && page + 3 > pages.length
-        ? pages.slice(pages.length - 5, pages.length)
-        : pages;
-    this.model.pagination.currentPage = page;
-    this.model.pagination.totalPages = pages.length;
-    // this.model.pagination.pages.value = page.toString();
-    // console.log('TEST:', this.model.test, typeof this.model.test);
-
-    // this.model.test = '8';
-    // console.log('TEST:', this.model.test);
-  }
-
   setTrialsModel(trials) {
     const model = trials.map((trial) => ({
       ...trial,
@@ -180,12 +139,13 @@ export default class ListTrialsController extends WebcController {
     }));
 
     this.model.trials = model;
-    this.paginateTrials(model, 1);
+    this.model.data = model;
     this.model.headers = this.model.headers.map((x) => ({ ...x, asc: false, desc: false }));
+
+    this.send('update-table', '1');
   }
 
   filterData() {
-    console.log(this.model.statuses.value);
     let result = this.trials;
 
     if (this.model.countries.value) {
@@ -198,39 +158,9 @@ export default class ListTrialsController extends WebcController {
       result = result.filter((x) => x.name.toUpperCase().search(this.model.search.value.toUpperCase()) !== -1);
     }
 
+    console.log(this.trials, result);
+
     this.setTrialsModel(result);
-  }
-
-  sortColumn(column) {
-    if (column || this.model.headers.some((x) => x.asc || x.desc)) {
-      if (!column) column = this.model.headers.find((x) => x.asc || x.desc).column;
-
-      const headers = this.model.headers;
-      const selectedColumn = headers.find((x) => x.column === column);
-      const idx = headers.indexOf(selectedColumn);
-
-      if (headers[idx].notSortable) return;
-
-      if (headers[idx].asc || headers[idx].desc) {
-        this.model.trials.reverse();
-        this.paginateTrials(this.model.trials, this.model.pagination.currentPage);
-        this.model.headers = this.model.headers.map((x) => {
-          if (x.column !== column) {
-            return { ...x, asc: false, desc: false };
-          } else return { ...x, asc: !headers[idx].asc, desc: !headers[idx].desc };
-        });
-      } else {
-        this.model.trials = this.model.trials.sort((a, b) => (a[column] >= b[column] ? 1 : -1));
-        this.paginateTrials(this.model.trials, this.model.pagination.currentPage);
-        this.model.headers = this.model.headers.map((x) => {
-          if (x.column !== column) {
-            return { ...x, asc: false, desc: false };
-          } else return { ...x, asc: true, desc: false };
-        });
-      }
-    } else {
-      this.model.headers = this.model.headers.map((x) => ({ ...x, asc: false, desc: false }));
-    }
   }
 
   showFeedbackToast(title, message, alertType) {
@@ -243,18 +173,17 @@ export default class ListTrialsController extends WebcController {
     this.model.addExpression(
       'trialArrayNotEmpty',
       () => {
-        return (
-          this.model.pagination &&
-          this.model.pagination.items &&
-          Array.isArray(this.model.pagination.items) &&
-          this.model.pagination.items.length > 0
-        );
+        return this.model.trials && Array.isArray(this.model.trials) && this.model.trials.length > 0;
       },
       'trials'
     );
 
     this.on('openFeedback', (e) => {
       this.feedbackEmitter = e.detail;
+    });
+
+    this.on('run-filters', (e) => {
+      this.filterData();
     });
 
     this.onTagClick('add-trial', async (event) => {
@@ -279,19 +208,6 @@ export default class ListTrialsController extends WebcController {
           disableBackdropClosing: false,
         }
       );
-
-      // this.createWebcModal({
-      //   template: 'add-new-trial',
-      //   controller: 'AddNewTrialModalController',
-      //   disableBackdropClosing: true,
-      //   disableFooter: true,
-      //   disableHeader: false,
-      //   disableExpanding: true,
-      //   disableClosing: false,
-      //   disableCancelButton: true,
-      //   expanded: false,
-      //   centered: true,
-      // });
     });
 
     this.on('delete-trial', async (event) => {
@@ -332,46 +248,6 @@ export default class ListTrialsController extends WebcController {
         this.model.clearButtonDisabled = false;
         this.filterData();
       }, 300);
-    });
-
-    this.on('navigate-to-page', async (event) => {
-      event.preventDefault();
-      this.paginateTrials(this.model.trials, event.data.value ? parseInt(event.data.value) : event.data);
-    });
-
-    this.on('go-to-previous-page', async () => {
-      if (this.model.pagination.currentPage !== 1) {
-        this.paginateTrials(this.model.trials, this.model.pagination.currentPage - 1);
-      }
-    });
-
-    this.on('go-to-next-page', async () => {
-      if (this.model.pagination.currentPage !== this.model.pagination.totalPages) {
-        this.paginateTrials(this.model.trials, this.model.pagination.currentPage + 1);
-      }
-    });
-
-    this.on('go-to-last-page', async () => {
-      const length = this.model.trials.length;
-      const numberOfPages = Math.ceil(length / this.model.pagination.itemsPerPage);
-      if (this.model.pagination.currentPage !== numberOfPages) {
-        this.paginateTrials(this.model.trials, numberOfPages);
-      }
-    });
-
-    this.on('go-to-first-page', async () => {
-      if (this.model.pagination.currentPage !== 1) {
-        this.paginateTrials(this.model.trials, 1);
-      }
-    });
-
-    this.on('set-items-per-page', async (event) => {
-      this.model.pagination.itemsPerPage = parseInt(event.data.value);
-      this.paginateTrials(this.model.trials, 1);
-    });
-
-    this.on('sort-column', async (event) => {
-      this.sortColumn(event.data);
     });
   }
 

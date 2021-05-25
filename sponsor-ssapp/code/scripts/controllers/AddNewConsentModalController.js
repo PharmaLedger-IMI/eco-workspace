@@ -51,8 +51,8 @@ export default class AddNewConsentModalController extends WebcController {
 
   file = null;
 
-  constructor(element, history) {
-    super(element, history);
+  constructor(...props) {
+    super(...props);
 
     let { id, keySSI } = this.history.location.state;
 
