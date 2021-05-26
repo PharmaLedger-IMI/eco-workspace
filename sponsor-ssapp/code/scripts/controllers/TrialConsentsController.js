@@ -85,7 +85,22 @@ export default class TrialConsentsController extends WebcController {
 
   async getConsents() {
     try {
-      this.consents = await this.consentsService.getTrialConsents(this.keySSI);
+      const consents = await this.consentsService.getTrialConsents(this.keySSI);
+      this.consents = [];
+      for (const consent of consents) {
+        for (const version of consent.versions) {
+          this.consents.push({
+            id: consent.id,
+            keySSI: consent.keySSI,
+            name: consent.name,
+            type: consent.type,
+            attachment: version.attachment,
+            version: version.version,
+            versionDate: version.versionDate,
+            enableUpdateButton: consent.versions.indexOf(version) === consent.versions.length - 1 ? true : false,
+          });
+        }
+      }
       console.log('CONSENTS RECEIVED:', this.consents);
       this.setConsentsModel(this.consents);
     } catch (error) {
@@ -226,10 +241,36 @@ export default class TrialConsentsController extends WebcController {
           controller: 'AddNewConsentModalController',
           disableExpanding: true,
           disableBackdropClosing: false,
+          isUpdate: false,
         }
       );
     });
-    this.on('update-consent', async (event) => {});
+
+    this.on('update-consent', async (event) => {
+      this.showModalFromTemplate(
+        'add-new-consent',
+        (event) => {
+          const response = event.detail;
+          this.getConsents();
+          this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
+          this.sendMessageToHco('add-trial', this.keySSI, 'New trial');
+        },
+        (event) => {
+          const error = event.detail || null;
+          if (error instanceof Error) {
+            console.log(error);
+            this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new consent', 'toast');
+          }
+        },
+        {
+          controller: 'AddNewConsentModalController',
+          disableExpanding: true,
+          disableBackdropClosing: false,
+          isUpdate: this.consents.find((x) => x.version === event.data),
+        }
+      );
+    });
+
     this.on('delete-consent', async (event) => {
       try {
         await this.consentsService.deleteConsent(this.keySSI, event.data);

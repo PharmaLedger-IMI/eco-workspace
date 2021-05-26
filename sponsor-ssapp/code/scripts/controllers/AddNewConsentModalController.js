@@ -50,9 +50,12 @@ export default class AddNewConsentModalController extends WebcController {
   };
 
   file = null;
+  isUpdate = false;
 
   constructor(...props) {
     super(...props);
+
+    this.isUpdate = props[0].isUpdate;
 
     let { id, keySSI } = this.history.location.state;
 
@@ -60,16 +63,29 @@ export default class AddNewConsentModalController extends WebcController {
 
     this.consentsService = new ConsentsService(this.DSUStorage);
 
-    this.setModel({
-      consent: {
-        id: this.id,
-        name: this.name,
-        type: this.type,
-        version: this.version,
-        attachment: this.attachment,
-      },
-      submitButtonDisabled: true,
-    });
+    if (this.isUpdate) {
+      this.setModel({
+        consent: {
+          id: { ...this.id, value: this.isUpdate.id, disabled: true },
+          name: { ...this.name, value: this.isUpdate.name, disabled: true },
+          type: { ...this.type, value: this.isUpdate.type, disabled: true },
+          version: this.version,
+          attachment: this.attachment,
+        },
+        submitButtonDisabled: true,
+      });
+    } else {
+      this.setModel({
+        consent: {
+          id: this.id,
+          name: this.name,
+          type: this.type,
+          version: this.version,
+          attachment: this.attachment,
+        },
+        submitButtonDisabled: true,
+      });
+    }
 
     this.attachAll();
   }
@@ -93,19 +109,34 @@ export default class AddNewConsentModalController extends WebcController {
 
     this.onTagClick('create-consent', async (event) => {
       try {
-        console.log('event fired');
-        this.model.submitButtonDisabled = true;
-        const consent = {
-          name: this.model.consent.name.value,
-          type: this.model.consent.type.value,
-          id: this.model.consent.id.value,
-          version: this.model.consent.version.value,
-          versionDate: new Date().toISOString(),
-          file: this.file[0],
-        };
-        const result = await this.consentsService.createConsent(consent, this.keySSI);
-        this.model.submitButtonDisabled = false;
-        this.send('confirmed', result);
+        if (!this.isUpdate) {
+          this.model.submitButtonDisabled = true;
+          const consent = {
+            name: this.model.consent.name.value,
+            type: this.model.consent.type.value,
+            id: this.model.consent.id.value,
+            versions: [
+              {
+                version: this.model.consent.version.value,
+                versionDate: new Date().toISOString(),
+                file: this.file[0],
+              },
+            ],
+          };
+          const result = await this.consentsService.createConsent(consent, this.keySSI);
+          this.model.submitButtonDisabled = false;
+          this.send('confirmed', result);
+        } else {
+          const version = {
+            version: this.model.consent.version.value,
+            versionDate: new Date().toISOString(),
+            file: this.file[0],
+          };
+
+          const result = await this.consentsService.updateConsent(version, this.keySSI, this.isUpdate.keySSI);
+          this.model.submitButtonDisabled = false;
+          this.send('confirmed', result);
+        }
       } catch (error) {
         this.send('closed', new Error('There was an issue creating the trial'));
         console.log(error);
