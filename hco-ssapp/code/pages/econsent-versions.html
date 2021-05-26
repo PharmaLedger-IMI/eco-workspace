@@ -4,12 +4,12 @@
         <div class="subheader row">
             <psk-label class="trial-title">{{@econsent.name}}</psk-label>
             <psk-label class="trial-title">{{@econsent.type}}</psk-label>
-            <psk-label class="trial-title">{{@econsent.versionDateAsString}}</psk-label>
         </div>
 
         <div class="tp-table">
-            <psk-layout columns="5" class="justify-content-center align-items-center table-row">
+            <psk-layout columns="6" class="justify-content-center align-items-center table-row">
                 <psk-label class="table-cell">VERSION</psk-label>
+                <psk-label class="table-cell">Date</psk-label>
                 <psk-label class="table-cell">TP CONSENT</psk-label>
                 <psk-label class="table-cell">TP CAREGIVE CONSENT</psk-label>
                 <psk-label class="table-cell">HCP CONSENT</psk-label>
@@ -20,8 +20,9 @@
 
         <div class="tp-wrapper">
             <div class="tp-table econsent-list" data-for="@versions">
-                <psk-layout columns="5" class="justify-content-center align-items-center table-row econsent-row-blue">
+                <psk-layout columns="6" class="justify-content-center align-items-center table-row econsent-row-blue">
                     <psk-label class="table-cell">{{@version}}</psk-label>
+                    <psk-label class="table-cell">{{@versionDateAsString}}</psk-label>
                     <div data-if="@tpSigned">
                         <button slot="true" data-tag="econsent:sign">
                             {{@tpApproval}}
