@@ -1,3 +1,5 @@
+import Constants from "../utils/Constants.js";
+
 const { WebcController } = WebCardinal.controllers;
 import CommunicationService from '../services/CommunicationService.js';
 import NotificationsService from '../services/NotificationsService.js';
@@ -128,6 +130,18 @@ export default class HomeController extends WebcController {
           });
           break;
         }
+        case 'add-econsent-version': {
+          this.TrialService.mountTrial(data.message.ssi, () => {});
+          this.sendMessageToPatient('refresh-trial', data.message.ssi,
+              Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.REFRESH_TRIAL);
+          break;
+        }
+        case 'add-consent': {
+          this.TrialService.mountTrial(data.message.ssi, () => {});
+          this.sendMessageToPatient('refresh-trial', data.message.ssi,
+              Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.REFRESH_TRIAL);
+          break;
+        }
         case 'delete-trial': {
           break;
         }
@@ -194,6 +208,14 @@ export default class HomeController extends WebcController {
           return console.log(err);
         }
       });
+    });
+  }
+
+  sendMessageToPatient(operation, ssi, shortMessage) {
+    this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
+      operation: operation,
+      ssi: ssi,
+      shortDescription: shortMessage,
     });
   }
 

@@ -228,7 +228,7 @@ export default class TrialConsentsController extends WebcController {
           this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
           console.log('THIS.KEYSSI:', this.keySSI);
-          this.sendMessageToHco('add-trial', this.keySSI, 'New trial');
+          this.sendMessageToHco('add-consent', this.keySSI, 'New trial');
         },
         (event) => {
           const error = event.detail || null;
@@ -253,7 +253,7 @@ export default class TrialConsentsController extends WebcController {
           const response = event.detail;
           this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          this.sendMessageToHco('add-trial', this.keySSI, 'New trial');
+          this.sendMessageToHco('add-econsent-version', this.keySSI, 'New trial');
         },
         (event) => {
           const error = event.detail || null;
