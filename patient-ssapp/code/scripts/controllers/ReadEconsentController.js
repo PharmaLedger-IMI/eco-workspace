@@ -35,11 +35,11 @@ export default class ReadEconsentController extends WebcController {
       if (err) {
         return console.log(err);
       }
+      let ecoVersion = this.model.historyData.ecoVersion;
       this.model.econsent = econsent;
-      this.fileDownloader = new FileDownloader(
-        this.getEconsentFilePath(this.model.historyData.trialuid, this.model.historyData.ecoId, econsent.attachment),
-        econsent.attachment
-      );
+      let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
+      let econsentFilePath = this.getEconsentFilePath(this.model.historyData.trialuid, this.model.historyData.ecoId, ecoVersion, currentVersion.attachment);
+      this.fileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
       this._downloadFile();
       this.EconsentService.getEconsentsStatuses((err, data) => {
         if (err) {
@@ -67,8 +67,8 @@ export default class ReadEconsentController extends WebcController {
     this.responseCallback(undefined, response);
   }
 
-  getEconsentFilePath(trialSSI, consentSSI, fileName) {
-    return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + fileName;
+  getEconsentFilePath(trialSSI, consentSSI, version, fileName) {
+    return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version + '/' + fileName;
   }
 
   _attachHandlerSign() {
@@ -150,6 +150,7 @@ export default class ReadEconsentController extends WebcController {
       useCaseSpecifics: {
         trialSSI: this.model.historyData.trialuid,
         tpNumber: this.model.historyData.tpNumber,
+        version: this.model.historyData.ecoVersion,
         action: {
           name: action,
           date: currentDate.toISOString(),

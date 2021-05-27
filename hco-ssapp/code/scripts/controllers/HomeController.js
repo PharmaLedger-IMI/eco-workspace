@@ -1,3 +1,5 @@
+import Constants from "../utils/Constants.js";
+
 const { WebcController } = WebCardinal.controllers;
 import CommunicationService from '../services/CommunicationService.js';
 import NotificationsService from '../services/NotificationsService.js';
@@ -49,6 +51,7 @@ export default class HomeController extends WebcController {
       someKey: 'someValue',
       rms: 'delivers',
     };
+
     this.StorageService.insertRecord('testTable', testObject, (err, obj) => {
       // if err is something like <Cannot read property 'originalMessage' of undefined> it means that this key already exist.
       console.log('StorageService.insertRecord', err, obj);
@@ -127,6 +130,18 @@ export default class HomeController extends WebcController {
           });
           break;
         }
+        case 'add-econsent-version': {
+          this.TrialService.mountTrial(data.message.ssi, () => {});
+          this.sendMessageToPatient('refresh-trial', data.message.ssi,
+              Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.REFRESH_TRIAL);
+          break;
+        }
+        case 'add-consent': {
+          this.TrialService.mountTrial(data.message.ssi, () => {});
+          this.sendMessageToPatient('refresh-trial', data.message.ssi,
+              Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.REFRESH_TRIAL);
+          break;
+        }
         case 'delete-trial': {
           break;
         }
@@ -143,10 +158,18 @@ export default class HomeController extends WebcController {
       if (err) {
         return console.log(err);
       }
-      if (econsent.actions === undefined) {
-        econsent.actions = [];
+      let currentVersionIndex = econsent.versions.findIndex(eco => eco.version === message.useCaseSpecifics.version)
+      if (currentVersionIndex === -1) {
+        return console.log(`Version ${message.useCaseSpecifics.version} of the econsent ${message.ssi} does not exist.`)
       }
-      econsent.actions.push(message.useCaseSpecifics.action);
+      let currentVersion = econsent.versions[currentVersionIndex]
+      if (currentVersion.actions === undefined) {
+        currentVersion.actions = [];
+      }
+      currentVersion.actions.push({
+            ...message.useCaseSpecifics.action,
+            tpNumber: message.useCaseSpecifics.tpNumber
+          });
       let actionNeeded = 'No action required';
       switch (message.useCaseSpecifics.action.name) {
         case 'withdraw': {
@@ -178,13 +201,21 @@ export default class HomeController extends WebcController {
           }
         });
       });
-      econsent.tpNumber = message.useCaseSpecifics.tpNumber;
       econsent.uid = econsent.keySSI;
+      econsent.versions[currentVersionIndex] = currentVersion;
       this.TrialService.updateEconsent(message.useCaseSpecifics.trialSSI, econsent, (err, response) => {
         if (err) {
           return console.log(err);
         }
       });
+    });
+  }
+
+  sendMessageToPatient(operation, ssi, shortMessage) {
+    this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
+      operation: operation,
+      ssi: ssi,
+      shortDescription: shortMessage,
     });
   }
 

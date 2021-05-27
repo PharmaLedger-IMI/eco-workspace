@@ -41,43 +41,44 @@ export default class EconsentVersionsController extends WebcController {
       if (err) {
         return console.log(err);
       }
-      this.model.econsent = {
-        ...data,
-        versionDateAsString: DateTimeService.convertStringToLocaleDate(data.versionDate),
-      };
-      let econsentVersion = {
-        ...data,
-        tpApproval: '-',
-        tpCaregiveApproval: '-',
-        hcpApproval: '-',
-        hcpWithdraw: '-',
-      };
-      econsentVersion.tpSigned = false;
-      data.actions.forEach((action) => {
-        switch (action.name) {
-          case 'sign': {
-            econsentVersion.tpSigned = true;
-            econsentVersion.tpApproval = action.toShowDate;
-            econsentVersion.hcpApproval = 'Required';
-            break;
-          }
-          case 'withdraw': {
-            econsentVersion.hcpWithdraw = 'TP Withdraw';
-            break;
-          }
-          case 'withdraw-intention': {
-            econsentVersion.hcpApproval = 'Contact TP';
-            econsentVersion.hcpWithdraw = 'Intention';
-            break;
-          }
+      this.model.econsent = data;
+      this.model.versions = data.versions?.map(econsentVersion => {
+        econsentVersion = {
+          ...econsentVersion,
+          tpApproval: '-',
+          tpCaregiveApproval: '-',
+          hcpApproval: '-',
+          hcpWithdraw: '-',
+          tpSigned: false,
+          versionDateAsString: DateTimeService.convertStringToLocaleDate(econsentVersion.versionDate)
         }
-      });
-      if (data.hcoSign) {
-        econsentVersion.hcpApproval = data.hcoSign.toShowDate;
-        econsentVersion.tpSigned = false;
-      }
+        econsentVersion.actions?.forEach((action) => {
+            switch (action.name) {
+              case 'sign': {
+                econsentVersion.tpSigned = true;
+                econsentVersion.tpApproval = action.toShowDate;
+                econsentVersion.hcpApproval = 'Required';
+                break;
+              }
+              case 'withdraw': {
+                econsentVersion.hcpWithdraw = 'TP Withdraw';
+                break;
+              }
+              case 'withdraw-intention': {
+                econsentVersion.hcpApproval = 'Contact TP';
+                econsentVersion.hcpWithdraw = 'Intention';
+                break;
+              }
+            }
+          })
 
-      this.model.versions.push(econsentVersion);
+          if (econsentVersion.hcoSign) {
+            econsentVersion.hcpApproval = data.hcoSign.toShowDate;
+            econsentVersion.tpSigned = false;
+          }
+
+          return econsentVersion;
+      });
     });
   }
 

@@ -43,8 +43,14 @@ export default class TrialController extends WebcController {
         if (err) {
           return console.log(err);
         }
-        this.model.econsents = [];
-        this.model.econsents.push(...data);
+
+        this.model.econsents = data?.map(econsent => {
+          return econsent.versions.length === 0 ? econsent : {
+            ...econsent,
+            ...econsent.versions.sort((a,b) => new Date(b.versionDate) - new Date(a.versionDate))[0]
+          }
+        })
+
         this.EconsentService.getEconsentsStatuses((err, data) => {
           if (err) {
             return console.error(err);
@@ -62,7 +68,8 @@ export default class TrialController extends WebcController {
       this.navigateToPageTag('econsent', {
         tpNumber: this.model.tpNumber,
         trialuid: this.model.keyssi,
-        ecoId: target.attributes['data'].value,
+        ecoId: model.uid,
+        ecoVersion: model.version,
       });
     });
   }
