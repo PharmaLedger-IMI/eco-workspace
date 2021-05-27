@@ -142,7 +142,7 @@ export default class ListTrialsController extends WebcController {
     this.model.data = model;
     this.model.headers = this.model.headers.map((x) => ({ ...x, asc: false, desc: false }));
 
-    this.send('update-table', '1');
+    eventBusService.emitEventListeners(Topics.RefreshTable, null);
   }
 
   filterData() {
@@ -157,8 +157,6 @@ export default class ListTrialsController extends WebcController {
     if (this.model.search.value && this.model.search.value !== '') {
       result = result.filter((x) => x.name.toUpperCase().search(this.model.search.value.toUpperCase()) !== -1);
     }
-
-    console.log(this.trials, result);
 
     this.setTrialsModel(result);
   }

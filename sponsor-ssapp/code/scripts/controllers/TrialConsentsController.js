@@ -1,6 +1,8 @@
 import { consentTypeEnum, consentTableHeaders } from '../constants/consent.js';
 import ConsentsService from '../services/ConsentsService.js';
 import CommunicationService from '../services/CommunicationService.js';
+import eventBusService from '../services/EventBusService.js';
+import { Topics } from '../constants/topics.js';
 
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
@@ -42,8 +44,6 @@ export default class TrialConsentsController extends WebcController {
     super(...props);
     let { id, keySSI } = this.history.location.state;
 
-    console.log('INSIDE CONSTRUCTOR', id, keySSI, this.history.location);
-
     this.keySSI = keySSI;
     this.consentsService = new ConsentsService(this.DSUStorage);
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.SPONSOR_IDENTITY);
@@ -54,18 +54,9 @@ export default class TrialConsentsController extends WebcController {
       pagination: this.pagination,
       headers: this.headers,
       search: this.search,
-      testing: {
-        templateInput: {
-          type: 'text',
-          value: 2,
-          style: 'border: 1px solid red',
-        },
-        templateLabel: {
-          text: 'Inner template label',
-        },
-      },
       type: 'consents',
       tableLength: 7,
+      data: [],
     });
 
     this.attachEvents();
@@ -76,7 +67,7 @@ export default class TrialConsentsController extends WebcController {
   async init() {
     try {
       await this.getConsents();
-      this.paginateConsents(this.model.consents);
+      this.setConsentsModel(this.model.consents);
     } catch (error) {
       console.log(error);
       this.showFeedbackToast('ERROR: There was an issue accessing trials object', 'Result', 'toast');
@@ -101,7 +92,6 @@ export default class TrialConsentsController extends WebcController {
           });
         }
       }
-      console.log('CONSENTS RECEIVED:', this.consents);
       this.setConsentsModel(this.consents);
     } catch (error) {
       console.log(error);
@@ -109,44 +99,13 @@ export default class TrialConsentsController extends WebcController {
     }
   }
 
-  paginateConsents(consents, page = 1) {
-    const itemsPerPage = this.model.pagination.itemsPerPage;
-    const length = consents.length;
-    const numberOfPages = Math.ceil(length / itemsPerPage);
-    const pages = Array.from({ length: numberOfPages }, (_, i) => i + 1).map((x) => ({
-      label: x,
-      value: x,
-      active: page === x,
-    }));
-
-    this.model.pagination.previous = page > 1 && pages.length > 1 ? false : true;
-    this.model.pagination.next = page < pages.length && pages.length > 1 ? false : true;
-    this.model.pagination.items = consents.slice(itemsPerPage * (page - 1), itemsPerPage * page);
-    this.model.pagination.pages = {
-      ...this.model.pagination.pages,
-      options: pages.map((x) => ({
-        label: x.label,
-        value: x.value,
-      })),
-    };
-    this.model.pagination.slicedPages =
-      pages.length > 5 && page - 3 >= 0 && page + 3 <= pages.length
-        ? pages.slice(page - 3, page + 2)
-        : pages.length > 5 && page - 3 < 0
-        ? pages.slice(0, 5)
-        : pages.length > 5 && page + 3 > pages.length
-        ? pages.slice(pages.length - 5, pages.length)
-        : pages;
-    this.model.pagination.currentPage = page;
-    this.model.pagination.totalPages = pages.length;
-  }
-
   setConsentsModel(consents) {
     const model = [...consents];
 
     this.model.consents = model;
-    this.paginateConsents(model, 1);
+    this.model.data = model;
     this.model.headers = this.model.headers.map((x) => ({ ...x, asc: false, desc: false }));
+    eventBusService.emitEventListeners(Topics.RefreshTable, null);
   }
 
   filterData() {
@@ -157,38 +116,6 @@ export default class TrialConsentsController extends WebcController {
     }
 
     this.setConsentsModel(result);
-  }
-
-  sortColumn(column) {
-    if (column || this.model.headers.some((x) => x.asc || x.desc)) {
-      if (!column) column = this.model.headers.find((x) => x.asc || x.desc).column;
-
-      const headers = this.model.headers;
-      const selectedColumn = headers.find((x) => x.column === column);
-      const idx = headers.indexOf(selectedColumn);
-
-      if (headers[idx].notSortable) return;
-
-      if (headers[idx].asc || headers[idx].desc) {
-        this.model.consents.reverse();
-        this.paginateConsents(this.model.consents, this.model.pagination.currentPage);
-        this.model.headers = this.model.headers.map((x) => {
-          if (x.column !== column) {
-            return { ...x, asc: false, desc: false };
-          } else return { ...x, asc: !headers[idx].asc, desc: !headers[idx].desc };
-        });
-      } else {
-        this.model.consents = this.model.consents.sort((a, b) => (a[column] >= b[column] ? 1 : -1));
-        this.paginateConsents(this.model.consents, this.model.pagination.currentPage);
-        this.model.headers = this.model.headers.map((x) => {
-          if (x.column !== column) {
-            return { ...x, asc: false, desc: false };
-          } else return { ...x, asc: true, desc: false };
-        });
-      }
-    } else {
-      this.model.headers = this.model.headers.map((x) => ({ ...x, asc: false, desc: false }));
-    }
   }
 
   showFeedbackToast(title, message, alertType) {
@@ -213,10 +140,6 @@ export default class TrialConsentsController extends WebcController {
 
     this.on('openFeedback', (e) => {
       this.feedbackEmitter = e.detail;
-    });
-
-    this.onTagClick('test', (e) => {
-      console.log('Testing fired');
     });
 
     this.onTagClick('add-consent', async (event) => {
@@ -292,46 +215,6 @@ export default class TrialConsentsController extends WebcController {
         this.model.clearButtonDisabled = false;
         this.filterData();
       }, 300);
-    });
-
-    this.on('navigate-to-page', async (event) => {
-      event.preventDefault();
-      this.paginateConsents(this.model.consents, event.data.value ? parseInt(event.data.value) : event.data);
-    });
-
-    this.on('go-to-previous-page', async () => {
-      if (this.model.pagination.currentPage !== 1) {
-        this.paginateConsents(this.model.consents, this.model.pagination.currentPage - 1);
-      }
-    });
-
-    this.on('go-to-next-page', async () => {
-      if (this.model.pagination.currentPage !== this.model.pagination.totalPages) {
-        this.paginateConsents(this.model.consents, this.model.pagination.currentPage + 1);
-      }
-    });
-
-    this.on('go-to-last-page', async () => {
-      const length = this.model.consents.length;
-      const numberOfPages = Math.ceil(length / this.model.pagination.itemsPerPage);
-      if (this.model.pagination.currentPage !== numberOfPages) {
-        this.paginateConsents(this.model.consents, numberOfPages);
-      }
-    });
-
-    this.on('go-to-first-page', async () => {
-      if (this.model.pagination.currentPage !== 1) {
-        this.paginateConsents(this.model.consents, 1);
-      }
-    });
-
-    this.on('set-items-per-page', async (event) => {
-      this.model.pagination.itemsPerPage = parseInt(event.data.value);
-      this.paginateConsents(this.model.consents, 1);
-    });
-
-    this.on('sort-column', async (event) => {
-      this.sortColumn(event.data);
     });
   }
 

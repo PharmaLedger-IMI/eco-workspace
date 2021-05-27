@@ -1,5 +1,7 @@
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
+import { Topics } from '../constants/topics.js';
+import eventBusService from '../services/EventBusService.js';
 
 export default class TableTemplateController extends WebcController {
   constructor(...props) {
@@ -8,11 +10,19 @@ export default class TableTemplateController extends WebcController {
     this.attachEvents();
 
     this.init();
+
+    this.addBusEventListener();
   }
 
   async init() {
     this.paginateData(this.model.data);
     return;
+  }
+
+  addBusEventListener() {
+    eventBusService.addEventListener(Topics.RefreshTable, async (data) => {
+      this.paginateData(this.model.data);
+    });
   }
 
   attachEvents() {
@@ -39,12 +49,6 @@ export default class TableTemplateController extends WebcController {
       },
       'form.email.isValid'
     );
-
-    this.onTagClick('update-table', async (event) => {
-      console.log('RUNNING');
-      this.send('run-filters');
-      this.paginateData(this.model.data, 1);
-    });
 
     this.on('navigate-to-page', async (event) => {
       event.preventDefault();
