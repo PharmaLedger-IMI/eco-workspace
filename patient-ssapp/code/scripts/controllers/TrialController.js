@@ -1,6 +1,7 @@
 import Constants from './Constants.js';
 import TrialService from '../services/TrialService.js';
 import EconsentService from '../services/EconsentService.js';
+import ConsentStatusMapper from "../utils/ConsentStatusMapper.js";
 
 const { WebcController } = WebCardinal.controllers;
 
@@ -51,6 +52,7 @@ export default class TrialController extends WebcController {
           }
         })
 
+        this.model.econsents[0].isMain = true;
         this.EconsentService.getEconsentsStatuses((err, data) => {
           if (err) {
             return console.error(err);
@@ -83,6 +85,10 @@ export default class TrialController extends WebcController {
   _setTpStatus(consents) {
     consents.forEach((consent) => {
       if (consent.type === 'Mandatory') {
+        if (!ConsentStatusMapper.isSigned(consent.actions))
+        {
+          this.model.econsents[index].required = true;
+        }
         this.model.tpStatus = consent.actions.map((action, index) => {
           return {
             ...action,
@@ -91,5 +97,6 @@ export default class TrialController extends WebcController {
         });
       }
     });
+
   }
 }
