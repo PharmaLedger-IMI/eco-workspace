@@ -1,4 +1,4 @@
-const { WebcController } = WebCardinal.controllers;
+const {WebcController} = WebCardinal.controllers;
 import Constants from '../utils/Constants.js';
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
@@ -46,9 +46,9 @@ export default class TrialController extends WebcController {
                 return console.log(err);
             }
             this.model.trial = trial;
-            this.model.trialParticipants = await this.TrialParticipantRepository.filterAsync  (`trialNumber == ${this.model.trial.tpNumber}`, 'ascending' , 30);
+            this.model.trialParticipants = await this.TrialParticipantRepository.filterAsync(`trialNumber == ${this.model.trial.tpNumber}`, 'ascending', 30);
 
-         });
+        });
     }
 
     _attachHandlerNavigateToParticipant() {
@@ -87,11 +87,9 @@ export default class TrialController extends WebcController {
     }
 
     async createTpDsu(tp) {
-        tp.trialNumber = this.model.trial.tpNumber;
+        tp.trialNumber = this.model.trial.id;
         tp.status = 'screened';
-        debugger;
         let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
-        debugger;
         this.model.trialParticipants.push(trialParticipant);
         this.sendMessageToPatient(
             'add-to-trial',
