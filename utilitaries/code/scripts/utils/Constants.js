@@ -5,7 +5,8 @@ const MESSAGES = {
                 SIGN_ECONSENT: 'HCO signed econsent'
             },
             PATIENT: {
-                ADD_TO_TRIAL: 'You were added to trial'
+                ADD_TO_TRIAL: 'You were added to trial',
+                REFRESH_TRIAL: 'Trial needs to be refreshed.'
             }
         },
         FEEDBACK: {

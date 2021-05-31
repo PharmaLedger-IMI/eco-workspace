@@ -46,8 +46,7 @@ export default class TrialController extends WebcController {
                 return console.log(err);
             }
             this.model.trial = trial;
-            this.model.trialParticipants = await this.TrialParticipantRepository.filterAsync(`trialNumber == ${this.model.trial.tpNumber}`, 'ascending', 30);
-
+            this.model.trialParticipants = await this.TrialParticipantRepository.filterAsync(`trialNumber == ${this.model.trial.id}`, 'ascending', 30);
         });
     }
 

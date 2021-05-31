@@ -2,6 +2,7 @@ import TrialService from '../services/TrialService.js';
 import FileDownloader from '../utils/FileDownloader.js';
 import EconsentService from '../services/EconsentService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
+import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 
 const { WebcController } = WebCardinal.controllers;
 
@@ -20,6 +21,7 @@ export default class EconsentController extends WebcController {
   _initServices(DSUStorage) {
     this.TrialService = new TrialService(DSUStorage);
     this.EconsentService = new EconsentService(DSUStorage);
+    this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
   }
 
   _initHandlers() {
@@ -42,6 +44,7 @@ export default class EconsentController extends WebcController {
       this.fileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
       this.model.econsent.versionDate = new Date(currentVersion.versionDate).toLocaleDateString('sw');
       this._downloadFile();
+
       this.EconsentService.getEconsentsStatuses((err, data) => {
         if (err) {
           return console.error(err);

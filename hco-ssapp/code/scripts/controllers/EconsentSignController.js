@@ -50,11 +50,10 @@ export default class EconsentSignController extends WebcController {
         ...econsent,
         versionDateAsString: DateTimeService.convertStringToLocaleDate(econsent.versionDate),
       };
-      let attachment = econsent.attachment;
-      this.FileDownloader = new FileDownloader(
-        this._getEconsentFilePath(this.model.trialSSI, this.model.econsentSSI, attachment),
-        attachment
-      );
+      let ecoVersion = this.model.ecoVersion;
+      let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
+      let econsentFilePath = this._getEconsentFilePath(this.model.trialSSI, this.model.econsentSSI, ecoVersion, currentVersion.attachment);
+      this.FileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
       this._downloadFile();
     });
   }
@@ -72,8 +71,8 @@ export default class EconsentSignController extends WebcController {
     });
   }
 
-  _getEconsentFilePath(trialSSI, consentSSI, fileName) {
-    return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + fileName;
+  _getEconsentFilePath(trialSSI, consentSSI, version, fileName) {
+    return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version + '/' + fileName;
   }
 
   _attachHandlerEconsentSign() {
