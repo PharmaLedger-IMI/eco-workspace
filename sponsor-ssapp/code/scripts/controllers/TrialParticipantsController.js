@@ -13,9 +13,9 @@ export default class TrialParticipantsController extends WebcController {
   headers = trialTableHeaders;
 
   search = {
-    label: 'Search for consent',
+    label: 'Search for participant id',
     required: false,
-    placeholder: 'Consent name...',
+    placeholder: 'Participant id...',
     value: '',
   };
 
@@ -26,17 +26,15 @@ export default class TrialParticipantsController extends WebcController {
     next: false,
     items: null,
     pages: {
-      options: [],
+      selectOptions: '',
     },
     slicedPages: null,
     currentPage: 0,
     itemsPerPage: 10,
     totalPages: null,
     itemsPerPageOptions: {
-      options: this.itemsPerPageArray.map((x) => ({
-        label: x,
-        value: x,
-      })),
+      selectOptions: this.itemsPerPageArray.join(' | '),
+      value: this.itemsPerPageArray[1].toString(),
     },
   };
 
@@ -104,15 +102,8 @@ export default class TrialParticipantsController extends WebcController {
   attachAll() {
     this.model.addExpression(
       'participantsArrayNotEmpty',
-      () => {
-        return (
-          this.model.pagination &&
-          this.model.pagination.items &&
-          Array.isArray(this.model.pagination.items) &&
-          this.model.pagination.items.length > 0
-        );
-      },
-      'pagination'
+      () => this.model.participants && Array.isArray(this.model.participants) && this.model.participants.length > 0,
+      'participants'
     );
 
     this.on('openFeedback', (e) => {

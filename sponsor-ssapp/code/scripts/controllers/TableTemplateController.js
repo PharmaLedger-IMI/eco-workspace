@@ -1,7 +1,5 @@
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
-import { Topics } from '../constants/topics.js';
-import eventBusService from '../services/EventBusService.js';
 
 export default class TableTemplateController extends WebcController {
   localData = null;
@@ -49,6 +47,7 @@ export default class TableTemplateController extends WebcController {
 
     this.on('navigate-to-page', async (event) => {
       event.preventDefault();
+      console.log('event:', event);
       this.paginateData(this.model.data, event.data.value ? parseInt(event.data.value) : event.data);
     });
 
@@ -105,10 +104,8 @@ export default class TableTemplateController extends WebcController {
       this.model.pagination.items = data.slice(itemsPerPage * (page - 1), itemsPerPage * page);
       this.model.pagination.pages = {
         ...this.model.pagination.pages,
-        options: pages.map((x) => ({
-          label: x.label,
-          value: x.value,
-        })),
+        selectOptions: pages.map((x) => x.value).join(' | '),
+        value: page.toString(),
       };
       this.model.pagination.slicedPages =
         pages.length > 5 && page - 3 >= 0 && page + 3 <= pages.length
@@ -120,6 +117,8 @@ export default class TableTemplateController extends WebcController {
           : pages;
       this.model.pagination.currentPage = page;
       this.model.pagination.totalPages = pages.length;
+
+      console.log(JSON.stringify(this.model.pagination, null, 2));
     }
   }
 

@@ -1,8 +1,6 @@
 import { consentTypeEnum, consentTableHeaders } from '../constants/consent.js';
 import ConsentsService from '../services/ConsentsService.js';
 import CommunicationService from '../services/CommunicationService.js';
-import eventBusService from '../services/EventBusService.js';
-import { Topics } from '../constants/topics.js';
 
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
@@ -26,17 +24,15 @@ export default class TrialConsentsController extends WebcController {
     next: false,
     items: null,
     pages: {
-      options: [],
+      selectOptions: '',
     },
     slicedPages: null,
     currentPage: 0,
     itemsPerPage: 10,
     totalPages: null,
     itemsPerPageOptions: {
-      options: this.itemsPerPageArray.map((x) => ({
-        label: x,
-        value: x,
-      })),
+      selectOptions: this.itemsPerPageArray.join(' | '),
+      value: this.itemsPerPageArray[1].toString(),
     },
   };
 
@@ -126,15 +122,8 @@ export default class TrialConsentsController extends WebcController {
   attachEvents() {
     this.model.addExpression(
       'consentsArrayNotEmpty',
-      () => {
-        return (
-          this.model.pagination &&
-          this.model.pagination.items &&
-          Array.isArray(this.model.pagination.items) &&
-          this.model.pagination.items.length > 0
-        );
-      },
-      'pagination.items'
+      () => this.model.consents && Array.isArray(this.model.consents) && this.model.consents.length > 0,
+      'consents'
     );
 
     this.on('openFeedback', (e) => {
@@ -164,6 +153,7 @@ export default class TrialConsentsController extends WebcController {
           disableExpanding: true,
           disableBackdropClosing: false,
           isUpdate: false,
+          existingIds: this.consents.map((x) => x.id) || [],
         }
       );
     });
@@ -188,7 +178,8 @@ export default class TrialConsentsController extends WebcController {
           controller: 'AddNewConsentModalController',
           disableExpanding: true,
           disableBackdropClosing: false,
-          isUpdate: this.consents.find((x) => x.version === event.data),
+          isUpdate: this.consents.find((x) => x.id === event.data),
+          existingVersions: this.consents.filter((x) => x.id === event.data).map((x) => x.version) || [],
         }
       );
     });
