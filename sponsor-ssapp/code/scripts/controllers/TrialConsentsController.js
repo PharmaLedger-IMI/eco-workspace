@@ -105,7 +105,6 @@ export default class TrialConsentsController extends WebcController {
     this.model.consents = model;
     this.model.data = model;
     this.model.headers = this.model.headers.map((x) => ({ ...x, asc: false, desc: false }));
-    eventBusService.emitEventListeners(Topics.RefreshTable, null);
   }
 
   filterData() {
@@ -143,15 +142,15 @@ export default class TrialConsentsController extends WebcController {
     });
 
     this.onTagClick('add-consent', async (event) => {
-      console.log('running add consent');
       this.showModalFromTemplate(
         'add-new-consent',
-        (event) => {
+        async (event) => {
           const response = event.detail;
-          this.getConsents();
+          await this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          console.log('THIS.KEYSSI:', this.keySSI);
-          this.sendMessageToHco('add-consent', this.keySSI, 'New trial');
+          if (this.consents.length === 1) {
+            this.sendMessageToHco('add-trial', this.keySSI, 'First consent');
+          } else this.sendMessageToHco('add-consent', this.keySSI, 'New trial');
         },
         (event) => {
           const error = event.detail || null;
