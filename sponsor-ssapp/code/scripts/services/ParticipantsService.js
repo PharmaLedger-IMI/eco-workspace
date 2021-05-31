@@ -54,7 +54,7 @@ export default class ParticipantsService extends DSUService {
         participant = {
           ...participant,
           consentName: consent.name,
-          consentVersion: consent.version,
+          consentVersion: data.version,
           consentStatus: participantConsentStatusEnum.Consent,
           patientSignature: data.type === senderType.Patient ? data.action.date : participant.patientSignature,
           doctorSignature: data.type === senderType.HCP ? data.action.date : participant.doctorSignature,
@@ -65,7 +65,7 @@ export default class ParticipantsService extends DSUService {
         const model = {
           participantId: data.participantId,
           consentName: consent.name,
-          consentVersion: consent.version,
+          consentVersion: data.version,
           consentStatus: participantConsentStatusEnum.Consent,
           patientSignature: data.type === senderType.Patient ? data.action.date : null,
           doctorSignature: data.type === senderType.HCP ? data.action.date : null,

@@ -80,6 +80,7 @@ export default class ListTrialsController extends WebcController {
               action: data.message.useCaseSpecifics.action,
               trialSSI: data.message.useCaseSpecifics.trialSSI,
               consentSSI: data.message.ssi,
+              version: data.message.useCaseSpecifics.version,
               type: data.sender === 'hcoIdentity' ? senderType.HCP : senderType.Patient,
             },
             data.message.useCaseSpecifics.trialSSI
@@ -141,8 +142,6 @@ export default class ListTrialsController extends WebcController {
     this.model.trials = model;
     this.model.data = model;
     this.model.headers = this.model.headers.map((x) => ({ ...x, asc: false, desc: false }));
-
-    eventBusService.emitEventListeners(Topics.RefreshTable, null);
   }
 
   filterData() {

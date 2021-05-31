@@ -4,14 +4,13 @@ import { Topics } from '../constants/topics.js';
 import eventBusService from '../services/EventBusService.js';
 
 export default class TableTemplateController extends WebcController {
+  localData = null;
   constructor(...props) {
     super(...props);
 
     this.attachEvents();
 
     this.init();
-
-    this.addBusEventListener();
   }
 
   async init() {
@@ -19,13 +18,11 @@ export default class TableTemplateController extends WebcController {
     return;
   }
 
-  addBusEventListener() {
-    eventBusService.addEventListener(Topics.RefreshTable, async (data) => {
+  attachEvents() {
+    this.model.onChange('data', () => {
       this.paginateData(this.model.data);
     });
-  }
 
-  attachEvents() {
     this.model.addExpression(
       'isTrialsTable',
       () => {
@@ -91,36 +88,39 @@ export default class TableTemplateController extends WebcController {
     });
   }
 
-  paginateData(data, page = 1) {
-    const itemsPerPage = this.model.pagination.itemsPerPage;
-    const length = data.length;
-    const numberOfPages = Math.ceil(length / itemsPerPage);
-    const pages = Array.from({ length: numberOfPages }, (_, i) => i + 1).map((x) => ({
-      label: x,
-      value: x,
-      active: page === x,
-    }));
+  paginateData(dataIncoming, page = 1) {
+    const data = [...dataIncoming];
+    if (data && data.length > 0) {
+      const itemsPerPage = this.model.pagination.itemsPerPage;
+      const length = data.length;
+      const numberOfPages = Math.ceil(length / itemsPerPage);
+      const pages = Array.from({ length: numberOfPages }, (_, i) => i + 1).map((x) => ({
+        label: x,
+        value: x,
+        active: page === x,
+      }));
 
-    this.model.pagination.previous = page > 1 && pages.length > 1 ? false : true;
-    this.model.pagination.next = page < pages.length && pages.length > 1 ? false : true;
-    this.model.pagination.items = data.slice(itemsPerPage * (page - 1), itemsPerPage * page);
-    this.model.pagination.pages = {
-      ...this.model.pagination.pages,
-      options: pages.map((x) => ({
-        label: x.label,
-        value: x.value,
-      })),
-    };
-    this.model.pagination.slicedPages =
-      pages.length > 5 && page - 3 >= 0 && page + 3 <= pages.length
-        ? pages.slice(page - 3, page + 2)
-        : pages.length > 5 && page - 3 < 0
-        ? pages.slice(0, 5)
-        : pages.length > 5 && page + 3 > pages.length
-        ? pages.slice(pages.length - 5, pages.length)
-        : pages;
-    this.model.pagination.currentPage = page;
-    this.model.pagination.totalPages = pages.length;
+      this.model.pagination.previous = page > 1 && pages.length > 1 ? false : true;
+      this.model.pagination.next = page < pages.length && pages.length > 1 ? false : true;
+      this.model.pagination.items = data.slice(itemsPerPage * (page - 1), itemsPerPage * page);
+      this.model.pagination.pages = {
+        ...this.model.pagination.pages,
+        options: pages.map((x) => ({
+          label: x.label,
+          value: x.value,
+        })),
+      };
+      this.model.pagination.slicedPages =
+        pages.length > 5 && page - 3 >= 0 && page + 3 <= pages.length
+          ? pages.slice(page - 3, page + 2)
+          : pages.length > 5 && page - 3 < 0
+          ? pages.slice(0, 5)
+          : pages.length > 5 && page + 3 > pages.length
+          ? pages.slice(pages.length - 5, pages.length)
+          : pages;
+      this.model.pagination.currentPage = page;
+      this.model.pagination.totalPages = pages.length;
+    }
   }
 
   sortColumn(column) {
