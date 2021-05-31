@@ -90,6 +90,7 @@ export default class EconsentVersionsController extends WebcController {
         trialSSI: this.model.trialSSI,
         econsentSSI: this.model.econsentSSI,
         tpUid: this.model.tpUid,
+        ecoVersion: model.version
       });
     });
   }
