@@ -207,6 +207,7 @@ export default class HomeController extends WebcController {
             econsent.uid = econsent.keySSI;
             econsent.versions[currentVersionIndex] = currentVersion;
             this.TrialService.updateEconsent(message.useCaseSpecifics.trialSSI, econsent, (err, response) => {
+                debugger;
                 if (err) {
                     return console.log(err);
                 }
