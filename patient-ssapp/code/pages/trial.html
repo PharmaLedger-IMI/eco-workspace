@@ -55,11 +55,40 @@
                          data="@keySSI">
                         <div class="dispay-flex">
 
+
                             <div class="left-image padding-image">
                                 <psk-img class="left-image" src="assets/images/document_black.png"
                                          height='40' width='40'></psk-img>
                             </div>
                             <div>
+                                <div data-if=@isMain>
+                                    <container slot="true">
+                                    <strong >
+                                        Main Consent
+                                    </strong>
+                                    </container>
+                                </div>
+                                <div data-if=@isMain>
+                                    <container slot="true">
+                                        <strong >
+                                            Main Consent
+                                        </strong>
+                                    </container>
+                                </div>
+                                <div data-if=@required>
+                                    <container slot="true">
+                                        <strong >
+                                            SIGNATURE REQUIRED
+                                        </strong>
+                                    </container>
+                                </div>
+                                <div data-if=@updated>
+                                    <container slot="true">
+                                        <strong >
+                                            SIGNATURE REQUIRED
+                                        </strong>
+                                    </container>
+                                </div>
                                 <div>
                                     <strong class="dispay-flex line-text">
                                         {{@name}}
