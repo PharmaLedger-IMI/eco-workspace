@@ -3,33 +3,25 @@
   <webc-container controller="ListTrialsController">
     <div class="d-flex flex-wrap justify-content-between align-items-center py-3 mb-5">
       <div class="d-flex flex-column">
-        <div>
-          <label for="">{{ @countries.label }}</label>
-        </div>
-        <select data-for="@countries.options" value="@countries.value" data-tag="filters-changed">
-          <option value="@value">{{ @label }}</option>
-        </select>
+        <psk-select view-model="countries" event-name="filters-changed" event-data="country"></psk-select>
       </div>
       <div class="d-flex flex-column">
-        <div>
-          <label for="">{{ @statuses.label }}</label>
-        </div>
-        <select data-for="@statuses.options" value="@statuses.value" data-tag="filters-changed">
-          <option value="@value">{{ @label }}</option>
-        </select>
+        <psk-select view-model="statuses" event-name="filters-changed" event-data="status"></psk-select>
       </div>
       <div class="d-flex flex-column">
-        <div>
-          <label for="">{{ @search.label }}</label>
-        </div>
-        <input id="search-field" data-view-model="@search" data-tag="filters-changed" />
+        <psk-input id="search-field" view-model="search" event-name="filters-changed" event-data="text"></psk-input>
       </div>
       <button class="btn btn-primary" disabled="@clearButtonDisabled" data-tag="filters-cleared">Clear filters</button>
       <button class="btn btn-primary" data-tag="add-trial">Add Trial</button>
     </div>
 
     <psk-condition condition="@trialArrayNotEmpty">
-      <webc-template template="table-template" data-view-model="@"></webc-template>
+      <div slot="condition-true">
+        <webc-template template="table-template" data-view-model="@"></webc-template>
+      </div>
+      <div slot="condition-false">
+        <div>No trials available.</div>
+      </div>
     </psk-condition>
     <psk-list-feedbacks messages-to-display="5" time-alive="3000"> </psk-list-feedbacks>
   </webc-container>

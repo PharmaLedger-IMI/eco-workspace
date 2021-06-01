@@ -55,9 +55,7 @@
         <psk-label class="table-cell" label="@type"></psk-label>
         <psk-label class="table-cell" label="@attachment"></psk-label>
         <div class="d-flex flex-row">
-          <psk-button class="btn-bare table-cell" event-name="update-consent" event-data="@version">
-            &#9997;
-          </psk-button>
+          <psk-button class="btn-bare table-cell" event-name="update-consent" event-data="@id"> &#9997; </psk-button>
           <psk-button class="btn-bare table-cell" event-name="delete-consent" event-data="@keySSI">
             &#10060;
           </psk-button>
@@ -82,6 +80,7 @@
   <div class="d-flex align-items-center justify-content-between flex-wrap">
     <div class="d-flex align-items-center justify-content-center">
       <span>Page&nbsp;</span>
+      <!-- TODO: no two-way binding on select, also how to set default/initial value -->
       <psk-select view-model="@pagination.pages" event-name="navigate-to-page"></psk-select>
       <span>&nbsp;of&nbsp;</span>
       <psk-label label="@pagination.totalPages"></psk-label>

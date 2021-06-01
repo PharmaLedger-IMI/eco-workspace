@@ -6,35 +6,27 @@ import TrialsService from '../services/TrialsService.js';
 const { WebcController } = WebCardinal.controllers;
 
 export default class AddNewTrialModalController extends WebcController {
-  trialStatusesArray = Object.entries(trialStatusesEnum).map(([k, v]) => ({
-    label: v,
-    value: v,
-  }));
+  trialStatusesArray = Object.entries(trialStatusesEnum)
+    .map(([k, v]) => `${v}, ${v}`)
+    .join(' | ');
 
-  trialCountriesArray = Object.entries(countryListAlpha2).map(([k, v]) => ({
-    label: v,
-    value: k,
-  }));
+  trialCountriesArray = Object.entries(countryListAlpha2)
+    .map(([k, v]) => `${v}, ${k}`)
+    .join(' | ');
 
   status = {
     label: 'Select status',
     placeholder: 'Please select an option',
     required: true,
-    options: this.trialStatusesArray,
+    selectOptions: this.trialStatusesArray,
   };
 
   countries = {
     label: 'List of countries',
     placeholder: 'Please select an option',
     required: true,
-    options: this.trialCountriesArray,
-  };
-
-  selectedCountries = {
-    label: 'Selected countries',
-    placeholder: 'Please select an option',
-    required: true,
-    options: [{ label: '     ', value: '      ' }],
+    selectOptions: this.trialCountriesArray,
+    selectionType: 'multiple',
   };
 
   name = {
@@ -56,6 +48,8 @@ export default class AddNewTrialModalController extends WebcController {
   constructor(...props) {
     super(...props);
 
+    this.existingIds = props[0].existingIds;
+
     this.trialsService = new TrialsService(this.DSUStorage);
 
     this.setModel({
@@ -64,7 +58,6 @@ export default class AddNewTrialModalController extends WebcController {
         name: this.name,
         status: this.status,
         countries: this.countries,
-        selectedCountries: this.selectedCountries,
       },
       submitButtonDisabled: true,
     });
@@ -73,59 +66,55 @@ export default class AddNewTrialModalController extends WebcController {
   }
 
   attachAll() {
-    // this.model.addExpression(
-    //   'disabled',
-    //   function () {
-    //     console.log('testiung');
-    //     return !(
-    //       this.model.trial.name.value &&
-    //       this.model.trial.status.value &&
-    //       this.model.trial.id.value &&
-    //       this.model.trial.countries.value
-    //     );
-    //   },
-    //   'trial.status.value'
-    // );
-
-    // this.onTagEvent('inputs-changed', 'keypress', async (model, target, event) => {
-    //   event.preventDefault();
-    //   console.log(model, target, event);
-    //   this.model.submitButtonDisabled = !(
-    //     this.model.trial.name.value &&
-    //     this.model.trial.status.value &&
-    //     this.model.trial.id.value &&
-    //     this.model.trial.countries.value
-    //   );
-    //   return;
-    // });
-
-    this.onTagClick('add-country', (event) => {
-      if (!this.model.trial.countries.selectedValue) return;
-
-      console.log(this.model.trial.countries.selectedValue);
-      const selectedCountry = this.model.trial.countries.options.find(
-        (x) => x.value === this.model.trial.countries.selectedValue
-      );
-      if (!selectedCountry) return;
-      console.log(selectedCountry);
-      this.model.trial.selectedCountries.options.push(selectedCountry);
-
-      this.model.trial.countries.selectedValue = null;
+    const idField = this.element.querySelector('#id-field');
+    idField.addEventListener('keydown', () => {
+      setTimeout(() => {
+        console.log(this.existingIds);
+        if (this.existingIds.indexOf(this.model.trial.id.value) > -1) {
+          this.model.trial.id = {
+            ...this.model.trial.id,
+            invalidValue: true,
+          };
+          return;
+        }
+        this.model.trial.id = {
+          ...this.model.trial.id,
+          invalidValue: null,
+        };
+      }, 300);
     });
-
-    this.onTagClick('remove-country', (event) => {});
 
     this.onTagClick('create-trial', async (event) => {
       try {
+        let valid = true;
+        for (const x in this.model.trial) {
+          if (!this.model.trial[x].value || this.model.trial[x].value === '') {
+            this.model.trial[x] = {
+              ...this.model.trial[x],
+              invalidValue: true,
+            };
+            setTimeout(() => {
+              this.model.trial[x] = {
+                ...this.model.trial[x],
+                invalidValue: null,
+              };
+            }, 1000);
+            valid = false;
+          }
+        }
+
+        if (this.existingIds.indexOf(this.model.trial.id.value) > -1) {
+          valid = false;
+        }
+
+        if (!valid) return;
+
         this.model.submitButtonDisabled = true;
         const trial = {
           name: this.model.trial.name.value,
           status: this.model.trial.status.value,
           id: this.model.trial.id.value,
-          countries: Object.entries(countryListAlpha2)
-            .map(([k, v]) => k)
-            .sort(() => 0.5 - Math.random())
-            .slice(0, Math.floor(Math.random() * 5 + 1)),
+          countries: [this.model.trial.countries.value],
           consents: [],
           participants: [],
         };

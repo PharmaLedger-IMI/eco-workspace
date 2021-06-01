@@ -22,16 +22,19 @@
         <!-- **************** PARTICIPANTS TOP BAR ************************* -->
         <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 mb-3" style="margin-bottom: 20px">
           <div class="d-flex flex-column">
-            <div>
-              <label for="">{{ @search.label }}</label>
-            </div>
-            <input id="search-field-participants" data-view-model="@search" data-tag="filters-changed" />
+            <psk-input id="search-field-participants" view-model="search" event-name="filters-changed"></psk-input>
           </div>
         </div>
 
         <!-- *************** PARTICIPANTS TABLE ********************* -->
-
-        <webc-template template="table-template" data-view-model="@"></webc-template>
+        <psk-condition condition="@participantsArrayNotEmpty">
+          <div slot="condition-true">
+            <webc-template template="table-template" data-view-model="@"></webc-template>
+          </div>
+          <div slot="condition-false">
+            <div>No participants available.</div>
+          </div>
+        </psk-condition>
       </webc-container>
     </psk-tab>
 
@@ -41,16 +44,19 @@
         <!-- **************** INFORM CONSENTS TOP BAR ************************* -->
         <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 mb-3" style="margin-bottom: 20px">
           <div class="d-flex flex-column">
-            <div>
-              <label for="">{{ @search.label }}</label>
-            </div>
-            <input id="search-field-consents" data-view-model="@search" data-tag="filters-changed" />
+            <psk-input id="search-field-consents" view-model="search" event-name="filters-changed"></psk-input>
           </div>
           <button class="btn btn-primary" data-tag="add-consent">Add consent</button>
         </div>
-
         <!-- *************** INFORM CONSENT TABLE ********************* -->
-        <webc-template template="table-template" data-view-model="@"></webc-template>
+        <psk-condition condition="@consentsArrayNotEmpty">
+          <div slot="condition-true">
+            <webc-template template="table-template" data-view-model="@"></webc-template>
+          </div>
+          <div slot="condition-false">
+            <div>No consents available.</div>
+          </div>
+        </psk-condition>
       </webc-container>
     </psk-tab>
 

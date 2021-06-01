@@ -47,17 +47,15 @@ export default class ListTrialsController extends WebcController {
     next: false,
     items: null,
     pages: {
-      options: [],
+      selectOptions: '',
     },
     slicedPages: null,
     currentPage: 0,
     itemsPerPage: 10,
     totalPages: null,
     itemsPerPageOptions: {
-      options: this.itemsPerPageArray.map((x) => ({
-        label: x,
-        value: x,
-      })),
+      selectOptions: this.itemsPerPageArray.join(' | '),
+      value: this.itemsPerPageArray[1].toString(),
     },
   };
 
@@ -169,9 +167,7 @@ export default class ListTrialsController extends WebcController {
   attachEvents() {
     this.model.addExpression(
       'trialArrayNotEmpty',
-      () => {
-        return this.model.trials && Array.isArray(this.model.trials) && this.model.trials.length > 0;
-      },
+      () => this.model.trials && Array.isArray(this.model.trials) && this.model.trials.length > 0,
       'trials'
     );
 
@@ -189,7 +185,6 @@ export default class ListTrialsController extends WebcController {
         (event) => {
           const response = event.detail;
           this.getTrials();
-          // this.sendMessageToHco('add-trial', response.keySSI, 'New trial' + response.id);
           this.showFeedbackToast('Result', 'Trial added successfully', 'toast');
         },
         (event) => {
@@ -203,6 +198,7 @@ export default class ListTrialsController extends WebcController {
           controller: 'AddNewTrialModalController',
           disableExpanding: false,
           disableBackdropClosing: false,
+          existingIds: this.trials.map((x) => x.id) || [],
         }
       );
     });
@@ -249,7 +245,6 @@ export default class ListTrialsController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage) {
-    console.log('SENDING MESSAGE');
     this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, {
       operation: operation,
       ssi: ssi,

@@ -9,10 +9,6 @@ export default class ProtocolController extends WebcController {
 
     this.storageService = getSharedStorage(this.DSUStorage);
 
-    this.storageService.waitForDb(() => console.log('WAIT_FOR_DB:', this.storageService.myDb), []);
-
-    console.log('STORAGE_SERVICE:', this.storageService);
-
     this.setModel({});
 
     this.attachEvents();
