@@ -4,63 +4,41 @@
         <webc-container controller="EconsentVersionsController">
             <div class=header-title>
                 <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
-                <psk-label class="scan-error-title" label="Notifications"></psk-label>
+                <psk-label class="scan-error-title" label="Consent History"></psk-label>
             </div>
+            <div class="padding-sides" data-for="@versions">
 
-            <div class="">
-                <div class="padding-sides" data-for="@notifications">
+                <div class="dispay-flex date-div justify-content-space-between" data-tag="go-to-econsent"
+                     data="@keySSI">
+                    <div class="dispay-flex">
 
-                    <div class="dispay-flex date-div justify-content-space-between">
-                        <div class="dispay-flex">
-                            <div class="left-image padding-image">
-                                <div data-if="@viewed">
-                                    <container slot="true">
-                                        <img src="@icon"  class="left-image gray-filter" width="50" height="60">
-                                    </container>
-                                    <container slot="false">
-                                        <img src="@icon"  class="left-image" width="50" height="60">
-                                    </container>
 
-                                </div>
+                        <div class="left-image padding-image">
+                            <psk-img class="left-image" src="assets/images/document_black.png"
+                                     height='40' width='40'></psk-img>
+                        </div>
+                        <div>
+                            <div>
+                                <strong class="dispay-flex line-text">
+                                    {{@name}}
+                                    {{@type}}
+                                </strong>
                             </div>
-                            <div class="right-text" data-if="@viewed">
-                                <container slot="true">
-                                    <div>
-                                        {{@name}}
-                                    </div>
-                                    <div>
-                                        {{@details}}
-                                    </div>
-
-                                    <div>
-                                        <psk-echo value="Date: "></psk-echo>
-                                        {{@startDate}}
-                                    </div>
-                                </container>
-                                <container slot="false">
-                                    <strong>
-                                        <div>
-                                            {{@name}}
-                                        </div>
-                                        <div>
-                                            {{@details}}
-                                        </div>
-                                        <div>
-                                            <psk-echo value="Date: "></psk-echo>
-                                            {{@startDate}}
-                                        </div>
-                                    </strong>
-                                </container>
-
+                            <div>
+                                <strong class="line-text">
+                                    <psk-echo value="Version: "></psk-echo>
+                                    {{@version}}
+                                </strong>
                             </div>
-                            <psk-button-link icon="arrow-right" class="go-back-link padding-top-35"
-                                             data-tag="go-to-notification"></psk-button-link>
+                            <div>
+                                <strong class="line-text">
+                                    <psk-echo value="Version Date: "></psk-echo>
+                                    {{@versionDate}}
+                                </strong>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <hr>
-            </div>
             </div>
         </webc-container>
     </psk-mobile>
