@@ -57,6 +57,7 @@ export default class TrialController extends WebcController {
             this.navigateToPageTag('trial-participant', {
                 trialSSI: this.model.trialSSI,
                 tpUid: model.uid,
+                trialParticipantNumber : model.number,
             });
         });
     }
