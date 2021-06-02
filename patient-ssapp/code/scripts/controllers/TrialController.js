@@ -60,8 +60,11 @@ export default class TrialController extends WebcController {
                         return console.error(err);
                     }
                     this._setTpStatus(statuses);
-                })
+                });
+
             });
+
+
         });
     }
 

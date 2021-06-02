@@ -8,7 +8,6 @@ export default class EconsentVersionsController extends WebcController {
         super(...props);
         this.setModel({});
         this._initServices(this.DSUStorage);
-        this._initHandlers();
         this.model.econsent = {};
         this.model.historyData = this.history.win.history.state.state;
         this.model.status = { actions: [] };
@@ -21,9 +20,6 @@ export default class EconsentVersionsController extends WebcController {
         this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
     }
 
-    _initHandlers() {
-        this._attachHandlerClose();
-    }
 
     _initEconsent() {
         this.TrialService.getEconsent(this.model.historyData.trialuid, this.model.historyData.ecoId, (err, econsent) => {
@@ -32,15 +28,21 @@ export default class EconsentVersionsController extends WebcController {
             }
             this.model.econsent = econsent;
             this.model.versions = econsent.versions;
+            this.EconsentsStatusRepository.findAll(( err,statuses) => {
+                if (err) {
+                    return console.error(err);
+                }
+
+            });
             debugger;
+            this.EconsentsStatusRepository.filter(`foreignConsentId == ${this.model.historyData.ecoId}`, 'ascending', 30,(err,data)=>{
+                if (err) {
+                    return console.error(err);
+                }
+                debugger;
+                console.log(data);
+            });
          });
-    }
-
-    _attachHandlerClose() {
-        this.onTagClick('close', (model, target, event) => {
-
-
-        });
     }
 
 }
