@@ -103,7 +103,10 @@ export default class TableTemplateController extends WebcController {
       this.model.pagination.next = page < pages.length && pages.length > 1 ? false : true;
       this.model.pagination.items = data.slice(itemsPerPage * (page - 1), itemsPerPage * page);
       this.model.pagination.pages = {
-        ...this.model.pagination.pages,
+        // options: pages.map((x) => ({
+        //   value: x.value,
+        //   label: x.value,
+        // })),
         selectOptions: pages.map((x) => x.value).join(' | '),
         value: page.toString(),
       };

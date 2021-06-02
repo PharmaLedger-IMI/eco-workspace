@@ -135,7 +135,8 @@ export default class AddNewConsentModalController extends WebcController {
         if (!this.isUpdate) {
           let valid = true;
           for (const x in this.model.consent) {
-            if (!this.model.consent[x].value || this.model.consent[x].value === '') {
+            // TODO: check if file selected
+            if ((!this.model.consent[x].value || this.model.consent[x].value === '') && x !== 'attachment') {
               this.model.consent[x] = {
                 ...this.model.consent[x],
                 invalidValue: true,
