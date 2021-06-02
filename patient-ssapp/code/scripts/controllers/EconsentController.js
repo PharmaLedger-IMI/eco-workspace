@@ -86,7 +86,7 @@ export default class EconsentController extends WebcController {
 
   _attachHandlerVersions() {
     this.on('econsent:versions', (event) => {
-      console.log('econsent:versions');
+      this.navigateToPageTag('econsent-versions', { ...this.model.historyData });
     });
   }
 

@@ -59,7 +59,7 @@ export default class TrialController extends WebcController {
                     if (err) {
                         return console.error(err);
                     }
-                    this._setTpStatus(data);
+                    this._setTpStatus(statuses);
                 })
             });
         });
