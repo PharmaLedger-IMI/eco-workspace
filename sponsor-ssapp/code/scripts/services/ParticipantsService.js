@@ -57,11 +57,10 @@ export default class ParticipantsService extends DSUService {
           consentVersion: data.version,
           consentStatus: participantConsentStatusEnum.Consent,
           patientSignature: data.type === senderType.Patient ? data.action.date : participant.patientSignature,
-          // doctorSignature: data.type === senderType.HCP ? data.action.date : participant.doctorSignature,
-          doctorSignature: data.type === senderType.HCP ? data.operationDate : participant.doctorSignature,
+          doctorSignature: data.type === senderType.HCP ? data.action.date : participant.doctorSignature,
+          // doctorSignature: data.type === senderType.HCP ? data.operationDate : participant.doctorSignature,
         };
 
-        debugger;
         await this.storageService.updateRecord(this.getTableName(trialKeySSI), data.participantId, participant);
       } else {
         const model = {
@@ -70,8 +69,8 @@ export default class ParticipantsService extends DSUService {
           consentVersion: data.version,
           consentStatus: participantConsentStatusEnum.Consent,
           patientSignature: data.type === senderType.Patient ? data.action.date : null,
-          // doctorSignature: data.type === senderType.HCP ? data.action.date : null,
-          doctorSignature: data.type === senderType.HCP ? data.operationDate : null,
+          doctorSignature: data.type === senderType.HCP ? data.action.date : null,
+          // doctorSignature: data.type === senderType.HCP ? data.operationDate : null,
         };
 
         await this.storageService.insertRecord(this.getTableName(trialKeySSI), data.participantId, model);
