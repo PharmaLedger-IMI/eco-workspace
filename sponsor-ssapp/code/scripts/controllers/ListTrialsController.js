@@ -70,7 +70,9 @@ export default class ListTrialsController extends WebcController {
         return console.error(err);
       }
       data = JSON.parse(data);
+      console.log('DATA MEESAGE:', data);
       switch (data.message.operation) {
+        case 'sign-econsent':
         case 'update-econsent': {
           await this.participantsService.updateParticipant(
             {
@@ -80,6 +82,7 @@ export default class ListTrialsController extends WebcController {
               consentSSI: data.message.ssi,
               version: data.message.useCaseSpecifics.version,
               type: data.sender === 'hcoIdentity' ? senderType.HCP : senderType.Patient,
+              operationDate: data.message.useCaseSpecifics.operationDate || null,
             },
             data.message.useCaseSpecifics.trialSSI
           );
