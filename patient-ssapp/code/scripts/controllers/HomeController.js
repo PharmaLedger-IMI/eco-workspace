@@ -1,6 +1,5 @@
 import CommunicationService from '../services/CommunicationService.js';
 import TrialService from '../services/TrialService.js';
-import EconsentService from '../services/EconsentService.js';
 import NotificationsService from '../services/NotificationsService.js';
 import DateTimeService from '../services/DateTimeService.js';
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
@@ -37,7 +36,6 @@ export default class HomeController extends WebcController {
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.NotificationsService = new NotificationsService(DSUStorage);
-        this.EconsentService = new EconsentService(DSUStorage);
         this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
     }
@@ -146,11 +144,6 @@ export default class HomeController extends WebcController {
                 console.log('database record'+data);
             })
 
-            this.EconsentService.saveEconsent(consent, (err, response) => {
-                if (err) {
-                    return console.log(err);
-                }
-            });
         });
     }
 }

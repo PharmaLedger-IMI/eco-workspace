@@ -12,12 +12,21 @@
                     <psk-label class="table-cell">{{@type}}</psk-label>
                     <psk-label class="table-cell">Version {{@version}}</psk-label>
                     <psk-label class="table-cell">{{@versionDateAsString}}</psk-label>
-                    <button data-tag="navigate:ec" >Consent Versions</button>
+                    <button data-tag="navigate:ec">Consent Versions</button>
                 </psk-layout>
                 <hr/>
             </div>
-        </div>
-        <psk-list-feedbacks messages-to-display="5" time-alive="3000"></psk-list-feedbacks>
+            <div data-if="@tp.tpNumber">
+                <div slot="false">
+                    <div data-if="@tp.tpSigned">
+                        <button slot="true" data-tag="tp:setTpNumber">
+                            SET TP NUMBER
+                        </button>
+                        <psk-label slot="false" class="table-cell">NOT YET SIGNED</psk-label>
+                    </div>
+                </div>
+            </div>
+            <psk-list-feedbacks messages-to-display="5" time-alive="3000"></psk-list-feedbacks>
     </webc-container>
 </psk-page>
 

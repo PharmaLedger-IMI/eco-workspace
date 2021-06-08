@@ -1,12 +1,37 @@
 
 .trial-table{
-    width: 80%;
+    width: 85%;
     margin-left: 20px;
-
 }
+
+trial-table tr:nth-child(even){background-color: #00345B;}
+
 .table-cell {
-    font-size: 20px;
-    color: #00345b;
-    font-weight: bold;
-
+    font-size: 16px;
+    color: #000000;
+    font-size: 16px;
 }
+
+.table-cell-title {
+    font-size: 16px;
+    color: #000000;
+    font-weight: bold;
+}
+
+.back-button{
+    background-color: #008798;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: center;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-left: 300px;
+    height: 55px;
+    width: 160px;
+}
+
+
+
+

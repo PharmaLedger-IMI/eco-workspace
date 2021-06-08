@@ -2,29 +2,59 @@
     <link rel="stylesheet" href="/assets/css/pages/home.css">
     <webc-container controller="HomeController">
 
-        <div class="subheader">
-            <psk-label class="trial-title" label="Trials"></psk-label>
+        <div class="main-background">
+            <div class="front">
+
+                <psk-label class="main-title" label="Trial Management"></psk-label>
+
+                <div class="trial-table">
+                    <psk-layout columns="7" class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell-title">Sponsor</psk-label>
+                        <psk-label class="table-cell-title">Trial Number/Id</psk-label>
+                        <psk-label class="table-cell-title">Trial Name</psk-label>
+                        <psk-label class="table-cell-title">Status</psk-label>
+                        <psk-label class="table-cell-title">Notifications</psk-label>
+                        <psk-label class="table-cell-title">Action Required</psk-label>
+                        <psk-label class="table-cell-title">Options</psk-label>
+                    </psk-layout>
+                    <hr/>
+                </div>
+
+                <div class="trial-table" data-for="@trials">
+                    <psk-layout data-tag="home:trial" data="@id" columns="7"
+                                class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell">Sponsor</psk-label>
+                        <psk-label class="table-cell">{{@id}}</psk-label>
+                        <psk-label class="table-cell">{{@name}}</psk-label>
+                        <psk-label class="table-cell">{{@status}}</psk-label>
+                        <psk-label class="table-cell">N/A</psk-label>
+                        <psk-label class="table-cell">N/A</psk-label>
+                        <psk-label class="table-cell">View| Add TS</psk-label>
+                    </psk-layout>
+                    <hr/>
+                </div>
+
+                <button class="back-button" data-tag="back">Back</button>
+            </div>
+
+            <div class="eu-container">
+                <div class="left-image-eu">
+                    <psk-img class="ed-control-image" src="assets/images/flageu.png"
+                             height='80' width='123'></psk-img>
+                </div>
+                <div class="right-text-eu">
+                    <strong>
+                        <psk-label class="eu-text">This project has received funding from the European Union’s Horizon
+                            2020 research
+                            and innovation programme under grant agreement No 853992 Copyright © PharmaLedger
+                            Consortium 2020 –2023
+                        </psk-label>
+                    </strong>
+                </div>
+
+            </div>
+
         </div>
-        <div class="trial-table">
-            <psk-layout columns="9" class="justify-content-center align-items-center table-row">
-                <psk-label class="table-cell">Name</psk-label>
-                <psk-label class="table-cell">Number/Id </psk-label>
-                <psk-label class="table-cell">Status</psk-label>
-
-            </psk-layout>
-            <hr/>
-        </div>
-
-        <div class="trial-table" data-for="@trials">
-            <psk-layout data-tag="home:trial" data="@id" columns="9" class="justify-content-center align-items-center table-row">
-                <psk-label class="table-cell">{{@name}}</psk-label>
-                <psk-label class="table-cell">{{@id}}</psk-label>
-                <psk-label class="table-cell">{{@status}}</psk-label>
-            </psk-layout>
-            <hr/>
-        </div>
-
-
     </webc-container>
 </psk-page>
 

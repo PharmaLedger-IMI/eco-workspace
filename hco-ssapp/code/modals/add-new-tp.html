@@ -3,7 +3,13 @@
     <webc-container class="maxw" controller="AddTrialParticipantController">
         <div class="top">
             <div class="line">
-                <psk-input class="tp-input" view-model="@number"/>
+                <psk-input class="tp-input" view-model="@name"/>
+            </div>
+            <div class="line">
+                <psk-input class="tp-input" view-model="@lastName"/>
+            </div>
+            <div class="line">
+                <psk-input class="tp-input" view-model="@did"/>
             </div>
             <div class="line">
                 <input type="month" data-view-model="@birthdate">

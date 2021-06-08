@@ -67,7 +67,7 @@ export default class EconsentSignController extends WebcController {
                 trialSSI: this.model.trialSSI,
                 tpNumber: this.model.trialParticipantNumber,
                 version: this.model.ecoVersion,
-                 action: {
+                action: {
                     name: 'sign',
                     date: DateTimeService.getCurrentDateAsISOString(),
                     toShowDate: currentDate.toLocaleDateString(),

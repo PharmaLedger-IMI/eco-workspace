@@ -1,6 +1,5 @@
 import Constants from './Constants.js';
 import TrialService from '../services/TrialService.js';
-import EconsentService from '../services/EconsentService.js';
 import ConsentStatusMapper from "../utils/ConsentStatusMapper.js";
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 
@@ -25,7 +24,6 @@ export default class TrialController extends WebcController {
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
-        this.EconsentService = new EconsentService(this.DSUStorage);
         this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
     }
 

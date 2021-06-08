@@ -46,7 +46,8 @@ export default class TrialController extends WebcController {
                 return console.log(err);
             }
             this.model.trial = trial;
-            this.model.trialParticipants = await this.TrialParticipantRepository.filterAsync(`trialNumber == ${this.model.trial.id}`, 'ascending', 30);
+            this.model.trialParticipants = await this.TrialParticipantRepository.filterAsync(`trialNumber == ${this.model.trial.id}`, 'asc', 30);
+
         });
     }
 
@@ -57,7 +58,7 @@ export default class TrialController extends WebcController {
             this.navigateToPageTag('trial-participant', {
                 trialSSI: this.model.trialSSI,
                 tpUid: model.uid,
-                trialParticipantNumber : model.number,
+                trialParticipantNumber: model.number,
             });
         });
     }
@@ -86,6 +87,7 @@ export default class TrialController extends WebcController {
         });
     }
 
+
     async createTpDsu(tp) {
         tp.trialNumber = this.model.trial.id;
         tp.status = 'screened';
@@ -94,7 +96,7 @@ export default class TrialController extends WebcController {
         this.sendMessageToPatient(
             'add-to-trial',
             this.model.trialSSI,
-            trialParticipant.number,
+            trialParticipant.did,
             Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL
         );
     }
@@ -115,4 +117,6 @@ export default class TrialController extends WebcController {
             this.feedbackEmitter(message, title, alertType);
         }
     }
+
+
 }

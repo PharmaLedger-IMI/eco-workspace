@@ -131,7 +131,8 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case 'add-econsent-version': {
-                    this.TrialService.mountTrial(data.message.ssi, () => {});
+                    this.TrialService.mountTrial(data.message.ssi, () => {
+                    });
                     this.sendMessageToPatient('refresh-trial', data.message.ssi,
                         Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.REFRESH_TRIAL);
                     break;
@@ -157,6 +158,7 @@ export default class HomeController extends WebcController {
     }
 
     _updateEconsentWithDetails(message) {
+
         this.TrialService.getEconsent(message.useCaseSpecifics.trialSSI, message.ssi, (err, econsent) => {
             if (err) {
                 return console.log(err);
@@ -188,26 +190,25 @@ export default class HomeController extends WebcController {
                     break;
                 }
             }
-            this.TrialParticipantRepository.findAll((err, data) => {
-                if (err) {
-                    return console.log(err);
+
+            this.TrialParticipantRepository.filter(`did == ${message.useCaseSpecifics.tpNumber}`, 'ascending', 30, (err, tps) => {
+                if (tps&&tps.length>0) {
+                    let tp = tps[0];
+                    tp.actionNeeded = actionNeeded;
+                    tp.tpSigned = true;
+                    this.TrialParticipantRepository.update(tp.uid, tp, (err, trialParticipant) => {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        console.log(trialParticipant);
+                    });
                 }
-                let tpNumber = message.useCaseSpecifics.tpNumber;
-                let tp = data.find((elem) => elem.number === tpNumber);
-                if (tp === undefined) {
-                    return console.log(`TP with number ${tpNumber} does not exist`);
-                }
-                tp.actionNeeded = actionNeeded;
-                this.TrialParticipantRepository.update(tp.uid, tp, (err, data) => {
-                    if (err) {
-                        return console.log(err);
-                    }
-                });
             });
+
+
             econsent.uid = econsent.keySSI;
             econsent.versions[currentVersionIndex] = currentVersion;
             this.TrialService.updateEconsent(message.useCaseSpecifics.trialSSI, econsent, (err, response) => {
-                debugger;
                 if (err) {
                     return console.log(err);
                 }

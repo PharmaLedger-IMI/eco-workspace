@@ -1,6 +1,5 @@
 import TrialService from '../services/TrialService.js';
 import FileDownloader from '../utils/FileDownloader.js';
-import EconsentService from '../services/EconsentService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 
@@ -20,7 +19,6 @@ export default class EconsentController extends WebcController {
 
   _initServices(DSUStorage) {
     this.TrialService = new TrialService(DSUStorage);
-    this.EconsentService = new EconsentService(DSUStorage);
     this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
   }
 
@@ -45,7 +43,7 @@ export default class EconsentController extends WebcController {
       this.model.econsent.versionDate = new Date(currentVersion.versionDate).toLocaleDateString('sw');
       this._downloadFile();
 
-      this.EconsentService.getEconsentsStatuses((err, data) => {
+      this.EconsentsStatusRepository.findAll((err, data) => {
         if (err) {
           return console.error(err);
         }
@@ -105,7 +103,7 @@ export default class EconsentController extends WebcController {
         if (response) {
           this.model.status.actions.push({ name: 'withdraw' });
         }
-        this.EconsentService.updateEconsent(this.model.status, (err, response) => {
+        this.EconsentsStatusRepository.update(this.model.status.uid, this.model.status, (err, response) => {
           if (err) {
             return console.log(err);
           }
