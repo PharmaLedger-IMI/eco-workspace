@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+
 .row {
     display: flex;
 }
@@ -25,32 +27,33 @@
     font-size: 42px;
     color: #00345b;
     font-weight: bold;
+    font-family: 'Roboto', sans-serif;
+    display: block;
+    width: 100%;
     text-align: center;
-    font-family: Roboto;
-
+    margin-top: 40px;
+    margin-bottom: 20px;
 }
 
 .main-background {
     background-color: #00345B;
-    height: 900px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 .front {
     background-color: #FFFFFF;
     border-radius: 15px;
     margin: 15px 15px 350px 15px;
-    height: 80%;
-    width: 97%;
-    position: absolute;
+    position: relative;
+    height: 80vh;
+    overflow: hidden;
 }
 
 .left-image-eu {
-    float: left;
-    margin-top: 5px;
-}
-
-.right-text-eu {
-    padding-top: 15px;
 
 }
 
@@ -60,12 +63,59 @@
 
 .eu-container {
     position: absolute;
-    bottom: 20px;
-    left: 20px;
+    width: 100%;
+    bottom: 5px;
+
+}
+
+.top-container {
     display: flex;
+    width: 100%;
+}
+
+.pharma-logo {
+    width: 110px;
+    height: 47px;
+    float: left;
+    margin-top: 5px;
+}
+
+.logout-button {
+    background-color: #008798;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: center;
+    font-size: 16px;
+    border-radius: 5px;
+    position: absolute;
+    height: 35px;
+    width: 135px;
+    right: 10px;
+    top: 10px;
 }
 
 .display-flex {
     display: flex;
 }
-
+.right-text-eu {
+    float: left;
+    width: 70%;
+    text-align: center;
+}
+.right-text-eu span {
+    margin-top: 20px;
+    display: inline-block;
+}
+.left-image-eu {
+    float: left;
+    width: 20%;
+    text-align: center;
+}
+.left-image-eu .image_container {
+    width: 100%;
+}
+.left-image-eu .image_container {
+    float: left;
+}

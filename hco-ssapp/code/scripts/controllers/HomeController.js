@@ -39,45 +39,7 @@ export default class HomeController extends WebcController {
         this.setModel(getInitModel());
         this._initServices(this.DSUStorage);
         this._initHandlers();
-        this._initTrial();
         this._handleMessages();
-        this.testDatabase();
-    }
-
-    testDatabase() {
-        // TEST DATABASE ONLY => TODO: REMOVE THIS
-
-        let testObject = {
-            someKey: 'someValue',
-            rms: 'delivers',
-        };
-
-        this.StorageService.insertRecord('testTable', testObject, (err, obj) => {
-            // if err is something like <Cannot read property 'originalMessage' of undefined> it means that this key already exist.
-            console.log('StorageService.insertRecord', err, obj);
-            this.StorageService.getRecord('testTable', obj.pk, (err, data) => {
-                console.log('StorageService.getRecord', err, data);
-            });
-        });
-
-        this.TrialRepository.create(testObject, (err, obj) => {
-            let tempPK = obj.pk;
-            // if err is something like <Cannot read property 'originalMessage' of undefined> it means that this key already exist.
-            console.log('TrialRepository.create', err, obj);
-            this.TrialRepository.findBy(tempPK, (err, data) => {
-                console.log('TrialRepository.findBy', err, data);
-            });
-
-            this.TrialRepository.findByAsync(tempPK).then((result) =>
-                console.log('this.TrialRepository.findByAsync#Promise', result)
-            );
-
-            (async () => {
-                let result = await this.TrialRepository.findByAsync(tempPK);
-                console.log('this.TrialRepository.findByAsync#await', result);
-            })();
-        });
-        // END DATABASE TESTING
     }
 
     addMessageToNotificationDsu(message) {
@@ -98,18 +60,12 @@ export default class HomeController extends WebcController {
     }
 
     _initHandlers() {
-        this._attachHandlerTrialDetails();
+
+        this._attachHandlerNotifications();
+        this._attachHandlerPatients();
+        this._attachHandlerTrialManagement();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
-        });
-    }
-
-    _initTrial() {
-        this.TrialService.getTrials((err, data) => {
-            if (err) {
-                return console.error(err);
-            }
-            this.model.trials = data;
         });
     }
 
@@ -126,7 +82,7 @@ export default class HomeController extends WebcController {
                         if (err) {
                             return console.log(err);
                         }
-                        this.model.trials.push(trial);
+
                     });
                     break;
                 }
@@ -224,11 +180,25 @@ export default class HomeController extends WebcController {
         });
     }
 
-    _attachHandlerTrialDetails() {
-        this.onTagEvent('home:trial', 'click', (model, target, event) => {
+    _attachHandlerTrialManagement() {
+        this.onTagEvent('home:trials', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-            this.navigateToPageTag('trial', model.keySSI);
+            this.navigateToPageTag('trial-management');
+        });
+    }
+
+    _attachHandlerPatients() {
+        this.onTagEvent('home:patients', 'click', (model, target, event) => {
+
+        });
+    }
+
+    _attachHandlerNotifications() {
+        this.onTagEvent('home:notifications', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('notifications');
         });
     }
 }

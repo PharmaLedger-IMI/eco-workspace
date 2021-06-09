@@ -8,6 +8,12 @@
       "tag": "home"
     },
     {
+      "name": "Trial Management",
+      "path": "/trial-management",
+      "src": "trial-management.html",
+      "tag": "trial-management"
+    },
+    {
       "name": "Create trial",
       "tag": "create-trial",
       "indexed": false

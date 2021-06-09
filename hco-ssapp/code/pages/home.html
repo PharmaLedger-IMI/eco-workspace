@@ -5,36 +5,27 @@
         <div class="main-background">
             <div class="front">
 
-                <psk-label class="main-title" label="Trial Management"></psk-label>
-
-                <div class="trial-table">
-                    <psk-layout columns="7" class="justify-content-center align-items-center table-row">
-                        <psk-label class="table-cell-title">Sponsor</psk-label>
-                        <psk-label class="table-cell-title">Trial Number/Id</psk-label>
-                        <psk-label class="table-cell-title">Trial Name</psk-label>
-                        <psk-label class="table-cell-title">Status</psk-label>
-                        <psk-label class="table-cell-title">Notifications</psk-label>
-                        <psk-label class="table-cell-title">Action Required</psk-label>
-                        <psk-label class="table-cell-title">Options</psk-label>
-                    </psk-layout>
-                    <hr/>
+                <div class="top-container">
+                    <div class="pharma-logo">
+                        <psk-img class="ed-control-image" src="assets/images/pharmalogo.png"
+                                 height='47' width='110'></psk-img>
+                    </div>
+                    <button class="logout-button" data-tag="logout">Logout</button>
                 </div>
+                <psk-img class="main-logo" src="assets/images/pharmalogo.png"
+                         height='231' width='487'></psk-img>
 
-                <div class="trial-table" data-for="@trials">
-                    <psk-layout data-tag="home:trial" data="@id" columns="7"
-                                class="justify-content-center align-items-center table-row">
-                        <psk-label class="table-cell">Sponsor</psk-label>
-                        <psk-label class="table-cell">{{@id}}</psk-label>
-                        <psk-label class="table-cell">{{@name}}</psk-label>
-                        <psk-label class="table-cell">{{@status}}</psk-label>
-                        <psk-label class="table-cell">N/A</psk-label>
-                        <psk-label class="table-cell">N/A</psk-label>
-                        <psk-label class="table-cell">View| Add TS</psk-label>
-                    </psk-layout>
-                    <hr/>
+                <div class="centered">
+                    <div class="button-container">
+                    <button class="main-button" data-tag="home:notifications">Notifications</button>
+                    </div>
+                    <div class="button-container">
+                        <button class="main-button" data-tag="home:trials">Trial Management</button>
+                    </div>
+                    <div class="button-container">
+                        <button class="main-button" data-tag="home:patients">List of Patients</button>
+                    </div>
                 </div>
-
-                <button class="back-button" data-tag="back">Back</button>
             </div>
 
             <div class="eu-container">
@@ -45,9 +36,9 @@
                 <div class="right-text-eu">
                     <strong>
                         <psk-label class="eu-text">This project has received funding from the European Union’s Horizon
-                            2020 research
-                            and innovation programme under grant agreement No 853992 Copyright © PharmaLedger
-                            Consortium 2020 –2023
+                            2020 research and innovation programme under <br/>
+                            grant agreement No 853992 Copyright <br/>
+                            <span>&copy;  PharmaLedger Consortium 2020 –2023</span>
                         </psk-label>
                     </strong>
                 </div>
