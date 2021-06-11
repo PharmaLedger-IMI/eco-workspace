@@ -12,7 +12,7 @@ let getInitModel = () => {
     };
 };
 
-export default class TrialController extends WebcController {
+export default class TrialParticipantsController extends WebcController {
 
     constructor(...props) {
         super(...props);
@@ -46,12 +46,12 @@ export default class TrialController extends WebcController {
                 return console.log(err);
             }
             this.model.trial = trial;
-            // debugger;
+             debugger;
             // this.model.trialParticipants1 = await this.TrialParticipantRepository.filterAsync(`trialNumber == ${this.model.trial.id}`, 'asc', 30);
             // debugger;
             // this.model.trialParticipants2 = await this.TrialParticipantRepository.filterAsync([`__version >= 0`,`trialNumber == ${this.model.trial.id}`],'asc', 30);
             this.model.trialParticipants = (await this.TrialParticipantRepository.findAllAsync()).filter(tp => tp.trialNumber === this.model.trial.id);
-
+            debugger;
 
         });
     }
@@ -69,7 +69,7 @@ export default class TrialController extends WebcController {
     }
 
     _attachHandlerAddTrialParticipant() {
-        this.onTagEvent('add:tp', 'click', (model, target, event) => {
+        this.onTagEvent('add:ts', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
             this.showModalFromTemplate(
@@ -94,8 +94,10 @@ export default class TrialController extends WebcController {
 
 
     async createTpDsu(tp) {
+        const currentDate = new Date();
         tp.trialNumber = this.model.trial.id;
         tp.status = 'screened';
+        tp.enrolledDate =  currentDate.toLocaleDateString();
         let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
         this.model.trialParticipants.push(trialParticipant);
         this.sendMessageToPatient(

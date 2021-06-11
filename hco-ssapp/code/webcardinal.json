@@ -14,6 +14,12 @@
       "tag": "trial-management"
     },
     {
+      "name": "Trial Participants",
+      "path": "/trial-participants",
+      "src": "trial-participants.html",
+      "tag": "trial-participants"
+    },
+    {
       "name": "Create trial",
       "tag": "create-trial",
       "indexed": false
