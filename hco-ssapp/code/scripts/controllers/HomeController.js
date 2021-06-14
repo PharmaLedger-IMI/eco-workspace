@@ -77,7 +77,7 @@ export default class HomeController extends WebcController {
             data = JSON.parse(data);
             switch (data.message.operation) {
                 case 'add-trial': {
-                    this.addMessageToNotificationDsu(data);
+                    //this.addMessageToNotificationDsu(data);
                     this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                         if (err) {
                             return console.log(err);

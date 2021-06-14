@@ -35,6 +35,7 @@ export default class TrialParticipantsController extends WebcController {
     _initHandlers() {
         this._attachHandlerAddTrialParticipant();
         this._attachHandlerNavigateToParticipant();
+        this._attachHandlerViewTrialParticipantDetails();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -89,6 +90,17 @@ export default class TrialParticipantsController extends WebcController {
                     disableBackdropClosing: false,
                     title: 'Add Trial Participant',
                 };
+        });
+    }
+
+    _attachHandlerViewTrialParticipantDetails() {
+        this.onTagEvent('tp:details', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('trial-participant-details', {
+                trialSSI: this.model.trialSSI,
+                tpUid: model.uid
+            });
         });
     }
 
