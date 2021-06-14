@@ -42,6 +42,7 @@ trial-table tr:nth-child(even) {
 .centered {
     margin: 70px 25% 0px 30%;
     display: flex;
+    width: 50%;
 }
 
 .button-container {
