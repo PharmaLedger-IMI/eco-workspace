@@ -62,6 +62,7 @@ export default class TrialManagementController extends WebcController {
     _initHandlers() {
         this._attachHandlerTrialDetails();
         this._attachHandlerTrialParticipants();
+        this._attachHandlerBack();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -90,7 +91,7 @@ export default class TrialManagementController extends WebcController {
         this.onTagEvent('trials:details', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-            this.navigateToPageTag('trial', model.keySSI);
+            this.navigateToPageTag('trial-details', model.keySSI);
         });
     }
     _attachHandlerTrialParticipants() {
@@ -100,4 +101,12 @@ export default class TrialManagementController extends WebcController {
             this.navigateToPageTag('trial-participants', model.keySSI);
         });
     }
+    _attachHandlerBack() {
+        this.onTagEvent('trials:participants', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('home', model.keySSI);
+        });
+    }
+
 }

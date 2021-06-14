@@ -1,0 +1,82 @@
+<psk-page title="Home">
+    <link rel="stylesheet" href="/assets/css/pages/trial-participants.css">
+    <webc-container controller="TrialDetailsController">
+
+        <div class="main-background">
+            <div class="front">
+
+                <div class="top-container">
+                    <div class="pharma-logo">
+                        <psk-img class="ed-control-image" src="assets/images/pharmalogo.png"
+                                 height='47' width='110'></psk-img>
+                    </div>
+                    <button class="logout-button" data-tag="logout">Logout</button>
+                </div>
+                <psk-label class="main-title">{{@trial.id}} {{@trial.name}}</psk-label>
+
+                <div class="subtitle-container">
+                    <psk-label class="subtitle">Recruitment period 20/01/2021-20/08/2021 (dummy text)</psk-label>
+                    <button class="add-ts" data-tag="add:ts">Add Trial Subject</button>
+                </div>
+
+                <psk-label class="table-title">Trial Subjects</psk-label>
+                <div class="trial-table">
+
+                    <psk-layout columns="6" class="justify-content-center align-items-center table-row">
+
+                        <psk-label class="table-cell">Planned</psk-label>
+                        <psk-label class="table-cell">Screened</psk-label>
+                        <psk-label class="table-cell">Enrolled</psk-label>
+                        <psk-label class="table-cell">Percentage of enrollment</psk-label>
+                        <psk-label class="table-cell">Withdrawed</psk-label>
+                        <psk-label class="table-cell">Declinde Trial</psk-label>
+
+                    </psk-layout>
+                    <hr/>
+                </div>
+
+                <div class="trial-table" d>
+                    <psk-label class="table-cell">{{@subjects.planed}}</psk-label>
+                    <psk-label class="table-cell">{{@subjects.screened}}</psk-label>
+                    <psk-label class="table-cell">{{@subjects.enrolled}}</psk-label>
+                    <psk-label class="table-cell">{{@subjects.percentage}}</psk-label>
+                    <psk-label class="table-cell">{{@subjects.withdrew}}</psk-label>
+                    <psk-label class="table-cell">{{@subjects.declined}}</psk-label>
+                    <hr/>
+                </div>
+                <div class="tp-table" data-for="@econsents">
+                    <psk-layout columns="@econsentsSize"
+                                class="justify-content-center align-items-center table-row">
+                        <div>
+                            <psk-label class="table-cell">{{@name}}</psk-label>
+                        </div>
+                    </psk-layout>
+
+                </div>
+
+
+                <button class="back-button" data-tag="back">Back</button>
+            </div>
+
+            <div class="eu-container">
+                <div class="left-image-eu">
+                    <psk-img class="ed-control-image" src="assets/images/flageu.png"
+                             height='80' width='123'></psk-img>
+                </div>
+                <div class="right-text-eu">
+                    <strong>
+                        <psk-label class="eu-text">This project has received funding from the European Union’s Horizon
+                            2020 research and innovation programme under <br/>
+                            grant agreement No 853992 Copyright <br/>
+                            <span>&copy;  PharmaLedger Consortium 2020 –2023</span>
+                        </psk-label>
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+    </webc-container>
+</psk-page>
+
+
