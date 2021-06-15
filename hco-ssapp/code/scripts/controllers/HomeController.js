@@ -5,6 +5,7 @@ import TrialService from '../services/TrialService.js';
 import SharedStorage from '../services/SharedStorage.js';
 import TrialRepository from '../repositories/TrialRepository.js';
 import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
+import NotificationsRepository from "../repositories/NotificationsRepository.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -43,11 +44,13 @@ export default class HomeController extends WebcController {
     }
 
     addMessageToNotificationDsu(message) {
-        this.NotificationsService.saveNotification(message.message, (err, notification) => {
+
+        this.NotificationsRepository.create(message, (err, data) => {
             if (err) {
-                return console.log(err);
+                return console.error(err);
             }
         });
+
     }
 
     _initServices(DSUStorage) {
@@ -55,8 +58,8 @@ export default class HomeController extends WebcController {
         this.NotificationsService = new NotificationsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
         this.StorageService = SharedStorage.getInstance(DSUStorage);
-        this.TrialRepository = TrialRepository.getInstance(DSUStorage);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
     }
 
     _initHandlers() {
@@ -148,7 +151,7 @@ export default class HomeController extends WebcController {
             }
 
             this.TrialParticipantRepository.filter(`did == ${message.useCaseSpecifics.tpNumber}`, 'ascending', 30, (err, tps) => {
-                if (tps&&tps.length>0) {
+                if (tps && tps.length > 0) {
                     let tp = tps[0];
                     tp.actionNeeded = actionNeeded;
                     tp.tpSigned = true;

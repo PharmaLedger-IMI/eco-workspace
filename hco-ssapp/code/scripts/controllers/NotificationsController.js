@@ -1,5 +1,7 @@
+import NotificationsRepository from "../repositories/NotificationsRepository.js";
+
 const {WebcController} = WebCardinal.controllers;
-import NotificationsService from '../services/NotificationsService.js';
+
 
 let getInitModel = () => {
     return {
@@ -21,19 +23,40 @@ export default class NotificationsController extends WebcController {
 
         this._initServices(this.DSUStorage);
         this._initNotifications();
+        this._attachHandlerNavigateToNotificationsList();
     }
 
     _initServices(DSUStorage) {
-        this.NotificationsService = new NotificationsService(DSUStorage);
+        this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
     }
 
     _initNotifications() {
-        this.NotificationsService.getNotifications((err, data) => {
+        this.model.notTypes.trialUpdates = true;
+        this.model.notTypes.consentUpdates = true;
+
+        this.NotificationsRepository.findAll((err, data) => {
+            debugger;
             if (err) {
                 return console.log(err);
             }
+            //data.filter(not =>  not.notificationType === this.model.notificationType )
             this.model.notifications = data;
-            this.model.notTypes.trialUpdates= true;
+            this.model.notTypes.trialUpdates = true;
         });
     }
+
+    _attachHandlerNavigateToNotificationsList() {
+        this.onTagEvent('notifications', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('notifications-list', {
+                notType: target.textContent,
+            });
+        });
+    }
+
+    _newNotificationsForTypes (notificationType){
+
+    }
+
 }

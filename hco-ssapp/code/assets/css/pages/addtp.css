@@ -13,6 +13,9 @@
 .tp-input{
     width: 90%;
 }
+.tp-input-small{
+    width: 90%;
+}
 
 .tp-date{
     width: 60%;
@@ -27,6 +30,19 @@
     display: table-cell;
     width: 50%;
     margin-left: 20px;
+}
+
+.scanQr {
+    argin-right: -1px!important;
+    float: right;
+    align-content: center;
+    width: 27%;
+    align-content: flex-end;
+    font-size: 16px;
+    background-color: #00345b;
+    border: none;
+    color: white;
+
 }
 
 .tp-button {

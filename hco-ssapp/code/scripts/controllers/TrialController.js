@@ -53,6 +53,7 @@ export default class TrialController extends WebcController {
             this.model.trialParticipants = (await this.TrialParticipantRepository.findAllAsync()).filter(tp => tp.trialNumber === this.model.trial.id);
 
 
+
         });
     }
 

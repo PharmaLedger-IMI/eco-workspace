@@ -3,24 +3,18 @@ const {WebcController} = WebCardinal.controllers;
 let getInitModel = () => {
     return {
         name: {
-            label: 'Trial Participant Name',
+            label: 'Name and Surname',
             name: 'name',
             required: true,
-            placeholder: 'Please insert the trial participant name...',
+            placeholder: 'Please insert the trial participant full name ..',
             value: '',
         },
-        lastName: {
-            label: 'Trial Participant Last Name',
-            name: 'lastName',
-            required: true,
-            placeholder: 'Please insert the trial participant last name',
-            value: '',
-        },
+
         did: {
-            label: 'DID',
+            label: 'Public Identifier',
             name: 'did',
             required: true,
-            placeholder: 'Please insert the trial participant did',
+            placeholder: 'Please insert the trial PUBLIC identifier',
             value: '',
         },
         birthdate: {
@@ -32,6 +26,27 @@ let getInitModel = () => {
             type: 'month',
             value: '',
         },
+        didParent1: {
+            label: 'Parent 1 Public Identifier',
+            name: 'did',
+            required: true,
+            placeholder: 'Please insert the parent 1 PUBLIC identifier',
+            value: '',
+        },
+        didParent2: {
+            label: 'Parent 2 Public Identifier',
+            name: 'did',
+            required: true,
+            placeholder: 'Please insert the parent 2 PUBLIC identifier',
+            value: '',
+        },
+        attachment : {
+            label: 'Select files',
+            listFiles: true,
+            filesAppend: false,
+            files: [],
+        },
+
         gender: {
             label: 'Select your gender',
             required: true,
@@ -47,6 +62,7 @@ let getInitModel = () => {
             ],
             value: '',
         },
+
     };
 };
 

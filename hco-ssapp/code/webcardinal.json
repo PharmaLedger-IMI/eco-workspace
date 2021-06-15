@@ -26,6 +26,12 @@
       "tag": "trial-participants"
     },
     {
+      "name": "Notifications List",
+      "path": "/notifications-list",
+      "src": "notifications-list.html",
+      "tag": "notifications-list"
+    },
+    {
       "name": "Create trial",
       "tag": "create-trial",
       "indexed": false
