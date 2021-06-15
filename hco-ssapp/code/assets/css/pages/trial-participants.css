@@ -1,10 +1,12 @@
 
-.trial-table{
+.trial-table {
     width: 80%;
     margin-left: 10%;
 }
 
-trial-table tr:nth-child(even){background-color: #00345B;}
+trial-table tr:nth-child(even) {
+    background-color: #00345B;
+}
 
 .table-cell {
     font-size: 16px;
@@ -18,7 +20,7 @@ trial-table tr:nth-child(even){background-color: #00345B;}
     font-weight: bold;
 }
 
-.back-button{
+.back-button {
     background-color: #008798;
     border: none;
     color: white;
@@ -26,7 +28,7 @@ trial-table tr:nth-child(even){background-color: #00345B;}
     text-decoration: none;
     font-size: 16px;
     border-radius: 5px;
-    margin: 20px 0 40px 45%;
+    margin: 80px 0 40px 45%;
     height: 55px;
     width: 160px;
 }
@@ -41,19 +43,19 @@ trial-table tr:nth-child(even){background-color: #00345B;}
     color: #2F80ED;
 }
 
-.subtitle-container{
+.subtitle-container {
     display: flex;
     margin-bottom: 20px;
-    margin-right: 10%;
-    justify-content: flex-end;
+    justify-content: center;
 }
 
-.subtitle{
+.subtitle {
     font-size: 34px;
     color: #008798;
     font-weight: bold;
 }
-.add-ts{
+
+.add-ts {
     background-color: #008798;
     border: none;
     color: white;
@@ -64,7 +66,15 @@ trial-table tr:nth-child(even){background-color: #00345B;}
     margin-left: 30px;
     height: 55px;
     width: 160px;
+    position: absolute;
+    right: 10%;
 }
 
+.display-flex {
+    display: flex;
+}
 
+.no-bottom-margin .image_container {
+    margin-bottom: 0 !important;
+}
 

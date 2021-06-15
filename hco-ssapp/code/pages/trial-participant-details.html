@@ -1,6 +1,6 @@
 <psk-page title="Home">
     <link rel="stylesheet" href="/assets/css/pages/trial-participants.css">
-    <webc-container controller="TrialParticipantsController">
+    <webc-container controller="TrialParticipantDetailsController">
 
         <div class="main-background">
             <div class="front">
@@ -12,38 +12,30 @@
                     </div>
                     <button class="logout-button" data-tag="logout">Logout</button>
                 </div>
-                <psk-label class="main-title">{{@trial.id}}  {{@trial.name}} </psk-label>
 
+                <psk-label class="main-title">{{@trialParticipant.name}} {{@trialParticipant.lastName}}</psk-label>
 
                 <div class="subtitle-container">
-                    <psk-label class="subtitle">Recruitment period 20/01/2021-20/08/2021 (dummy text)</psk-label>
-                    <button class="add-ts" data-tag="add:ts">Add Trial Subject</button>
+                    <psk-label class="subtitle">Screen failed</psk-label>
                 </div>
-
                 <div class="trial-table">
-                    <psk-layout columns="7" class="justify-content-center align-items-center table-row">
-                        <psk-label class="table-cell"></psk-label>
-                        <psk-label class="table-cell">Name</psk-label>
-                        <psk-label class="table-cell">Number</psk-label>
-                        <psk-label class="table-cell">Birthday</psk-label>
-                        <psk-label class="table-cell">Status</psk-label>
-                        <psk-label class="table-cell">Notification for action</psk-label>
-                        <psk-label class="table-cell">Overview</psk-label>
+                    <psk-layout columns="4" class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell">Enrolled</psk-label>
+                        <psk-label class="table-cell">Withdraw / Discontinued / Screen Failed</psk-label>
+                        <psk-label class="table-cell">Completed</psk-label>
+                        <psk-label class="table-cell">Consents Signed</psk-label>
                     </psk-layout>
                     <hr/>
                 </div>
-                <div class="tp-table trial-table" data-for="@trialParticipants">
-                    <psk-layout columns="7"
-                                class="justify-content-center align-items-center table-row">
-                        <psk-img class="table-cell no-bottom-margin" src="assets/images/bell.png"
-                                 height='30' width='34'></psk-img>
-                        <psk-label class="table-cell">{{@name}}{{@lastName}}</psk-label>
-                        <psk-label class="table-cell">{{@trialNumber}}</psk-label>
-                        <psk-label class="table-cell">{{@birthdate}}</psk-label>
-                        <psk-label class="table-cell">{{@status}}</psk-label>
+                <div class="trial-table">
+                    <psk-layout columns="4" class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell">{{@trialParticipant.enrolledDate}}</psk-label>
+                        <psk-label class="table-cell">MOCK: SF-06/10/2020</psk-label>
                         <psk-label class="table-cell">MOCK: N/A</psk-label>
                         <div class="table-cell">
-                            <button class="link-button" data-tag="tp:details" data="@id">View</button>
+                            <div data-for="@consentsSigned" class="rows-as-list">
+                                <psk-label>{{@name}}</psk-label>
+                            </div>
                         </div>
                     </psk-layout>
                 </div>

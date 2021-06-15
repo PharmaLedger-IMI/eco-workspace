@@ -49,6 +49,12 @@
       "tag": "trial-participant"
     },
     {
+      "name": "Trial Participant Details",
+      "path": "/trial-participant-details",
+      "src": "trial-participant-details.html",
+      "tag": "trial-participant-details"
+    },
+    {
       "name": "Econsent Versions",
       "path": "/econsent-versions",
       "src": "econsent-versions.html",
