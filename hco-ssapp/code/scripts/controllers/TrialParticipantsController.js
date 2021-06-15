@@ -47,14 +47,72 @@ export default class TrialParticipantsController extends WebcController {
                 return console.log(err);
             }
             this.model.trial = trial;
-             debugger;
-            // this.model.trialParticipants1 = await this.TrialParticipantRepository.filterAsync(`trialNumber == ${this.model.trial.id}`, 'asc', 30);
-            // debugger;
-            // this.model.trialParticipants2 = await this.TrialParticipantRepository.filterAsync([`__version >= 0`,`trialNumber == ${this.model.trial.id}`],'asc', 30);
-            this.model.trialParticipants = (await this.TrialParticipantRepository.findAllAsync()).filter(tp => tp.trialNumber === this.model.trial.id);
-            debugger;
-
+            let actions = await this._getEconsentActionsMappedByUser(keySSI);
+            this.model.trialParticipants = await this._getTrialParticipantsMappedWithActionRequired(actions);
         });
+    }
+
+    async _getTrialParticipantsMappedWithActionRequired(actions) {
+        return (await this.TrialParticipantRepository.findAllAsync())
+            .filter(tp => tp.trialNumber === this.model.trial.id)
+            .map(tp => {
+                let tpActions = actions[tp.did];
+                if (tpActions.length === 0) {
+                    return {
+                        ...tp,
+                        actionNeeded: 'No action required'
+                    }
+                }
+                let lastAction = tpActions[tpActions.length - 1];
+                let actionNeeded = 'No action required';
+                switch (lastAction.action.name) {
+                    case 'withdraw': {
+                        actionNeeded = 'TP Withdrawed';
+                        break;
+                    }
+                    case 'withdraw-intention': {
+                        actionNeeded = 'Reconsent required';
+                        break;
+                    }
+                    case 'sign': {
+                        actionNeeded = 'Acknowledgement required';
+                        break;
+                    }
+                }
+                return {
+                    ...tp,
+                    actionNeeded: actionNeeded
+                }
+            })
+    }
+
+    async _getEconsentActionsMappedByUser(keySSI) {
+        let actions = {};
+        (await this.TrialService.getEconsentsAsync(keySSI))
+            .forEach(econsent => {
+                econsent.versions.forEach(version => {
+                    version.actions.forEach(action => {
+                        if (actions[action.tpNumber] === undefined) {
+                            actions[action.tpNumber] = []
+                        }
+                        actions[action.tpNumber].push({
+                            econsent: {
+                                uid: econsent.uid,
+                                keySSI: econsent.keySSI,
+                                name: econsent.name,
+                                type: econsent.type,
+                            },
+                            version: {
+                                attachmentKeySSI: version.attachmentKeySSI,
+                                version: version.version,
+                                versionDate: version.versionDate,
+                            },
+                            action: action
+                        })
+                    })
+                })
+            });
+        return actions;
     }
 
     _attachHandlerNavigateToParticipant() {
@@ -109,7 +167,7 @@ export default class TrialParticipantsController extends WebcController {
         const currentDate = new Date();
         tp.trialNumber = this.model.trial.id;
         tp.status = 'screened';
-        tp.enrolledDate =  currentDate.toLocaleDateString();
+        tp.enrolledDate = currentDate.toLocaleDateString();
         let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
         this.model.trialParticipants.push(trialParticipant);
         this.sendMessageToPatient(
