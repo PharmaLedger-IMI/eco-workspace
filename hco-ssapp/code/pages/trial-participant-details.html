@@ -16,7 +16,7 @@
                 <psk-label class="main-title">{{@trialParticipant.name}} {{@trialParticipant.lastName}}</psk-label>
 
                 <div class="subtitle-container">
-                    <psk-label class="subtitle">Screen failed</psk-label>
+                    <psk-label class="subtitle">{{@lastAction}}</psk-label>
                 </div>
                 <div class="trial-table">
                     <psk-layout columns="4" class="justify-content-center align-items-center table-row">
@@ -30,11 +30,11 @@
                 <div class="trial-table">
                     <psk-layout columns="4" class="justify-content-center align-items-center table-row">
                         <psk-label class="table-cell">{{@trialParticipant.enrolledDate}}</psk-label>
-                        <psk-label class="table-cell">MOCK: SF-06/10/2020</psk-label>
+                        <psk-label class="table-cell">{{@lastBadAction}}</psk-label>
                         <psk-label class="table-cell">MOCK: N/A</psk-label>
                         <div class="table-cell">
                             <div data-for="@consentsSigned" class="rows-as-list">
-                                <psk-label>{{@name}}</psk-label>
+                                <psk-label>{{@}}</psk-label>
                             </div>
                         </div>
                     </psk-layout>

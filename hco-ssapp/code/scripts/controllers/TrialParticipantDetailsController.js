@@ -1,5 +1,4 @@
 const {WebcController} = WebCardinal.controllers;
-import Constants from '../utils/Constants.js';
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
 import CommunicationService from '../services/CommunicationService.js';
@@ -23,7 +22,7 @@ export default class TrialParticipantDetailsController extends WebcController {
         });
         this._initServices(this.DSUStorage);
         this._initHandlers();
-        this._initTrial(this.model.trialSSI);
+        this._initTrialParticipant(this.model.trialSSI);
     }
 
     _initServices(DSUStorage) {
@@ -39,10 +38,62 @@ export default class TrialParticipantDetailsController extends WebcController {
         });
     }
 
-    async _initTrial(keySSI) {
-        debugger
-        this.model.trialParticipant = await this.TrialParticipantRepository.findByAsync(this.model.tpUid)
-        debugger
+    async _initTrialParticipant(keySSI) {
+        this.model.trialParticipant = await this.TrialParticipantRepository.findByAsync(this.model.tpUid);
+
+        let userActions = await this._getUserActionsFromEconsents(keySSI, this.model.trialParticipant.did);
+
+        this.model.lastAction = userActions[userActions.length - 1].action.name
+            .split('-')
+            .filter(action => action.length > 0)
+            .map(action => action.charAt(0).toUpperCase() + action.slice(1))
+            .join(" ");
+
+        this.model.consentsSigned = userActions
+            .filter(ac => ac.action.name === 'sign')
+            .map(ac => ac.version.version + ' - ' + ac.econsent.name)
+
+        let lastBadActions = userActions
+            .filter(ac => ac.action.name === 'withdraw-intention' || ac.action.name === 'withdraw')
+
+        let lastBadAction = lastBadActions[lastBadActions.length - 1]
+
+        let initials = lastBadAction === undefined ? 'N/A' : lastBadAction.action.name
+            .split('-')
+            .filter(action => action.length > 0)
+            .map(action => action.charAt(0).toUpperCase())
+            .join("");
+        this.model.lastBadAction = lastBadAction === undefined ? 'N/A'
+            : initials + ' - ' + lastBadAction.action.toShowDate;
+    }
+
+    async _getUserActionsFromEconsents(keySSI, tpNumber) {
+        // TODO: re-check this logic.
+        let userActions = [];
+        (await this.TrialService.getEconsentsAsync(keySSI))
+            .forEach(econsent => {
+                econsent.versions.forEach(version => {
+                    version.actions.forEach(action => {
+                        if (action.tpNumber === tpNumber) {
+                            userActions.push({
+                                econsent: {
+                                    uid: econsent.uid,
+                                    keySSI: econsent.keySSI,
+                                    name: econsent.name,
+                                    type: econsent.type,
+                                },
+                                version: {
+                                    attachmentKeySSI: version.attachmentKeySSI,
+                                    version: version.version,
+                                    versionDate: version.versionDate,
+                                },
+                                action: action
+                            })
+                        }
+                    })
+                })
+            });
+        return userActions;
     }
 
     _showFeedbackToast(title, message, alertType = 'toast') {
