@@ -3,7 +3,7 @@ import CommunicationService from '../services/CommunicationService.js';
 import NotificationsService from '../services/NotificationsService.js';
 import TrialService from '../services/TrialService.js';
 import SharedStorage from '../services/SharedStorage.js';
-import TrialRepository from '../repositories/TrialRepository.js';
+
 import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
 import NotificationsRepository from "../repositories/NotificationsRepository.js";
 
@@ -43,9 +43,12 @@ export default class HomeController extends WebcController {
         this._handleMessages();
     }
 
-    addMessageToNotificationDsu(message) {
+    addMessageToNotificationDsu(message, type) {
 
+        let notification = message.message;
+        notification.type= type;
         this.NotificationsRepository.create(message, (err, data) => {
+            debugger;
             if (err) {
                 return console.error(err);
             }
@@ -80,7 +83,7 @@ export default class HomeController extends WebcController {
             data = JSON.parse(data);
             switch (data.message.operation) {
                 case 'add-trial': {
-                    //this.addMessageToNotificationDsu(data);
+                    this.addMessageToNotificationDsu(data,'trialupdates');
                     this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                         if (err) {
                             return console.log(err);

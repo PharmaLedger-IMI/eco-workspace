@@ -10,8 +10,14 @@
                 <psk-input class="tp-input" view-model="@did"/>
             </div>
             <div class="line">
+
                 <psk-radio-group view-model="@gender"></psk-radio-group>
             </div>
+
+            <div class="line">
+                <input type="month" data-view-model="@birthdate">
+            </div>
+
             <div class="line">
                 <psk-input class="tp-input" view-model="@didParent1"/>
                 <button class="scanQr" data-tag="parent1:scanQr">Scan QR</button>

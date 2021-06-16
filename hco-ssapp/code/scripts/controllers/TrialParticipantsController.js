@@ -36,6 +36,7 @@ export default class TrialParticipantsController extends WebcController {
         this._attachHandlerAddTrialParticipant();
         this._attachHandlerNavigateToParticipant();
         this._attachHandlerViewTrialParticipantDetails();
+        this._attachHandlerViewTrialParticipantStatus();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -151,8 +152,8 @@ export default class TrialParticipantsController extends WebcController {
         });
     }
 
-    _attachHandlerViewTrialParticipantDetails() {
-        this.onTagEvent('tp:details', 'click', (model, target, event) => {
+    _attachHandlerViewTrialParticipantStatus() {
+        this.onTagEvent('tp:status', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
             this.navigateToPageTag('trial-participant-details', {
@@ -162,6 +163,16 @@ export default class TrialParticipantsController extends WebcController {
         });
     }
 
+    _attachHandlerViewTrialParticipantDetails() {
+        this.onTagEvent('tp:details', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('trial-participant', {
+                trialSSI: this.model.trialSSI,
+                tpUid: model.uid
+            });
+        });
+    }
 
     async createTpDsu(tp) {
         const currentDate = new Date();
