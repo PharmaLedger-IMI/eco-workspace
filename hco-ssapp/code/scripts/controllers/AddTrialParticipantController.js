@@ -40,7 +40,7 @@ let getInitModel = () => {
             placeholder: 'Please insert the parent 2 PUBLIC identifier',
             value: '',
         },
-        attachment : {
+        attachment: {
             label: 'Select files',
             listFiles: true,
             filesAppend: false,
@@ -83,7 +83,6 @@ export default class AddTrialParticipantController extends WebcController {
             event.stopImmediatePropagation();
             const trialParticipant = {
                 name: this.model.name.value,
-                lastName: this.model.lastName.value,
                 did: this.model.did.value,
                 birthdate: this.model.birthdate.value,
                 gender: this.model.gender.value,
