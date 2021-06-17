@@ -117,7 +117,6 @@ export default class TrialParticipantController extends WebcController {
                 return console.log(err);
             }
             this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.SUCCESS.ATTACH_TRIAL_PARTICIPANT_NUMBER);
-
         });
 
     }

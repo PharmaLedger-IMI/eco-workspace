@@ -120,6 +120,13 @@
     float: left;
 }
 
+.general-table{
+    width: 80%;
+    margin-left: 10%;
+}
+
 .rows-as-list {
     display: grid !important;
 }
+
+
