@@ -3,34 +3,50 @@
     <webc-container class="maxw" controller="AddTrialParticipantController">
         <div class="top">
             <div class="line">
-                <psk-input class="tp-input" view-model="@name"/>
-                <button class="scanQr" data-tag="tp:scanQr">Scan QR</button>
-            </div>
-            <div class="line">
-                <psk-input class="tp-input" view-model="@did"/>
-            </div>
-            <div class="line">
+                <div class="left-div">
+                    <div>
+                        <psk-input class="tp-input" view-model="@name"/>
+                    </div>
+                    <div>
+                        <psk-input class="tp-input" view-model="@did"/>
+                    </div>
+                    <div>
+                        <psk-radio-group class="gender-input" view-model="@gender"></psk-radio-group>
+                        <div>
+                            <label for="birthdate">{{@birthdate.label}}</label>
+                            <input id="birthdate" type="month" data-view-model="@birthdate">
+                        </div>
+                    </div>
 
-                <psk-radio-group view-model="@gender"></psk-radio-group>
+                </div>
+                <div class="right-div">
+                    <button class="scanQr" data-tag="tp:scanQr">Scan QR</button>
+                </div>
             </div>
-
+            <hr>
             <div class="line">
-                <input type="month" data-view-model="@birthdate">
+                <div class="left-div">
+                    <psk-input class="tp-input" view-model="@didParent1"/>
+                </div>
+                <div class="right-div">
+                    <button class="scanQr" data-tag="parent1:scanQr">Scan QR</button>
+                </div>
             </div>
-
+            <hr>
             <div class="line">
-                <psk-input class="tp-input" view-model="@didParent1"/>
-                <button class="scanQr" data-tag="parent1:scanQr">Scan QR</button>
-            </div>
-            <div class="line">
-                <psk-input class="tp-input" view-model="@didParent2"/>
-                <button class="scanQr" data-tag="parent2:scanQr">Scan QR</button>
+                <div class="left-div">
+                    <psk-input class="tp-input" view-model="@didParent2"/>
+                </div>
+                <div class="right-div">
+                    <button class="scanQr" data-tag="parent2:scanQr">Scan QR</button>
+                </div>
             </div>
 
             <psk-files-chooser style="margin: 10px" view-model="@attachment" event-name="add-file"></psk-files-chooser>
-
-            <button class="tp-button" slot="footer" data-tag="tp:submit">Done</button>
-            <button class="tp-button" slot="footer" data-tag="tp:cancel">Cancel</button>
+        </div>
+        <div class="bottom">
+            <button class="tp-button wide-button inverted-colors" slot="footer" data-tag="tp:submit">Done</button>
+            <button class="tp-button wide-button inverted-colors" slot="footer" data-tag="tp:cancel">Cancel</button>
         </div>
     </webc-container>
 </webc-skin>

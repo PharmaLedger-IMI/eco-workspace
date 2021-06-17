@@ -129,4 +129,6 @@
     display: grid !important;
 }
 
-
+button {
+    border-radius: 5px !important;
+}
