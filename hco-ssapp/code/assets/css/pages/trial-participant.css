@@ -15,3 +15,46 @@
     color: white;
     font-weight: bold;
 }
+
+.tp-button {
+    background-color: #008798;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    border-radius: 5px;
+    margin: 20px ;
+    height: 55px;
+    width: 160px;
+}
+
+.tp-button left{
+    background-color: #008798;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    border-radius: 5px;
+    height: 55px;
+    width: 160px;
+    margin-left: 50%;
+    margin-right: 20px ;
+}
+.link-button {
+    background-color: white !important;
+    border: white !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    text-align: left;
+    font-size: 22px;
+    color: #2F80ED;
+}
+
+.top-buttons {
+    margin-left: 45%;
+    display: flex;
+    margin-right: 10%;
+    width: 45%;
+}

@@ -14,7 +14,7 @@
                 </div>
                 <psk-label class="main-title" label="@notificationType"></psk-label>
 
-                <div class="trial-table">
+                <div class="general-table">
                     <psk-layout columns="2" class="justify-content-center align-items-center table-row">
                         <psk-label class="table-cell-title">Notification</psk-label>
                         <psk-label class="table-cell-title">Recommended Action</psk-label>
@@ -22,15 +22,13 @@
                     <hr/>
                 </div>
 
-                <div class="trial-table" data-for="@notifications">
+                <div class="general-table" data-for="@notifications">
                     <psk-layout columns="2"
                                 class="justify-content-center align-items-center table-row">
-
                         <psk-label class="table-cell">{{@title}}</psk-label>
                         <psk-label class="table-cell">{{@shortMessage}}</psk-label>
-
                     </psk-layout>
-                    <hr/>
+
                 </div>
 
                 <button class="back-button" data-tag="back">Back</button>

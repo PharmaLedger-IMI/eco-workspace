@@ -23,10 +23,12 @@ export default class TrialParticipantController extends WebcController {
         this._initServices(this.DSUStorage);
         this._initHandlers();
         this._initConsents(this.model.trialSSI);
-        this._initTrialParticipant();
+
     }
 
     _initServices(DSUStorage) {
+        debugger;
+
         this.TrialService = new TrialService(DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
@@ -36,6 +38,7 @@ export default class TrialParticipantController extends WebcController {
     _initHandlers() {
         this._attachHandlerNavigateToEconsentVersions();
         this._attachHandlerAddTrialParticipantNumber();
+        this._attachHandlerGoBack();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -46,12 +49,14 @@ export default class TrialParticipantController extends WebcController {
             if (err) {
                 return console.log(err);
             }
+
             this.model.econsents = data.map((consent) => {
                 return {
                     ...consent,
                     versionDateAsString: DateTimeService.convertStringToLocaleDate(consent.versionDate),
                 };
             });
+            this._initTrialParticipant();
         });
     }
 
@@ -62,11 +67,13 @@ export default class TrialParticipantController extends WebcController {
                 return console.log(err);
             }
             this.model.tp = data;
+            this._computeEconsentsWithActions();
+
         })
     }
 
     _attachHandlerNavigateToEconsentVersions() {
-        this.onTagEvent('navigate:ec', 'click', (model, target, event) => {
+        this.onTagEvent('consent:history', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
             this.navigateToPageTag('econsent-versions', {
@@ -75,6 +82,14 @@ export default class TrialParticipantController extends WebcController {
                 trialParticipantNumber: this.model.trialParticipantNumber,
                 tpUid: this.model.tpUid,
             });
+        });
+    }
+
+    _attachHandlerGoBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
         });
     }
 
@@ -119,5 +134,31 @@ export default class TrialParticipantController extends WebcController {
             this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.SUCCESS.ATTACH_TRIAL_PARTICIPANT_NUMBER);
         });
 
+    }
+
+    _computeEconsentsWithActions() {
+        debugger;
+        this.model.econsents.forEach(econsent => {
+            econsent.versions.forEach(version => {
+                if (version.actions != undefined) {
+                    let tpVersions = version.actions.filter(action => action.tpNumber === this.model.tp.did);
+                    if (tpVersions && tpVersions.length > 0) {
+                        let tpVersion = tpVersions[tpVersions.length - 1];
+                        if (tpVersion && tpVersion.actionNeeded) {
+                            if (tpVersion.actionNeeded === Constants.ECO_STATUSES.TO_BE_SIGNED) {
+                                econsent.signed = true;
+                            }
+                            if (tpVersion.actionNeeded ===Constants.ECO_STATUSES.WITHDRAW) {
+                                econsent.withdraw = true;
+                            }
+                            if (tpVersion.actionNeeded === Constants.ECO_STATUSES.CONTACT) {
+                                econsent.contact = true;
+                            }
+                        }
+                    }
+                }
+
+            })
+        })
     }
 }

@@ -14,6 +14,7 @@ let getInitModel = () => {
 export default class EconsentVersionsController extends WebcController {
     constructor(...props) {
         super(...props);
+        debugger;
         this.setModel({
             ...getInitModel(),
             ...this.history.win.history.state.state,

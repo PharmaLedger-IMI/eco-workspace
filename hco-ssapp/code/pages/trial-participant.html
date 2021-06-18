@@ -1,5 +1,5 @@
 <psk-page title="Home">
-    <link rel="stylesheet" href="/assets/css/pages/trial-management.css">
+    <link rel="stylesheet" href="/assets/css/pages/trial-participant.css">
     <webc-container controller="TrialParticipantController">
 
         <div class="main-background">
@@ -14,6 +14,10 @@
                 </div>
                 <psk-label class="main-title" label="Trial Participant"></psk-label>
 
+                <div class="top-buttons">
+                    <button class="tp-button left" data-tag="tp:visits">Visits and Procedures</button>
+                    <button class="tp-button" data-tag="tp:setTpNumber">Set TP Number</button>
+                </div>
                 <div class="general-table">
                     <psk-layout columns="6" class="justify-content-center align-items-center table-row">
                         <psk-label class="table-title">Consent Name & ID</psk-label>
@@ -34,26 +38,43 @@
                         <psk-label class="table-cell">{{@versionDateAsString}}</psk-label>
                         <psk-label class="table-cell">{{@versionHCODateAsString}}</psk-label>
                         <div class="table-cell">
-                            <button class="link-button" data-tag="consent:sign" data="@id">Sign</button>
-                            <psk-label> |</psk-label>
-                            <button class="link-button" data-tag="consent:contactTS" data="@id">Contact TS</button>
-                            <psk-label> |</psk-label>
+                            <div data-if="@signed">
+                                <div slot="true">
+                                    <button class="link-button" data-tag="consent:sign" data="@id">Sign</button>
+                                    <psk-label> |</psk-label>
+                                </div>
+                            </div>
+                            <div data-if="@withdraw">
+                                <div slot="true">
+
+                                    <button class="link-button" data-tag="consent:contactTS" data="@id">Contact TS
+                                    </button>
+                                    <psk-label> |</psk-label>
+                                </div>
+                            </div>
+                            <div data-if="@contact">
+                                <div slot="true">
+
+                                    <button class="link-button" data-tag="consent:history" data="@id">History</button>
+                                    <psk-label> |</psk-label>
+                                </div>
+                            </div>
+
                             <button class="link-button" data-tag="consent:history" data="@id">History</button>
                         </div>
                     </psk-layout>
-                    <hr/>
                 </div>
-                <div data-if="@tp.tpNumber">
-                    <div slot="false">
-                        <div data-if="@tp.tpSigned">
-                            <button slot="true" data-tag="tp:setTpNumber">
-                                SET TP NUMBER
-                            </button>
-                            <psk-label slot="false" class="table-cell">NOT YET SIGNED</psk-label>
-                        </div>
-                    </div>
+<!--                <div data-if="@tp.tpNumber">-->
+<!--                    <div slot="false">-->
+<!--                        <div data-if="@tp.tpSigned">-->
+<!--                            <button slot="true" data-tag="tp:setTpNumber">-->
+<!--                                SET TP NUMBER-->
+<!--                            </button>-->
+<!--                            <psk-label slot="false" class="table-cell">NOT YET SIGNED</psk-label>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                </div>
+<!--                </div>-->
                 <button class="back-button" data-tag="back">Back</button>
             </div>
 
