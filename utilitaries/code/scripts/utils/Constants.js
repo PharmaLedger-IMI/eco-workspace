@@ -20,6 +20,13 @@ const MESSAGES = {
     }
 }
 
+const ECO_STATUSES = {
+    TO_BE_SIGNED :'Acknowledgement required',
+    WITHDRAW :'TP Withdrawed',
+    CONTACT: 'Reconsent required'
+}
+
 export default {
-    MESSAGES
+    MESSAGES,
+    ECO_STATUSES
 };
