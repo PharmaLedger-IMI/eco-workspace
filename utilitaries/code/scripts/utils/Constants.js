@@ -26,7 +26,14 @@ const ECO_STATUSES = {
     CONTACT: 'Reconsent required'
 }
 
+const TRIAL_PARTICIPANT_STATUS = {
+    ENROLLED :'Enrolled',
+    WITHDRAW :'Withdrawed',
+    DECLINED: 'Declined',
+    SCREENED: 'Screened'
+}
 export default {
     MESSAGES,
-    ECO_STATUSES
+    ECO_STATUSES,
+    TRIAL_PARTICIPANT_STATUS
 };

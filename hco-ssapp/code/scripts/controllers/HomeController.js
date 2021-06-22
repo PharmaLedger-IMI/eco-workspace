@@ -137,25 +137,30 @@ export default class HomeController extends WebcController {
             debugger;
 
             let actionNeeded = 'No action required';
+            let status = Constants.TRIAL_PARTICIPANT_STATUS.SCREENED;
             let tpSigned = false;
             switch (message.useCaseSpecifics.action.name) {
                 case 'withdraw': {
                     actionNeeded = 'TP Withdrawed';
+                    status =status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
                     break;
                 }
                 case 'withdraw-intention': {
                     actionNeeded = 'Reconsent required';
+                    status =status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
                     break;
                 }
                 case 'sign': {
                     tpSigned = true;
                     actionNeeded = 'Acknowledgement required';
+                    status =status = Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED;
                     break;
                 }
             }
             currentVersion.actions.push({
                 ...message.useCaseSpecifics.action,
                 tpNumber: message.useCaseSpecifics.tpNumber,
+                status : status,
                 actionNeeded:actionNeeded
             });
             debugger;

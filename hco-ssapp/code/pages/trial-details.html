@@ -1,5 +1,5 @@
 <psk-page title="Home">
-    <link rel="stylesheet" href="/assets/css/pages/trial-participants.css">
+    <link rel="stylesheet" href="/assets/css/pages/trial-details.css">
     <webc-container controller="TrialDetailsController">
 
         <div class="main-background">
@@ -16,7 +16,7 @@
 
                 <div class="subtitle-container">
                     <psk-label class="subtitle">Recruitment period 20/01/2021-20/08/2021 (dummy text)</psk-label>
-                    <button class="add-ts" data-tag="add:ts">Add Trial Subject</button>
+                    <!--                    <button class="add-ts" data-tag="add:ts">Add Trial Subject</button>-->
                 </div>
 
                 <psk-label class="table-title">Trial Subjects</psk-label>
@@ -24,35 +24,37 @@
 
                     <psk-layout columns="6" class="justify-content-center align-items-center table-row">
 
-                        <psk-label class="table-cell">Planned</psk-label>
-                        <psk-label class="table-cell">Screened</psk-label>
-                        <psk-label class="table-cell">Enrolled</psk-label>
-                        <psk-label class="table-cell">Percentage of enrollment</psk-label>
-                        <psk-label class="table-cell">Withdrawed</psk-label>
-                        <psk-label class="table-cell">Declinde Trial</psk-label>
+                        <psk-label class="table-cell-title">Planned</psk-label>
+                        <psk-label class="table-cell-title">Screened</psk-label>
+                        <psk-label class="table-cell-title">Enrolled</psk-label>
+                        <psk-label class="table-cell-title">Percentage of enrollment</psk-label>
+                        <psk-label class="table-cell-title">Withdrawed</psk-label>
+                        <psk-label class="table-cell-title">Declined Trial</psk-label>
 
                     </psk-layout>
                     <hr/>
                 </div>
 
-                <div class="trial-table" d>
-                    <psk-label class="table-cell">{{@subjects.planed}}</psk-label>
-                    <psk-label class="table-cell">{{@subjects.screened}}</psk-label>
-                    <psk-label class="table-cell">{{@subjects.enrolled}}</psk-label>
-                    <psk-label class="table-cell">{{@subjects.percentage}}</psk-label>
-                    <psk-label class="table-cell">{{@subjects.withdrew}}</psk-label>
-                    <psk-label class="table-cell">{{@subjects.declined}}</psk-label>
-                    <hr/>
-                </div>
-                <div class="tp-table" data-for="@econsents">
-                    <psk-layout columns="@econsentsSize"
-                                class="justify-content-center align-items-center table-row">
-                        <div>
-                            <psk-label class="table-cell">{{@name}}</psk-label>
-                        </div>
-                    </psk-layout>
+                <div class="trial-table">
+                    <psk-layout columns="6" class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell">{{@subjects.planned}}</psk-label>
+                        <psk-label class="table-cell">{{@subjects.screened}}</psk-label>
+                        <psk-label class="table-cell">{{@subjects.enrolled}}</psk-label>
+                        <psk-label class="table-cell">{{@subjects.percentage}}</psk-label>
+                        <psk-label class="table-cell">{{@subjects.withdrew}}</psk-label>
+                        <psk-label class="table-cell">{{@subjects.declined}}</psk-label>
 
+                    </psk-layout>
                 </div>
+                <!--                <div class="tp-table" data-for="@econsents">-->
+                <!--                    <psk-layout columns="@econsentsSize"-->
+                <!--                                class="justify-content-center align-items-center table-row">-->
+                <!--                        <div>-->
+                <!--                            <psk-label class="table-cell">{{@name}}</psk-label>-->
+                <!--                        </div>-->
+                <!--                    </psk-layout>-->
+
+                <!--                </div>-->
 
 
                 <button class="back-button" data-tag="back">Back</button>
