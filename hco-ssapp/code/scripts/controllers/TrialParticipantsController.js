@@ -37,6 +37,7 @@ export default class TrialParticipantsController extends WebcController {
         this._attachHandlerNavigateToParticipant();
         this._attachHandlerViewTrialParticipantDetails();
         this._attachHandlerViewTrialParticipantStatus();
+        this._attachHandlerGoBack();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -212,5 +213,11 @@ export default class TrialParticipantsController extends WebcController {
         }
     }
 
-
+    _attachHandlerGoBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
+        });
+    }
 }

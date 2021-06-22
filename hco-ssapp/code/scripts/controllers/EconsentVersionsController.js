@@ -32,6 +32,7 @@ export default class EconsentVersionsController extends WebcController {
 
     _initHandlers() {
         this._attachHandlerEconsentSign();
+        this._attachHandlerBack();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -101,5 +102,13 @@ export default class EconsentVersionsController extends WebcController {
         if (typeof this.feedbackEmitter === 'function') {
             this.feedbackEmitter(message, title, alertType);
         }
+    }
+
+    _attachHandlerBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
+        });
     }
 }

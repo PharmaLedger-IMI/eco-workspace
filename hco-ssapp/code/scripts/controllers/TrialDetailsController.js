@@ -85,10 +85,9 @@ export default class TrialDetailsController extends WebcController {
         this.onTagEvent('back', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-            this.navigateToPageTag('trial-management');
+            window.history.back();
         });
     }
-
 
     sendMessageToPatient(operation, ssi, trialParticipantNumber, shortMessage) {
         this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
