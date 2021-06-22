@@ -37,6 +37,7 @@ export default class TrialParticipantController extends WebcController {
 
     _initHandlers() {
         this._attachHandlerNavigateToEconsentVersions();
+        this._attachHandlerNavigateToEconsentSign();
         this._attachHandlerAddTrialParticipantNumber();
         this._attachHandlerGoBack();
         this.on('openFeedback', (e) => {
@@ -81,6 +82,24 @@ export default class TrialParticipantController extends WebcController {
                 econsentSSI: model.keySSI,
                 trialParticipantNumber: this.model.trialParticipantNumber,
                 tpUid: this.model.tpUid,
+            });
+        });
+    }
+
+    _attachHandlerNavigateToEconsentSign() {
+        this.onTagEvent('consent:sign', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            let ecoVersion = undefined;
+            if (model && model.versions && model.versions.length > 0) {
+                ecoVersion = model.versions[model.versions.length - 1].version;
+            }
+            this.navigateToPageTag('econsent-sign', {
+                trialSSI: this.model.trialSSI,
+                econsentSSI: model.keySSI,
+                trialParticipantNumber: this.model.tp.did,
+                tpUid: this.model.tpUid,
+                ecoVersion: ecoVersion
             });
         });
     }
