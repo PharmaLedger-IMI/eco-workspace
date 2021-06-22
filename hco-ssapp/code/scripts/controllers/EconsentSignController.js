@@ -21,6 +21,7 @@ export default class EconsentSignController extends WebcController {
         this.setModel({
             ...getInitModel(),
             ...this.history.win.history.state.state,
+            showControls: false
         });
 
         this._initServices(this.DSUStorage);
@@ -139,6 +140,14 @@ export default class EconsentSignController extends WebcController {
         if (content) {
             content.append(assetObject);
         }
+
+        window.addEventListener("scroll", (event) => {
+            let myDiv = event.target;
+            if (myDiv.id === 'pdfViewer'
+                && myDiv.offsetHeight + myDiv.scrollTop >= myDiv.scrollHeight) {
+                this.model.showControls = true;
+            }
+        }, {capture: true});
     };
 
     _displayFile = () => {

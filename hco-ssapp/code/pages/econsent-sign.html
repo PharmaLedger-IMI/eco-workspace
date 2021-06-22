@@ -20,12 +20,19 @@
                     <psk-label class="trial-title">{{@econsent.versionDateAsString}}</psk-label>
                 </div>
                 <hr/>
-                <div class='content' id="pdfViewer">
+                <div id="pdfViewerWrapper">
+                    <div class='content' id="pdfViewer">
+                    </div>
                 </div>
+
+
                 <div class="dispay-flex econsent-actions">
                     <button class="action-button" data-tag="back">Back</button>
-                    <button class="action-button" data-tag="econsent:decline">Decline</button>
-                    <button class="action-button" data-tag="econsent:sign">Sign</button>
+                    <div class="dispay-flex econsent-actions-subcontrols" data-if="@showControls">
+                        <button class="action-button" data-tag="econsent:decline">Decline</button>
+                        <button class="action-button" data-tag="econsent:sign">Sign</button>
+                    </div>
+
                 </div>
             </div>
 
