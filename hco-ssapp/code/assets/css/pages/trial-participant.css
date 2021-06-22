@@ -24,9 +24,10 @@
     text-decoration: none;
     font-size: 16px;
     border-radius: 5px;
-    margin: 20px ;
     height: 55px;
-    width: 160px;
+    padding: 0 30px;
+    margin-left: 10px;
+    margin-bottom: 30px;
 }
 
 .tp-button left{
@@ -48,13 +49,25 @@
     box-shadow: none !important;
     border-radius: 0 !important;
     text-align: left;
-    font-size: 22px;
+    font-size: 16px;
     color: #2F80ED;
 }
 
 .top-buttons {
-    margin-left: 45%;
+    display: inline-block;
+    margin-left: 10%;
+    width: 80%;
+    text-align: right;
+}
+.table-cell-title {
+    font-size: 16px;
+    color: #000000;
+    font-weight: bold;
+}
+
+.table-cell {
+    font-size: 16px;
+    color: #000000;
     display: flex;
-    margin-right: 10%;
-    width: 45%;
+    font-size: 16px;
 }
