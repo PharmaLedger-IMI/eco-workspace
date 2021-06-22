@@ -47,6 +47,7 @@ export default class HomeController extends WebcController {
 
         let notification = message.message;
         notification.type = type;
+        debugger;
         this.NotificationsRepository.create(message, (err, data) => {
             debugger;
             if (err) {

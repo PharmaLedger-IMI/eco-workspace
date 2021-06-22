@@ -23,8 +23,14 @@ export default class NotificationsController extends WebcController {
 
         this._initServices(this.DSUStorage);
         this._initNotifications();
+        this._initHandlers ();
+      }
+
+    _initHandlers (){
+        this._attachHandlerBack();
         this._attachHandlerNavigateToNotificationsList();
     }
+
 
     _initServices(DSUStorage) {
         this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
@@ -57,6 +63,14 @@ export default class NotificationsController extends WebcController {
 
     _newNotificationsForTypes (notificationType){
 
+    }
+
+    _attachHandlerBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
+        });
     }
 
 }
