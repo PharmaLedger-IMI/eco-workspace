@@ -1,8 +1,8 @@
 import TrialService from '../services/TrialService.js';
-import EconsentService from '../services/EconsentService.js';
 import FileDownloader from '../utils/FileDownloader.js';
 import CommunicationService from '../services/CommunicationService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
+import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository";
 
 const { WebcController } = WebCardinal.controllers;
 
@@ -30,8 +30,8 @@ export default class SignManuallyController extends WebcController {
 
   _initServices(DSUStorage) {
     this.TrialService = new TrialService(DSUStorage);
-    this.EconsentService = new EconsentService(DSUStorage);
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
+    this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
   }
 
   _initConsent() {
@@ -45,7 +45,7 @@ export default class SignManuallyController extends WebcController {
         econsent.attachment
       );
       this._downloadFile();
-      this.EconsentService.getEconsentsStatuses((err, data) => {
+      this.EconsentsStatusRepository.findAll((err, data) => {
         if (err) {
           return console.error(err);
         }
@@ -104,6 +104,7 @@ export default class SignManuallyController extends WebcController {
       useCaseSpecifics: {
         trialSSI: this.model.historyData.trialuid,
         tpNumber: this.model.historyData.tpNumber,
+        version: this.model.historyData.ecoVersion,
         operationDate: new Date().toISOString(),
       },
       shortDescription: shortMessage,
@@ -123,9 +124,9 @@ export default class SignManuallyController extends WebcController {
   };
 
   _saveEconsent() {
-    this.EconsentService.updateEconsent(
-      {
-        ...this.model.status,
+    this.EconsentsStatusRepository.update(
+      this.model.uid,
+        {  ...this.model.status,
       },
       (err, data) => {
         if (err) {

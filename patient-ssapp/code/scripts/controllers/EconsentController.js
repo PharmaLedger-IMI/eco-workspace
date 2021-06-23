@@ -1,7 +1,7 @@
 import TrialService from '../services/TrialService.js';
 import FileDownloader from '../utils/FileDownloader.js';
-import EconsentService from '../services/EconsentService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
+import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 
 const { WebcController } = WebCardinal.controllers;
 
@@ -19,7 +19,7 @@ export default class EconsentController extends WebcController {
 
   _initServices(DSUStorage) {
     this.TrialService = new TrialService(DSUStorage);
-    this.EconsentService = new EconsentService(DSUStorage);
+    this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
   }
 
   _initHandlers() {
@@ -35,14 +35,15 @@ export default class EconsentController extends WebcController {
       if (err) {
         return console.log(err);
       }
+      let ecoVersion = this.model.historyData.ecoVersion;
       this.model.econsent = econsent;
-      this.fileDownloader = new FileDownloader(
-        this.getEconsentFilePath(this.model.historyData.trialuid, this.model.historyData.ecoId, econsent.attachment),
-        econsent.attachment
-      );
-      this.model.econsent.versionDate = new Date(econsent.versionDate).toLocaleDateString('sw');
+      let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
+      let econsentFilePath = this.getEconsentFilePath(this.model.historyData.trialuid, this.model.historyData.ecoId, ecoVersion, currentVersion.attachment);
+      this.fileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
+      this.model.econsent.versionDate = new Date(currentVersion.versionDate).toLocaleDateString('sw');
       this._downloadFile();
-      this.EconsentService.getEconsentsStatuses((err, data) => {
+
+      this.EconsentsStatusRepository.findAll((err, data) => {
         if (err) {
           return console.error(err);
         }
@@ -83,7 +84,7 @@ export default class EconsentController extends WebcController {
 
   _attachHandlerVersions() {
     this.on('econsent:versions', (event) => {
-      console.log('econsent:versions');
+      this.navigateToPageTag('econsent-versions', { ...this.model.historyData });
     });
   }
 
@@ -102,7 +103,7 @@ export default class EconsentController extends WebcController {
         if (response) {
           this.model.status.actions.push({ name: 'withdraw' });
         }
-        this.EconsentService.updateEconsent(this.model.status, (err, response) => {
+        this.EconsentsStatusRepository.update(this.model.status.uid, this.model.status, (err, response) => {
           if (err) {
             return console.log(err);
           }
@@ -111,8 +112,8 @@ export default class EconsentController extends WebcController {
     });
   }
 
-  getEconsentFilePath(trialSSI, consentSSI, fileName) {
-    return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + fileName;
+  getEconsentFilePath(trialSSI, consentSSI, version, fileName) {
+    return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version + '/' + fileName;
   }
 
   _downloadFile = () => {

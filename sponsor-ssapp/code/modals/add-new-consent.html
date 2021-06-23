@@ -1,25 +1,19 @@
-<h2 slot="title">New Consent</h2>
+<h2 slot="header">New Consent</h2>
 
 <div class="d-flex flex-column justify-content-between">
   <div style="margin: 10px">
-    <label>{{@consent.name.label}}</label>
-    <input data-view-model="@consent.name" data-tag="inputs-changed" />
+    <psk-input view-model="consent.name"></psk-input>
   </div>
   <div style="margin: 10px">
-    <label>{{@consent.id.label}}</label>
-    <input data-view-model="@consent.id" data-tag="inputs-changed" />
+    <psk-input id="id-field" view-model="consent.id" event-name="id-changed"></psk-input>
   </div>
   <div style="margin: 10px">
-    <label>{{@consent.type.label}}</label>
-    <select data-for="@consent.type.options" value="@consent.type.value">
-      <option value="@value">{{ @label }}</option>
-    </select>
+    <psk-select view-model="consent.type"></psk-select>
   </div>
   <div style="margin: 10px">
-    <label>{{@consent.version.label}}</label>
-    <input data-view-model="@consent.version" data-tag="inputs-changed" />
+    <psk-input id="version-field" view-model="consent.version" event-name="version-changed"></psk-input>
   </div>
-  <psk-files-chooser view-model="consent.attachment" event-name="add-file"> </psk-files-chooser>
+  <psk-files-chooser style="margin: 10px" view-model="consent.attachment" event-name="add-file"> </psk-files-chooser>
 </div>
 
 <button class="btn btn-primary" slot="footer" data-tag="create-consent">Submit</button>

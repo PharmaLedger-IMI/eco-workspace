@@ -35,19 +35,28 @@
             <div class="left">
                 <psk-label class="trial-title" label="Trial Participants"></psk-label>
                 <div class="tp-table">
-                    <psk-layout columns="3" class="justify-content-center align-items-center table-row">
-                        <psk-label class="table-cell">TP Number</psk-label>
+                    <psk-layout columns="5" class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell">Name:</psk-label>
                         <psk-label class="table-cell">Status</psk-label>
+                        <psk-label class="table-cell">Did</psk-label>
                         <psk-label class="table-cell">Notification for action</psk-label>
+                        <psk-label class="table-cell">Tp Number</psk-label>
                     </psk-layout>
                     <hr/>
                 </div>
 
-                <div  class="tp-table" data-for="@trialParticipants">
-                    <psk-layout columns="3" class="justify-content-center align-items-center table-row" data-tag="navigate:tp" >
-                        <psk-label class="table-cell">{{@number}}</psk-label>
+                <div class="tp-table" data-for="@trialParticipants">
+                    <psk-layout columns="5" class="justify-content-center align-items-center table-row"
+                                data-tag="navigate:tp">
+                        <psk-label class="table-cell">{{@name}}{{@lastName}}</psk-label>
                         <psk-label class="table-cell">{{@status}}</psk-label>
-                        <psk-label class="table-cell">{{@actionNeeded}}</psk-label>
+                        <psk-label class="table-cell">{{@did}}</psk-label>
+                        <div data-if="@tpNumber">
+                            <psk-label slot="false" class="table-cell">{{@tpNumber}}</psk-label>
+                            <psk-label slot="false" class="table-cell">NOT YET SET OR SIGNED</psk-label>
+                        </div>
+
+                        <psk-label class="table-cell">{{@number}}</psk-label>
                     </psk-layout>
                     <hr/>
                 </div>

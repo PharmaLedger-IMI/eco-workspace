@@ -2,6 +2,7 @@
 const { WebcController } = WebCardinal.controllers;
 
 export default class TableTemplateController extends WebcController {
+  localData = null;
   constructor(...props) {
     super(...props);
 
@@ -16,6 +17,10 @@ export default class TableTemplateController extends WebcController {
   }
 
   attachEvents() {
+    this.model.onChange('data', () => {
+      this.paginateData(this.model.data);
+    });
+
     this.model.addExpression(
       'isTrialsTable',
       () => {
@@ -40,14 +45,9 @@ export default class TableTemplateController extends WebcController {
       'form.email.isValid'
     );
 
-    this.onTagClick('update-table', async (event) => {
-      console.log('RUNNING');
-      this.send('run-filters');
-      this.paginateData(this.model.data, 1);
-    });
-
     this.on('navigate-to-page', async (event) => {
       event.preventDefault();
+      console.log('event:', event);
       this.paginateData(this.model.data, event.data.value ? parseInt(event.data.value) : event.data);
     });
 
@@ -87,36 +87,42 @@ export default class TableTemplateController extends WebcController {
     });
   }
 
-  paginateData(data, page = 1) {
-    const itemsPerPage = this.model.pagination.itemsPerPage;
-    const length = data.length;
-    const numberOfPages = Math.ceil(length / itemsPerPage);
-    const pages = Array.from({ length: numberOfPages }, (_, i) => i + 1).map((x) => ({
-      label: x,
-      value: x,
-      active: page === x,
-    }));
+  paginateData(dataIncoming, page = 1) {
+    const data = [...dataIncoming];
+    if (data && data.length > 0) {
+      const itemsPerPage = this.model.pagination.itemsPerPage;
+      const length = data.length;
+      const numberOfPages = Math.ceil(length / itemsPerPage);
+      const pages = Array.from({ length: numberOfPages }, (_, i) => i + 1).map((x) => ({
+        label: x,
+        value: x,
+        active: page === x,
+      }));
 
-    this.model.pagination.previous = page > 1 && pages.length > 1 ? false : true;
-    this.model.pagination.next = page < pages.length && pages.length > 1 ? false : true;
-    this.model.pagination.items = data.slice(itemsPerPage * (page - 1), itemsPerPage * page);
-    this.model.pagination.pages = {
-      ...this.model.pagination.pages,
-      options: pages.map((x) => ({
-        label: x.label,
-        value: x.value,
-      })),
-    };
-    this.model.pagination.slicedPages =
-      pages.length > 5 && page - 3 >= 0 && page + 3 <= pages.length
-        ? pages.slice(page - 3, page + 2)
-        : pages.length > 5 && page - 3 < 0
-        ? pages.slice(0, 5)
-        : pages.length > 5 && page + 3 > pages.length
-        ? pages.slice(pages.length - 5, pages.length)
-        : pages;
-    this.model.pagination.currentPage = page;
-    this.model.pagination.totalPages = pages.length;
+      this.model.pagination.previous = page > 1 && pages.length > 1 ? false : true;
+      this.model.pagination.next = page < pages.length && pages.length > 1 ? false : true;
+      this.model.pagination.items = data.slice(itemsPerPage * (page - 1), itemsPerPage * page);
+      this.model.pagination.pages = {
+        // options: pages.map((x) => ({
+        //   value: x.value,
+        //   label: x.value,
+        // })),
+        selectOptions: pages.map((x) => x.value).join(' | '),
+        value: page.toString(),
+      };
+      this.model.pagination.slicedPages =
+        pages.length > 5 && page - 3 >= 0 && page + 3 <= pages.length
+          ? pages.slice(page - 3, page + 2)
+          : pages.length > 5 && page - 3 < 0
+          ? pages.slice(0, 5)
+          : pages.length > 5 && page + 3 > pages.length
+          ? pages.slice(pages.length - 5, pages.length)
+          : pages;
+      this.model.pagination.currentPage = page;
+      this.model.pagination.totalPages = pages.length;
+
+      console.log(JSON.stringify(this.model.pagination, null, 2));
+    }
   }
 
   sortColumn(column) {

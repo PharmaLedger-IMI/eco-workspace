@@ -8,6 +8,30 @@
       "tag": "home"
     },
     {
+      "name": "Trial Management",
+      "path": "/trial-management",
+      "src": "trial-management.html",
+      "tag": "trial-management"
+    },
+    {
+      "name": "Trial Details",
+      "path": "/trial-details",
+      "src": "trial-details.html",
+      "tag": "trial-details"
+    },
+    {
+      "name": "Trial Participants",
+      "path": "/trial-participants",
+      "src": "trial-participants.html",
+      "tag": "trial-participants"
+    },
+    {
+      "name": "Notifications List",
+      "path": "/notifications-list",
+      "src": "notifications-list.html",
+      "tag": "notifications-list"
+    },
+    {
       "name": "Create trial",
       "tag": "create-trial",
       "indexed": false
@@ -23,6 +47,12 @@
       "path": "/trial-participant",
       "src": "trial-participant.html",
       "tag": "trial-participant"
+    },
+    {
+      "name": "Trial Participant Details",
+      "path": "/trial-participant-details",
+      "src": "trial-participant-details.html",
+      "tag": "trial-participant-details"
     },
     {
       "name": "Econsent Versions",

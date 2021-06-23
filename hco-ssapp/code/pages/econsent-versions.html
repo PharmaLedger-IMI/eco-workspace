@@ -1,41 +1,71 @@
-<psk-page title="Trial Participant">
-    <link rel="stylesheet" href="/assets/css/pages/econsent-versions.css">
+<psk-page title="Trial Management">
+    <link rel="stylesheet" href="/assets/css/pages/trial-management.css">
     <webc-container controller="EconsentVersionsController">
-        <div class="subheader row">
-            <psk-label class="trial-title">{{@econsent.name}}</psk-label>
-            <psk-label class="trial-title">{{@econsent.type}}</psk-label>
-            <psk-label class="trial-title">{{@econsent.versionDateAsString}}</psk-label>
-        </div>
 
-        <div class="tp-table">
-            <psk-layout columns="5" class="justify-content-center align-items-center table-row">
-                <psk-label class="table-cell">VERSION</psk-label>
-                <psk-label class="table-cell">TP CONSENT</psk-label>
-                <psk-label class="table-cell">TP CAREGIVE CONSENT</psk-label>
-                <psk-label class="table-cell">HCP CONSENT</psk-label>
-                <psk-label class="table-cell">TP WITHDRAW</psk-label>
-            </psk-layout>
-            <hr/>
-        </div>
+        <div class="main-background">
+            <div class="front">
 
-        <div class="tp-wrapper">
-            <div class="tp-table econsent-list" data-for="@versions">
-                <psk-layout columns="5" class="justify-content-center align-items-center table-row econsent-row-blue">
-                    <psk-label class="table-cell">{{@version}}</psk-label>
-                    <div data-if="@tpSigned">
-                        <button slot="true" data-tag="econsent:sign">
-                            {{@tpApproval}}
-                        </button>
-                        <psk-label slot="false" class="table-cell">{{@tpApproval}}</psk-label>
+                <div class="top-container">
+                    <div class="pharma-logo">
+                        <psk-img class="ed-control-image" src="assets/images/pharmalogo.png"
+                                 height='47' width='110'></psk-img>
                     </div>
-                    <psk-label class="table-cell">{{@tpCaregiveApproval}}</psk-label>
-                    <psk-label class="table-cell">{{@hcpApproval}}</psk-label>
-                    <psk-label class="table-cell">{{@hcpWithdraw}}</psk-label>
-                </psk-layout>
-                <hr/>
+                    <button class="logout-button" data-tag="logout">Logout</button>
+                </div>
+                <psk-label class="main-title" label="Trial Management"></psk-label>
+
+                <div class="trial-table">
+                    <psk-layout columns="5" class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell">VERSION</psk-label>
+                        <psk-label class="table-cell">TS SIGNATURE</psk-label>
+                        <psk-label class="table-cell">HCP SIGNATURE</psk-label>
+                        <psk-label class="table-cell">WITHDREW</psk-label>
+                        <psk-label class="table-cell">OPTIONS</psk-label>
+                    </psk-layout>
+                    <hr/>
+                </div>
+
+
+                <div class="trial-table" data-for="@versions">
+                    <psk-layout columns="5"
+                                class="justify-content-center align-items-center table-row econsent-row-blue">
+                        <psk-label class="table-cell">{{@version}} - {{@versionDateAsString}}</psk-label>
+                        <psk-label class="table-cell">{{@versionDateAsString}}</psk-label>
+                        <div data-if="@tpSigned">
+                            <button slot="true" data-tag="econsent:sign">
+                                {{@tpApproval}}
+                            </button>
+                            <psk-label slot="false" class="table-cell">{{@tpApproval}}</psk-label>
+                        </div>
+                        <psk-label class="table-cell">{{@tpCaregiveApproval}}</psk-label>
+                        <psk-label class="table-cell">{{@hcpApproval}}</psk-label>
+                        <psk-label class="table-cell">{{@hcpWithdraw}}</psk-label>
+                    </psk-layout>
+                    <hr/>
+
+                </div>
+
+                <button class="back-button" data-tag="back">Back</button>
             </div>
+
+            <div class="eu-container">
+                <div class="left-image-eu">
+                    <psk-img class="ed-control-image" src="assets/images/flageu.png"
+                             height='80' width='123'></psk-img>
+                </div>
+                <div class="right-text-eu">
+                    <strong>
+                        <psk-label class="eu-text">This project has received funding from the European Union’s Horizon
+                            2020 research and innovation programme under <br/>
+                            grant agreement No 853992 Copyright <br/>
+                            <span>&copy;  PharmaLedger Consortium 2020 – 2023</span>
+                        </psk-label>
+                    </strong>
+                </div>
+
+            </div>
+
         </div>
-        <psk-list-feedbacks messages-to-display="5" time-alive="3000"></psk-list-feedbacks>
     </webc-container>
 </psk-page>
 

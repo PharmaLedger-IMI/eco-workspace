@@ -1,0 +1,45 @@
+<psk-example class="mobile-example">
+    <psk-mobile class="noPadding background" disable-header>
+        <link rel="stylesheet" href="/assets/css/pages/notifications.css">
+        <webc-container controller="EconsentVersionsController">
+            <div class=header-title>
+                <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
+                <psk-label class="scan-error-title" label="Consent History"></psk-label>
+            </div>
+            <div class="padding-sides" data-for="@versions">
+
+                <div class="dispay-flex date-div justify-content-space-between" data-tag="go-to-econsent"
+                     data="@keySSI">
+                    <div class="dispay-flex">
+
+
+                        <div class="left-image padding-image">
+                            <psk-img class="left-image" src="assets/images/document_black.png"
+                                     height='40' width='40'></psk-img>
+                        </div>
+                        <div>
+                            <div>
+                                <strong class="dispay-flex line-text">
+                                    {{@name}}
+                                    {{@type}}
+                                </strong>
+                            </div>
+                            <div>
+                                <strong class="line-text">
+                                    <psk-echo value="Version: "></psk-echo>
+                                    {{@version}}
+                                </strong>
+                            </div>
+                            <div>
+                                <strong class="line-text">
+                                    <psk-echo value="Version Date: "></psk-echo>
+                                    {{@versionDate}}
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </webc-container>
+    </psk-mobile>
+</psk-example>

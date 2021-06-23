@@ -44,6 +44,12 @@
       "tag": "site"
     },
     {
+      "name": "EconsentVersions",
+      "path": "/econsent-versions",
+      "src": "econsent-versions.html",
+      "tag": "econsent-versions"
+    },
+    {
       "name": "Create trial",
       "tag": "create-trial",
       "indexed": false

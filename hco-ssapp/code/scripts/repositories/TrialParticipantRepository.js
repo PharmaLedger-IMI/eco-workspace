@@ -15,9 +15,16 @@ class TrialParticipantRepository {
 
     findBy = (trialKey, callback) => this.StorageService.getRecord(this.tableName, trialKey, callback);
 
+    findByAsync = async (trialKey) => this.StorageService.getRecordAsync(this.tableName, trialKey);
+
     findAll = (callback) => this.StorageService.getAllRecords(this.tableName, callback);
 
     findAllAsync = async () => this.StorageService.getAllRecordsAsync(this.tableName);
+
+    filter = (query, sort, limit, callback) => this.StorageService.filter(this.tableName, query, sort, limit, callback);
+
+    filterAsync = async (query, sort, limit) =>
+        this.StorageService.filterAsync(this.tableName, query, sort, limit);
 
     update = (key, trialParticipant, callback) =>
         this.StorageService.updateRecord(this.tableName, key, trialParticipant, callback);

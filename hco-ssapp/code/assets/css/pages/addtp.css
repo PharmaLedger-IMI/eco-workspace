@@ -13,6 +13,9 @@
 .tp-input{
     width: 90%;
 }
+.tp-input-small{
+    width: 90%;
+}
 
 .tp-date{
     width: 60%;
@@ -29,6 +32,26 @@
     margin-left: 20px;
 }
 
+.scanQr {
+    argin-right: -1px!important;
+    float: right;
+    align-content: center;
+    margin: 0 20px;
+    padding: 10px;
+    width: 100px;
+    align-content: flex-end;
+    font-size: 16px;
+    background-color: #008798;
+    border: none;
+    color: white;
+}
+
+.inverted-colors {
+    background-color: white !important;
+    color: #008798 !important;
+    border: 1px solid #008798 !important;
+}
+
 .tp-button {
     background-color: #00345b;
     border: none;
@@ -38,16 +61,34 @@
     text-decoration: none;
     display: inline-block;
     text-transform: uppercase;
-
     vertical-align: center;
-
     font-size: 16px;
     margin-right: 30px;
 }
 
-
-webc-modal[data-shadow] .webc-modal .webc-modal-dialog.centered {
-
-    min-width: 80%;
-
+.bottom {
+    padding: 0 0 0 10%;
 }
+
+.wide-button {
+    width: 40%;
+}
+
+.left-div {
+    width: 100%;
+}
+
+.right-div {
+    display: flex;
+    align-items: center;
+}
+
+div.form-group {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+/*.gender-input psk-label {*/
+/*    width: 115px;*/
+/*}*/

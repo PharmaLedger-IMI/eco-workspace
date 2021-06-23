@@ -38,7 +38,7 @@ class SharedStorage {
             record.uid = key;
         }
         this.letDatabaseInit()
-            .then(() => this.mydb.insertRecord(tableName, key, record, callback)).catch(this.logError);
+            .then(() => this.mydb.insertRecord(tableName, key, record, () => this.getRecord(tableName, key, callback))).catch(this.logError);
     }
 
     insertRecordAsync = async (tableName, key, record) => this.asyncMyFunction(this.insertRecord, [tableName, key, record]);

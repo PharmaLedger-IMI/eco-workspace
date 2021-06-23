@@ -47,17 +47,15 @@ export default class ListTrialsController extends WebcController {
     next: false,
     items: null,
     pages: {
-      options: [],
+      selectOptions: '',
     },
     slicedPages: null,
     currentPage: 0,
     itemsPerPage: 10,
     totalPages: null,
     itemsPerPageOptions: {
-      options: this.itemsPerPageArray.map((x) => ({
-        label: x,
-        value: x,
-      })),
+      selectOptions: this.itemsPerPageArray.join(' | '),
+      value: this.itemsPerPageArray[1].toString(),
     },
   };
 
@@ -72,7 +70,9 @@ export default class ListTrialsController extends WebcController {
         return console.error(err);
       }
       data = JSON.parse(data);
+      console.log('DATA MEESAGE:', data);
       switch (data.message.operation) {
+        case 'sign-econsent':
         case 'update-econsent': {
           await this.participantsService.updateParticipant(
             {
@@ -80,7 +80,9 @@ export default class ListTrialsController extends WebcController {
               action: data.message.useCaseSpecifics.action,
               trialSSI: data.message.useCaseSpecifics.trialSSI,
               consentSSI: data.message.ssi,
+              version: data.message.useCaseSpecifics.version,
               type: data.sender === 'hcoIdentity' ? senderType.HCP : senderType.Patient,
+              operationDate: data.message.useCaseSpecifics.operationDate || null,
             },
             data.message.useCaseSpecifics.trialSSI
           );
@@ -141,8 +143,6 @@ export default class ListTrialsController extends WebcController {
     this.model.trials = model;
     this.model.data = model;
     this.model.headers = this.model.headers.map((x) => ({ ...x, asc: false, desc: false }));
-
-    this.send('update-table', '1');
   }
 
   filterData() {
@@ -158,8 +158,6 @@ export default class ListTrialsController extends WebcController {
       result = result.filter((x) => x.name.toUpperCase().search(this.model.search.value.toUpperCase()) !== -1);
     }
 
-    console.log(this.trials, result);
-
     this.setTrialsModel(result);
   }
 
@@ -172,9 +170,7 @@ export default class ListTrialsController extends WebcController {
   attachEvents() {
     this.model.addExpression(
       'trialArrayNotEmpty',
-      () => {
-        return this.model.trials && Array.isArray(this.model.trials) && this.model.trials.length > 0;
-      },
+      () => this.model.trials && Array.isArray(this.model.trials) && this.model.trials.length > 0,
       'trials'
     );
 
@@ -192,7 +188,6 @@ export default class ListTrialsController extends WebcController {
         (event) => {
           const response = event.detail;
           this.getTrials();
-          // this.sendMessageToHco('add-trial', response.keySSI, 'New trial' + response.id);
           this.showFeedbackToast('Result', 'Trial added successfully', 'toast');
         },
         (event) => {
@@ -206,6 +201,7 @@ export default class ListTrialsController extends WebcController {
           controller: 'AddNewTrialModalController',
           disableExpanding: false,
           disableBackdropClosing: false,
+          existingIds: this.trials.map((x) => x.id) || [],
         }
       );
     });
@@ -252,7 +248,6 @@ export default class ListTrialsController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage) {
-    console.log('SENDING MESSAGE');
     this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, {
       operation: operation,
       ssi: ssi,

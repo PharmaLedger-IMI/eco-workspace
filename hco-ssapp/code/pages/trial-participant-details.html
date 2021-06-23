@@ -1,0 +1,67 @@
+<psk-page title="Home">
+    <link rel="stylesheet" href="/assets/css/pages/trial-participants.css">
+    <webc-container controller="TrialParticipantDetailsController">
+
+        <div class="main-background">
+            <div class="front">
+
+                <div class="top-container">
+                    <div class="pharma-logo">
+                        <psk-img class="ed-control-image" src="assets/images/pharmalogo.png"
+                                 height='47' width='110'></psk-img>
+                    </div>
+                    <button class="logout-button" data-tag="logout">Logout</button>
+                </div>
+
+                <psk-label class="main-title">{{@trialParticipant.name}} {{@trialParticipant.lastName}}</psk-label>
+
+                <div class="subtitle-container">
+                    <psk-label class="subtitle">{{@lastAction}}</psk-label>
+                </div>
+                <div class="trial-table">
+                    <psk-layout columns="4" class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell">Enrolled</psk-label>
+                        <psk-label class="table-cell">Withdraw / Discontinued / Screen Failed</psk-label>
+                        <psk-label class="table-cell">Completed</psk-label>
+                        <psk-label class="table-cell">Consents Signed</psk-label>
+                    </psk-layout>
+                    <hr/>
+                </div>
+                <div class="trial-table">
+                    <psk-layout columns="4" class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell">{{@trialParticipant.enrolledDate}}</psk-label>
+                        <psk-label class="table-cell">{{@lastBadAction}}</psk-label>
+                        <psk-label class="table-cell">MOCK: N/A</psk-label>
+                        <div class="table-cell">
+                            <div data-for="@consentsSigned" class="rows-as-list">
+                                <psk-label>{{@}}</psk-label>
+                            </div>
+                        </div>
+                    </psk-layout>
+                </div>
+
+                <button class="back-button" data-tag="back">Back</button>
+            </div>
+
+            <div class="eu-container">
+                <div class="left-image-eu">
+                    <psk-img class="ed-control-image" src="assets/images/flageu.png"
+                             height='80' width='123'></psk-img>
+                </div>
+                <div class="right-text-eu">
+                    <strong>
+                        <psk-label class="eu-text">This project has received funding from the European Union’s Horizon
+                            2020 research and innovation programme under <br/>
+                            grant agreement No 853992 Copyright <br/>
+                            <span>&copy;  PharmaLedger Consortium 2020 –2023</span>
+                        </psk-label>
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+    </webc-container>
+</psk-page>
+
+

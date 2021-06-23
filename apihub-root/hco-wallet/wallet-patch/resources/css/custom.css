@@ -9,6 +9,14 @@ div.global_container {
     height: 100%;
 }
 
+div.global_container aside {
+    display: none;
+}
+
+div.global_container section {
+    overflow: hidden;
+}
+
 div.global_container.is-mobile {
     width: 100%;
     flex-direction: column;
