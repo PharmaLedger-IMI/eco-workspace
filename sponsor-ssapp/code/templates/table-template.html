@@ -32,11 +32,13 @@
 
   <span data-if="@isTrialsTable">
     <psk-for-each data-view-model="@pagination.items" style="display: contents">
-      <psk-layout columns="5" class="justify-content-center align-items-center table-row">
+      <psk-layout columns="7" class="justify-content-center align-items-center table-row">
         <psk-label class="table-cell" label="@id"></psk-label>
         <psk-label class="table-cell" label="@name"></psk-label>
+        <psk-label class="table-cell" label="@sponsor"></psk-label>
+        <psk-label class="table-cell" label="@stage"></psk-label>
         <psk-label class="table-cell" label="@status"></psk-label>
-        <psk-label class="table-cell" label="@countries"></psk-label>
+        <psk-label class="table-cell" label="@created"></psk-label>
         <div class="d-flex flex-row">
           <psk-button class="btn-bare table-cell" event-name="view-trial" event-data="@id"> &#128269; </psk-button>
           <psk-button class="btn-bare table-cell" event-name="delete-trial" event-data="@id"> &#10060; </psk-button>

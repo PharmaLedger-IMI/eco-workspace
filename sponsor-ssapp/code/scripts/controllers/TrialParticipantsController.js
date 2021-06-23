@@ -1,4 +1,3 @@
-import TrialsService from '../services/TrialsService.js';
 import ParticipantsService from '../services/ParticipantsService.js';
 import { trialTableHeaders, participantConsentStatusEnum } from '../constants/participant.js';
 import eventBusService from '../services/EventBusService.js';
@@ -41,8 +40,6 @@ export default class TrialParticipantsController extends WebcController {
   constructor(...props) {
     super(...props);
     let { id, keySSI } = this.history.location.state;
-
-    this.trialsService = new TrialsService(this.DSUStorage);
 
     this.keySSI = keySSI;
     this.participantsService = new ParticipantsService(this.DSUStorage);

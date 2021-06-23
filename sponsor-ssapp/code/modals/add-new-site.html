@@ -1,0 +1,20 @@
+<h2 slot="header">New Site</h2>
+
+<form>
+  <div class="d-flex flex-column justify-content-between">
+    <div class="d-flex flex-row m-2">
+      <psk-select view-model="site.countries"></psk-select>
+    </div>
+    <div class="m-2">
+      <psk-input id="id-field" view-model="site.id" event-name="id-changed"></psk-input>
+    </div>
+    <div class="m-2">
+      <psk-input view-model="site.name"></psk-input>
+    </div>
+    <div class="m-2">
+      <psk-input id="did-field" disabled="true" view-model="site.did" event-name="did-changed"></psk-input>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" slot="footer" data-tag="create-site">Submit</button>
+</form>

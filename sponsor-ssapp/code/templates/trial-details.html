@@ -1,0 +1,151 @@
+<webc-container controller="TrialDetailsController" data-view-model="@">
+  <link rel="stylesheet" href="assets/css/trial-details.css" />
+
+  <div data-for="@menu">
+    <div class="accordion-item">
+      <div data-if="@selected">
+        <container slot="true">
+          <div data-if="@selectedOption.0">
+            <h5
+              data-tag="select-menu"
+              data-custom="@name"
+              class="d-flex flex-row bold align-items-center m-2 p-2 accordion-header"
+            >
+              <i class="fas fa-angle-down"></i>
+              <div class="ml-2">{{ @name }}</div>
+            </h5>
+            <div data-if="@loading" class="ml-5">
+              <container slot="false">
+                <div data-if="@data">
+                  <div class="row m-2">
+                    <div class="col-md-3">Trial Code</div>
+                    <div class="col-md-3">{{ @data.id }}</div>
+                  </div>
+                  <div class="row m-2">
+                    <div class="col-md-3">Trial Sponsor</div>
+                    <div class="col-md-3">{{ @data.sponsor }}</div>
+                  </div>
+                  <div class="row m-2">
+                    <div class="col-md-3">Trial Name</div>
+                    <div class="col-md-3">{{ @data.name }}</div>
+                  </div>
+                </div>
+              </container>
+            </div>
+          </div>
+          <div data-if="@selectedOption.1">
+            <div class="d-flex flex-row bold align-items-center m-2 p-2 accordion-header">
+              <h5 class="d-flex flex-row bold align-items-center" data-tag="select-menu" data-custom="@name">
+                <i class="fas fa-angle-down"></i>
+                <div class="ml-2">{{ @name }}</div>
+              </h5>
+              <button class="btn btn-primary ml-auto" data-tag="add-site">Add Site</button>
+            </div>
+            <div data-if="@loading" class="ml-5">
+              <container slot="false">
+                <div data-if="@data">
+                  <div data-for="@data">
+                    <div class="row bg-light">
+                      <div
+                        class="col-md-8 country-option d-flex align-items-center"
+                        data-tag="select-country"
+                        data-custom="@country"
+                      >
+                        {{ @country }}
+                      </div>
+                      <div class="col-md-2 d-flex flex-row bold align-items-center">
+                        <i class="far fa-pause-circle"></i>
+                        <button data-tag="country-on-hold" data-custom="@country" class="btn btn-bare">
+                          Put On Hold
+                        </button>
+                      </div>
+                      <div class="col-md-2 d-flex flex-row bold align-items-center">
+                        <i class="far fa-stop-circle"></i>
+                        <button data-tag="country-terminate" data-custom="@country" class="btn btn-bare">
+                          Terminate
+                        </button>
+                      </div>
+                    </div>
+
+                    <div data-if="@selected">
+                      <div data-for="@sites">
+                        <div class="row align-items-center">
+                          <div class="col-md-1"></div>
+                          <div class="col-md-2">{{ @id }}</div>
+                          <div class="col-md-2">{{ @name }}</div>
+                          <div class="col-md-2 d-flex flex-row bold align-items-center">
+                            <i class="far fa-pause-circle"></i>
+                            <button disable="true" data-tag="site-edit" data-custom="@id" class="btn btn-bare">
+                              Edit
+                            </button>
+                          </div>
+                          <!-- <div class="col-md-2">
+                            <div class="col-md-2 d-flex flex-row bold align-items-center">
+                              <i class="far fa-pause-circle"></i>
+                              <button disable="true" data-tag="site-delete" data-custom="@id" class="btn btn-bare">
+                                Delete
+                              </button>
+                            </div>
+                          </div> -->
+                          <div class="col-md-3 d-flex flex-row bold align-items-center">
+                            <i class="far fa-pause-circle"></i>
+                            <button data-tag="site-on-hold" data-custom="@id" class="btn btn-bare">On Hold</button>
+                          </div>
+                          <div class="col-md-2 d-flex flex-row bold align-items-center">
+                            <i class="far fa-stop-circle"></i>
+                            <button data-tag="site-terminate" data-custom="@id" class="btn btn-bare">Terminate</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </container>
+            </div>
+          </div>
+          <div data-if="@selectedOption.2">
+            <h5
+              data-tag="select-menu"
+              data-custom="@name"
+              class="d-flex flex-row bold align-items-center m-2 p-2 accordion-header"
+            >
+              <i class="fas fa-angle-down"></i>
+              <div class="ml-2">{{ @name }}</div>
+            </h5>
+            <div data-if="@loading" class="ml-5">
+              <container slot="false">
+                <div data-if="@data">Consents</div>
+              </container>
+            </div>
+          </div>
+          <div data-if="@selectedOption.3">
+            <h5
+              data-tag="select-menu"
+              data-custom="@name"
+              class="d-flex flex-row bold align-items-center m-2 p-2 accordion-header"
+            >
+              <i class="fas fa-angle-down"></i>
+              <div class="ml-2">{{ @name }}</div>
+            </h5>
+            <div data-tag="select-menu" data-custom="@name" data-if="@loading" class="ml-5">
+              <container slot="false">
+                <div data-if="@data">Visits</div>
+              </container>
+            </div>
+          </div>
+        </container>
+        <container slot="false">
+          <h5
+            data-tag="select-menu"
+            data-custom="@name"
+            class="d-flex flex-row bold align-items-center m-2 p-2 accordion-header"
+          >
+            <i class="fas fa-angle-right"></i>
+            <div class="ml-2">{{ @name }}</div>
+          </h5>
+        </container>
+      </div>
+    </div>
+  </div>
+  <psk-list-feedbacks messages-to-display="5" time-alive="3000"> </psk-list-feedbacks>
+</webc-container>

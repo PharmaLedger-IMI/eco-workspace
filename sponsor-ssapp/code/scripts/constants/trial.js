@@ -1,7 +1,16 @@
 export const trialStatusesEnum = {
   Active: 'Active',
-  OnHold: 'On-hold',
-  Postponed: 'Postponed',
+  OnHold: 'On Hold',
+  Cancelled: 'Cancelled',
+};
+
+export const trialStagesEnum = {
+  Created: 'Created',
+  Submission: 'Submission',
+  Initiated: 'Initiated',
+  Recruiting: 'Recruiting',
+  Enrolling: 'Enrolling',
+  Conducting: 'Conducting',
   Completed: 'Completed',
 };
 
@@ -23,17 +32,35 @@ export const trialTableHeaders = [
     desc: null,
   },
   {
-    column: 'status',
-    label: 'EC Status',
+    column: 'sponsor',
+    label: 'Sponsor',
     notSortable: false,
     type: 'string',
     asc: null,
     desc: null,
   },
   {
-    column: 'countries',
-    label: 'Countries',
+    column: 'stage',
+    label: 'Stage',
     notSortable: false,
+    type: 'string',
+    asc: null,
+    desc: null,
+  },
+  {
+    column: 'status',
+    label: 'Status',
+    notSortable: false,
+    type: 'string',
+    asc: null,
+    desc: null,
+  },
+  {
+    column: 'created',
+    label: 'Created',
+    notSortable: false,
+    type: 'string',
+    asc: null,
     desc: null,
   },
   {
