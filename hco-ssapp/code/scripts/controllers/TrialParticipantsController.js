@@ -37,6 +37,7 @@ export default class TrialParticipantsController extends WebcController {
         this._attachHandlerNavigateToParticipant();
         this._attachHandlerViewTrialParticipantDetails();
         this._attachHandlerViewTrialParticipantStatus();
+        this._attachHandlerGoBack();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -58,7 +59,7 @@ export default class TrialParticipantsController extends WebcController {
             .filter(tp => tp.trialNumber === this.model.trial.id)
             .map(tp => {
                 let tpActions = actions[tp.did];
-                if (tpActions.length === 0) {
+                if (tpActions === undefined || tpActions.length === 0) {
                     return {
                         ...tp,
                         actionNeeded: 'No action required'
@@ -91,7 +92,13 @@ export default class TrialParticipantsController extends WebcController {
         let actions = {};
         (await this.TrialService.getEconsentsAsync(keySSI))
             .forEach(econsent => {
+                if (econsent.versions === undefined) {
+                    return actions;
+                }
                 econsent.versions.forEach(version => {
+                    if (version.actions === undefined) {
+                        return actions;
+                    }
                     version.actions.forEach(action => {
                         if (actions[action.tpNumber] === undefined) {
                             actions[action.tpNumber] = []
@@ -206,5 +213,11 @@ export default class TrialParticipantsController extends WebcController {
         }
     }
 
-
+    _attachHandlerGoBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
+        });
+    }
 }

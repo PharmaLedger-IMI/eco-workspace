@@ -12,7 +12,6 @@ trial-table tr:nth-child(even) {
     font-size: 16px;
     color: #000000;
     font-size: 16px;
-
 }
 
 .table-cell-title {
@@ -79,4 +78,8 @@ trial-table tr:nth-child(even) {
     margin-bottom: 0 !important;
 }
 
-
+.table-title {
+    margin-left: 10%;
+    font-size: 16px;
+    color: #000000;
+}

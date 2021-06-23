@@ -33,6 +33,7 @@ export default class TrialParticipantDetailsController extends WebcController {
     }
 
     _initHandlers() {
+        this._attachHandlerGoBack();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -43,7 +44,8 @@ export default class TrialParticipantDetailsController extends WebcController {
 
         let userActions = await this._getUserActionsFromEconsents(keySSI, this.model.trialParticipant.did);
 
-        this.model.lastAction = userActions[userActions.length - 1].action.name
+
+        this.model.lastAction = userActions.length === 0 ? undefined : userActions[userActions.length - 1].action.name
             .split('-')
             .filter(action => action.length > 0)
             .map(action => action.charAt(0).toUpperCase() + action.slice(1))
@@ -56,7 +58,7 @@ export default class TrialParticipantDetailsController extends WebcController {
         let lastBadActions = userActions
             .filter(ac => ac.action.name === 'withdraw-intention' || ac.action.name === 'withdraw')
 
-        let lastBadAction = lastBadActions[lastBadActions.length - 1]
+        let lastBadAction = lastBadActions.length === 0 ? undefined : lastBadActions[lastBadActions.length - 1]
 
         let initials = lastBadAction === undefined ? 'N/A' : lastBadAction.action.name
             .split('-')
@@ -72,7 +74,13 @@ export default class TrialParticipantDetailsController extends WebcController {
         let userActions = [];
         (await this.TrialService.getEconsentsAsync(keySSI))
             .forEach(econsent => {
+                if (econsent.versions === undefined) {
+                    return userActions;
+                }
                 econsent.versions.forEach(version => {
+                    if (version.actions === undefined) {
+                        return userActions;
+                    }
                     version.actions.forEach(action => {
                         if (action.tpNumber === tpNumber) {
                             userActions.push({
@@ -100,5 +108,12 @@ export default class TrialParticipantDetailsController extends WebcController {
         if (typeof this.feedbackEmitter === 'function') {
             this.feedbackEmitter(message, title, alertType);
         }
+    }
+    _attachHandlerGoBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
+        });
     }
 }

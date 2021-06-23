@@ -36,6 +36,7 @@ export default class TrialManagementController extends WebcController {
     constructor(...props) {
         super(...props);
 
+        console.log('Constructor TM Controller');
         this.setModel(getInitModel());
         this._initServices(this.DSUStorage);
         this._initHandlers();
@@ -78,7 +79,6 @@ export default class TrialManagementController extends WebcController {
     }
 
 
-
     sendMessageToPatient(operation, ssi, shortMessage) {
         this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
             operation: operation,
@@ -94,6 +94,7 @@ export default class TrialManagementController extends WebcController {
             this.navigateToPageTag('trial-details', model.keySSI);
         });
     }
+
     _attachHandlerTrialParticipants() {
         this.onTagEvent('trials:participants', 'click', (model, target, event) => {
             event.preventDefault();
@@ -101,11 +102,12 @@ export default class TrialManagementController extends WebcController {
             this.navigateToPageTag('trial-participants', model.keySSI);
         });
     }
+
     _attachHandlerBack() {
-        this.onTagEvent('trials:participants', 'click', (model, target, event) => {
+        this.onTagEvent('back', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-            this.navigateToPageTag('home', model.keySSI);
+            window.history.back();
         });
     }
 

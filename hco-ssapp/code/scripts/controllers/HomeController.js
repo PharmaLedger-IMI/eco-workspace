@@ -46,7 +46,8 @@ export default class HomeController extends WebcController {
     addMessageToNotificationDsu(message, type) {
 
         let notification = message.message;
-        notification.type= type;
+        notification.type = type;
+        debugger;
         this.NotificationsRepository.create(message, (err, data) => {
             debugger;
             if (err) {
@@ -83,7 +84,7 @@ export default class HomeController extends WebcController {
             data = JSON.parse(data);
             switch (data.message.operation) {
                 case 'add-trial': {
-                    this.addMessageToNotificationDsu(data,'trialupdates');
+                    this.addMessageToNotificationDsu(data, 'trialupdates');
                     this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                         if (err) {
                             return console.log(err);
@@ -133,32 +134,53 @@ export default class HomeController extends WebcController {
             if (currentVersion.actions === undefined) {
                 currentVersion.actions = [];
             }
-            currentVersion.actions.push({
-                ...message.useCaseSpecifics.action,
-                tpNumber: message.useCaseSpecifics.tpNumber
-            });
+            debugger;
+
             let actionNeeded = 'No action required';
+            let status = Constants.TRIAL_PARTICIPANT_STATUS.SCREENED;
+            let tpSigned = false;
             switch (message.useCaseSpecifics.action.name) {
                 case 'withdraw': {
                     actionNeeded = 'TP Withdrawed';
+                    status =status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
                     break;
                 }
                 case 'withdraw-intention': {
                     actionNeeded = 'Reconsent required';
+                    status =status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
                     break;
                 }
                 case 'sign': {
+                    tpSigned = true;
                     actionNeeded = 'Acknowledgement required';
+                    status =status = Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED;
                     break;
                 }
             }
-
+            currentVersion.actions.push({
+                ...message.useCaseSpecifics.action,
+                tpNumber: message.useCaseSpecifics.tpNumber,
+                status : status,
+                actionNeeded:actionNeeded
+            });
+            debugger;
             this.TrialParticipantRepository.filter(`did == ${message.useCaseSpecifics.tpNumber}`, 'ascending', 30, (err, tps) => {
+                debugger;
                 if (tps && tps.length > 0) {
                     let tp = tps[0];
                     tp.actionNeeded = actionNeeded;
-                    tp.tpSigned = true;
+                    tp.tpSigned = tpSigned;
+                    // let action = {
+                    //     actionNeeded: actionNeeded,
+                    //     econsentUid: econsent.uid,
+                    //     econsentVersion: currentVersion.uid
+                    // };
+                    // if (!tp.actions) {
+                    //     tp.actions = [];
+                    //     tp.actions.push(action);
+                    // }
                     this.TrialParticipantRepository.update(tp.uid, tp, (err, trialParticipant) => {
+                        debugger;
                         if (err) {
                             return console.log(err);
                         }

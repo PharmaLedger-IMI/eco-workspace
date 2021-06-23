@@ -20,6 +20,20 @@ const MESSAGES = {
     }
 }
 
+const ECO_STATUSES = {
+    TO_BE_SIGNED :'Acknowledgement required',
+    WITHDRAW :'TP Withdrawed',
+    CONTACT: 'Reconsent required'
+}
+
+const TRIAL_PARTICIPANT_STATUS = {
+    ENROLLED :'Enrolled',
+    WITHDRAW :'Withdrawed',
+    DECLINED: 'Declined',
+    SCREENED: 'Screened'
+}
 export default {
-    MESSAGES
+    MESSAGES,
+    ECO_STATUSES,
+    TRIAL_PARTICIPANT_STATUS
 };

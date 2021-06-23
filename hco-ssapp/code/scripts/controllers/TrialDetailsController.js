@@ -43,8 +43,8 @@ export default class TrialDetailsController extends WebcController {
     }
 
     _initHandlers() {
-        this._attachHandlerAddTrialParticipant();
-        this._attachHandlerNavigateToParticipant();
+        // this._attachHandlerAddTrialParticipant();
+        // this._attachHandlerNavigateToParticipant();
         this._attachHandlerBack();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
@@ -62,7 +62,12 @@ export default class TrialDetailsController extends WebcController {
             // debugger;
             // this.model.trialParticipants2 = await this.TrialParticipantRepository.filterAsync([`__version >= 0`,`trialNumber == ${this.model.trial.id}`],'asc', 30);
             this.model.trialParticipants = (await this.TrialParticipantRepository.findAllAsync()).filter(tp => tp.trialNumber === this.model.trial.id);
-            this.model.subjects.enrolled = this.model.trialParticipants.length;
+            this.model.subjects.planned = this.model.trialParticipants.length;
+            this.model.subjects.enrolled = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED).length;
+            this.model.subjects.screened = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.SCREENED).length;
+            this.model.subjects.withdrew = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW).length;
+            this.model.subjects.declined = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.DECLINED).length;
+            this.model.subjects.percentage = (this.model.subjects.enrolled * 100) / 7 + '%' ;
             debugger;
             this.TrialService.getEconsents(trial.uid, (err, econsents) => {
                 if (err) {
@@ -75,62 +80,13 @@ export default class TrialDetailsController extends WebcController {
         });
     }
 
-    _attachHandlerNavigateToParticipant() {
-        this.onTagEvent('navigate:tp', 'click', (model, target, event) => {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            this.navigateToPageTag('trial-participant', {
-                trialSSI: this.model.trialSSI,
-                tpUid: model.uid,
-                trialParticipantNumber: model.number,
-            });
-        });
-    }
 
     _attachHandlerBack() {
         this.onTagEvent('back', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-            this.navigateToPageTag('trial-management');
+            window.history.back();
         });
-    }
-
-    _attachHandlerAddTrialParticipant() {
-        this.onTagEvent('add:tp', 'click', (model, target, event) => {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            this.showModalFromTemplate(
-                'add-new-tp',
-                (event) => {
-                    const response = event.detail;
-                    this.createTpDsu(response);
-                    this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.SUCCESS.ADD_TRIAL_PARTICIPANT);
-                },
-                (event) => {
-                    const response = event.detail;
-                }
-            ),
-                {
-                    controller: 'AddTrialParticipantController',
-                    disableExpanding: false,
-                    disableBackdropClosing: false,
-                    title: 'Add Trial Participant',
-                };
-        });
-    }
-
-
-    async createTpDsu(tp) {
-        tp.trialNumber = this.model.trial.id;
-        tp.status = 'screened';
-        let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
-        this.model.trialParticipants.push(trialParticipant);
-        this.sendMessageToPatient(
-            'add-to-trial',
-            this.model.trialSSI,
-            trialParticipant.did,
-            Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL
-        );
     }
 
     sendMessageToPatient(operation, ssi, trialParticipantNumber, shortMessage) {

@@ -15,6 +15,11 @@ export default class NotificationsListController extends WebcController {
         this.model.notificationType = this.history.win.history.state.state.notType;
         this._initServices(this.DSUStorage);
         this._initNotifications();
+        this._initHandlers ();
+    }
+
+    _initHandlers (){
+        this._attachHandlerBack();
     }
 
     _initServices(DSUStorage) {
@@ -32,5 +37,13 @@ export default class NotificationsListController extends WebcController {
             //data.filter(not =>  not.notificationType === this.model.notificationType )
 
           });
+    }
+
+    _attachHandlerBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
+        });
     }
 }
