@@ -1,5 +1,6 @@
 const {WebcController} = WebCardinal.controllers;
 import Constants from '../utils/Constants.js';
+import DateTimeService from '../services/DateTimeService.js';
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
 import CommunicationService from '../services/CommunicationService.js';
@@ -45,6 +46,7 @@ export default class TrialDetailsController extends WebcController {
     _initHandlers() {
         // this._attachHandlerAddTrialParticipant();
         // this._attachHandlerNavigateToParticipant();
+        this._attachHandlerNavigateToVersion();
         this._attachHandlerBack();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
@@ -72,7 +74,18 @@ export default class TrialDetailsController extends WebcController {
                 if (err) {
                     return console.log(err);
                 }
-                this.model.econsents = econsents;
+                this.model.econsents = econsents.map(econsent => {
+                    return {
+                        ...econsent,
+                        versions: econsent.versions.map(v => {
+                            return {
+                                ...v,
+                                econsentSSI: econsent.uid,
+                                versionDateAsString: DateTimeService.convertStringToLocaleDate(v.versionDate)
+                            }
+                        })
+                    }
+                });
                 this.model.econsentsSize = econsents.length;
             })
 
@@ -85,6 +98,20 @@ export default class TrialDetailsController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
             window.history.back();
+        });
+    }
+
+    _attachHandlerNavigateToVersion() {
+        this.onTagEvent('navigate-to-version', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('econsent-sign', {
+                trialSSI: this.model.trialSSI,
+                econsentSSI: model.econsentSSI,
+                ecoVersion: model.version,
+                readOnly: false
+            });
+
         });
     }
 
