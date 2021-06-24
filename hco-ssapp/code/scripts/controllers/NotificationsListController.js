@@ -29,7 +29,7 @@ export default class NotificationsListController extends WebcController {
     _initNotifications() {
 
         this.NotificationsRepository.findAll((err, data) => {
-            debugger;
+
             if (err) {
                 return console.log(err);
             }

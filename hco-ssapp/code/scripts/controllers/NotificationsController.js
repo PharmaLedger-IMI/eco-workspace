@@ -41,7 +41,6 @@ export default class NotificationsController extends WebcController {
         this.model.notTypes.consentUpdates = true;
 
         this.NotificationsRepository.findAll((err, data) => {
-            debugger;
             if (err) {
                 return console.log(err);
             }

@@ -1,3 +1,5 @@
+import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
+
 const {WebcController} = WebCardinal.controllers;
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
@@ -33,6 +35,7 @@ export default class EconsentSignController extends WebcController {
         this.TrialService = new TrialService(DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
     }
 
     _initHandlers() {
@@ -92,11 +95,13 @@ export default class EconsentSignController extends WebcController {
                 date: currentDate.toISOString(),
                 toShowDate: currentDate.toLocaleDateString(),
             };
-            this.TrialService.updateEconsent(this.model.trialSSI, this.model.econsent, (err, response) => {
-                if (err) {
-                    return console.log(err);
-                }
-            });
+
+            // this.TrialService.updateEconsent(this.model.trialSSI, this.model.econsent, (err, response) => {
+            //     if (err) {
+            //         return console.log(err);
+            //     }
+            // });
+            this._updateEconsentWithDetails();
             this.sendMessageToSponsor('sign-econsent', Constants.MESSAGES.HCO.COMMUNICATION.SPONSOR.SIGN_ECONSENT);
             this.navigateToPageTag('home');
         });
@@ -176,5 +181,59 @@ export default class EconsentSignController extends WebcController {
         if (typeof this.feedbackEmitter === 'function') {
             this.feedbackEmitter(message, title, alertType);
         }
+    }
+
+
+    _updateEconsentWithDetails(message) {
+
+        let currentVersionIndex = this.model.econsent.versions.findIndex(eco => eco.version === this.model.ecoVersion)
+        if (currentVersionIndex === -1) {
+            return console.log(`Version ${message.useCaseSpecifics.version} of the econsent ${message.ssi} does not exist.`)
+        }
+        let currentVersion = this.model.econsent.versions[currentVersionIndex]
+        if (currentVersion.actions === undefined) {
+            currentVersion.actions = [];
+        }
+
+
+        const currentDate = new Date();
+        currentVersion.actions.push({
+
+            tpNumber: this.model.trialParticipantNumber,
+            type: 'hco',
+            status: Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED,
+            actionNeeded: 'HCO SIGNED -no action required',
+            toShowDate: currentDate.toLocaleDateString(),
+        });
+
+        this.model.econsent.uid = this.model.econsent.keySSI;
+        this.model.econsent.versions[currentVersionIndex] = currentVersion;
+        this.TrialService.updateEconsent(this.model.trialSSI, this.model.econsent, (err, response) => {
+            if (err) {
+                return console.log(err);
+            }
+            this._updateTrialParticipantStatus();
+        });
+    }
+
+    _updateTrialParticipantStatus() {
+
+        this.TrialParticipantRepository.filter(`did == ${this.model.trialParticipantNumber}`, 'ascending', 30, (err, tps) => {
+
+            if (tps && tps.length > 0) {
+                let tp = tps[0];
+                tp.actionNeeded = 'HCO SIGNED -no action required',
+                tp.tpSigned = true;
+                tp.status = Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED;
+                this.TrialParticipantRepository.update(tp.uid, tp, (err, trialParticipant) => {
+                    if (err) {
+                        return console.log(err);
+                    }
+                    console.log(trialParticipant);
+                });
+            }
+        });
+
+
     }
 }

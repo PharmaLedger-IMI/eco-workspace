@@ -30,7 +30,8 @@ const TRIAL_PARTICIPANT_STATUS = {
     ENROLLED :'Enrolled',
     WITHDRAW :'Withdrawed',
     DECLINED: 'Declined',
-    SCREENED: 'Screened'
+    SCREENED: 'Screened',
+    PLANNED: 'Planned'
 }
 export default {
     MESSAGES,

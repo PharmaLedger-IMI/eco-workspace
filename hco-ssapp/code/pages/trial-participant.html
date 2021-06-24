@@ -35,10 +35,10 @@
                         <psk-label class="table-cell">{{@name}}</psk-label>
                         <psk-label class="table-cell">{{@type}}</psk-label>
                         <psk-label class="table-cell">Version {{@version}}</psk-label>
-                        <psk-label class="table-cell">{{@versionDateAsString}}</psk-label>
-                        <psk-label class="table-cell">{{@versionHCODateAsString}}</psk-label>
+                        <psk-label class="table-cell">{{@tsSignedDate}}</psk-label>
+                        <psk-label class="table-cell">{{@hcoDate}}</psk-label>
                         <div class="table-cell">
-                            <div data-if="@signed">
+                            <div data-if="@showSigned">
                                 <div slot="true">
                                     <button class="link-button" data-tag="consent:sign" data="@id">Sign</button>
                                     <psk-label> |</psk-label>
@@ -55,6 +55,12 @@
                                 <div slot="true">
 
                                     <button class="link-button" data-tag="consent:contactTS" data="@id">Contact</button>
+                                    <psk-label> |</psk-label>
+                                </div>
+                            </div>
+                            <div data-if="@showSigned">
+                                <div slot="false">
+                                    <button class="link-button" data-tag="consent:view" data="@id">View</button>
                                     <psk-label> |</psk-label>
                                 </div>
                             </div>

@@ -47,9 +47,7 @@ export default class HomeController extends WebcController {
 
         let notification = message.message;
         notification.type = type;
-        debugger;
         this.NotificationsRepository.create(message, (err, data) => {
-            debugger;
             if (err) {
                 return console.error(err);
             }
@@ -134,7 +132,6 @@ export default class HomeController extends WebcController {
             if (currentVersion.actions === undefined) {
                 currentVersion.actions = [];
             }
-            debugger;
 
             let actionNeeded = 'No action required';
             let status = Constants.TRIAL_PARTICIPANT_STATUS.SCREENED;
@@ -153,7 +150,7 @@ export default class HomeController extends WebcController {
                 case 'sign': {
                     tpSigned = true;
                     actionNeeded = 'Acknowledgement required';
-                    status =status = Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED;
+                    status =status = Constants.TRIAL_PARTICIPANT_STATUS.SCREENED;
                     break;
                 }
             }
@@ -161,26 +158,20 @@ export default class HomeController extends WebcController {
                 ...message.useCaseSpecifics.action,
                 tpNumber: message.useCaseSpecifics.tpNumber,
                 status : status,
+                type: 'tp',
                 actionNeeded:actionNeeded
             });
-            debugger;
+
             this.TrialParticipantRepository.filter(`did == ${message.useCaseSpecifics.tpNumber}`, 'ascending', 30, (err, tps) => {
-                debugger;
+
                 if (tps && tps.length > 0) {
                     let tp = tps[0];
                     tp.actionNeeded = actionNeeded;
                     tp.tpSigned = tpSigned;
-                    // let action = {
-                    //     actionNeeded: actionNeeded,
-                    //     econsentUid: econsent.uid,
-                    //     econsentVersion: currentVersion.uid
-                    // };
-                    // if (!tp.actions) {
-                    //     tp.actions = [];
-                    //     tp.actions.push(action);
-                    // }
+                    tp.status = status;
+
                     this.TrialParticipantRepository.update(tp.uid, tp, (err, trialParticipant) => {
-                        debugger;
+
                         if (err) {
                             return console.log(err);
                         }
