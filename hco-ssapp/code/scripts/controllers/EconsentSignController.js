@@ -23,7 +23,13 @@ export default class EconsentSignController extends WebcController {
         this.setModel({
             ...getInitModel(),
             ...this.history.win.history.state.state,
-            showControls: false
+            showControls: false,
+            pdf: {
+                currentPage: 1,
+                pagesNo: 0
+            },
+            showPageUp: false,
+            showPageDown: true
         });
 
         this._initServices(this.DSUStorage);
@@ -40,6 +46,8 @@ export default class EconsentSignController extends WebcController {
 
     _initHandlers() {
         this._attachHandlerEconsentSign();
+        this._attachHandlerPdfPageUp();
+        this._attachHandlerPdfPageDown();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -107,6 +115,46 @@ export default class EconsentSignController extends WebcController {
         });
     }
 
+    _attachHandlerPdfPageUp() {
+        this.onTagEvent('pdf-page-up', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            if (this.model.pdf.currentPage === 1) {
+                this.model.showPageUp = false;
+            }
+            if (this.model.pdf.currentPage + 1 < this.model.pdf.pagesNo) {
+                this.model.showPageDown = true;
+            }
+            if (this.model.pdf.currentPage <= 1) {
+                return;
+            }
+            this.model.pdf.currentPage = this.model.pdf.currentPage - 1;
+            this.renderPage(this.model.pdf.currentPage);
+        });
+    }
+
+    _attachHandlerPdfPageDown() {
+        this.onTagEvent('pdf-page-down', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            if (this.model.pdf.currentPage >= 1) {
+                this.model.showPageUp = true;
+            }
+            if (this.model.pdf.currentPage + 1 === this.model.pdf.pagesNo) {
+                this.model.showControls = true;
+                this.model.showPageDown = false;
+            }
+            if (this.model.pdf.currentPage >= this.model.pdf.pagesNo) {
+                this.model.showControls = true;
+                return;
+            }
+            this.model.pdf.currentPage = this.model.pdf.currentPage + 1;
+            this.renderPage(this.model.pdf.currentPage);
+        });
+    }
+
     _downloadFile = () => {
         this.FileDownloader.downloadFile((downloadedFile) => {
             this.rawBlob = downloadedFile.rawBlob;
@@ -114,7 +162,6 @@ export default class EconsentSignController extends WebcController {
             this.blob = new Blob([this.rawBlob], {
                 type: this.mimeType,
             });
-
             if (this.mimeType.indexOf(TEXT_MIME_TYPE) !== -1) {
                 this._prepareTextEditorViewModel();
             } else {
@@ -135,12 +182,15 @@ export default class EconsentSignController extends WebcController {
     _loadBlob = (callback) => {
         const reader = new FileReader();
         reader.readAsDataURL(this.blob);
-        reader.onloadend = function () {
-            callback(reader.result);
+        reader.onloadend = () => {
+            let base64data = reader.result;
+            this.initPDF(base64data.substr(base64data.indexOf(',')+1));
+            callback(base64data);
         };
     };
 
     _appendAsset = (assetObject) => {
+        return;
         let content = this.element.querySelector('.content');
         if (content) {
             content.append(assetObject);
@@ -154,6 +204,46 @@ export default class EconsentSignController extends WebcController {
             }
         }, {capture: true});
     };
+
+    initPDF(pdfData) {
+        pdfData = atob(pdfData);
+        let pdfjsLib = window['pdfjs-dist/build/pdf'];
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+
+        this.loadingTask = pdfjsLib.getDocument({data: pdfData});
+        this.renderPage(this.model.pdf.currentPage);
+
+        window.addEventListener("scroll", (event) => {
+            let myDiv = event.target;
+            if (myDiv.id === 'canvas-wrapper'
+                && myDiv.offsetHeight + myDiv.scrollTop >= myDiv.scrollHeight) {
+                console.log('Scroll down -> should change the page here.')
+            }
+        }, {capture: true});
+    }
+
+    renderPage = (pageNo) => {
+        this.loadingTask.promise.then((pdf) => {
+            this.model.pdf.pagesNo = pdf.numPages;
+            pdf.getPage(pageNo).then(page => {
+                const viewport = page.getViewport({scale: 1});
+
+                const canvas = document.getElementById('the-canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                const renderTask = page.render(renderContext);
+                renderTask.promise.then(function () {
+                    console.log('Page rendered');
+                });
+            });
+        }, (reason) => console.error(reason));
+    }
 
     _displayFile = () => {
         if (window.navigator && window.navigator.msSaveOrOpenBlob) {

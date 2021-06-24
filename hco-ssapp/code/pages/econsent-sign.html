@@ -13,18 +13,18 @@
                 </div>
                 <psk-label class="main-title" label="Trial Participant"></psk-label>
 
-
-                <div class="header-title subheader row">
-                    <psk-label class="trial-title">{{@econsent.name}}</psk-label>
-                    <psk-label class="trial-title">{{@econsent.type}}</psk-label>
-                    <psk-label class="trial-title">{{@econsent.versionDateAsString}}</psk-label>
-                </div>
                 <hr/>
-                <div id="pdfViewerWrapper">
-                    <div class='content' id="pdfViewer">
+                <div id="canvas-wrapper" class="display-flex">
+                    <div data-if="@showPageUp">
+                        <button class="action-button" data-tag="pdf-page-up">Up</button>
+                    </div>
+                    <div class="canvas-parent">
+                        <canvas id="the-canvas"></canvas>
+                    </div>
+                    <div data-if="@showPageDown">
+                        <button class="action-button" data-tag="pdf-page-down">Down</button>
                     </div>
                 </div>
-
 
                 <div class="dispay-flex econsent-actions">
                     <button class="action-button" data-tag="back">Back</button>
@@ -32,7 +32,6 @@
                         <button class="action-button" data-tag="econsent:decline">Decline</button>
                         <button class="action-button" data-tag="econsent:sign">Sign</button>
                     </div>
-
                 </div>
             </div>
 
