@@ -12,23 +12,35 @@ export default class SitesService extends DSUService {
   }
 
   async getSites(trialKeySSI) {
-    console.log(trialKeySSI);
     const result = await this.storageService.filter(this.getTableName(trialKeySSI));
-    console.log('RESULT:', result);
     if (result) {
       return result.filter((x) => !x.deleted);
     } else return [];
   }
 
-  async getSite(id, trialKeySSI) {
-    const result = await this.storageService.filter(this.getTableName(trialKeySSI), id);
+  async getSite(keySSI) {
+    const result = await this.getEntityAsync(keySSI);
+    return result;
+  }
+
+  async getSiteFromDB(id, trialKeySSI) {
+    const result = await this.storageService.getRecord(this.getTableName(trialKeySSI), id);
     return result;
   }
 
   async createSite(data, trialKeySSI) {
-    const site = await this.addSiteToDB(
+    debugger;
+    const site = await this.saveEntityAsync({
+      ...data,
+      stage: siteStagesEnum.Created,
+      status: siteStatusesEnum.Active,
+      created: new Date().toISOString(),
+    });
+
+    await this.addSiteToDB(
       {
         ...data,
+        keySSI: site.uid,
         stage: siteStagesEnum.Created,
         status: siteStatusesEnum.Active,
         created: new Date().toISOString(),
@@ -36,6 +48,32 @@ export default class SitesService extends DSUService {
       trialKeySSI
     );
     return site;
+  }
+
+  async changeSiteStatus(status, id, trialKeySSI) {
+    const site = await this.getSiteFromDB(id, trialKeySSI);
+    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.id, {
+      ...site,
+      status,
+    });
+
+    const siteDSU = await this.getEntityAsync(site.keySSI);
+    const updatedSiteDSU = await this.updateEntityAsync({ ...siteDSU, status });
+
+    return updatedSite;
+  }
+
+  async changeSiteStage(stage, id) {
+    const site = await this.getSiteFromDB(id, trialKeySSI);
+    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.id, {
+      ...site,
+      stage,
+    });
+
+    const siteDSU = await this.getEntityAsync(site.keySSI);
+    const updatedSiteDSU = await this.updateEntityAsync({ ...siteDSU, stage });
+
+    return updatedSite;
   }
 
   async deleteSite(id, trialKeySSI) {

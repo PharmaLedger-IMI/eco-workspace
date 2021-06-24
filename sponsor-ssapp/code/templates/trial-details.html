@@ -47,17 +47,23 @@
                   <div data-for="@data">
                     <div class="row bg-light">
                       <div
-                        class="col-md-8 country-option d-flex align-items-center"
+                        class="col-md-7 country-option d-flex align-items-center"
                         data-tag="select-country"
                         data-custom="@country"
                       >
                         {{ @country }}
                       </div>
-                      <div class="col-md-2 d-flex flex-row bold align-items-center">
-                        <i class="far fa-pause-circle"></i>
-                        <button data-tag="country-on-hold" data-custom="@country" class="btn btn-bare">
-                          Put On Hold
-                        </button>
+                      <div class="col-md-3 d-flex flex-row bold align-items-center" data-if="@active">
+                        <container slot="true">
+                          <i class="far fa-pause-circle"></i>
+                          <button data-tag="country-on-hold" data-custom="@country" class="btn btn-bare">
+                            On Hold
+                          </button>
+                        </container>
+                        <container slot="false">
+                          <i class="far fa-pause-circle"></i>
+                          <button data-tag="country-resume" data-custom="@country" class="btn btn-bare">Resume</button>
+                        </container>
                       </div>
                       <div class="col-md-2 d-flex flex-row bold align-items-center">
                         <i class="far fa-stop-circle"></i>
@@ -87,11 +93,17 @@
                               </button>
                             </div>
                           </div> -->
-                          <div class="col-md-3 d-flex flex-row bold align-items-center">
-                            <i class="far fa-pause-circle"></i>
-                            <button data-tag="site-on-hold" data-custom="@id" class="btn btn-bare">On Hold</button>
+                          <div class="col-md-3 d-flex flex-row bold align-items-center" data-if="@active">
+                            <container slot="true">
+                              <i class="far fa-pause-circle"></i>
+                              <button data-tag="site-on-hold" data-custom="@id" class="btn btn-bare">On Hold</button>
+                            </container>
+                            <container slot="false">
+                              <i class="far fa-pause-circle"></i>
+                              <button data-tag="site-resume" data-custom="@id" class="btn btn-bare">Resume</button>
+                            </container>
                           </div>
-                          <div class="col-md-2 d-flex flex-row bold align-items-center">
+                          <div class="col-md-2 d-flex flex-row bold align-items-center" data-if="@terminated">
                             <i class="far fa-stop-circle"></i>
                             <button data-tag="site-terminate" data-custom="@id" class="btn btn-bare">Terminate</button>
                           </div>
