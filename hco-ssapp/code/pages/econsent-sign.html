@@ -28,9 +28,11 @@
 
                 <div class="dispay-flex econsent-actions">
                     <button class="action-button" data-tag="back">Back</button>
-                    <div class="dispay-flex econsent-actions-subcontrols" data-if="@showControls">
-                        <button class="action-button" data-tag="econsent:decline">Decline</button>
-                        <button class="action-button" data-tag="econsent:sign">Sign</button>
+                    <div data-if="@readOnly">
+                        <div class="dispay-flex econsent-actions-subcontrols" data-if="@showControls">
+                            <button class="action-button" data-tag="econsent:decline">Decline</button>
+                            <button class="action-button" data-tag="econsent:sign">Sign</button>
+                        </div>
                     </div>
                 </div>
             </div>

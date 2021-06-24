@@ -32,6 +32,10 @@ export default class EconsentSignController extends WebcController {
             showPageDown: true
         });
 
+        if (this.model.readOnly === undefined) {
+            this.model.readOnly = false;
+        }
+
         this._initServices(this.DSUStorage);
         this._initHandlers();
         this._initConsent();
