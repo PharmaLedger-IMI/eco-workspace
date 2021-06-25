@@ -46,16 +46,22 @@
 
                     </psk-layout>
                 </div>
-                <!--                <div class="tp-table" data-for="@econsents">-->
-                <!--                    <psk-layout columns="@econsentsSize"-->
-                <!--                                class="justify-content-center align-items-center table-row">-->
-                <!--                        <div>-->
-                <!--                            <psk-label class="table-cell">{{@name}}</psk-label>-->
-                <!--                        </div>-->
-                <!--                    </psk-layout>-->
 
-                <!--                </div>-->
-
+                <hr>
+                <psk-label class="table-title">Consents (and versions released)</psk-label>
+                <div class="trial-table econsent-and-versions-table">
+                    <psk-layout columns="@econsentsSize" data-for="@econsents" class="justify-content-center table-row">
+                        <div>
+                            <psk-label class="table-cell-title">{{@name}} (Type: {{@type}})</psk-label>
+                            <div data-for="@versions" class="version-row">
+                                <hr>
+                                <psk-label class="clickable" data-tag="navigate-to-version">
+                                    {{@version}} - {{@versionDateAsString}}
+                                </psk-label>
+                            </div>
+                        </div>
+                    </psk-layout>
+                </div>
 
                 <button class="back-button" data-tag="back">Back</button>
             </div>

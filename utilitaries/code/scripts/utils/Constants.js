@@ -26,14 +26,25 @@ const ECO_STATUSES = {
     CONTACT: 'Reconsent required'
 }
 
+const NOTIFICATIONS_TYPE  = {
+
+    TRIAL_UPDATES: 'Trial Updates',
+    WITHDRAWS: 'Withdraws',
+    CONSENT_UPDATES: 'Consent Updates',
+    MILESTONES_REMINDERS : 'Milestones Reminders',
+    TRIAL_SUBJECT_QUESTIONS: 'Trial Subject Questions'
+}
+
 const TRIAL_PARTICIPANT_STATUS = {
     ENROLLED :'Enrolled',
     WITHDRAW :'Withdrawed',
     DECLINED: 'Declined',
-    SCREENED: 'Screened'
+    SCREENED: 'Screened',
+    PLANNED: 'Planned'
 }
 export default {
     MESSAGES,
     ECO_STATUSES,
-    TRIAL_PARTICIPANT_STATUS
+    TRIAL_PARTICIPANT_STATUS,
+    NOTIFICATIONS_TYPE
 };

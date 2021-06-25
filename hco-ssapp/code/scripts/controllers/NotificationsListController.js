@@ -20,6 +20,7 @@ export default class NotificationsListController extends WebcController {
 
     _initHandlers (){
         this._attachHandlerBack();
+        this._attachHandlerTrialParticipants();
     }
 
     _initServices(DSUStorage) {
@@ -29,14 +30,13 @@ export default class NotificationsListController extends WebcController {
     _initNotifications() {
 
         this.NotificationsRepository.findAll((err, data) => {
-            debugger;
+
             if (err) {
                 return console.log(err);
             }
-            this.model.notifications = data;
-            //data.filter(not =>  not.notificationType === this.model.notificationType )
 
-          });
+            this.model.notifications = data.filter (not => not.type === this.model.notificationType )
+           });
     }
 
     _attachHandlerBack() {
@@ -46,4 +46,21 @@ export default class NotificationsListController extends WebcController {
             window.history.back();
         });
     }
+
+    _attachHandlerTrialParticipants() {
+        this.onTagEvent('goToAction', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            if (model.recommendedAction === 'view trial'){
+                this.navigateToPageTag('trial-participants', model.ssi);
+            }
+            if (model.recommendedAction === 'view trial participants'){
+                this.navigateToPageTag('trial-participants', model.ssi);
+            }
+
+        });
+    }
+
+
 }
