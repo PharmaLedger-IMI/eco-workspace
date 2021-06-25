@@ -18,29 +18,18 @@ trial-table tr:nth-child(even){background-color: #00345B;}
     font-weight: bold;
 }
 
-.back-button{
-    background-color: #008798;
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    font-size: 16px;
-    border-radius: 5px;
-    margin: 20px 0 40px 45%;
-    height: 55px;
-    width: 160px;
-}
-
 .link-button {
     background-color: white !important;
     border: white !important;
     box-shadow: none !important;
     border-radius: 0 !important;
     text-align: left;
-    font-size: 22px;
+    font-size: 16px;
     color: #2F80ED;
 }
 
-
-
+.smaller-btn {
+    height: 35px;
+    width: 100px;
+}
 

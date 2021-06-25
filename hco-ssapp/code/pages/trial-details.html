@@ -10,9 +10,11 @@
                         <psk-img class="ed-control-image" src="assets/images/pharmalogo.png"
                                  height='47' width='110'></psk-img>
                     </div>
+                    <div>
+                        <psk-label class="main-title">{{@trial.id}} {{@trial.name}}</psk-label>
+                    </div>
                     <button class="logout-button" data-tag="logout">Logout</button>
                 </div>
-                <psk-label class="main-title">{{@trial.id}} {{@trial.name}}</psk-label>
 
                 <div class="subtitle-container">
                     <psk-label class="subtitle">Recruitment period 20/01/2021-20/08/2021 (dummy text)</psk-label>
@@ -48,7 +50,10 @@
                 </div>
 
                 <hr>
-                <psk-label class="table-title">Consents (and versions released)</psk-label>
+
+                <div>
+                    <label class="table-title">Consents (and versions released)</label>
+                </div>
                 <div class="trial-table econsent-and-versions-table">
                     <psk-layout columns="@econsentsSize" data-for="@econsents" class="justify-content-center table-row">
                         <div>

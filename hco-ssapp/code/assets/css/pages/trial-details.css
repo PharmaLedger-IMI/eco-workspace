@@ -20,26 +20,13 @@ trial-table tr:nth-child(even) {
     font-weight: bold;
 }
 
-.back-button {
-    background-color: #008798;
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    font-size: 16px;
-    border-radius: 5px;
-    margin: 80px 0 40px 45%;
-    height: 55px;
-    width: 160px;
-}
-
 .link-button {
     background-color: white !important;
     border: white !important;
     box-shadow: none !important;
     border-radius: 0 !important;
     text-align: left;
-    font-size: 22px;
+    font-size: 16px;
     color: #2F80ED;
 }
 
@@ -50,7 +37,7 @@ trial-table tr:nth-child(even) {
 }
 
 .subtitle {
-    font-size: 34px;
+    font-size: 24px;
     color: #008798;
     font-weight: bold;
 }
@@ -88,11 +75,6 @@ trial-table tr:nth-child(even) {
 
 .version-row > * {
     display: block;
-}
-
-.econsent-and-versions-table hr {
-    margin-top: 0.1rem;
-    margin-bottom: 0.1rem;
 }
 
 .clickable {
