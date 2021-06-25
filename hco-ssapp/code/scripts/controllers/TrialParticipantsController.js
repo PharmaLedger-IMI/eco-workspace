@@ -184,7 +184,7 @@ export default class TrialParticipantsController extends WebcController {
     async createTpDsu(tp) {
         const currentDate = new Date();
         tp.trialNumber = this.model.trial.id;
-        tp.status = 'screened';
+        tp.status = Constants.TRIAL_PARTICIPANT_STATUS.PLANNED;
         tp.enrolledDate = currentDate.toLocaleDateString();
         let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
         this.model.trialParticipants.push(trialParticipant);
