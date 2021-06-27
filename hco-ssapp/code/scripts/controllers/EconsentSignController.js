@@ -1,10 +1,12 @@
-const {WebcController} = WebCardinal.controllers;
+import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
 import CommunicationService from '../services/CommunicationService.js';
 import DateTimeService from '../services/DateTimeService.js';
 import FileDownloader from '../utils/FileDownloader.js';
 import Constants from '../utils/Constants.js';
+
+const {WebcController} = WebCardinal.controllers;
 
 const TEXT_MIME_TYPE = 'text/';
 
@@ -21,8 +23,18 @@ export default class EconsentSignController extends WebcController {
         this.setModel({
             ...getInitModel(),
             ...this.history.win.history.state.state,
-            showControls: false
+            showControls: false,
+            pdf: {
+                currentPage: 1,
+                pagesNo: 0
+            },
+            showPageUp: false,
+            showPageDown: true
         });
+
+        if (this.model.controlsShouldBeVisible === undefined) {
+            this.model.controlsShouldBeVisible = true;
+        }
 
         this._initServices(this.DSUStorage);
         this._initHandlers();
@@ -33,6 +45,7 @@ export default class EconsentSignController extends WebcController {
         this.TrialService = new TrialService(DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
     }
 
     _initHandlers() {
@@ -92,15 +105,13 @@ export default class EconsentSignController extends WebcController {
                 date: currentDate.toISOString(),
                 toShowDate: currentDate.toLocaleDateString(),
             };
-            this.TrialService.updateEconsent(this.model.trialSSI, this.model.econsent, (err, response) => {
-                if (err) {
-                    return console.log(err);
-                }
-            });
+
+            this._updateEconsentWithDetails();
             this.sendMessageToSponsor('sign-econsent', Constants.MESSAGES.HCO.COMMUNICATION.SPONSOR.SIGN_ECONSENT);
             this.navigateToPageTag('home');
         });
     }
+
 
     _downloadFile = () => {
         this.FileDownloader.downloadFile((downloadedFile) => {
@@ -109,7 +120,6 @@ export default class EconsentSignController extends WebcController {
             this.blob = new Blob([this.rawBlob], {
                 type: this.mimeType,
             });
-
             if (this.mimeType.indexOf(TEXT_MIME_TYPE) !== -1) {
                 this._prepareTextEditorViewModel();
             } else {
@@ -119,36 +129,54 @@ export default class EconsentSignController extends WebcController {
     };
 
     _loadPdfOrTextFile = () => {
-        this._loadBlob((base64Blob) => {
-            const obj = document.createElement('object');
-            obj.type = this.mimeType;
-            obj.data = base64Blob;
-            this._appendAsset(obj);
-        });
-    };
-
-    _loadBlob = (callback) => {
         const reader = new FileReader();
         reader.readAsDataURL(this.blob);
-        reader.onloadend = function () {
-            callback(reader.result);
+        reader.onloadend = () => {
+            let base64data = reader.result;
+            this.initPDF(base64data.substr(base64data.indexOf(',') + 1));
         };
     };
 
-    _appendAsset = (assetObject) => {
-        let content = this.element.querySelector('.content');
-        if (content) {
-            content.append(assetObject);
-        }
+    initPDF(pdfData) {
+        pdfData = atob(pdfData);
+        let pdfjsLib = window['pdfjs-dist/build/pdf'];
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+
+        this.loadingTask = pdfjsLib.getDocument({data: pdfData});
+        this.renderPage(this.model.pdf.currentPage);
 
         window.addEventListener("scroll", (event) => {
             let myDiv = event.target;
-            if (myDiv.id === 'pdfViewer'
+            if (myDiv.id === 'canvas-wrapper'
                 && myDiv.offsetHeight + myDiv.scrollTop >= myDiv.scrollHeight) {
                 this.model.showControls = true;
             }
         }, {capture: true});
-    };
+    }
+
+    renderPage = (pageNo) => {
+        this.loadingTask.promise.then((pdf) => {
+            this.model.pdf.pagesNo = pdf.numPages;
+            pdf.getPage(pageNo).then(result => this.handlePages(pdf, result));
+        }, (reason) => console.error(reason));
+    }
+
+    handlePages = (thePDF, page) => {
+        const viewport = page.getViewport({scale: 1.5});
+        let canvas = document.createElement("canvas");
+        canvas.style.display = "block";
+        let context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        page.render({canvasContext: context, viewport: viewport});
+        document.getElementById('canvas-parent').appendChild(canvas);
+
+        this.model.pdf.currentPage = this.model.pdf.currentPage + 1;
+        let currPage = this.model.pdf.currentPage;
+        if (thePDF !== null && currPage <= this.model.pdf.pagesNo) {
+            thePDF.getPage(currPage).then(result => this.handlePages(thePDF, result));
+        }
+    }
 
     _displayFile = () => {
         if (window.navigator && window.navigator.msSaveOrOpenBlob) {
@@ -160,6 +188,7 @@ export default class EconsentSignController extends WebcController {
 
         window.URL = window.URL || window.webkitURL;
         const fileType = this.mimeType.split('/')[0];
+        debugger
         switch (fileType) {
             case 'image': {
                 this._loadImageFile();
@@ -176,5 +205,59 @@ export default class EconsentSignController extends WebcController {
         if (typeof this.feedbackEmitter === 'function') {
             this.feedbackEmitter(message, title, alertType);
         }
+    }
+
+
+    _updateEconsentWithDetails(message) {
+
+        let currentVersionIndex = this.model.econsent.versions.findIndex(eco => eco.version === this.model.ecoVersion)
+        if (currentVersionIndex === -1) {
+            return console.log(`Version ${message.useCaseSpecifics.version} of the econsent ${message.ssi} does not exist.`)
+        }
+        let currentVersion = this.model.econsent.versions[currentVersionIndex]
+        if (currentVersion.actions === undefined) {
+            currentVersion.actions = [];
+        }
+
+
+        const currentDate = new Date();
+        currentVersion.actions.push({
+
+            tpNumber: this.model.trialParticipantNumber,
+            type: 'hco',
+            status: Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED,
+            actionNeeded: 'HCO SIGNED -no action required',
+            toShowDate: currentDate.toLocaleDateString(),
+        });
+
+        this.model.econsent.uid = this.model.econsent.keySSI;
+        this.model.econsent.versions[currentVersionIndex] = currentVersion;
+        this.TrialService.updateEconsent(this.model.trialSSI, this.model.econsent, (err, response) => {
+            if (err) {
+                return console.log(err);
+            }
+            this._updateTrialParticipantStatus();
+        });
+    }
+
+    _updateTrialParticipantStatus() {
+
+        this.TrialParticipantRepository.filter(`did == ${this.model.trialParticipantNumber}`, 'ascending', 30, (err, tps) => {
+
+            if (tps && tps.length > 0) {
+                let tp = tps[0];
+                tp.actionNeeded = 'HCO SIGNED -no action required',
+                    tp.tpSigned = true;
+                tp.status = Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED;
+                this.TrialParticipantRepository.update(tp.uid, tp, (err, trialParticipant) => {
+                    if (err) {
+                        return console.log(err);
+                    }
+                    console.log(trialParticipant);
+                });
+            }
+        });
+
+
     }
 }

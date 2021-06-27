@@ -1,4 +1,5 @@
 import NotificationsRepository from "../repositories/NotificationsRepository.js";
+import Constants from "../utils/Constants.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -41,13 +42,14 @@ export default class NotificationsController extends WebcController {
         this.model.notTypes.consentUpdates = true;
 
         this.NotificationsRepository.findAll((err, data) => {
-            debugger;
             if (err) {
                 return console.log(err);
             }
-            //data.filter(not =>  not.notificationType === this.model.notificationType )
             this.model.notifications = data;
-            this.model.notTypes.trialUpdates = true;
+
+            this.model.notTypes.trialUpdates = this.model.notifications.filter(not => not.type === Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES)?.length > 0;
+            this.model.notTypes.withdraws = this.model.notifications.filter(not => not.type === Constants.NOTIFICATIONS_TYPE.WITHDRAWS)?.length > 0;
+            this.model.notTypes.consentUpdates = this.model.notifications.filter(not => not.type === Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES)?.length > 0;
         });
     }
 

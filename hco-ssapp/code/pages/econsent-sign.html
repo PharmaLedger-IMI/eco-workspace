@@ -9,29 +9,32 @@
                         <psk-img class="ed-control-image" src="assets/images/pharmalogo.png"
                                  height='47' width='110'></psk-img>
                     </div>
+                    <div>
+                        <psk-label class="main-title" label="Trial Participant"></psk-label>
+                    </div>
                     <button class="logout-button" data-tag="logout">Logout</button>
                 </div>
-                <psk-label class="main-title" label="Trial Participant"></psk-label>
-
-
-                <div class="header-title subheader row">
-                    <psk-label class="trial-title">{{@econsent.name}}</psk-label>
-                    <psk-label class="trial-title">{{@econsent.type}}</psk-label>
-                    <psk-label class="trial-title">{{@econsent.versionDateAsString}}</psk-label>
-                </div>
                 <hr/>
-                <div id="pdfViewerWrapper">
-                    <div class='content' id="pdfViewer">
+                <div class="middle">
+                    <div class="width-25 align-end">
+                        <button class="action-button" data-tag="back">Back</button>
+                    </div>
+                    <div class="width-50">
+                        <div id="canvas-wrapper" class="display-flex">
+                            <div id="canvas-parent">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="width-25 align-start" data-if="@controlsShouldBeVisible">
+                        <div class="econsent-actions-subcontrols" data-if="@showControls">
+                            <button class="action-button block-button" data-tag="econsent:sign">Sign</button>
+                            <button class="action-button block-button" data-tag="econsent:decline">Decline</button>
+                        </div>
                     </div>
                 </div>
-
 
                 <div class="dispay-flex econsent-actions">
-                    <button class="action-button" data-tag="back">Back</button>
-                    <div class="dispay-flex econsent-actions-subcontrols" data-if="@showControls">
-                        <button class="action-button" data-tag="econsent:decline">Decline</button>
-                        <button class="action-button" data-tag="econsent:sign">Sign</button>
-                    </div>
+
 
                 </div>
             </div>

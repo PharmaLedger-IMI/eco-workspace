@@ -1,5 +1,6 @@
 const {WebcController} = WebCardinal.controllers;
 import Constants from '../utils/Constants.js';
+import DateTimeService from '../services/DateTimeService.js';
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
 import CommunicationService from '../services/CommunicationService.js';
@@ -45,6 +46,7 @@ export default class TrialDetailsController extends WebcController {
     _initHandlers() {
         // this._attachHandlerAddTrialParticipant();
         // this._attachHandlerNavigateToParticipant();
+        this._attachHandlerNavigateToVersion();
         this._attachHandlerBack();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
@@ -57,9 +59,8 @@ export default class TrialDetailsController extends WebcController {
                 return console.log(err);
             }
             this.model.trial = trial;
-            // debugger;
+
             // this.model.trialParticipants1 = await this.TrialParticipantRepository.filterAsync(`trialNumber == ${this.model.trial.id}`, 'asc', 30);
-            // debugger;
             // this.model.trialParticipants2 = await this.TrialParticipantRepository.filterAsync([`__version >= 0`,`trialNumber == ${this.model.trial.id}`],'asc', 30);
             this.model.trialParticipants = (await this.TrialParticipantRepository.findAllAsync()).filter(tp => tp.trialNumber === this.model.trial.id);
             this.model.subjects.planned = this.model.trialParticipants.length;
@@ -67,13 +68,24 @@ export default class TrialDetailsController extends WebcController {
             this.model.subjects.screened = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.SCREENED).length;
             this.model.subjects.withdrew = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW).length;
             this.model.subjects.declined = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.DECLINED).length;
-            this.model.subjects.percentage = (this.model.subjects.enrolled * 100) / 7 + '%' ;
-            debugger;
+            this.model.subjects.percentage = ((this.model.subjects.enrolled * 100) /  this.model.subjects.planned).toFixed(2) + '%' ;
+
             this.TrialService.getEconsents(trial.uid, (err, econsents) => {
                 if (err) {
                     return console.log(err);
                 }
-                this.model.econsents = econsents;
+                this.model.econsents = econsents.map(econsent => {
+                    return {
+                        ...econsent,
+                        versions: econsent.versions.map(v => {
+                            return {
+                                ...v,
+                                econsentSSI: econsent.uid,
+                                versionDateAsString: DateTimeService.convertStringToLocaleDate(v.versionDate)
+                            }
+                        })
+                    }
+                });
                 this.model.econsentsSize = econsents.length;
             })
 
@@ -86,6 +98,20 @@ export default class TrialDetailsController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
             window.history.back();
+        });
+    }
+
+    _attachHandlerNavigateToVersion() {
+        this.onTagEvent('navigate-to-version', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('econsent-sign', {
+                trialSSI: this.model.trialSSI,
+                econsentSSI: model.econsentSSI,
+                ecoVersion: model.version,
+                controlsShouldBeVisible: false
+            });
+
         });
     }
 

@@ -43,23 +43,9 @@ export default class HomeController extends WebcController {
         this._handleMessages();
     }
 
-    addMessageToNotificationDsu(message, type) {
-
-        let notification = message.message;
-        notification.type = type;
-        debugger;
-        this.NotificationsRepository.create(message, (err, data) => {
-            debugger;
-            if (err) {
-                return console.error(err);
-            }
-        });
-
-    }
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
-        this.NotificationsService = new NotificationsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
         this.StorageService = SharedStorage.getInstance(DSUStorage);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
@@ -84,7 +70,8 @@ export default class HomeController extends WebcController {
             data = JSON.parse(data);
             switch (data.message.operation) {
                 case 'add-trial': {
-                    this.addMessageToNotificationDsu(data, 'trialupdates');
+
+                    this._saveNotification(data.message, 'New trial was added','view trial',Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
                     this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                         if (err) {
                             return console.log(err);
@@ -94,6 +81,7 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case 'add-econsent-version': {
+                    this._saveNotification(data.message, 'New ecosent version was added','view trial',Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
                     this.TrialService.mountTrial(data.message.ssi, () => {
                     });
                     this.sendMessageToPatient('refresh-trial', data.message.ssi,
@@ -101,6 +89,7 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case 'add-consent': {
+                    this._saveNotification(data.message, 'New ecosent  was added','view trial',Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
                     this.TrialService.unmountTrial(data.message.ssi, (err, response) => {
                         this.TrialService.mountTrial(data.message.ssi, (err, response) => {
                         })
@@ -134,7 +123,6 @@ export default class HomeController extends WebcController {
             if (currentVersion.actions === undefined) {
                 currentVersion.actions = [];
             }
-            debugger;
 
             let actionNeeded = 'No action required';
             let status = Constants.TRIAL_PARTICIPANT_STATUS.SCREENED;
@@ -143,17 +131,20 @@ export default class HomeController extends WebcController {
                 case 'withdraw': {
                     actionNeeded = 'TP Withdrawed';
                     status =status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
+                    this._saveNotification(message, 'Trial participant '+message.useCaseSpecifics.tpNumber +' withdraw','view trial participants',Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
                     break;
                 }
                 case 'withdraw-intention': {
                     actionNeeded = 'Reconsent required';
+                    this._saveNotification(message, 'Trial participant '+message.useCaseSpecifics.tpNumber +' withdraw','view trial participants',Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
                     status =status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
                     break;
                 }
                 case 'sign': {
                     tpSigned = true;
+                    this._saveNotification(message, 'Trial participant '+message.useCaseSpecifics.tpNumber +' signed','view trial',Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
                     actionNeeded = 'Acknowledgement required';
-                    status =status = Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED;
+                    status =status = Constants.TRIAL_PARTICIPANT_STATUS.SCREENED;
                     break;
                 }
             }
@@ -161,26 +152,20 @@ export default class HomeController extends WebcController {
                 ...message.useCaseSpecifics.action,
                 tpNumber: message.useCaseSpecifics.tpNumber,
                 status : status,
+                type: 'tp',
                 actionNeeded:actionNeeded
             });
-            debugger;
+
             this.TrialParticipantRepository.filter(`did == ${message.useCaseSpecifics.tpNumber}`, 'ascending', 30, (err, tps) => {
-                debugger;
+
                 if (tps && tps.length > 0) {
                     let tp = tps[0];
                     tp.actionNeeded = actionNeeded;
                     tp.tpSigned = tpSigned;
-                    // let action = {
-                    //     actionNeeded: actionNeeded,
-                    //     econsentUid: econsent.uid,
-                    //     econsentVersion: currentVersion.uid
-                    // };
-                    // if (!tp.actions) {
-                    //     tp.actions = [];
-                    //     tp.actions.push(action);
-                    // }
+                    tp.status = status;
+
                     this.TrialParticipantRepository.update(tp.uid, tp, (err, trialParticipant) => {
-                        debugger;
+
                         if (err) {
                             return console.log(err);
                         }
@@ -229,4 +214,18 @@ export default class HomeController extends WebcController {
             this.navigateToPageTag('notifications');
         });
     }
+
+    _saveNotification(notification, name , reccomendedAction,  type) {
+
+
+        notification.type = type;
+        notification.name = name;
+        notification.recommendedAction = reccomendedAction;
+        this.NotificationsRepository.create(notification, (err, data) => {
+            if (err) {
+                return console.error(err);
+            }
+        });
+    }
+
 }

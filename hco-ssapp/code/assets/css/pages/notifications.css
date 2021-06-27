@@ -26,13 +26,11 @@
 }
 
 .centered {
-    margin: 70px 25% 0px 30%;
+    justify-content: space-evenly;
     display: flex;
-}
-
-.button-container {
-    display:flex;
-    width: 33%;
+    width: 70%;
+    margin-left: 15%;
+    margin-top: 40px;
 }
 
 .main-button {
@@ -43,18 +41,6 @@
     text-decoration: none;
     font-size: 18px;
     border-radius: 5px;
-    height: 55px;
-    width: 160px;
-}
-.back-button{
-    background-color: #008798;
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    font-size: 16px;
-    border-radius: 5px;
-    margin: 20px 0 40px 45%;
     height: 55px;
     width: 160px;
 }

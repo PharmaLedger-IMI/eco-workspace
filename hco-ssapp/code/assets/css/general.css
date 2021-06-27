@@ -65,8 +65,11 @@ object {
 }
 
 .econsent-actions-subcontrols {
-    width: 50%;
     justify-content: space-evenly;
+}
+
+.econsent-actions-subcontrols > * {
+    margin: 0 30px;
 }
 
 .main-title {
@@ -77,7 +80,6 @@ object {
     display: block;
     width: 100%;
     text-align: center;
-    margin-top: 40px;
     margin-bottom: 20px;
 }
 
@@ -116,7 +118,9 @@ object {
 
 .top-container {
     display: flex;
+    justify-content: space-between;
     width: 100%;
+    margin-bottom: 30px;
 }
 
 .pharma-logo {
@@ -135,7 +139,7 @@ object {
     vertical-align: center;
     font-size: 16px;
     border-radius: 5px;
-    position: absolute;
+    position: relative;
     height: 35px;
     width: 135px;
     right: 10px;
@@ -182,4 +186,9 @@ object {
 
 button {
     border-radius: 5px !important;
+}
+
+hr {
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
 }
