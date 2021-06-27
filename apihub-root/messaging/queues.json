@@ -1,5 +1,7 @@
 {
     "queues": [
+        "did:demo:patientIdentity",
+        "did:demo:hcoIdentity",
         "did:demo:sponsorIdentity"
     ]
 }
