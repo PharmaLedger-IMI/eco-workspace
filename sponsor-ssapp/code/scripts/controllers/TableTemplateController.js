@@ -47,7 +47,6 @@ export default class TableTemplateController extends WebcController {
 
     this.on('navigate-to-page', async (event) => {
       event.preventDefault();
-      console.log('event:', event);
       this.paginateData(this.model.data, event.data.value ? parseInt(event.data.value) : event.data);
     });
 
@@ -120,8 +119,6 @@ export default class TableTemplateController extends WebcController {
           : pages;
       this.model.pagination.currentPage = page;
       this.model.pagination.totalPages = pages.length;
-
-      console.log(JSON.stringify(this.model.pagination, null, 2));
     }
   }
 

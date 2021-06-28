@@ -128,7 +128,6 @@ export default class ListTrialsController extends WebcController {
   async getTrials() {
     try {
       this.trials = await this.trialsService.getTrials();
-      console.log(this.trials);
       // this.updateCountryOptions(this.trials);
       this.setTrialsModel(this.trials);
     } catch (error) {
@@ -234,7 +233,6 @@ export default class ListTrialsController extends WebcController {
     });
 
     this.on('view-trial', async (event) => {
-      console.log(this.trials.find((x) => x.id === event.data));
       this.navigateToPageTag('trial', {
         id: event.data,
         keySSI: this.trials.find((x) => x.id === event.data).keySSI,

@@ -78,7 +78,6 @@ export default class AddNewTrialModalController extends WebcController {
     const idField = this.element.querySelector('#id-field');
     idField.addEventListener('keydown', () => {
       setTimeout(() => {
-        console.log(this.existingIds);
         if (this.existingIds.indexOf(this.model.trial.id.value) > -1) {
           this.model.trial.id = {
             ...this.model.trial.id,
@@ -126,7 +125,6 @@ export default class AddNewTrialModalController extends WebcController {
           did: this.model.trial.did.value,
           consents: [],
         };
-        console.log(trial);
         const result = await this.trialsService.createTrial(trial);
         this.model.submitButtonDisabled = false;
         this.send('confirmed', result);
