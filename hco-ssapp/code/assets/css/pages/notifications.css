@@ -62,3 +62,8 @@
     height: 55px;
     width: 160px;
 }
+
+.body{
+    height: 300px;
+    overflow: auto;
+}

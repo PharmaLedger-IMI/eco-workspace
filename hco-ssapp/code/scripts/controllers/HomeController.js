@@ -120,7 +120,7 @@ export default class HomeController extends WebcController {
                         if (err) {
                             return console.log(err);
                         }
-                        this.TrialService.mountTrial(site.keySSI, (err, trial) => {
+                        this.TrialService.mountTrial(site.trialKeySSI, (err, trial) => {
                             if (err) {
                                 return console.log(err);
                             }

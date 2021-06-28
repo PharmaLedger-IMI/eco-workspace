@@ -33,3 +33,8 @@ trial-table tr:nth-child(even){background-color: #00345B;}
     width: 100px;
 }
 
+.body{
+    height: 300px;
+    overflow: auto;
+}
+

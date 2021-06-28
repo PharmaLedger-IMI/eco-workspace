@@ -71,3 +71,7 @@
     display: flex;
     font-size: 16px;
 }
+.body{
+    height: 300px;
+    overflow: auto;
+}
