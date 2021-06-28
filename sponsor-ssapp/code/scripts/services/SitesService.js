@@ -35,6 +35,7 @@ export default class SitesService extends DSUService {
       stage: siteStagesEnum.Created,
       status: siteStatusesEnum.Active,
       created: new Date().toISOString(),
+      trialKeySSI,
     });
 
     await this.addSiteToDB(

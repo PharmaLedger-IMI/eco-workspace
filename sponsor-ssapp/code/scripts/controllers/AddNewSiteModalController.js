@@ -66,7 +66,6 @@ export default class AddNewSiteModalController extends WebcController {
     const idField = this.element.querySelector('#id-field');
     idField.addEventListener('keydown', () => {
       setTimeout(() => {
-        console.log(this.existingIds);
         if (this.existingIds.indexOf(this.model.site.id.value) > -1) {
           this.model.site.id = {
             ...this.model.site.id,

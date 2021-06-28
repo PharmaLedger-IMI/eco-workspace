@@ -1,5 +1,5 @@
 import CommunicationService from '../services/CommunicationService.js';
-import ConsentsService from '../services/ConsentsService.js';
+import NewConsentService from '../services/NewConsentService.js';
 import TrialsService from '../services/TrialsService.js';
 
 // eslint-disable-next-line no-undef
@@ -12,7 +12,7 @@ export default class VisitsProceduresController extends WebcController {
 
     this.keySSI = keySSI;
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.SPONSOR_IDENTITY);
-    this.consentsService = new ConsentsService(this.DSUStorage);
+    this.consentsService = new NewConsentService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
     this.feedbackEmitter = null;
 
@@ -37,9 +37,84 @@ export default class VisitsProceduresController extends WebcController {
 
   async getConsents() {
     this.model.consents = await this.consentsService.getTrialConsents(this.keySSI);
+
+    const procedures = [];
+    if (this.model.consents && this.model.consents.length > 0) {
+      this.model.consents.forEach((x) => {
+        if (x.procedures && x.procedures.length > 0) {
+          x.procedures.forEach((y) => procedures.push(y));
+        }
+      });
+    }
+
+    if (procedures && procedures.length > 0) {
+      await this.loadModel(procedures);
+    }
+
+    return;
   }
 
-  attachEvents() {}
+  async loadModel(procedures) {
+    procedures.sort((a, b) => a.id - b.id);
+
+    this.model.procedures = procedures.map((x) => {
+      return {
+        id: x.id,
+        inputId: 'input_' + x.id,
+        selectId: 'select_' + x.id,
+        name: {
+          label: 'Procedure',
+          name: 'procedure',
+          required: true,
+          placeholder: 'Procedure...',
+          value: x.name,
+          type: 'text',
+        },
+        consent: {
+          label: 'Select a consent',
+          placeholder: 'Please select an option',
+          required: false,
+          options: this.model.consents.map((y) => ({
+            label: y.name,
+            value: y.keySSI,
+            selected: x.consent.keySSI === y.keySSI ? 'selected' : null,
+          })),
+        },
+        visits: x.visits.map((y) => ({
+          id: x.id + ':' + y.id,
+          checkbox: {
+            type: 'checkbox',
+            placeholder: 'enabled',
+            label: y.id,
+            checked: y.checked,
+          },
+          period: {
+            label: 'Period',
+            name: 'period',
+            required: true,
+            placeholder: 'Period...',
+            value: y.period,
+            type: 'number',
+          },
+          timeUnit: {
+            id: 'unit_' + x.id + '_' + y.id,
+            label: 'Select a time unit',
+            placeholder: 'Please select an option',
+            required: true,
+            options: [
+              { label: 'Day', value: 'Day', selected: y.unit === 'Day' ? 'selected' : null },
+              { label: 'Week', value: 'Week', selected: y.unit === 'Week' ? 'selected' : null },
+              { label: 'Month', value: 'Month', selected: y.unit === 'Month' ? 'selected' : null },
+            ],
+          },
+        })),
+      };
+    });
+
+    console.log(JSON.stringify(this.model.procedures, null, 2));
+    console.log(JSON.stringify(procedures, null, 2));
+    return;
+  }
 
   showFeedbackToast(title, message, alertType) {
     if (typeof this.feedbackEmitter === 'function') {
@@ -51,7 +126,6 @@ export default class VisitsProceduresController extends WebcController {
     this.model.addExpression(
       'proceduresExist',
       () => {
-        console.log('changed');
         return this.model.procedures && Array.isArray(this.model.procedures) && this.model.procedures.length > 0;
       },
       'procedures'
@@ -63,7 +137,6 @@ export default class VisitsProceduresController extends WebcController {
 
     this.onTagEvent('addProcedure', 'click', () => {
       const procedures = JSON.parse(JSON.stringify(this.model.procedures));
-      console.log(this.model.consents);
 
       const newProcedures = [
         ...procedures,
@@ -124,7 +197,6 @@ export default class VisitsProceduresController extends WebcController {
 
       // this.model.setChainValue('procedures', newProcedures);
       this.model.procedures = newProcedures;
-      console.log(JSON.stringify(newProcedures, null, 2));
     });
 
     this.onTagEvent('removeProcedure', 'click', () => {
@@ -193,9 +265,7 @@ export default class VisitsProceduresController extends WebcController {
       this.model.procedures = newProcedures;
     });
 
-    this.onTagEvent('submitData', 'click', () => {
-      console.log('Submitting...');
-
+    this.onTagEvent('submitData', 'click', async () => {
       let error = null;
       const result = this.model.procedures.map((x, idx) => {
         if (x.name.value === '' || !x.visits || x.visits.length === 0) {
@@ -232,8 +302,12 @@ export default class VisitsProceduresController extends WebcController {
         return;
       }
 
-      console.log(result);
+      await this.consentsService.updateBaseConsentVisits(result, this.keySSI);
+      await this.getConsents();
 
+      this.sendMessageToHco('update-base-procedures', this.keySSI, 'Update trial consents');
+
+      return;
       //TODO: Save to corresponding consents
       // TODO: Update consents if changed
     });

@@ -5,6 +5,7 @@
     <div class="accordion-item">
       <div data-if="@selected">
         <container slot="true">
+          <!-- ************ TRIAL DETAILS ***************-->
           <div data-if="@selectedOption.0">
             <h5
               data-tag="select-menu"
@@ -33,6 +34,7 @@
               </container>
             </div>
           </div>
+          <!-- ************ SITES & COUNTRIES ***************-->
           <div data-if="@selectedOption.1">
             <div class="d-flex flex-row bold align-items-center m-2 p-2 accordion-header">
               <h5 class="d-flex flex-row bold align-items-center" data-tag="select-menu" data-custom="@name">
@@ -115,18 +117,144 @@
               </container>
             </div>
           </div>
+          <!-- ************ CONSENTS ***************-->
           <div data-if="@selectedOption.2">
-            <h5
-              data-tag="select-menu"
-              data-custom="@name"
-              class="d-flex flex-row bold align-items-center m-2 p-2 accordion-header"
-            >
-              <i class="fas fa-angle-down"></i>
-              <div class="ml-2">{{ @name }}</div>
-            </h5>
+            <div class="d-flex flex-row bold align-items-center m-2 p-2 accordion-header">
+              <h5 data-tag="select-menu" data-custom="@name" class="d-flex flex-row bold align-items-center">
+                <i class="fas fa-angle-down"></i>
+                <div class="ml-2">{{ @name }}</div>
+              </h5>
+              <button class="btn btn-primary ml-auto" data-tag="add-trial-consent">Add Consent</button>
+            </div>
             <div data-if="@loading" class="ml-5">
               <container slot="false">
-                <div data-if="@data">Consents</div>
+                <div data-if="@data">
+                  <div data-if="@data.trial">
+                    <div class="row mb-2">
+                      <div class="col-md-3 bold">Trial Consent Name</div>
+                      <div class="col-md-3 bold">Type</div>
+                      <div class="col-md-1 bold">Version</div>
+                      <div class="col-md-3 bold">Uploaded</div>
+                      <div class="col-md-1 bold">Document</div>
+                    </div>
+                    <div data-for="@data.trial">
+                      <div class="row">
+                        <div class="col-md-3">{{ @name }}</div>
+                        <div class="col-md-3">{{ @type }}</div>
+                        <div class="col-md-1">{{ @versions.0.version }}</div>
+                        <div class="col-md-3">{{ @versionDate }}</div>
+                        <div class="col-md-1">{{ @versions.0.attachment }}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <br />
+
+                  <div class="row mb-2">
+                    <div class="col-md-4 bold">Site Consent Name</div>
+                    <div class="col-md-3 bold">Type</div>
+                    <div class="col-md-2 bold">Uploaded</div>
+                    <div class="col-md-2 bold">EC Approval</div>
+                    <div class="col-md-1 bold">Document</div>
+                  </div>
+                  <div data-if="@data.site">
+                    <div data-for="@data.site">
+                      <div class="row bg-light" data-if="@selected">
+                        <container
+                          data-tag="select-consent-country"
+                          data-custom="@country"
+                          slot="true"
+                          class="col-md-12 bg-light country-option d-flex align-items-center py-2"
+                        >
+                          <i class="mr-2 fas fa-minus"></i>
+                          <div>{{ @country }}</div>
+                        </container>
+                        <container
+                          data-tag="select-consent-country"
+                          data-custom="@country"
+                          slot="false"
+                          class="col-md-12 bg-light country-option d-flex align-items-center py-2"
+                        >
+                          <i class="mr-2 fas fa-plus"></i>
+                          <div>{{ @country }}</div>
+                        </container>
+                      </div>
+
+                      <div data-if="@selected">
+                        <div data-if="@sites">
+                          <div data-for="@sites">
+                            <div data-if="@selected" class="ml-2">
+                              <container slot="true">
+                                <div
+                                  class="col-md-12 bg-light country-option d-flex align-items-center py-2"
+                                  data-tag="select-consent-site"
+                                  data-custom="@id"
+                                >
+                                  <i class="fas fa-minus"></i>
+                                  <div class="col-md-3">{{ @name }}</div>
+                                </div>
+
+                                <div data-if="@consents">
+                                  <div data-for="@consents">
+                                    <div data-if="@selected" class="ml-2">
+                                      <container slot="true">
+                                        <container
+                                          slot="false"
+                                          class="col-md-12 bg-light country-option d-flex align-items-center py-2"
+                                        >
+                                          <div class="d-flex flex-row" data-tag="select-consent" data-custom="@id">
+                                            <i class="fas fa-minus"></i>
+                                            <div>{{ @name }}</div>
+                                            <div>{{ @type }}</div>
+                                          </div>
+                                          <button
+                                            class="col-md-2 btn btn-primary ml-auto"
+                                            data-tag="add-version"
+                                            data-custom="@id"
+                                          >
+                                            Add Version
+                                          </button>
+                                        </container>
+
+                                        <br />
+
+                                        <div data-for="@versions" class="ml-4 row">
+                                          <div class="col-md-6">{{ @version }}</div>
+                                          <div class="col-md-2">{{ @versionDate }}</div>
+                                          <div class="col-md-2">{{ @versionDate }}</div>
+                                          <div class="col-md-2">{{ @attachment}}</div>
+                                        </div>
+                                      </container>
+                                      <container
+                                        slot="false"
+                                        class="col-md-12 bg-light country-option d-flex align-items-center py-2"
+                                        data-tag="select-consent"
+                                        data-custom="@id"
+                                      >
+                                        <i class="fas fa-plus"></i>
+                                        <div class="col-md-3">{{ @name }}</div>
+                                        <div class="col-md-3">{{ @type }}</div>
+                                      </container>
+                                    </div>
+                                  </div>
+                                </div>
+                              </container>
+                              <container
+                                slot="false"
+                                class="col-md-12 bg-light country-option d-flex align-items-center py-2"
+                                data-tag="select-consent-site"
+                                data-custom="@id"
+                              >
+                                <i class="fas fa-plus"></i>
+                                <div class="col-md-3">{{ @name }}</div>
+                              </container>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </container>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import { consentTypeEnum } from '../constants/consent.js';
-import ConsentsService from '../services/ConsentsService.js';
+import NewConsentService from '../services/NewConsentService.js';
 
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
@@ -57,12 +57,13 @@ export default class AddNewConsentModalController extends WebcController {
     this.isUpdate = props[0].isUpdate;
     this.existingIds = props[0].existingIds || null;
     this.existingVersions = props[0].existingVersions || null;
+    this.site = props[0].site || null;
 
     let { id, keySSI } = this.history.location.state;
 
     this.keySSI = keySSI;
 
-    this.consentsService = new ConsentsService(this.DSUStorage);
+    this.consentsService = new NewConsentService(this.DSUStorage);
 
     if (this.isUpdate) {
       this.setModel({
@@ -202,9 +203,15 @@ export default class AddNewConsentModalController extends WebcController {
             file: this.file[0],
           };
 
-          const result = await this.consentsService.updateConsent(version, this.keySSI, this.isUpdate.keySSI);
-          this.model.submitButtonDisabled = false;
-          this.send('confirmed', result);
+          // console.log(JSON.stringify(this.site, null, 2), JSON.stringify(this.isUpdate, null, 2));
+          const result = await this.consentsService.updateConsent(
+            version,
+            this.keySSI,
+            this.site.keySSI,
+            this.isUpdate
+          );
+          // this.model.submitButtonDisabled = false;
+          // this.send('confirmed', result);
         }
       } catch (error) {
         this.send('closed', new Error('There was an issue creating the trial'));
