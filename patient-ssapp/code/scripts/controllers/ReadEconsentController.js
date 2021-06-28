@@ -19,6 +19,11 @@ export default class ReadEconsentController extends WebcController {
         this.model.declined = {};
         this.model.signed = {};
         this.model.withdraw = {};
+        this.model.showControls = false;
+        this.model.pdf = {
+            currentPage: 1,
+            pagesNo: 0
+        }
 
         this._initConsent();
         this._initHandlers();
@@ -39,7 +44,7 @@ export default class ReadEconsentController extends WebcController {
             this.model.econsent = econsent;
             let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
             let econsentFilePath = this.getEconsentFilePath(this.model.historyData.trialuid, this.model.historyData.ecoId, ecoVersion, currentVersion.attachment);
-            this.fileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
+            this.FileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
             this._downloadFile();
             this.EconsentsStatusRepository.findAll((err, data) => {
                 if (err) {
@@ -119,7 +124,7 @@ export default class ReadEconsentController extends WebcController {
             console.log('econsent:download');
             event.preventDefault();
             event.stopImmediatePropagation();
-            this.fileDownloader.downloadFileToDevice({
+            this.FileDownloader.downloadFileToDevice({
                 contentType: this.mimeType,
                 rawBlob: this.rawBlob,
             });
@@ -154,46 +159,65 @@ export default class ReadEconsentController extends WebcController {
     }
 
     _downloadFile = () => {
-        this.fileDownloader.downloadFile((downloadedFile) => {
+        this.FileDownloader.downloadFile((downloadedFile) => {
             this.rawBlob = downloadedFile.rawBlob;
             this.mimeType = downloadedFile.contentType;
             this.blob = new Blob([this.rawBlob], {
                 type: this.mimeType,
             });
-
-            if (this.mimeType.indexOf(TEXT_MIME_TYPE) !== -1) {
-                //this._prepareTextEditorViewModel();
-            } else {
-                this._displayFile();
-            }
+            this._displayFile();
         });
     };
 
     _loadPdfOrTextFile = () => {
-        this._loadBlob((base64Blob) => {
-            const obj = document.createElement('object');
-            obj.type = this.mimeType;
-            obj.data = base64Blob;
-
-            this._appendAsset(obj);
-        });
-    };
-
-    _loadBlob = (callback) => {
         const reader = new FileReader();
         reader.readAsDataURL(this.blob);
-        reader.onloadend = function () {
-            callback(reader.result);
+        reader.onloadend = () => {
+            let base64data = reader.result;
+            this.initPDF(base64data.substr(base64data.indexOf(',') + 1));
         };
     };
 
-    _appendAsset = (assetObject) => {
-        let content = this.element.querySelector('.content');
+    initPDF(pdfData) {
+        pdfData = atob(pdfData);
+        let pdfjsLib = window['pdfjs-dist/build/pdf'];
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 
-        if (content) {
-            content.append(assetObject);
+        this.loadingTask = pdfjsLib.getDocument({data: pdfData});
+        this.renderPage(this.model.pdf.currentPage);
+
+        window.addEventListener("scroll", (event) => {
+            let myDiv = event.target;
+            if (myDiv.id === 'canvas-wrapper'
+                && myDiv.offsetHeight + myDiv.scrollTop >= myDiv.scrollHeight) {
+                this.model.showControls = true;
+            }
+        }, {capture: true});
+    }
+
+    renderPage = (pageNo) => {
+        this.loadingTask.promise.then((pdf) => {
+            this.model.pdf.pagesNo = pdf.numPages;
+            pdf.getPage(pageNo).then(result => this.handlePages(pdf, result));
+        }, (reason) => console.error(reason));
+    }
+
+    handlePages = (thePDF, page) => {
+        const viewport = page.getViewport({scale: 0.68});
+        let canvas = document.createElement("canvas");
+        canvas.style.display = "block";
+        let context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        page.render({canvasContext: context, viewport: viewport});
+        document.getElementById('canvas-parent').appendChild(canvas);
+
+        this.model.pdf.currentPage = this.model.pdf.currentPage + 1;
+        let currPage = this.model.pdf.currentPage;
+        if (thePDF !== null && currPage <= this.model.pdf.pagesNo) {
+            thePDF.getPage(currPage).then(result => this.handlePages(thePDF, result));
         }
-    };
+    }
 
     _displayFile = () => {
         if (window.navigator && window.navigator.msSaveOrOpenBlob) {
@@ -219,13 +243,11 @@ export default class ReadEconsentController extends WebcController {
 
 
     async _saveStatus(operation) {
-
-        if (this.model.status&&this.model.status.uid) {
+        if (this.model.status && this.model.status.uid) {
             await this.EconsentsStatusRepository.updateAsync(this.model.status.uid, this.model.status);
             this.sendMessageToSponsorAndHCO(operation, this.model.econsent.keySSI, 'Tp' + operation);
             this._finishActionSave();
-        }
-        else{
+        } else {
             //TODO implement when status is not set => optional consents
         }
     }
