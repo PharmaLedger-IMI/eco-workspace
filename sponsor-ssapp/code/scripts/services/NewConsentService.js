@@ -90,7 +90,6 @@ export default class NewConsentService extends DSUService {
 
   async updateConsent(data, trialKeySSI, siteKeySSI, consent) {
     const siteConsents = await this.getTrialConsents(siteKeySSI);
-    console.log(JSON.stringify(consent, null, 2));
 
     if (consent.versions.length === 1) {
       const consentData = {
@@ -173,9 +172,6 @@ export default class NewConsentService extends DSUService {
 
   async updateBaseConsentVisits(visits, trialKeySSI) {
     const consents = await this.getTrialConsents(trialKeySSI);
-    console.log('CONSENTS:', JSON.stringify(consents, null, 2));
-    console.log('VISITS:', visits);
-
     for (const consent of consents) {
       const consentVisits = visits.filter((x) => x.consent.keySSI === consent.keySSI);
       if (consentVisits && consentVisits.length > 0) {
@@ -190,78 +186,6 @@ export default class NewConsentService extends DSUService {
     }
 
     return;
-
-    // const sampleData = [
-    //   {
-    //       "id": 0,
-    //       "name": "12121",
-    //       "consent": {
-    //           "keySSI": "BBudGH6ySHG6GUHN8ogNrTWbbW5UisFSbmJ3xGNBqoQ6pkHRpWPArksc7TYYbpBPd5DzJxtuCAQDPWc8hamhgqET9",
-    //           "id": "22",
-    //           "name": "con 2"
-    //       },
-    //       "visits": [
-    //           {
-    //               "id": 0,
-    //               "checked": true,
-    //               "period": "2",
-    //               "unit": "Week"
-    //           },
-    //           {
-    //               "id": 1,
-    //               "checked": true,
-    //               "period": "1",
-    //               "unit": "Day"
-    //           }
-    //       ]
-    //   },
-    //   {
-    //       "id": 1,
-    //       "name": "122112111",
-    //       "consent": {
-    //           "keySSI": "BBudGH6ySHG6GUHN8ogNrTWbL4rHscYLdB6H64GLEjEundddih97DPi9KYpn6aDY7D6XjfKBkKek3ifbeHsK2ushh",
-    //           "id": "1",
-    //           "name": "con 1"
-    //       },
-    //       "visits": [
-    //           {
-    //               "id": 0,
-    //               "checked": false,
-    //               "period": "2",
-    //               "unit": "Day"
-    //           },
-    //           {
-    //               "id": 1,
-    //               "checked": true,
-    //               "period": "2",
-    //               "unit": "Day"
-    //           }
-    //       ]
-    //   },
-    //   {
-    //       "id": 2,
-    //       "name": "11111111",
-    //       "consent": {
-    //           "keySSI": "BBudGH6ySHG6GUHN8ogNrTWbbW5UisFSbmJ3xGNBqoQ6pkHRpWPArksc7TYYbpBPd5DzJxtuCAQDPWc8hamhgqET9",
-    //           "id": "22",
-    //           "name": "con 2"
-    //       },
-    //       "visits": [
-    //           {
-    //               "id": 0,
-    //               "checked": true,
-    //               "period": "2",
-    //               "unit": "Day"
-    //           },
-    //           {
-    //               "id": 1,
-    //               "checked": true,
-    //               "period": "2",
-    //               "unit": "Day"
-    //           }
-    //       ]
-    //   }
-    // ]
   }
 
   async mountConsent(keySSI, consentKeySSI, isSiteConsent) {

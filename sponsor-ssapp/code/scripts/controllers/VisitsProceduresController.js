@@ -110,9 +110,6 @@ export default class VisitsProceduresController extends WebcController {
         })),
       };
     });
-
-    console.log(JSON.stringify(this.model.procedures, null, 2));
-    console.log(JSON.stringify(procedures, null, 2));
     return;
   }
 
