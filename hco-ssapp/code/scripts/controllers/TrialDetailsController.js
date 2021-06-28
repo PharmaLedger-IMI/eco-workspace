@@ -109,7 +109,7 @@ export default class TrialDetailsController extends WebcController {
                 trialSSI: this.model.trialSSI,
                 econsentSSI: model.econsentSSI,
                 ecoVersion: model.version,
-                readOnly: false
+                controlsShouldBeVisible: false
             });
 
         });
