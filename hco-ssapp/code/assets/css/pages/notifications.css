@@ -26,11 +26,29 @@
 }
 
 .centered {
-    justify-content: space-evenly;
     display: flex;
-    width: 70%;
-    margin-left: 15%;
-    margin-top: 40px;
+    margin-top: 60px;
+    margin-left: 11.5%;
+}
+
+.button-container button {
+    width: 300px;
+    display: flex;
+    justify-content: center;
+    padding-top: 15px;
+}
+
+.button-container button div div {
+    margin-left: 10px;
+    margin-top: -5px;
+}
+
+.button-container {
+    width: 33%;
+}
+
+.missing-buton-margin-right {
+    margin-right: 30%;
 }
 
 .main-button {

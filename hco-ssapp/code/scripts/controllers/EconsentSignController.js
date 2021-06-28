@@ -121,11 +121,7 @@ export default class EconsentSignController extends WebcController {
             this.blob = new Blob([this.rawBlob], {
                 type: this.mimeType,
             });
-            if (this.mimeType.indexOf(TEXT_MIME_TYPE) !== -1) {
-                this._prepareTextEditorViewModel();
-            } else {
-                this._displayFile();
-            }
+            this._displayFile();
         });
     };
 
@@ -189,7 +185,6 @@ export default class EconsentSignController extends WebcController {
 
         window.URL = window.URL || window.webkitURL;
         const fileType = this.mimeType.split('/')[0];
-        debugger
         switch (fileType) {
             case 'image': {
                 this._loadImageFile();
@@ -207,7 +202,6 @@ export default class EconsentSignController extends WebcController {
             this.feedbackEmitter(message, title, alertType);
         }
     }
-
 
     _updateEconsentWithDetails(message) {
 

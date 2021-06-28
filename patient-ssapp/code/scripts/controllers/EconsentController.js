@@ -114,7 +114,8 @@ export default class EconsentController extends WebcController {
   }
 
   getEconsentFilePath(trialSSI, consentSSI, version, fileName) {
-    return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version + '/' + fileName;
+    debugger
+    return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version;
   }
 
   _downloadFile = () => {
