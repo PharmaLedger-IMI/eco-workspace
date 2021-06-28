@@ -50,6 +50,7 @@ export default class EconsentSignController extends WebcController {
 
     _initHandlers() {
         this._attachHandlerEconsentSign();
+        this._attachHandlerBack();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -259,5 +260,13 @@ export default class EconsentSignController extends WebcController {
         });
 
 
+    }
+
+    _attachHandlerBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
+        });
     }
 }
