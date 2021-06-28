@@ -18,16 +18,13 @@
 
                 <div class="centered">
                     <div class="button-container">
-                        <button class="main-button" data-tag="notifications">
-                            Trial Updates
-                            <div data-if="@notTypes.trialUpdates">
-                                <div slot="true">
-                                    <psk-img class="table-cell" src="assets/images/bell.png"
-                                             height='30' width='34'></psk-img>
-                                </div>
+                        <button class="main-button" data-tag="notifications">Trial Updates</button>
+                        <div data-if="@notTypes.trialUpdates">
+                            <div slot="true">
+                                <psk-img class="table-cell" src="assets/images/bell.png"
+                                         height='30' width='34'></psk-img>
                             </div>
-                        </button>
-
+                        </div>
                     </div>
                     <div class="button-container">
                         <button class="main-button" data-tag="notifications">Withdraws</button>

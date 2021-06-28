@@ -17,6 +17,7 @@ export default class TrialController extends WebcController {
         let receivedObject = this.history.win.history.state.state;
         this.model.keyssi = receivedObject.trialSSI;
         this.model.tpNumber = receivedObject.tpNumber;
+        debugger;
         this._initServices(this.DSUStorage);
         this._initTrial();
         this._initHandlers();

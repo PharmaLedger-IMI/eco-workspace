@@ -163,10 +163,24 @@ export default class TrialParticipantController extends WebcController {
                 return console.log(err);
             }
             this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.SUCCESS.ATTACH_TRIAL_PARTICIPANT_NUMBER);
+            this._sendMessageToPatient(this.model.trialSSI,trialParticipant, 'Tp Number was attached');
         });
 
     }
 
+    _sendMessageToPatient( ssi, tp, shortMessage) {
+        debugger;
+        this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
+            operation: 'update-tpNumber',
+            ssi: ssi,
+            useCaseSpecifics: {
+                tpNumber: tp.tpNumber,
+                tpName:  tp.tpName,
+                tpDid: tp.did
+            },
+            shortDescription: shortMessage,
+        });
+    }
     _computeEconsentsWithActions() {
         this.model.econsents.forEach(econsent => {
 
