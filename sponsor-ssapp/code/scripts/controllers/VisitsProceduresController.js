@@ -215,65 +215,58 @@ export default class VisitsProceduresController extends WebcController {
       // this.model.visits = [...this.model.visits, { id: this.model.visits.length }];
       const newProcedures = this.model.procedures.map((x) => ({
         ...x,
-        visits: [
-          ...x.visits,
-          {
-            id: x.id + ':' + visits.length,
-            checkbox: {
-              type: 'checkbox',
-              placeholder: 'enabled',
-              label: visits.length,
-              checked: true,
-            },
-            period: {
-              label: 'Period',
-              name: 'period',
-              required: true,
-              placeholder: 'Period...',
-              value: '',
-              type: 'number',
-            },
-            timeUnit: {
-              id: 'unit_' + x.id + '_' + visits.length,
-              label: 'Select a time unit',
-              placeholder: 'Please select an option',
-              required: true,
-              options: [
-                { label: 'Day', value: 'Day' },
-                { label: 'Week', value: 'Week' },
-                { label: 'Month', value: 'Month' },
-              ],
-            },
+        visits: this.model.visits.map((y) => ({
+          id: x.id + ':' + y.id,
+          checkbox: {
+            type: 'checkbox',
+            placeholder: 'enabled',
+            label: y.id,
+            checked: true,
           },
-        ],
-        // visits: this.model.visits.map((y) => ({
-        //   id: x.id + ':' + y.id,
-        //   checkbox: {
-        //     type: 'checkbox',
-        //     placeholder: 'enabled',
-        //     label: y.id,
-        //     checked: true,
-        //   },
-        //   period: {
-        //     label: 'Period',
-        //     name: 'period',
-        //     required: true,
-        //     placeholder: 'Period...',
-        //     value: '',
-        //     type: 'number',
-        //   },
-        //   timeUnit: {
-        //     id: 'unit_' + x.id + '_' + y.id,
-        //     label: 'Select a time unit',
-        //     placeholder: 'Please select an option',
-        //     required: true,
-        //     options: [
-        //       { label: 'Day', value: 'Day' },
-        //       { label: 'Week', value: 'Week' },
-        //       { label: 'Month', value: 'Month' },
-        //     ],
-        //   },
-        // })),
+          period: {
+            label: 'Period',
+            name: 'period',
+            required: true,
+            placeholder: 'Period...',
+            value: !!x.visits[parseInt(y.id)] ? x.visits[parseInt(y.id)].period.value : '',
+            type: 'number',
+          },
+          timeUnit: {
+            id: 'unit_' + x.id + '_' + y.id,
+            label: 'Select a time unit',
+            placeholder: 'Please select an option',
+            required: true,
+            options: [
+              {
+                label: 'Day',
+                value: 'Day',
+                selected: !!this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id)
+                  ? this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id).value === 'Day'
+                    ? 'selected'
+                    : null
+                  : null,
+              },
+              {
+                label: 'Week',
+                value: 'Week',
+                selected: !!this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id)
+                  ? this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id).value === 'Week'
+                    ? 'selected'
+                    : null
+                  : null,
+              },
+              {
+                label: 'Month',
+                value: 'Month',
+                selected: !!this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id)
+                  ? this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id).value === 'Month'
+                    ? 'selected'
+                    : null
+                  : null,
+              },
+            ],
+          },
+        })),
       }));
       // this.model.setChainValue('procedures', newProcedures);
       this.model.procedures = newProcedures;
@@ -297,7 +290,7 @@ export default class VisitsProceduresController extends WebcController {
       let error = null;
       const result = this.model.procedures.map((x, idx) => {
         if (x.name.value === '' || !x.visits || x.visits.length === 0) {
-          this.showFeedbackToast('Error', 'All procedures must have a name and at least one visit', 'toast');
+          // this.showFeedbackToast('Error', 'All procedures must have a name and at least one visit', 'toast');
           error = true;
           // return;
         }
