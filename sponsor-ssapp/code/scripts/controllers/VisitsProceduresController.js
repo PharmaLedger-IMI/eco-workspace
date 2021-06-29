@@ -305,7 +305,7 @@ export default class VisitsProceduresController extends WebcController {
           },
           visits: x.visits.map((y, visitIdx) => {
             const targetElementUnit = this.element.querySelector('#' + y.timeUnit.id);
-            if (!y.period.value) {
+            if (!y.period.value && y.checkbox.checked) {
               error = true;
             }
             return {
