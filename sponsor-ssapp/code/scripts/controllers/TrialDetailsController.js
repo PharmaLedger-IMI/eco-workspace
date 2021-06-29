@@ -9,6 +9,9 @@ import { countryListAlpha2 } from '../constants/countries.js';
 import { siteStatusesEnum } from './../constants/site.js';
 import CommunicationService from '../services/CommunicationService.js';
 import NewConsentService from '../services/NewConsentService.js';
+import eventBusService from '../services/EventBusService.js';
+import { Topics } from '../constants/topics.js';
+
 export default class TrialDetailsController extends WebcController {
   constructor(...props) {
     super(...props);
@@ -130,6 +133,7 @@ export default class TrialDetailsController extends WebcController {
       }
 
       await this.getSites();
+      eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
     });
 
     this.onTagClick('country-resume', async (model, target, event) => {
@@ -140,6 +144,7 @@ export default class TrialDetailsController extends WebcController {
       }
 
       await this.getSites();
+      eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
     });
 
     this.onTagClick('country-terminate', async (model, target, event) => {
@@ -150,6 +155,7 @@ export default class TrialDetailsController extends WebcController {
       }
 
       await this.getSites();
+      eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
     });
 
     this.onTagClick('site-edit', async (model, target, event) => {
@@ -163,6 +169,7 @@ export default class TrialDetailsController extends WebcController {
       await this.changeSiteStatus(siteStatusesEnum.OnHold, data);
       await this.getSites();
       this.showFeedbackToast('Result', 'Site status changed successfully', 'toast');
+      eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
     });
 
     this.onTagClick('site-resume', async (model, target, event) => {
@@ -170,6 +177,7 @@ export default class TrialDetailsController extends WebcController {
       await this.changeSiteStatus(siteStatusesEnum.Active, data);
       await this.getSites();
       this.showFeedbackToast('Result', 'Site status changed successfully', 'toast');
+      eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
     });
 
     this.onTagClick('site-terminate', async (model, target, event) => {
@@ -177,6 +185,7 @@ export default class TrialDetailsController extends WebcController {
       await this.changeSiteStatus(siteStatusesEnum.Cancelled, data);
       await this.getSites();
       this.showFeedbackToast('Result', 'Site status changed successfully', 'toast');
+      eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
     });
 
     this.on('openFeedback', (e) => {
@@ -191,6 +200,7 @@ export default class TrialDetailsController extends WebcController {
           this.getSites();
           this.sendMessageToHco('add-site', response.keySSI, 'Site added');
           this.showFeedbackToast('Result', 'Site added successfully', 'toast');
+          eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
         },
         (event) => {
           const error = event.detail || null;
