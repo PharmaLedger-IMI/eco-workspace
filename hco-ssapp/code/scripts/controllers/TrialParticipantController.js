@@ -40,6 +40,7 @@ export default class TrialParticipantController extends WebcController {
         this._attachHandlerAddTrialParticipantNumber();
         this._attachHandlerGoBack();
         this._attachHandlerView();
+        this._attachHandlerVisits();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -126,6 +127,13 @@ export default class TrialParticipantController extends WebcController {
         });
     }
 
+    _attachHandlerVisits() {
+        this.onTagEvent('tp:visits', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('visits-procedures', model.keySSI);
+        });
+    }
     _showFeedbackToast(title, message, alertType) {
         if (typeof this.feedbackEmitter === 'function') {
             this.feedbackEmitter(message, title, alertType);
@@ -169,7 +177,7 @@ export default class TrialParticipantController extends WebcController {
     }
 
     _sendMessageToPatient( ssi, tp, shortMessage) {
-        debugger;
+
         this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
             operation: 'update-tpNumber',
             ssi: ssi,

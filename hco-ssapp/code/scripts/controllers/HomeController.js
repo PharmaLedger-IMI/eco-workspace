@@ -1,4 +1,5 @@
 import Constants from "../utils/Constants.js";
+
 import CommunicationService from '../services/CommunicationService.js';
 import SiteService from '../services/SiteService.js';
 import TrialService from '../services/TrialService.js';
@@ -6,6 +7,7 @@ import SharedStorage from '../services/SharedStorage.js';
 
 import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
 import NotificationsRepository from "../repositories/NotificationsRepository.js";
+import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -51,6 +53,7 @@ export default class HomeController extends WebcController {
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
         this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
         this.SiteService = new SiteService(DSUStorage);
+        this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
     }
 
     _initHandlers() {
@@ -72,8 +75,8 @@ export default class HomeController extends WebcController {
             switch (data.message.operation) {
                 case 'add-trial': {
 
-                    this._saveNotification(data.message, 'New trial was added','view trial',Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
-                    debugger;
+                    this._saveNotification(data.message, 'New trial was added', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
+
                     this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                         if (err) {
                             return console.log(err);
@@ -83,7 +86,7 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case 'add-econsent-version': {
-                    this._saveNotification(data.message, 'New ecosent version was added','view trial',Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
+                    this._saveNotification(data.message, 'New ecosent version was added', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
                     this.TrialService.mountTrial(data.message.ssi, () => {
                     });
                     this.sendMessageToPatient('refresh-trial', data.message.ssi,
@@ -91,7 +94,7 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case 'add-consent': {
-                    this._saveNotification(data.message, 'New ecosent  was added','view trial',Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
+                    this._saveNotification(data.message, 'New ecosent  was added', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
                     this.TrialService.unmountTrial(data.message.ssi, (err, response) => {
                         this.TrialService.mountTrial(data.message.ssi, (err, response) => {
                         })
@@ -108,15 +111,20 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case 'site-status-change': {
-                    this._saveNotification(data.message, 'The status of site was changed','view trial',Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
-                    debugger;
+                    this._saveNotification(data.message, 'The status of site was changed', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
+
+                    break;
+                }
+                case 'update-base-procedures': {
+                    this._saveNotification(data.message, 'New procedure was added ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
+                    this._saveVisit(data.message);
                     break;
                 }
                 case 'add-site': {
 
-                    this._saveNotification(data.message, 'Your site was added to the trial ','view trial',Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
+                    this._saveNotification(data.message, 'Your site was added to the trial ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
 
-                    this.SiteService.mountSite(data.message.ssi, (err,site)=>{
+                    this.SiteService.mountSite(data.message.ssi, (err, site) => {
                         if (err) {
                             return console.log(err);
                         }
@@ -133,9 +141,9 @@ export default class HomeController extends WebcController {
 
                 case 'add-trial-consent': {
 
-                    this._saveNotification(data.message, 'New consent was added to trial  ','view trial',Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
+                    this._saveNotification(data.message, 'New consent was added to trial  ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
 
-                    debugger;
+
                     // this.SiteService.mountSite(data.message.ssi, (err,site)){
                     //     if (err) {
                     //         return console.log(err);
@@ -175,30 +183,30 @@ export default class HomeController extends WebcController {
             switch (message.useCaseSpecifics.action.name) {
                 case 'withdraw': {
                     actionNeeded = 'TP Withdrawed';
-                    status =status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
-                    this._saveNotification(message, 'Trial participant '+message.useCaseSpecifics.tpNumber +' withdraw','view trial participants',Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
+                    status = status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
+                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpNumber + ' withdraw', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
                     break;
                 }
                 case 'withdraw-intention': {
                     actionNeeded = 'Reconsent required';
-                    this._saveNotification(message, 'Trial participant '+message.useCaseSpecifics.tpNumber +' withdraw','view trial participants',Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
-                    status =status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
+                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpNumber + ' withdraw', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
+                    status = status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
                     break;
                 }
                 case 'sign': {
                     tpSigned = true;
-                    this._saveNotification(message, 'Trial participant '+message.useCaseSpecifics.tpNumber +' signed','view trial',Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
+                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpNumber + ' signed', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
                     actionNeeded = 'Acknowledgement required';
-                    status =status = Constants.TRIAL_PARTICIPANT_STATUS.SCREENED;
+                    status = status = Constants.TRIAL_PARTICIPANT_STATUS.SCREENED;
                     break;
                 }
             }
             currentVersion.actions.push({
                 ...message.useCaseSpecifics.action,
                 tpNumber: message.useCaseSpecifics.tpNumber,
-                status : status,
+                status: status,
                 type: 'tp',
-                actionNeeded:actionNeeded
+                actionNeeded: actionNeeded
             });
 
             this.TrialParticipantRepository.filter(`did == ${message.useCaseSpecifics.tpNumber}`, 'ascending', 30, (err, tps) => {
@@ -260,9 +268,9 @@ export default class HomeController extends WebcController {
         });
     }
 
-    _saveNotification(notification, name , reccomendedAction,  type) {
+    _saveNotification(notification, name, reccomendedAction, type) {
 
-        debugger;
+
         notification.type = type;
         notification.name = name;
         notification.recommendedAction = reccomendedAction;
@@ -273,4 +281,35 @@ export default class HomeController extends WebcController {
         });
     }
 
+    _saveVisit(message) {
+
+        this.TrialService.getEconsents(message.ssi, (err, consents) => {
+            if (err) {
+                return console.error(err);
+            }
+            consents.forEach(consent => {
+                let procedures = consent.procedures;
+
+                if (procedures) {
+                    procedures.forEach(item => {
+                        let visitToBeAdded = {name:item.name, consentSSI: item.consent.keySSI, trialSSI: message.ssi};
+
+                        if(item.visits&&item.visits.length>0){
+                            item.visits.forEach(visit => {
+                                visitToBeAdded.period = visit.period;
+                                visitToBeAdded.unit = visit.unit;
+                                this.VisitsAndProceduresRepository.create(visitToBeAdded, (err, visitCreated) => {
+                                    if (err) {
+                                        return console.error(err);
+                                    }
+                                })
+                            })
+                        }
+
+                    })
+                }
+
+            })
+        })
+    }
 }
