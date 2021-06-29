@@ -1,6 +1,6 @@
 import Constants from "../utils/Constants.js";
 import CommunicationService from '../services/CommunicationService.js';
-import NotificationsService from '../services/NotificationsService.js';
+import SiteService from '../services/SiteService.js';
 import TrialService from '../services/TrialService.js';
 import SharedStorage from '../services/SharedStorage.js';
 
@@ -50,6 +50,7 @@ export default class HomeController extends WebcController {
         this.StorageService = SharedStorage.getInstance(DSUStorage);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
         this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
+        this.SiteService = new SiteService(DSUStorage);
     }
 
     _initHandlers() {
@@ -72,6 +73,7 @@ export default class HomeController extends WebcController {
                 case 'add-trial': {
 
                     this._saveNotification(data.message, 'New trial was added','view trial',Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
+                    debugger;
                     this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                         if (err) {
                             return console.log(err);
@@ -103,6 +105,49 @@ export default class HomeController extends WebcController {
                 }
                 case 'update-econsent': {
                     this._updateEconsentWithDetails(data.message);
+                    break;
+                }
+                case 'site-status-change': {
+                    this._saveNotification(data.message, 'The status of site was changed','view trial',Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
+                    debugger;
+                    break;
+                }
+                case 'add-site': {
+
+                    this._saveNotification(data.message, 'Your site was added to the trial ','view trial',Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
+
+                    this.SiteService.mountSite(data.message.ssi, (err,site)=>{
+                        if (err) {
+                            return console.log(err);
+                        }
+                        this.TrialService.mountTrial(site.keySSI, (err, trial) => {
+                            if (err) {
+                                return console.log(err);
+                            }
+
+                        });
+                    });
+
+                    break;
+                }
+
+                case 'add-trial-consent': {
+
+                    this._saveNotification(data.message, 'New consent was added to trial  ','view trial',Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
+
+                    debugger;
+                    // this.SiteService.mountSite(data.message.ssi, (err,site)){
+                    //     if (err) {
+                    //         return console.log(err);
+                    //     }
+                    //     this.TrialService.mountTrial(site.keySSI, (err, trial) => {
+                    //         if (err) {
+                    //             return console.log(err);
+                    //         }
+                    //
+                    //     });
+                    // }
+
                     break;
                 }
             }
@@ -217,7 +262,7 @@ export default class HomeController extends WebcController {
 
     _saveNotification(notification, name , reccomendedAction,  type) {
 
-
+        debugger;
         notification.type = type;
         notification.name = name;
         notification.recommendedAction = reccomendedAction;

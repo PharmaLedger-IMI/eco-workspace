@@ -48,6 +48,7 @@ export default class EconsentController extends WebcController {
           return console.error(err);
         }
         let status = data.find((element) => element.foreignConsentId === this.model.historyData.ecoId);
+        debugger;
         if (status === undefined) {
           return console.log(`Status not found for econsendId ${this.model.historyData.ecoId}`);
         }

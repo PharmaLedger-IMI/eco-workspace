@@ -18,10 +18,18 @@
                 </psk-layout-item>
 
                 <psk-layout-item class="home-default-bottom">
-                    <psk-label class="user-name-title" label="JOHN SMITH"></psk-label>
-                    <psk-label class="user-name-title" label="TP NUMBER"></psk-label>
-                    <div class="padding-sides" data-for="@trials">
+                    <div data-if="@tp.name">
+                        <div slot="true">
+                            <psk-label class="user-name">{{@tp.name}}</psk-label>
+                        </div>
+                    </div>
+                    <div data-if="@tp.tpNumber">
+                        <div slot="true">
+                            <psk-label class="tpNumber">{{@tp.tpNumber}}</psk-label>
+                        </div>
+                    </div>
 
+                    <div class="padding-sides" data-for="@trials">
                         <div class="dispay-flex date-div justify-content-space-between" data-tag="home:trial"
                              data="@id">
                             <div class="dispay-flex">

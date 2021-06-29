@@ -35,6 +35,7 @@ export default class NotificationsListController extends WebcController {
                 return console.log(err);
             }
 
+            debugger;
             this.model.notifications = data.filter (not => not.type === this.model.notificationType )
            });
     }

@@ -191,17 +191,19 @@ export default class TrialParticipantsController extends WebcController {
         this.sendMessageToPatient(
             'add-to-trial',
             this.model.trialSSI,
-            trialParticipant.did,
+            {tpNumber: '',tpName: tp.name, did: tp.did},
             Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL
         );
     }
 
-    sendMessageToPatient(operation, ssi, trialParticipantNumber, shortMessage) {
+    sendMessageToPatient(operation, ssi, tp, shortMessage) {
         this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
             operation: operation,
             ssi: ssi,
             useCaseSpecifics: {
-                tpNumber: trialParticipantNumber,
+                tpNumber: tp.tpNumber,
+                tpName:  tp.tpName,
+                tpDid: tp.did
             },
             shortDescription: shortMessage,
         });
