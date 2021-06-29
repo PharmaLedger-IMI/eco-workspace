@@ -141,7 +141,7 @@ export default class TrialParticipantController extends WebcController {
                 (event) => {
                     this.model.tp.tpNumber = event.detail;
                     this._updateTrialParticipant(this.model.tp);
-
+                    this.updateTrialStage();
                 },
                 (event) => {
                     const response = event.detail;
@@ -153,6 +153,16 @@ export default class TrialParticipantController extends WebcController {
                     disableBackdropClosing: false,
                     title: 'Attach Trial Participant Number',
                 };
+        });
+    }
+
+    updateTrialStage() {
+        this.TrialService.getTrial(this.model.trialSSI, async (err, trial) => {
+            if (err) {
+                return console.log(err);
+            }
+            trial.stage = 'Enrolling';
+            this.TrialService.updateTrialAsync(trial)
         });
     }
 

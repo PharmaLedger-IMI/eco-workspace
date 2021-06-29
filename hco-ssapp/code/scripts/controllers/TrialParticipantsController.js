@@ -143,6 +143,10 @@ export default class TrialParticipantsController extends WebcController {
                 'add-new-tp',
                 (event) => {
                     const response = event.detail;
+
+                    this.model.trial.stage = 'Recruiting';
+                    this.TrialService.updateTrialAsync(this.model.trial)
+
                     this.createTpDsu(response);
                     this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.SUCCESS.ADD_TRIAL_PARTICIPANT);
                 },
@@ -187,6 +191,7 @@ export default class TrialParticipantsController extends WebcController {
         tp.status = Constants.TRIAL_PARTICIPANT_STATUS.PLANNED;
         tp.enrolledDate = currentDate.toLocaleDateString();
         let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
+        trialParticipant.actionNeeded = 'No action required';
         this.model.trialParticipants.push(trialParticipant);
         this.sendMessageToPatient(
             'add-to-trial',
