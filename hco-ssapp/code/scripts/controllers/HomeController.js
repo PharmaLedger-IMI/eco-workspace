@@ -1,5 +1,4 @@
 import Constants from "../utils/Constants.js";
-
 import CommunicationService from '../services/CommunicationService.js';
 import SiteService from '../services/SiteService.js';
 import TrialService from '../services/TrialService.js';
@@ -210,7 +209,6 @@ export default class HomeController extends WebcController {
             });
 
             this.TrialParticipantRepository.filter(`did == ${message.useCaseSpecifics.tpNumber}`, 'ascending', 30, (err, tps) => {
-
                 if (tps && tps.length > 0) {
                     let tp = tps[0];
                     tp.actionNeeded = actionNeeded;
@@ -218,7 +216,6 @@ export default class HomeController extends WebcController {
                     tp.status = status;
 
                     this.TrialParticipantRepository.update(tp.uid, tp, (err, trialParticipant) => {
-
                         if (err) {
                             return console.log(err);
                         }
@@ -226,7 +223,6 @@ export default class HomeController extends WebcController {
                     });
                 }
             });
-
 
             econsent.uid = econsent.keySSI;
             econsent.versions[currentVersionIndex] = currentVersion;
@@ -269,8 +265,6 @@ export default class HomeController extends WebcController {
     }
 
     _saveNotification(notification, name, reccomendedAction, type) {
-
-
         notification.type = type;
         notification.name = name;
         notification.recommendedAction = reccomendedAction;
@@ -292,9 +286,9 @@ export default class HomeController extends WebcController {
 
                 if (procedures) {
                     procedures.forEach(item => {
-                        let visitToBeAdded = {name:item.name, consentSSI: item.consent.keySSI, trialSSI: message.ssi};
+                        let visitToBeAdded = {name: item.name, consentSSI: item.consent.keySSI, trialSSI: message.ssi};
 
-                        if(item.visits&&item.visits.length>0){
+                        if (item.visits && item.visits.length > 0) {
                             item.visits.forEach(visit => {
                                 visitToBeAdded.period = visit.period;
                                 visitToBeAdded.unit = visit.unit;
