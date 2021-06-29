@@ -309,9 +309,9 @@ export default class TrialDetailsController extends WebcController {
         'add-new-consent',
         (event) => {
           const response = event.detail;
-          // this.getConsents();
+          this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          // this.sendMessageToHco('add-econsent-version', this.keySSI, 'New trial');
+          this.sendMessageToHco('add-econsent-version', selectedSite.keySSI, 'New trial');
         },
         (event) => {
           const error = event.detail || null;
@@ -382,6 +382,8 @@ export default class TrialDetailsController extends WebcController {
     const sites = (await this.sitesService.getSites(this.model.trial.keySSI)).map((x) => ({
       ...x,
     }));
+
+    console.log(JSON.stringify(sites, null, 2));
 
     const existingData = this.model.menu.find((x) => x.name === menuOptions.Consents).data;
     if (existingData && existingData.length > 0) {
