@@ -121,11 +121,11 @@ export default class VisitsProceduresController extends WebcController {
 
   attachEvents() {
     this.model.addExpression(
-      'proceduresExist',
-      () => {
-        return this.model.procedures && Array.isArray(this.model.procedures) && this.model.procedures.length > 0;
-      },
-      'procedures'
+        'proceduresExist',
+        () => {
+          return this.model.procedures && Array.isArray(this.model.procedures) && this.model.procedures.length > 0;
+        },
+        'procedures'
     );
 
     this.on('openFeedback', (e) => {
@@ -159,36 +159,36 @@ export default class VisitsProceduresController extends WebcController {
             })),
           },
           visits:
-            this.model.visits.length > 0
-              ? this.model.visits.map((y) => ({
-                  id: procedures.length + ':' + y.id,
-                  checkbox: {
-                    type: 'checkbox',
-                    placeholder: 'enabled',
-                    label: y.id,
-                    checked: true,
-                  },
-                  period: {
-                    label: 'Period',
-                    name: 'period',
-                    required: true,
-                    placeholder: 'Period...',
-                    value: '',
-                    type: 'number',
-                  },
-                  timeUnit: {
-                    id: 'unit_' + procedures.length + '_' + y.id,
-                    label: 'Select a time unit',
-                    placeholder: 'Please select an option',
-                    required: true,
-                    options: [
-                      { label: 'Day', value: 'Day' },
-                      { label: 'Week', value: 'Week' },
-                      { label: 'Month', value: 'Month' },
-                    ],
-                  },
-                }))
-              : [],
+              this.model.visits.length > 0
+                  ? this.model.visits.map((y) => ({
+                    id: procedures.length + ':' + y.id,
+                    checkbox: {
+                      type: 'checkbox',
+                      placeholder: 'enabled',
+                      label: y.id,
+                      checked: true,
+                    },
+                    period: {
+                      label: 'Period',
+                      name: 'period',
+                      required: true,
+                      placeholder: 'Period...',
+                      value: '',
+                      type: 'number',
+                    },
+                    timeUnit: {
+                      id: 'unit_' + procedures.length + '_' + y.id,
+                      label: 'Select a time unit',
+                      placeholder: 'Please select an option',
+                      required: true,
+                      options: [
+                        { label: 'Day', value: 'Day' },
+                        { label: 'Week', value: 'Week' },
+                        { label: 'Month', value: 'Month' },
+                      ],
+                    },
+                  }))
+                  : [],
         },
       ];
 
@@ -228,7 +228,7 @@ export default class VisitsProceduresController extends WebcController {
             name: 'period',
             required: true,
             placeholder: 'Period...',
-            value: '',
+            value: !!x.visits[parseInt(y.id)] ? x.visits[parseInt(y.id)].period.value : '',
             type: 'number',
           },
           timeUnit: {
@@ -237,9 +237,33 @@ export default class VisitsProceduresController extends WebcController {
             placeholder: 'Please select an option',
             required: true,
             options: [
-              { label: 'Day', value: 'Day' },
-              { label: 'Week', value: 'Week' },
-              { label: 'Month', value: 'Month' },
+              {
+                label: 'Day',
+                value: 'Day',
+                selected: !!this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id)
+                    ? this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id).value === 'Day'
+                        ? 'selected'
+                        : null
+                    : null,
+              },
+              {
+                label: 'Week',
+                value: 'Week',
+                selected: !!this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id)
+                    ? this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id).value === 'Week'
+                        ? 'selected'
+                        : null
+                    : null,
+              },
+              {
+                label: 'Month',
+                value: 'Month',
+                selected: !!this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id)
+                    ? this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id).value === 'Month'
+                        ? 'selected'
+                        : null
+                    : null,
+              },
             ],
           },
         })),
@@ -281,7 +305,7 @@ export default class VisitsProceduresController extends WebcController {
           },
           visits: x.visits.map((y, visitIdx) => {
             const targetElementUnit = this.element.querySelector('#' + y.timeUnit.id);
-            if (!y.period.value) {
+            if (!y.period.value && y.checkbox.checked) {
               error = true;
             }
             return {

@@ -39,6 +39,7 @@ export default class VisitsAndProceduresController extends WebcController {
             if (err) {
                 return console.log(err);
             }
+
             this.model.visits = data.filter(visit => visit.trialSSI === this.model.trialSSI);
 
         });
