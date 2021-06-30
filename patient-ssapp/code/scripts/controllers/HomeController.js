@@ -120,7 +120,6 @@ export default class HomeController extends WebcController {
         this.onTagEvent('home:trial', 'click', (trial, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-            debugger;
             this.navigateToPageTag('trial', {
                 trialSSI: trial.keySSI,
                 tpNumber: trial.tpNumber,
@@ -158,7 +157,6 @@ export default class HomeController extends WebcController {
     }
 
     _initTrialParticipant() {
-        debugger;
         this.model.tp = {};
         this.TrialParticipantRepository.findAll((err, data) => {
             if (err) {
@@ -171,7 +169,6 @@ export default class HomeController extends WebcController {
     }
 
     _saveTrialParticipantInfo(data) {
-        debugger;
         let trialParticipant = {
             name: data.tpName, tpNumber: data.tpNumber, did: data.did
         }

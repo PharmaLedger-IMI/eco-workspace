@@ -17,11 +17,12 @@
                 </div>
 
                 <div class="trial-table">
-                    <psk-layout columns="7" class="justify-content-center align-items-center table-row">
+                    <psk-layout columns="8" class="justify-content-center align-items-center table-row">
                         <psk-label class="table-cell-title">Sponsor</psk-label>
                         <psk-label class="table-cell-title">Trial Number/Id</psk-label>
                         <psk-label class="table-cell-title">Trial Name</psk-label>
                         <psk-label class="table-cell-title">Status</psk-label>
+                        <psk-label class="table-cell-title">Stage</psk-label>
                         <psk-label class="table-cell-title">Notifications</psk-label>
                         <psk-label class="table-cell-title">Action Required</psk-label>
                         <psk-label class="table-cell-title">Options</psk-label>
@@ -29,19 +30,20 @@
                     <hr/>
                 </div>
 
-                <div class="trial-table" data-for="@trials">
-                    <psk-layout columns="7"
+                <div class="trial-table body" data-for="@trials">
+                    <psk-layout columns="8"
                                 class="justify-content-center align-items-center table-row">
                         <psk-label class="table-cell">Sponsor</psk-label>
                         <psk-label class="table-cell">{{@id}}</psk-label>
                         <psk-label class="table-cell">{{@name}}</psk-label>
                         <psk-label class="table-cell">{{@status}}</psk-label>
+                        <psk-label class="table-cell">{{@stage}}</psk-label>
                         <psk-label class="table-cell">N/A</psk-label>
                         <psk-label class="table-cell">N/A</psk-label>
                         <div class="table-cell">
                             <button class="link-button" data-tag="trials:details" data="@id">View</button>
                             <psk-label> | </psk-label>
-                            <button class="link-button" data-tag="trials:participants" data="@id">Trial Subjects</button>
+                            <button class="link-button" data-tag="trials:participants" data="@id">Subjects</button>
                         </div>
                     </psk-layout>
                     <hr/>

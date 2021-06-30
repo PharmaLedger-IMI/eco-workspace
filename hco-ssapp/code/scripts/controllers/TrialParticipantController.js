@@ -1,5 +1,5 @@
 import TrialService from '../services/TrialService.js';
-import TrialParticipantsService from '../services/TrialParticipantsService.js';
+import SiteService from '../services/SiteService.js';
 import CommunicationService from '../services/CommunicationService.js';
 import DateTimeService from '../services/DateTimeService.js';
 import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
@@ -29,9 +29,10 @@ export default class TrialParticipantController extends WebcController {
     _initServices(DSUStorage) {
 
         this.TrialService = new TrialService(DSUStorage);
-        this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
+        this.SiteService = new SiteService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+
     }
 
     _initHandlers() {
@@ -40,6 +41,7 @@ export default class TrialParticipantController extends WebcController {
         this._attachHandlerAddTrialParticipantNumber();
         this._attachHandlerGoBack();
         this._attachHandlerView();
+        this._attachHandlerVisits();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -126,6 +128,13 @@ export default class TrialParticipantController extends WebcController {
         });
     }
 
+    _attachHandlerVisits() {
+        this.onTagEvent('tp:visits', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('visits-procedures', this.model.trialSSI);
+        });
+    }
     _showFeedbackToast(title, message, alertType) {
         if (typeof this.feedbackEmitter === 'function') {
             this.feedbackEmitter(message, title, alertType);
@@ -141,7 +150,7 @@ export default class TrialParticipantController extends WebcController {
                 (event) => {
                     this.model.tp.tpNumber = event.detail;
                     this._updateTrialParticipant(this.model.tp);
-
+                    this.updateTrialStage();
                 },
                 (event) => {
                     const response = event.detail;
@@ -153,6 +162,17 @@ export default class TrialParticipantController extends WebcController {
                     disableBackdropClosing: false,
                     title: 'Attach Trial Participant Number',
                 };
+        });
+    }
+
+    updateTrialStage() {
+        this.TrialService.getTrial(this.model.trialSSI, async (err, trial) => {
+            if (err) {
+                return console.log(err);
+            }
+            trial.stage = 'Enrolling';
+            this.TrialService.updateTrialAsync(trial)
+            this._getSite();
         });
     }
 
@@ -169,7 +189,7 @@ export default class TrialParticipantController extends WebcController {
     }
 
     _sendMessageToPatient( ssi, tp, shortMessage) {
-        debugger;
+
         this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
             operation: 'update-tpNumber',
             ssi: ssi,
@@ -219,5 +239,30 @@ export default class TrialParticipantController extends WebcController {
 
             })
         })
+    }
+
+    _getSite() {
+
+        this.SiteService.getSites((err,sites)=>{
+            if (err) {
+                return console.log(err);
+            }
+            if(sites &&sites.length >0){
+                this.model.site = sites[sites.length-1];
+                this._sendMessageToSponsor();
+            }
+        });
+    }
+
+    _sendMessageToSponsor() {
+        this.CommunicationService.sendMessage(CommunicationService.identities.SPONSOR_IDENTITY, {
+            operation: 'update-site-status',
+            ssi: this.model.trialSSI,
+            stageInfo: {
+                siteSSI: this.model.site.KeySSI,
+                status:  this.model.trial.stage
+            },
+            shortDescription: 'The stage of the site changed',
+        });
     }
 }

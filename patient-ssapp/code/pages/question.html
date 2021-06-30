@@ -1,13 +1,11 @@
-<psk-example class="mobile-example">
-    <psk-mobile class="noPadding background" disable-header>
-        <webc-container controller="QuestionController">
-            <div class="header-row">
-                <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
-                <psk-label class="scan-error-title" label="Question"></psk-label>
-            </div>
-            <div class="subheader">
-                <psk-label class="subheader" label="Work in progress ..."></psk-label>
-            </div>
-        </webc-container>
-    </psk-mobile>
-</psk-example>
+<webc-container controller="QuestionController">
+    <div class="container-child">
+        <div class="header-row">
+            <psk-button-link class="go-back-link" event-name="go-back" icon="arrow-left"></psk-button-link>
+            <psk-label class="scan-error-title" label="Question"></psk-label>
+        </div>
+        <div class="subheader">
+            <psk-label class="subheader" label="Work in progress ..."></psk-label>
+        </div>
+    </div>
+</webc-container>

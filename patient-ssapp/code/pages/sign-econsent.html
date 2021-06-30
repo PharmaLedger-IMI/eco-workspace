@@ -1,63 +1,58 @@
-<psk-example class="mobile-example">
-    <psk-mobile class="noPadding background" disable-header>
-        <link rel="stylesheet" href="/assets/css/pages/consent.css">
-        <webc-container controller="ReadEconsentController">
-            <div class="header-title">
-                <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
-                <psk-label class="scan-error-title" label="Trial"></psk-label>
+<link href="/assets/css/pages/consent.css" rel="stylesheet">
+<webc-container controller="ReadEconsentController">
+    <div class="container-child eco-sign">
+        <div id="canvas-wrapper">
+            <div id="canvas-parent">
             </div>
-            <psk-label slot="title" class="bpd-modal-title" label="Sign Econsent"></psk-label>
-            <div class='content'>
-            </div>
-            <div class="econsent-actions">
-                <button class="consent-read" style="width: 80%"
-                        data-tag="econsent:download">Download
-                </button>
+        </div>
+
+        <div class="econsent-actions">
+            <button class="long-button" data-tag="econsent:download">Download
+            </button>
+            <div data-if="@showControls">
                 <div class="dispay-flex">
                     <div data-if="@required">
-                        <container slot="true">
-                            <div >
-                                <button class="consent-read"
-                                            data-tag="manual:sign">Manual Sign
+                            <div>
+                                <button class="long-button"
+                                        data-tag="manual:sign">Manual Sign
                                 </button>
-                                <button class="consent-read"
-                                            data-tag="econsent:sign">Sign
+                                <button class="long-button"
+                                        data-tag="econsent:sign">Sign
                                 </button>
                             </div>
-                            <button class="consent-read"
-                                        data-tag="econsent:decline">Decline
+                            <button class="long-button"
+                                    data-tag="econsent:decline">Decline
                             </button>
-
-                        </container>
 
                     </div>
                 </div>
 
                 <div data-if="@signed">
                     <container slot="true">
-                        <button class="consent-read" style="background-color: red"
-                                    data-tag="econsent:withdraw">Withdraw
+                        <button class="long-button" data-tag="econsent:withdraw"
+                                style="background-color: red">Withdraw
                         </button>
                     </container>
                 </div>
 
                 <div data-if="@withdraw">
                     <container slot="true">
-                        <button class="consent-read"
-                                    data-tag="econsent:sign">Re-Sign
+                        <button class="long-button"
+                                data-tag="econsent:sign">Re-Sign
                         </button>
                     </container>
                 </div>
 
                 <div data-if="@withdrawIntention">
                     <container slot="true">
-                        <button class="consent-read"
-                                    data-tag="econsent:sign">Re-Sign
+                        <button class="long-button"
+                                data-tag="econsent:sign">Re-Sign
                         </button>
                     </container>
                 </div>
-
             </div>
-        </webc-container>
-    </psk-mobile>
-</psk-example>
+        </div>
+
+        <button class="back-button" data-tag="back">Back</button>
+    </div>
+</webc-container>

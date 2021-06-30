@@ -1,118 +1,44 @@
-<psk-example class="mobile-example">
-    <psk-mobile class="noPadding background" disable-header>
-        <link rel="stylesheet" href="/assets/css/pages/trial.css">
-        <webc-container controller="TrialController">
-            <div class="header-title">
-                <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
-                <psk-label class="scan-error-title" label="Trial"></psk-label>
-            </div>
-            <div class="subheader">
-                <psk-label label="TP STATUS"></psk-label>
-            </div>
-            <div class="padding-10" data-for="@tpStatus">
-                <div class="status">
-                    <div class="circle_selected">{{@index}}</div>
-                    {{@name}}
-                </div>
-            </div>
-            <div class="subheader">
-                <psk-label label="General Data"></psk-label>
-            </div>
-            <div class="padding-sides">
-                <div>
-                    <psk-echo class="line-text" value="Trial Name: "></psk-echo>
-                    <strong class="line-text">
-                        {{@trial.name}}
-                    </strong>
-                </div>
-                <div>
-                    <psk-echo class="line-text" value="Trial number: "></psk-echo>
-                    <strong class="line-text">
-                        {{@trial.id}}
-                    </strong>
-                </div>
-                <div>
-                    <psk-echo class="line-text"
-                              value="Sponsor: "></psk-echo>
-                    <strong class="line-text">
-                        Sponsor Test
-                    </strong>
-                </div>
-                <div>
-                    <psk-echo class="line-text" value="Details: "></psk-echo>
-                    <strong class="line-text">
-                        Status: {{@trial.status}}
-                    </strong>
-                </div>
-            </div>
-            <div class="">
-                <div class="subheader">
-                    <psk-label class="subheader" label="CONSENT"></psk-label>
-                </div>
-                <div class="padding-sides" data-for="@econsents">
+<link href="/assets/css/pages/trial.css" rel="stylesheet">
+<webc-container controller="TrialController">
+    <div class="container-child">
+        <psk-label class="user-name">{{@trial.name}}</psk-label>
+        <psk-label class="tpNumber">{{@trial.status}}</psk-label>
 
-                    <div class="dispay-flex date-div justify-content-space-between" data-tag="go-to-econsent"
-                         data="@keySSI">
-                        <div class="dispay-flex">
+        <div class="trial-details">
+            <strong>Details</strong>
+            <p>General details and description of the trial in case it is provided by the Sponsor/Site regarding specific particularities of the Trial or general message for Trial Subject</p>
+        </div>
 
-
-                            <div class="left-image padding-image">
-                                <psk-img class="left-image" src="assets/images/document_black.png"
-                                         height='40' width='40'></psk-img>
-                            </div>
-                            <div>
-                                <div data-if=@isMain>
-                                    <container slot="true">
-                                    <strong >
-                                        Main Consent
-                                    </strong>
-                                    </container>
-                                </div>
-                                <div data-if=@isMain>
-                                    <container slot="true">
-                                        <strong >
-                                            Main Consent
-                                        </strong>
-                                    </container>
-                                </div>
-                                <div data-if=@required>
-                                    <container slot="true">
-                                        <strong >
-                                            SIGNATURE REQUIRED
-                                        </strong>
-                                    </container>
-                                </div>
-                                <div data-if=@updated>
-                                    <container slot="true">
-                                        <strong >
-                                            SIGNATURE REQUIRED
-                                        </strong>
-                                    </container>
-                                </div>
-                                <div>
-                                    <strong class="dispay-flex line-text">
-                                        {{@name}}
-                                        {{@type}}
-                                    </strong>
-                                </div>
-                                <div>
-                                    <strong class="line-text">
-                                        <psk-echo value="Version: "></psk-echo>
-                                        {{@version}}
-                                    </strong>
-                                </div>
-                                <div>
-                                    <strong class="line-text">
-                                        <psk-echo value="Version Date: "></psk-echo>
-                                        {{@versionDate}}
-                                    </strong>
-                                </div>
-                            </div>
+        <div class="">
+            <strong>Consent List</strong>
+            <hr>
+            <div data-for="@econsents">
+                <psk-layout columns="3" template-columns="10% 50% 40%"
+                            class="justify-content-center align-items-center table-row"
+                            data="@keySSI" data-tag="go-to-econsent">
+                    <div>
+                        <psk-img class="left-image" height='40'
+                                 src="assets/images/document_black.png" width='40'></psk-img>
+                    </div>
+                    <div class="layout-content">
+                        <strong>
+                            {{@name}}
+                        </strong>
+                        <div>
+                            {{@version}} - {{@versionDateAsString}}
+                        </div>
+                        <div class="red-color">
+                            ({{@type}})
                         </div>
                     </div>
-                </div>
-                <hr>
+                    <div class="layout-content">
+                        Consent required
+                    </div>
+                    <hr class="layout-hr">
+                </psk-layout>
             </div>
-        </webc-container>
-    </psk-mobile>
-</psk-example>
+        </div>
+
+        <button class="back-button" data-tag="back">Back</button>
+    </div>
+</webc-container>

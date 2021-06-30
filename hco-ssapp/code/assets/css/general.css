@@ -33,6 +33,8 @@
     margin: 20px 0 40px 45%;
     height: 55px;
     width: 160px;
+    position: absolute;
+    bottom: 5px;
 }
 
 .action-button {

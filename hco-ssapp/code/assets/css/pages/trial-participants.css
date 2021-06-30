@@ -21,6 +21,11 @@ trial-table tr:nth-child(even) {
     font-weight: bold;
 }
 
+.body{
+    height: 300px;
+    overflow: auto;
+}
+
 .link-button {
     background-color: white !important;
     border: white !important;

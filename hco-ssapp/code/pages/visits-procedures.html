@@ -1,6 +1,6 @@
 <psk-page title="Home">
-    <link rel="stylesheet" href="/assets/css/pages/notifications.css">
-    <webc-container controller="NotificationsListController">
+    <link rel="stylesheet" href="/assets/css/pages/visits-procedures.css">
+    <webc-container controller="VisitsAndProceduresController">
 
         <div class="main-background">
             <div class="front">
@@ -11,24 +11,26 @@
                                  height='47' width='110'></psk-img>
                     </div>
                     <div>
-                        <psk-label class="main-title" label="@notificationType"></psk-label>
+                        <psk-label class="main-title" label="Visits and procedures "></psk-label>
                     </div>
                     <button class="logout-button" data-tag="logout">Logout</button>
                 </div>
 
                 <div class="general-table">
-                    <psk-layout columns="2" class="justify-content-center align-items-center table-row">
-                        <psk-label class="table-cell-title">Notification</psk-label>
-                        <psk-label class="table-cell-title">Recommended Action</psk-label>
+                    <psk-layout columns="3" class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell-title">Visit</psk-label>
+                        <psk-label class="table-cell-title">Period</psk-label>
+                        <psk-label class="table-cell-title">Consent Assigned</psk-label>
                     </psk-layout>
                     <hr/>
                 </div>
 
-                <div class="general-table body" data-for="@notifications">
-                    <psk-layout columns="2"
+                <div class="general-table body" data-for="@visits">
+                    <psk-layout columns="3"
                                 class="justify-content-center align-items-center table-row">
                         <psk-label class="table-cell">{{@name}}</psk-label>
-                        <psk-label class="table-cell"  data-tag="goToAction" data="@id" >{{@recommendedAction}}</psk-label>
+                        <psk-label class="table-cell">{{@period}} {{@unit}}</psk-label>
+                        <button class="link-button" data-tag="goToAction" data="@id">Consent</button>
                     </psk-layout>
 
                 </div>
