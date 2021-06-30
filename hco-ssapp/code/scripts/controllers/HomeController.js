@@ -288,7 +288,6 @@ export default class HomeController extends WebcController {
                 if (procedures) {
                     procedures.forEach(item => {
 
-
                         if (item.visits && item.visits.length > 0) {
                             item.visits.forEach(visit => {
                                 let visitToBeAdded = {name: item.name, consentSSI: item.consent.keySSI, trialSSI: message, period:visit.period, unit: visit.unit };
@@ -309,6 +308,7 @@ export default class HomeController extends WebcController {
     }
 
     _updateVisits (trialSSI){
+
         this.VisitsAndProceduresRepository.filter(`trialSSI == ${trialSSI}`, 'asc', 30,(err,data)=>{
             if (err) {
                 return console.error(err);
@@ -327,6 +327,9 @@ export default class HomeController extends WebcController {
                     });
                 })
 
+            }
+            else {
+                this._saveVisit(trialSSI);
             }
         });
     }
