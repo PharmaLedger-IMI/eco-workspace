@@ -24,6 +24,9 @@ export default class VisitsProceduresController extends WebcController {
       visits: [],
       dataLoaded: false,
       trial: null,
+      notEditable: true,
+      filters: [],
+      filteredProcedures: [],
     };
 
     this.attachEvents();
@@ -32,6 +35,7 @@ export default class VisitsProceduresController extends WebcController {
 
     eventBusService.addEventListener(Topics.RefreshTrialConsents, async () => {
       await this.getConsents();
+      this.model.filters = this.model.consents.map((x) => ({ name: x.name, selected: true }));
     });
   }
 
@@ -43,6 +47,7 @@ export default class VisitsProceduresController extends WebcController {
 
   async getConsents() {
     this.model.consents = await this.consentsService.getTrialConsents(this.keySSI);
+    this.model.filters = this.model.consents.map((x) => ({ name: x.name, selected: true }));
 
     const procedures = [];
     if (this.model.consents && this.model.consents.length > 0) {
@@ -53,9 +58,7 @@ export default class VisitsProceduresController extends WebcController {
       });
     }
 
-    if (procedures && procedures.length > 0) {
-      await this.loadModel(procedures);
-    }
+    await this.loadModel(procedures);
 
     return;
   }
@@ -116,6 +119,7 @@ export default class VisitsProceduresController extends WebcController {
         })),
       };
     });
+    this.filter();
     return;
   }
 
@@ -123,6 +127,14 @@ export default class VisitsProceduresController extends WebcController {
     if (typeof this.feedbackEmitter === 'function') {
       this.feedbackEmitter(message, title, alertType);
     }
+  }
+
+  filter() {
+    this.model.filteredProcedures = this.model.procedures.filter((x) =>
+      x.consent.options.reduce((acc, y) => {
+        return this.model.filters.find((z) => z.name === y.label).selected && y.selected === 'selected' ? true : acc;
+      }, false)
+    );
   }
 
   attachEvents() {
@@ -136,6 +148,25 @@ export default class VisitsProceduresController extends WebcController {
 
     this.on('openFeedback', (e) => {
       this.feedbackEmitter = e.detail;
+    });
+
+    this.onTagEvent('edit', 'click', () => {
+      this.model.notEditable = !this.model.notEditable;
+    });
+
+    this.onTagEvent('cancel', 'click', async () => {
+      await this.getConsents();
+      this.model.notEditable = !this.model.notEditable;
+    });
+
+    this.onTagClick('filter-procedures', async (model, target, event) => {
+      const data = target.getAttribute('data-custom');
+      const selectedFilter = this.model.filters.find((x) => x.name === data);
+      selectedFilter.selected = !selectedFilter.selected;
+
+      if (this.model.procedures && Array.isArray(this.model.procedures) && this.model.procedures.length > 0) {
+        this.filter();
+      }
     });
 
     this.onTagEvent('addProcedure', 'click', () => {
@@ -333,7 +364,7 @@ export default class VisitsProceduresController extends WebcController {
       await this.getConsents();
 
       this.sendMessageToHco('update-base-procedures', this.keySSI, 'Update trial consents');
-
+      this.model.notEditable = !this.model.notEditable;
       return;
       //TODO: Save to corresponding consents
       // TODO: Update consents if changed
