@@ -30,6 +30,8 @@ class VisitsAndProceduresRepository {
     updateAsync = (key, trialParticipant) =>
         this.StorageService.updateRecordAsync(this.tableName, key, trialParticipant);
 
+    delete = (key,callback) => this.StorageService.deleteRecord(this.tableName, key, callback);
+
 }
 
 export default {

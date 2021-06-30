@@ -26,6 +26,8 @@ class TrialParticipantRepository {
     filterAsync = async (query, sort, limit) =>
         this.StorageService.filterAsync(this.tableName, query, sort, limit);
 
+
+
     update = (key, trialParticipant, callback) =>
         this.StorageService.updateRecord(this.tableName, key, trialParticipant, callback);
 

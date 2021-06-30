@@ -116,7 +116,7 @@ export default class HomeController extends WebcController {
                 }
                 case 'update-base-procedures': {
                     this._saveNotification(data.message, 'New procedure was added ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
-                    this._saveVisit(data.message);
+                    this._updateVisits(data.message.ssi);
                     break;
                 }
                 case 'add-site': {
@@ -277,7 +277,8 @@ export default class HomeController extends WebcController {
 
     _saveVisit(message) {
 
-        this.TrialService.getEconsents(message.ssi, (err, consents) => {
+
+        this.TrialService.getEconsents(message, (err, consents) => {
             if (err) {
                 return console.error(err);
             }
@@ -286,12 +287,12 @@ export default class HomeController extends WebcController {
 
                 if (procedures) {
                     procedures.forEach(item => {
-                        let visitToBeAdded = {name: item.name, consentSSI: item.consent.keySSI, trialSSI: message.ssi};
+
 
                         if (item.visits && item.visits.length > 0) {
                             item.visits.forEach(visit => {
-                                visitToBeAdded.period = visit.period;
-                                visitToBeAdded.unit = visit.unit;
+                                let visitToBeAdded = {name: item.name, consentSSI: item.consent.keySSI, trialSSI: message, period:visit.period, unit: visit.unit };
+
                                 this.VisitsAndProceduresRepository.create(visitToBeAdded, (err, visitCreated) => {
                                     if (err) {
                                         return console.error(err);
@@ -305,5 +306,28 @@ export default class HomeController extends WebcController {
 
             })
         })
+    }
+
+    _updateVisits (trialSSI){
+        this.VisitsAndProceduresRepository.filter(`trialSSI == ${trialSSI}`, 'asc', 30,(err,data)=>{
+            if (err) {
+                return console.error(err);
+            }
+            if (data && data.length>0){
+                let nrDeleted =0;
+                data.forEach(visit => {
+                    this.VisitsAndProceduresRepository.delete(visit.pk, (err,msg)=>{
+                        if (err) {
+                            return console.error(err);
+                        }
+                        nrDeleted++;
+                        if (nrDeleted==data.length){
+                            this._saveVisit(trialSSI);
+                        }
+                    });
+                })
+
+            }
+        });
     }
 }

@@ -149,6 +149,7 @@ export default class TrialParticipantsController extends WebcController {
 
                     this.createTpDsu(response);
                     this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.SUCCESS.ADD_TRIAL_PARTICIPANT);
+                    this._getSite();
                 },
                 (event) => {
                     const response = event.detail;
@@ -225,6 +226,31 @@ export default class TrialParticipantsController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
             window.history.back();
+        });
+    }
+
+    _getSite() {
+
+        this.SiteService.getSites((err,sites)=>{
+            if (err) {
+                return console.log(err);
+            }
+            if(sites &&sites.length >0){
+                this.model.site = sites[sites.length-1];
+                this._sendMessageToSponsor();
+            }
+        });
+    }
+
+    _sendMessageToSponsor() {
+        this.CommunicationService.sendMessage(CommunicationService.identities.SPONSOR_IDENTITY, {
+            operation: 'update-site-status',
+            ssi: this.model.trialSSI,
+            stageInfo: {
+                siteSSI: this.model.site.KeySSI,
+                status:  this.model.trial.stage
+            },
+            shortDescription: 'The stage of the site changed',
         });
     }
 }
