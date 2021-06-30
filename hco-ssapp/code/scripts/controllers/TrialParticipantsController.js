@@ -1,4 +1,5 @@
 const {WebcController} = WebCardinal.controllers;
+import SiteService from '../services/SiteService.js';
 import Constants from '../utils/Constants.js';
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
@@ -30,6 +31,7 @@ export default class TrialParticipantsController extends WebcController {
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.SiteService = new SiteService(DSUStorage);
     }
 
     _initHandlers() {
