@@ -1,6 +1,8 @@
 import CommunicationService from '../services/CommunicationService.js';
 import NewConsentService from '../services/NewConsentService.js';
 import TrialsService from '../services/TrialsService.js';
+import eventBusService from '../services/EventBusService.js';
+import { Topics } from '../constants/topics.js';
 
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
@@ -27,6 +29,10 @@ export default class VisitsProceduresController extends WebcController {
     this.attachEvents();
 
     this.init();
+
+    eventBusService.addEventListener(Topics.RefreshTrialConsents, async () => {
+      await this.getConsents();
+    });
   }
 
   async init() {

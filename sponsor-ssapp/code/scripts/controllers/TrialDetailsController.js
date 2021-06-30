@@ -230,6 +230,7 @@ export default class TrialDetailsController extends WebcController {
           if (this.model.sites && this.model.sites.length > 0) {
             this.sendMessageToHco('add-trial-consent', null, 'Trial consent');
           }
+          eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
           // } else this.sendMessageToHco('add-consent', this.model.trial.keySSI, 'New trial');
         },
         (event) => {
@@ -322,6 +323,7 @@ export default class TrialDetailsController extends WebcController {
           this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
           this.sendMessageToHco('add-econsent-version', selectedSite.keySSI, 'New trial');
+          eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
         },
         (event) => {
           const error = event.detail || null;
@@ -392,8 +394,6 @@ export default class TrialDetailsController extends WebcController {
     const sites = (await this.sitesService.getSites(this.model.trial.keySSI)).map((x) => ({
       ...x,
     }));
-
-    console.log(JSON.stringify(sites, null, 2));
 
     const existingData = this.model.menu.find((x) => x.name === menuOptions.Consents).data;
     if (existingData && existingData.length > 0) {
