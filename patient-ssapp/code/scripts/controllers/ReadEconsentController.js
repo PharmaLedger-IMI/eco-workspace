@@ -24,7 +24,6 @@ export default class ReadEconsentController extends WebcController {
             currentPage: 1,
             pagesNo: 0
         }
-
         this._initConsent();
         this._initHandlers();
     }
@@ -50,7 +49,13 @@ export default class ReadEconsentController extends WebcController {
                 if (err) {
                     return console.error(err);
                 }
-                this.model.status = data.find((element) => element.foreignConsentId === this.model.historyData.ecoId);
+                let currentStatus = data.find((element) => element.foreignConsentId === this.model.historyData.ecoId);
+                if (currentStatus === undefined) {
+                    currentStatus = {
+                        actions: []
+                    }
+                }
+                this.model.status = currentStatus;
                 this.model.signed = ConsentStatusMapper.isSigned(this.model.status.actions);
                 this.model.declined = ConsentStatusMapper.isDeclined(this.model.status.actions);
                 this.model.required = ConsentStatusMapper.isRequired(this.model.status.actions);
@@ -65,6 +70,7 @@ export default class ReadEconsentController extends WebcController {
         this._attachHandlerSign();
         this._attachHandlerManuallySign();
         this._attachHandlerDownload();
+        this._attachHandlerBack();
     }
 
     _finishProcess(event, response) {
@@ -185,12 +191,12 @@ export default class ReadEconsentController extends WebcController {
 
         this.loadingTask = pdfjsLib.getDocument({data: pdfData});
         this.renderPage(this.model.pdf.currentPage);
-
         window.addEventListener("scroll", (event) => {
             let myDiv = event.target;
             if (myDiv.id === 'canvas-wrapper'
-                && myDiv.offsetHeight + myDiv.scrollTop >= myDiv.scrollHeight) {
+                && myDiv.offsetHeight + myDiv.scrollTop >= myDiv.scrollHeight - 1) {
                 this.model.showControls = true;
+
             }
         }, {capture: true});
     }
@@ -198,12 +204,15 @@ export default class ReadEconsentController extends WebcController {
     renderPage = (pageNo) => {
         this.loadingTask.promise.then((pdf) => {
             this.model.pdf.pagesNo = pdf.numPages;
+            if (pdf.numPages <= 1) {
+                this.model.showControls = true;
+            }
             pdf.getPage(pageNo).then(result => this.handlePages(pdf, result));
         }, (reason) => console.error(reason));
     }
 
     handlePages = (thePDF, page) => {
-        const viewport = page.getViewport({scale: 0.68});
+        const viewport = page.getViewport({scale: 0.64});
         let canvas = document.createElement("canvas");
         canvas.style.display = "block";
         let context = canvas.getContext('2d');
@@ -241,6 +250,13 @@ export default class ReadEconsentController extends WebcController {
         }
     };
 
+    _attachHandlerBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
+        });
+    }
 
     async _saveStatus(operation) {
         if (this.model.status && this.model.status.uid) {

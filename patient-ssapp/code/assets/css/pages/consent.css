@@ -46,6 +46,7 @@
     overflow: scroll;
     width: fit-content;
     overflow-x: hidden;
+    height: 600px;
 }
 
 #canvas-parent {
@@ -53,7 +54,6 @@
 }
 
 #canvas-parent > * {
-    border: 1px solid black;
     direction: ltr;
 }
 

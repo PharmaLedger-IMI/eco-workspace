@@ -1,53 +1,15 @@
-<psk-example class="mobile-example">
-    <psk-mobile class="noPadding background" disable-header>
-        <link rel="stylesheet" href="/assets/css/pages/trial.css">
-        <webc-container controller="EconsentController">
-            <div class="header-title">
-                <button icon="arrow-left" class="go-back-link" data-tag="go-back"></button>
-                <psk-label class="scan-error-title" label="@econsent.name"></psk-label>
-            </div>
+<link href="/assets/css/pages/trial.css" rel="stylesheet">
+<webc-container controller="EconsentController">
+    <div class="container-child">
+        <psk-label class="user-name">{{@econsent.name}}</psk-label>
+        <psk-label class="tpNumber">{{@econsent.version}} - {{@econsent.versionDate}}</psk-label>
+        <psk-label class="tpNumber">{{@status.latest}}</psk-label>
 
-            <div class="">
-                <div class="subheader">
-                    <psk-label class="subheader" label="Consent Status"></psk-label>
-                </div>
-                <div class="padding-10" data-for="@status.actions">
-                    <div class="status">
-                        <div class="circle_selected">{{@index}}</div>
-                        {{@name}}
-                    </div>
-                </div>
-
-                <div class="subheader">
-                    <psk-label class="subheader" label="@econsent.version"></psk-label>
-                </div>
-                <div class="padding-sides">
-                    <div>
-                        <psk-echo value="Document date: "></psk-echo>
-                        <strong>
-                            <psk-echo value="@econsent.versionDate"></psk-echo>
-                        </strong>
-                    </div>
-                </div>
-                <div class="consent-actions">
-                    <div class="dispay-flex">
-                        <button class="consent-read"
-                                data-tag="econsent:read">Read
-                        </button>
-<!--                        This code is commented because is not yet clear if the pdf can be downloed from this page or not -->
-<!--                        <button class="consent-read right"-->
-<!--                                data-tag="econsent:download">Download-->
-<!--                        </button>-->
-                    </div>
-                </div>
-            </div>
-            <psk-button class="patient-general-button econsents-button"
-                        event-name="econsent:versions" style="bottom: 80px;">Consent History Trial
-            </psk-button>
-            <psk-button class="patient-general-button econsents-button"
-                        event-name="econsent:question" style="bottom: 10px;">Ask Question
-            </psk-button>
-
-        </webc-container>
-    </psk-mobile>
-</psk-example>
+        <div class="patient-button-row-middle">
+            <button class="long-button" data-tag="econsent:read">View, Sign or Download</button>
+            <button class="long-button" data-tag="econsent:versions">Consent History Trial</button>
+            <button class="long-button" data-tag="econsent:question">Ask Question</button>
+        </div>
+        <button class="back-button" data-tag="back">Back</button>
+    </div>
+</webc-container>

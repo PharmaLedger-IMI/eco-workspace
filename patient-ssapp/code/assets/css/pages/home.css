@@ -28,21 +28,33 @@
 .home-default-bottom {
     width: 100%;
     height: 100%;
-    background-color: #00345B;
-    color: white;
+    color: #00345B;
+    background-color: white;
 }
 
-.user-name {
-    margin-top: 50px;
-    font-size: 26px;
-    font-weight: bold;
-    display: block;
-    text-align: center;
+.patient-button-row .psk-card {
+    position: initial !important;
 }
-.tpNumber {
-    margin-top: 70px;
-    font-size: 22px;
-    font-weight: bold;
-    display: block;
-    text-align: center;
+
+webc-container {
+    background-color: red;
+}
+
+.trial-img img {
+    filter: invert(100%);
+}
+
+.home-default-top {
+    width: 100%;
+    height: 100%;
+    margin: 20px 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background: white;
+    padding-top: 50px;
+}
+
+.home-default-top img {
+    padding: 10px;
 }

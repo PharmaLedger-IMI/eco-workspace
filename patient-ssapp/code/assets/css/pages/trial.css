@@ -1,13 +1,12 @@
 .left-image{
     float:left;
-    margin-top: 10px;
-    margin-right: 10px;
-
 }
+
 .consent-block {
     display: flex;
     clear: both;
 }
+
 .header-title {
     display: flex;
     height: 50px;
@@ -135,4 +134,21 @@
 
 .consent-read right {
     margin-right: 10%;
+}
+
+.trial-details {
+    margin: 10% 0;
+}
+
+.layout-content {
+    margin-left: 5px;
+}
+
+.red-color {
+    color: red;
+}
+
+.layout-hr {
+    width: 350px;
+    margin-top: 0;
 }

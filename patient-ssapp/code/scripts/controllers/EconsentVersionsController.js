@@ -33,7 +33,6 @@ export default class EconsentVersionsController extends WebcController {
                 if (err) {
                     return console.error(err);
                 }
-                debugger;
                 console.log(data);
             });
          });
