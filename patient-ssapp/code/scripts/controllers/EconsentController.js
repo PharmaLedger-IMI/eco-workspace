@@ -13,6 +13,7 @@ export default class EconsentController extends WebcController {
     this._initHandlers();
     this.model.econsent = {};
     this.model.historyData = this.history.win.history.state.state;
+
     this.model.status = {
       actions: [],
       latest: 'N/A'
@@ -83,6 +84,7 @@ export default class EconsentController extends WebcController {
 
   _attachHandlerReadEconsent() {
     this.onTagClick('econsent:read', (model, target, event) => {
+
       this.navigateToPageTag('sign-econsent', { ...this.model.historyData });
     });
   }

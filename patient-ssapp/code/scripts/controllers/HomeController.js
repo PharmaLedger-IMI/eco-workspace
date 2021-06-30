@@ -77,13 +77,15 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case 'add-to-trial' : {
-                    this.addMessageToNotificationDsu(data);
+                    //this.addMessageToNotificationDsu(data);
+
                     this._saveTrialParticipantInfo(data.message.useCaseSpecifics);
                     this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                         if (err) {
                             return console.log(err);
                         }
                         trial.uid = trial.keySSI;
+                        this.model.did= data.message.useCaseSpecifics.did,
                         this.TrialService.updateTrial(
                             {
                                 ...trial,
@@ -120,9 +122,10 @@ export default class HomeController extends WebcController {
         this.onTagEvent('home:trial', 'click', (trial, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
+
             this.navigateToPageTag('trial', {
                 trialSSI: trial.keySSI,
-                tpNumber: trial.tpNumber,
+                tpNumber: this.model.did,
             });
         });
     }
@@ -170,8 +173,9 @@ export default class HomeController extends WebcController {
 
     _saveTrialParticipantInfo(data) {
         let trialParticipant = {
-            name: data.tpName, tpNumber: data.tpNumber, did: data.did
+            name: data.tpName, tpNumber: data.tpNumber, did: data.tpDid
         }
+
 
         if (!this.model.tp||!this.model.tp.name) {
             this.TrialParticipantRepository.create(trialParticipant, (err, data) => {
@@ -180,14 +184,17 @@ export default class HomeController extends WebcController {
                 }
 
             });
-        } else {
+        } else if (data.tpNumber) {
 
             this.model.tp.tpNumber = trialParticipant.tpNumber;
+            this.model.tp.did = trialParticipant.tpDid;
+            this.model.tp.name = trialParticipant.name;
             this.TrialParticipantRepository.update(this.model.tp.uid, this.model.tp, (err, data) => {
                 if (err) {
                     return console.log(err);
                 }
-            });
+            }
+            );
         }
 
     }

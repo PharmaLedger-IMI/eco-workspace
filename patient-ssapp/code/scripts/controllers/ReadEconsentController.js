@@ -3,7 +3,7 @@ import FileDownloader from '../utils/FileDownloader.js';
 import CommunicationService from '../services/CommunicationService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
-
+import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
 const {WebcController} = WebCardinal.controllers;
 
 const TEXT_MIME_TYPE = 'text/';
@@ -32,6 +32,7 @@ export default class ReadEconsentController extends WebcController {
         this.TrialService = new TrialService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
         this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
+        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
     }
 
     _initConsent() {
@@ -145,23 +146,35 @@ export default class ReadEconsentController extends WebcController {
 
     sendMessageToSponsorAndHCO(action, ssi, shortMessage) {
         const currentDate = new Date();
-        let sendObject = {
-            operation: 'update-econsent',
-            ssi: ssi,
-            useCaseSpecifics: {
-                trialSSI: this.model.historyData.trialuid,
-                tpNumber: this.model.historyData.tpNumber,
-                version: this.model.historyData.ecoVersion,
-                action: {
-                    name: action,
-                    date: currentDate.toISOString(),
-                    toShowDate: currentDate.toLocaleDateString(),
-                },
-            },
-            shortDescription: shortMessage,
-        };
-        this.CommunicationService.sendMessage(CommunicationService.identities.SPONSOR_IDENTITY, sendObject);
-        this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, sendObject);
+
+
+    this.TrialParticipantRepository.findAll((err, data) => {
+            if (err) {
+                return console.log(err);
+            }
+
+            if (data && data.length > 0) {
+                this.model.tp = data[0];
+                let sendObject = {
+                    operation: 'update-econsent',
+                    ssi: ssi,
+                    useCaseSpecifics: {
+                        trialSSI: this.model.historyData.trialuid,
+                        tpNumber: this.model.tp.did,
+                        version: this.model.historyData.ecoVersion,
+                        action: {
+                            name: action,
+                            date: currentDate.toISOString(),
+                            toShowDate: currentDate.toLocaleDateString(),
+                        },
+                    },
+                    shortDescription: shortMessage,
+                };
+                this.CommunicationService.sendMessage(CommunicationService.identities.SPONSOR_IDENTITY, sendObject);
+                this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, sendObject);
+            }
+        });
+
     }
 
     _downloadFile = () => {
