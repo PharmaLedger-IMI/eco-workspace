@@ -77,7 +77,7 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case 'add-to-trial' : {
-                    //this.addMessageToNotificationDsu(data);
+                    this.addMessageToNotificationDsu(data);
 
                     this._saveTrialParticipantInfo(data.message.useCaseSpecifics);
                     this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
