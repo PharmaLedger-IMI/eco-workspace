@@ -1,6 +1,8 @@
 import CommunicationService from '../services/CommunicationService.js';
 import NewConsentService from '../services/NewConsentService.js';
 import TrialsService from '../services/TrialsService.js';
+import eventBusService from '../services/EventBusService.js';
+import { Topics } from '../constants/topics.js';
 
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
@@ -22,11 +24,19 @@ export default class VisitsProceduresController extends WebcController {
       visits: [],
       dataLoaded: false,
       trial: null,
+      notEditable: true,
+      filters: [],
+      filteredProcedures: [],
     };
 
     this.attachEvents();
 
     this.init();
+
+    eventBusService.addEventListener(Topics.RefreshTrialConsents, async () => {
+      await this.getConsents();
+      this.model.filters = this.model.consents.map((x) => ({ name: x.name, selected: true }));
+    });
   }
 
   async init() {
@@ -37,6 +47,7 @@ export default class VisitsProceduresController extends WebcController {
 
   async getConsents() {
     this.model.consents = await this.consentsService.getTrialConsents(this.keySSI);
+    this.model.filters = this.model.consents.map((x) => ({ name: x.name, selected: true }));
 
     const procedures = [];
     if (this.model.consents && this.model.consents.length > 0) {
@@ -47,9 +58,7 @@ export default class VisitsProceduresController extends WebcController {
       });
     }
 
-    if (procedures && procedures.length > 0) {
-      await this.loadModel(procedures);
-    }
+    await this.loadModel(procedures);
 
     return;
   }
@@ -110,6 +119,7 @@ export default class VisitsProceduresController extends WebcController {
         })),
       };
     });
+    this.filter();
     return;
   }
 
@@ -119,17 +129,44 @@ export default class VisitsProceduresController extends WebcController {
     }
   }
 
+  filter() {
+    this.model.filteredProcedures = this.model.procedures.filter((x) =>
+      x.consent.options.reduce((acc, y) => {
+        return this.model.filters.find((z) => z.name === y.label).selected && y.selected === 'selected' ? true : acc;
+      }, false)
+    );
+  }
+
   attachEvents() {
     this.model.addExpression(
-        'proceduresExist',
-        () => {
-          return this.model.procedures && Array.isArray(this.model.procedures) && this.model.procedures.length > 0;
-        },
-        'procedures'
+      'proceduresExist',
+      () => {
+        return this.model.procedures && Array.isArray(this.model.procedures) && this.model.procedures.length > 0;
+      },
+      'procedures'
     );
 
     this.on('openFeedback', (e) => {
       this.feedbackEmitter = e.detail;
+    });
+
+    this.onTagEvent('edit', 'click', () => {
+      this.model.notEditable = !this.model.notEditable;
+    });
+
+    this.onTagEvent('cancel', 'click', async () => {
+      await this.getConsents();
+      this.model.notEditable = !this.model.notEditable;
+    });
+
+    this.onTagClick('filter-procedures', async (model, target, event) => {
+      const data = target.getAttribute('data-custom');
+      const selectedFilter = this.model.filters.find((x) => x.name === data);
+      selectedFilter.selected = !selectedFilter.selected;
+
+      if (this.model.procedures && Array.isArray(this.model.procedures) && this.model.procedures.length > 0) {
+        this.filter();
+      }
     });
 
     this.onTagEvent('addProcedure', 'click', () => {
@@ -159,36 +196,36 @@ export default class VisitsProceduresController extends WebcController {
             })),
           },
           visits:
-              this.model.visits.length > 0
-                  ? this.model.visits.map((y) => ({
-                    id: procedures.length + ':' + y.id,
-                    checkbox: {
-                      type: 'checkbox',
-                      placeholder: 'enabled',
-                      label: y.id,
-                      checked: true,
-                    },
-                    period: {
-                      label: 'Period',
-                      name: 'period',
-                      required: true,
-                      placeholder: 'Period...',
-                      value: '',
-                      type: 'number',
-                    },
-                    timeUnit: {
-                      id: 'unit_' + procedures.length + '_' + y.id,
-                      label: 'Select a time unit',
-                      placeholder: 'Please select an option',
-                      required: true,
-                      options: [
-                        { label: 'Day', value: 'Day' },
-                        { label: 'Week', value: 'Week' },
-                        { label: 'Month', value: 'Month' },
-                      ],
-                    },
-                  }))
-                  : [],
+            this.model.visits.length > 0
+              ? this.model.visits.map((y) => ({
+                  id: procedures.length + ':' + y.id,
+                  checkbox: {
+                    type: 'checkbox',
+                    placeholder: 'enabled',
+                    label: y.id,
+                    checked: true,
+                  },
+                  period: {
+                    label: 'Period',
+                    name: 'period',
+                    required: true,
+                    placeholder: 'Period...',
+                    value: '',
+                    type: 'number',
+                  },
+                  timeUnit: {
+                    id: 'unit_' + procedures.length + '_' + y.id,
+                    label: 'Select a time unit',
+                    placeholder: 'Please select an option',
+                    required: true,
+                    options: [
+                      { label: 'Day', value: 'Day' },
+                      { label: 'Week', value: 'Week' },
+                      { label: 'Month', value: 'Month' },
+                    ],
+                  },
+                }))
+              : [],
         },
       ];
 
@@ -241,28 +278,28 @@ export default class VisitsProceduresController extends WebcController {
                 label: 'Day',
                 value: 'Day',
                 selected: !!this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id)
-                    ? this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id).value === 'Day'
-                        ? 'selected'
-                        : null
-                    : null,
+                  ? this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id).value === 'Day'
+                    ? 'selected'
+                    : null
+                  : null,
               },
               {
                 label: 'Week',
                 value: 'Week',
                 selected: !!this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id)
-                    ? this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id).value === 'Week'
-                        ? 'selected'
-                        : null
-                    : null,
+                  ? this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id).value === 'Week'
+                    ? 'selected'
+                    : null
+                  : null,
               },
               {
                 label: 'Month',
                 value: 'Month',
                 selected: !!this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id)
-                    ? this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id).value === 'Month'
-                        ? 'selected'
-                        : null
-                    : null,
+                  ? this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id).value === 'Month'
+                    ? 'selected'
+                    : null
+                  : null,
               },
             ],
           },
@@ -327,7 +364,7 @@ export default class VisitsProceduresController extends WebcController {
       await this.getConsents();
 
       this.sendMessageToHco('update-base-procedures', this.keySSI, 'Update trial consents');
-
+      this.model.notEditable = !this.model.notEditable;
       return;
       //TODO: Save to corresponding consents
       // TODO: Update consents if changed

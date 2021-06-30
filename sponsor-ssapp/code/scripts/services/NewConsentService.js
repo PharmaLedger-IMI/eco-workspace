@@ -1,5 +1,6 @@
 import getSharedStorage from './SharedDBStorageService.js';
 import DSUService from './DSUService.js';
+import SitesService from './SitesService.js';
 
 export default class NewConsentService extends DSUService {
   CONSENTS_TABLE = 'consents';
@@ -9,6 +10,7 @@ export default class NewConsentService extends DSUService {
   constructor(DSUStorage) {
     super(DSUStorage, '/consents');
     this.storageService = getSharedStorage(DSUStorage);
+    this.siteService = new SitesService(DSUStorage);
     this.DSUStorage = DSUStorage;
   }
 
@@ -88,39 +90,58 @@ export default class NewConsentService extends DSUService {
     return consent;
   }
 
-  async updateConsent(data, trialKeySSI, siteKeySSI, consent) {
-    const siteConsents = await this.getTrialConsents(siteKeySSI);
-
-    if (consent.versions.length === 1) {
+  async updateConsent(data, trialKeySSI, site, consent) {
+    const selectedSiteConsent = site.consents.find((x) => x.id === consent.id);
+    if (selectedSiteConsent.versions.length === 1) {
       const consentData = {
         id: consent.id,
-        parentKeySSI: consent.KeySSI,
+        parentKeySSI: consent.uid,
         name: consent.name,
         type: consent.type,
-        versions: consent.versions,
+        versions: selectedSiteConsent.versions,
       };
+
+      console.log(data, trialKeySSI, site.keySSI);
+      console.log(JSON.stringify(consent, null, 2));
+
       const newConsent = await this.saveEntityAsync(consentData);
 
-      // const attachmentKeySSI = await this.uploadFile(
-      //   '/consents/' + consent.uid + '/consent/' + data.versions[0].version,
-      //   data.versions[0].file
-      // );
-      // consent.versions[0].attachmentKeySSI = attachmentKeySSI;
-      // consent.versions[0].attachment = data.versions[0].file.name;
-      // const updatedConsent = await this.updateEntityAsync(consent);
+      const attachmentKeySSI = await this.uploadFile(
+        '/consents/' + newConsent.uid + '/consent/' + data.version,
+        data.file
+      );
+
+      data.attachmentKeySSI = attachmentKeySSI;
+      data.attachment = data.file.name;
+      newConsent.versions.push(data);
+      const updatedConsentDSU = await this.updateEntityAsync(newConsent);
+      const siteConsents = await this.addConsentToDB(updatedConsentDSU, site.keySSI);
+
+      // await this.updateConsentToDB(updatedConsent, site.keySSI);
+
+      await this.mountConsent(site.keySSI, updatedConsentDSU.uid, true);
+
+      await this.siteService.updateSiteConsents(updatedConsentDSU, site.id, trialKeySSI);
+
+      return updatedConsentDSU;
     } else {
+      const consentDSU = await this.getConsent(selectedSiteConsent.uid);
+      const attachmentKeySSI = await this.uploadFile(
+        '/consents/' + consentDSU.uid + '/consent/' + data.version,
+        data.file
+      );
+      data.attachmentKeySSI = attachmentKeySSI;
+      data.attachment = data.file.name;
+      consentDSU.versions.push(data);
+      const updatedConsent = await this.updateEntityAsync(consentDSU);
+      await this.updateConsentToDB(updatedConsent, site.keySSI);
+      await this.siteService.updateSiteConsents(updatedConsent, site.id, trialKeySSI);
+
+      // await this.unmountConsent(site.keySSI, updatedConsent.uid, true);
+      // await this.mountConsent(site.keySSI, updatedConsent.uid, true);
+
+      return updatedConsent;
     }
-    // const consent = await this.getConsent(consentKeySSI);
-    // const attachmentKeySSI = await this.uploadFile('/consents/' + consent.uid + '/consent/' + data.version, data.file);
-    // data.attachmentKeySSI = attachmentKeySSI;
-    // data.attachment = data.file.name;
-    // consent.versions.push(data);
-    // const updatedConsent = await this.updateEntityAsync(consent);
-    // await this.updateConsentToDB(consent, trialKeySSI);
-
-    // await this.mountConsent(trialKeySSI, consent.uid);
-
-    // return consent;
   }
 
   async deleteConsent(trialKeySSI, consentKeySSI) {
@@ -190,12 +211,14 @@ export default class NewConsentService extends DSUService {
 
   async mountConsent(keySSI, consentKeySSI, isSiteConsent) {
     const path = (isSiteConsent ? this.SITES_PATH : this.TRIALS_PATH) + '/' + keySSI + '/' + 'consent';
-    return await this.mountEntityAsync(consentKeySSI, path);
+    await this.mountEntityAsync(consentKeySSI, path);
+    return;
   }
 
   async unmountConsent(keySSI, consentKeySSI, isSiteConsent) {
     const path = (isSiteConsent ? this.SITES_PATH : this.TRIALS_PATH) + '/' + keySSI + '/' + 'consent';
-    return await this.unmountEntityAsync(consentKeySSI, path);
+    await this.unmountEntityAsync(consentKeySSI, path);
+    return;
   }
 
   //TODO: do it in DSUService

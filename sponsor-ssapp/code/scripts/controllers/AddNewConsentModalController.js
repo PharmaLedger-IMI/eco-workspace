@@ -204,14 +204,9 @@ export default class AddNewConsentModalController extends WebcController {
           };
 
           // console.log(JSON.stringify(this.site, null, 2), JSON.stringify(this.isUpdate, null, 2));
-          const result = await this.consentsService.updateConsent(
-            version,
-            this.keySSI,
-            this.site.keySSI,
-            this.isUpdate
-          );
-          // this.model.submitButtonDisabled = false;
-          // this.send('confirmed', result);
+          const result = await this.consentsService.updateConsent(version, this.keySSI, this.site, this.isUpdate);
+          this.model.submitButtonDisabled = false;
+          this.send('confirmed', result);
         }
       } catch (error) {
         this.send('closed', new Error('There was an issue creating the trial'));

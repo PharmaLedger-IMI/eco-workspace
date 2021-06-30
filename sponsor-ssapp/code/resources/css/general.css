@@ -175,6 +175,10 @@ webc-app-identity {
   background-color: #f0f0f0;
 }
 
+.background-blue {
+  background-color: rgba(0, 136, 152, 0.8);
+}
+
 /* Table fix background */
 
 .btn-bare.gray .btn.btn-primary {

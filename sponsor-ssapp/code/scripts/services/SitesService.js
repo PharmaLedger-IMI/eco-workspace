@@ -29,7 +29,6 @@ export default class SitesService extends DSUService {
   }
 
   async createSite(data, trialKeySSI) {
-    debugger;
     const site = await this.saveEntityAsync({
       ...data,
       stage: siteStagesEnum.Created,
@@ -64,7 +63,7 @@ export default class SitesService extends DSUService {
     return updatedSite;
   }
 
-  async changeSiteStage(stage, id) {
+  async changeSiteStage(stage, id, trialKeySSI) {
     const site = await this.getSiteFromDB(id, trialKeySSI);
     const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.id, {
       ...site,
@@ -75,6 +74,24 @@ export default class SitesService extends DSUService {
     const updatedSiteDSU = await this.updateEntityAsync({ ...siteDSU, stage });
 
     return updatedSite;
+  }
+
+  async updateSiteConsents(data, id, trialKeySSI) {
+    debugger;
+    const site = await this.getSiteFromDB(id, trialKeySSI);
+    const existingConsent = site.consents.find((x) => x.id === data.id);
+    if (existingConsent) {
+      existingConsent.versions = data.versions;
+    } else {
+      site.consents = [...site.consents, data];
+    }
+    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.id, {
+      ...site,
+    });
+
+    const siteDSU = await this.getEntityAsync(site.keySSI);
+    const updatedSiteDSU = await this.updateEntityAsync({ ...siteDSU, consents: site.consents });
+    return updatedSiteDSU;
   }
 
   async deleteSite(id, trialKeySSI) {
