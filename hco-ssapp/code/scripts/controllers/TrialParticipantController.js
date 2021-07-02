@@ -213,6 +213,7 @@ export default class TrialParticipantController extends WebcController {
                         if (tpVersion && tpVersion.actionNeeded) {
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.TO_BE_SIGNED) {
                                 econsent.signed = true;
+                                this.model.tp.tpSigned = true;
                                 econsent.tsSignedDate = tpVersion.toShowDate;
 
                             }
@@ -229,7 +230,7 @@ export default class TrialParticipantController extends WebcController {
                     if (hcoVersions && hcoVersions.length > 0) {
                         let hcVersion = hcoVersions[hcoVersions.length - 1];
                         econsent.hcoDate = hcVersion.toShowDate;
-
+                        this.model.tp.hcoSigned = true;
                         econsent.hcoSigned = true;
 
                     }

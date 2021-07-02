@@ -17,8 +17,22 @@
                 </div>
 
                 <div class="top-buttons">
-                    <button class="tp-button left" data-tag="tp:visits">Visits and Procedures</button>
-                    <button class="tp-button" data-tag="tp:setTpNumber">Set TS Number</button>
+
+                    <div class="button-slot" data-if="@tp.hcoSigned">
+                        <div slot="true">
+                            <button class="tp-button left" data-tag="tp:visits">Visits and Procedures</button>
+                        </div>
+                    </div>
+
+                    <div class="button-slot" data-if="@tp.tpNumber">
+                        <div slot="false">
+                            <div data-if="@tp.tpSigned">
+                                <button class="tp-button" data-tag="tp:setTpNumber">Set TS Number</button>
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
                 <div class="general-table">
                     <psk-layout columns="6" class="justify-content-center align-items-center table-row">
@@ -71,17 +85,7 @@
                         </div>
                     </psk-layout>
                 </div>
-<!--                <div data-if="@tp.tpNumber">-->
-<!--                    <div slot="false">-->
-<!--                        <div data-if="@tp.tpSigned">-->
-<!--                            <button slot="true" data-tag="tp:setTpNumber">-->
-<!--                                SET TP NUMBER-->
-<!--                            </button>-->
-<!--                            <psk-label slot="false" class="table-cell">NOT YET SIGNED</psk-label>-->
-<!--                        </div>-->
-<!--                    </div>-->
 
-<!--                </div>-->
                 <button class="back-button" data-tag="back">Back</button>
             </div>
 

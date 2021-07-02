@@ -26,10 +26,16 @@
     border-radius: 5px;
     height: 55px;
     padding: 0 30px;
-    margin-left: 10px;
-    margin-bottom: 30px;
+
 }
 
+.button-slot{
+    height: 55px;
+    margin-left: 10px;
+    margin-bottom: 30px;
+    position: relative;
+    display: inline-block;
+}
 .tp-button left{
     background-color: #008798;
     border: none;

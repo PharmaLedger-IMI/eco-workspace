@@ -315,6 +315,7 @@ export default class HomeController extends WebcController {
 
     _updateVisits(trialSSI) {
 
+        //Here it will be updated and sync  but at this moment there is no solution to identify  and sync the visits and procedures
         this.VisitsAndProceduresRepository.filter(`trialSSI == ${trialSSI}`, 'asc', 30, (err, data) => {
             if (err) {
                 return console.error(err);
