@@ -47,7 +47,7 @@ export default class HomeController extends WebcController {
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.StorageService = SharedStorage.getInstance(DSUStorage);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
         this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
@@ -56,10 +56,10 @@ export default class HomeController extends WebcController {
     }
 
     _initHandlers() {
-
         this._attachHandlerNotifications();
         this._attachHandlerPatients();
         this._attachHandlerTrialManagement();
+        //this._demoOfDomainCommunications();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -161,8 +161,18 @@ export default class HomeController extends WebcController {
         });
     }
 
-    _updateEconsentWithDetails(message) {
+    _demoOfDomainCommunications() {
+        this.CommunicationService.sendMessage(CommunicationService.identities.IOT.PROFESSIONAL_IDENTITY, {
+            operation: "operation",
+            ssi: "ssi",
+            shortDescription: "shortMessage",
+        });
+        this.CommunicationService.listenForMessages('iot', (err, data) => {
+            debugger
+        });
+    }
 
+    _updateEconsentWithDetails(message) {
         this.TrialService.getEconsent(message.useCaseSpecifics.trialSSI, message.ssi, (err, econsent) => {
             if (err) {
                 return console.log(err);
@@ -235,7 +245,7 @@ export default class HomeController extends WebcController {
     }
 
     sendMessageToPatient(operation, ssi, shortMessage) {
-        this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
+        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
             operation: operation,
             ssi: ssi,
             shortDescription: shortMessage,

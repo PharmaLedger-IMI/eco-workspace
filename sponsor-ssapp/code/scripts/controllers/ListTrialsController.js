@@ -75,7 +75,7 @@ export default class ListTrialsController extends WebcController {
 
     this.trialsService = new TrialsService(this.DSUStorage);
     this.participantsService = new ParticipantsService(this.DSUStorage);
-    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.SPONSOR_IDENTITY);
+    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
     this.CommunicationService.listenForMessages(async (err, data) => {
       if (err) {
         return console.error(err);
@@ -263,7 +263,7 @@ export default class ListTrialsController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage) {
-    this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, {
+    this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, {
       operation: operation,
       ssi: ssi,
       shortDescription: shortMessage,
