@@ -11,7 +11,7 @@
                                  height='47' width='110'></psk-img>
                     </div>
                     <div>
-                        <psk-label class="main-title" label="Trial Management"></psk-label>
+                        <psk-label class="main-title">Trial History: {{@trial.name}}</psk-label>
                     </div>
                     <button class="logout-button" data-tag="logout">Logout</button>
                 </div>
@@ -32,7 +32,6 @@
                     <psk-layout columns="5"
                                 class="justify-content-center align-items-center table-row econsent-row-blue">
                         <psk-label class="table-cell">{{@version}} - {{@versionDateAsString}}</psk-label>
-                        <psk-label class="table-cell">{{@versionDateAsString}}</psk-label>
                         <div data-if="@tpSigned">
                             <button slot="true" class="action-button smaller-btn" data-tag="econsent:sign">
                                 {{@tpApproval}}

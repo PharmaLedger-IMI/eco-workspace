@@ -20,7 +20,7 @@ export default class EconsentVersionsController extends WebcController {
         });
         this._initServices(this.DSUStorage);
         this._initHandlers();
-        this._initConsent();
+        this._initTrialAndConsent();
     }
 
     _initServices(DSUStorage) {
@@ -37,7 +37,13 @@ export default class EconsentVersionsController extends WebcController {
         });
     }
 
-    _initConsent() {
+    _initTrialAndConsent() {
+        this.TrialService.getTrial(this.model.trialSSI, (err, trial) => {
+            if (err) {
+                return console.log(err);
+            }
+            this.model.trial = trial;
+        });
         this.TrialService.getEconsent(this.model.trialSSI, this.model.econsentSSI, (err, data) => {
             if (err) {
                 return console.log(err);

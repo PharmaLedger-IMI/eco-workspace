@@ -18,7 +18,8 @@ export default class TrialParticipantDetailsController extends WebcController {
         this.setModel({
             ...getInitModel(),
             ...this.history.win.history.state.state,
-            consentsSigned: [{name: 'V1 - Assent Form 1'}, {name: 'V1 - Parental Consent'}]
+            consentsSigned: [],
+            userActionsToShow: []
         });
         this._initServices(this.DSUStorage);
         this._initHandlers();
@@ -40,11 +41,25 @@ export default class TrialParticipantDetailsController extends WebcController {
     }
 
     async _initTrialParticipant(keySSI) {
+
         this.model.trialParticipant = await this.TrialParticipantRepository.findByAsync(this.model.tpUid);
 
         let userActions = await this._getUserActionsFromEconsents(keySSI, this.model.trialParticipant.did);
 
-
+        let userActionsToShow = [
+            {
+                name: 'Enrolled',
+                date: this.model.trialParticipant.enrolledDate
+            }
+        ];
+        userActions.filter(ua => ua.action.type === 'tp').forEach(ua => {
+            let actualAction = ua.action;
+            userActionsToShow.push({
+                name: actualAction.status,
+                date: actualAction.toShowDate
+            })
+        })
+        this.model.userActionsToShow = userActionsToShow;
         this.model.lastAction = userActions.length === 0 ? undefined : userActions[userActions.length - 1].action.name
             .split('-')
             .filter(action => action.length > 0)

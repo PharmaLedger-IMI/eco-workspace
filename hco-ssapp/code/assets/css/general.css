@@ -194,3 +194,7 @@ hr {
     margin-top: 0.2rem;
     margin-bottom: 0.2rem;
 }
+
+.table-like-elements > * {
+    display: table-row;
+}

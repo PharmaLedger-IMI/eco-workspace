@@ -217,7 +217,7 @@ export default class EconsentSignController extends WebcController {
 
         const currentDate = new Date();
         currentVersion.actions.push({
-
+            name: 'sign',
             tpNumber: this.model.trialParticipantNumber,
             type: 'hco',
             status: Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED,

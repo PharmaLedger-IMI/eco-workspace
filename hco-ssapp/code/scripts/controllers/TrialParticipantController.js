@@ -52,7 +52,6 @@ export default class TrialParticipantController extends WebcController {
             if (err) {
                 return console.log(err);
             }
-            debugger;
             this.model.econsents = data.map((consent) => {
                 return {
                     ...consent,
@@ -92,7 +91,6 @@ export default class TrialParticipantController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
 
-            debugger;
             this.navigateToPageTag('econsent-sign', {
                 trialSSI: this.model.trialSSI,
                 econsentSSI: model.KeySSI,
