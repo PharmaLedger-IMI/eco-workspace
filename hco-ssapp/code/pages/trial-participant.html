@@ -53,7 +53,15 @@
                         <psk-label class="table-cell">{{@type}}</psk-label>
                         <psk-label class="table-cell">{{@lastVersion}}</psk-label>
                         <psk-label class="table-cell">{{@tsSignedDate}}</psk-label>
-                        <psk-label class="table-cell">{{@tsWithdrawDate}}</psk-label>
+                        <div data-if="@tsWithdrawedIntentionDate">
+                            <div slot="true">
+                                <psk-label class="table-cell red">{{@tsWithdrawedIntentionDate}}</psk-label>
+                            </div>
+                            <div slot="false">
+                                <psk-label class="table-cell">{{@tsWithdrawDate}}</psk-label>
+                            </div>
+                        </div>
+
                         <psk-label class="table-cell">{{@hcoDate}}</psk-label>
                         <div class="table-cell">
                             <div data-if="@showSigned">

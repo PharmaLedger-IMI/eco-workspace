@@ -227,6 +227,7 @@ export default class TrialParticipantController extends WebcController {
                             }
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.CONTACT) {
                                 econsent.contact = true;
+                                econsent.tsWithdrawedIntentionDate = 'Intention';
                             }
                         }
                     }
