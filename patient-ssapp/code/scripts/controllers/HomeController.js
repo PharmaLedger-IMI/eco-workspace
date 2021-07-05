@@ -39,7 +39,7 @@ export default class HomeController extends WebcController {
         this.NotificationsService = new NotificationsService(DSUStorage);
         this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.PATIENT_IDENTITY);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.PATIENT_IDENTITY);
     }
 
     _initHandlers() {
@@ -78,14 +78,12 @@ export default class HomeController extends WebcController {
                 }
                 case 'add-to-trial' : {
                     this.addMessageToNotificationDsu(data);
-
                     this._saveTrialParticipantInfo(data.message.useCaseSpecifics);
                     this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                         if (err) {
                             return console.log(err);
                         }
                         trial.uid = trial.keySSI;
-                        this.model.did= data.message.useCaseSpecifics.did,
                         this.TrialService.updateTrial(
                             {
                                 ...trial,

@@ -29,7 +29,7 @@ export default class TrialParticipantsController extends WebcController {
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
         this.SiteService = new SiteService(DSUStorage);
     }
@@ -205,7 +205,7 @@ export default class TrialParticipantsController extends WebcController {
     }
 
     sendMessageToPatient(operation, ssi, tp, shortMessage) {
-        this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
+        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
             operation: operation,
             ssi: ssi,
             useCaseSpecifics: {
@@ -245,7 +245,7 @@ export default class TrialParticipantsController extends WebcController {
     }
 
     _sendMessageToSponsor() {
-        this.CommunicationService.sendMessage(CommunicationService.identities.SPONSOR_IDENTITY, {
+        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, {
             operation: 'update-site-status',
             ssi: this.model.trialSSI,
             stageInfo: {

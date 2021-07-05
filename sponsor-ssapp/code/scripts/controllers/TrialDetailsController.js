@@ -19,7 +19,7 @@ export default class TrialDetailsController extends WebcController {
     this.storageService = getSharedStorage(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
-    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.SPONSOR_IDENTITY);
+    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
     this.newConsentService = new NewConsentService(this.DSUStorage);
 
     let { id, keySSI } = this.history.location.state;
@@ -450,7 +450,7 @@ export default class TrialDetailsController extends WebcController {
     }
   }
 
-  sendMessageToHco(operation, ssi, shortMessage, did = CommunicationService.identities.HCO_IDENTITY) {
+  sendMessageToHco(operation, ssi, shortMessage, did = CommunicationService.identities.ECO.HCO_IDENTITY) {
     console.log({
       operation: operation,
       ssi: ssi,
