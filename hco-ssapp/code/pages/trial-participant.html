@@ -11,7 +11,7 @@
                                  height='47' width='110'></psk-img>
                     </div>
                     <div>
-                        <psk-label class="main-title" label="Trial Subject"></psk-label>
+                        <psk-label class="main-title">Trial Subject: {{@tp.name}}</psk-label>
                     </div>
                     <button class="logout-button" data-tag="logout">Logout</button>
                 </div>
@@ -35,11 +35,12 @@
 
                 </div>
                 <div class="general-table">
-                    <psk-layout columns="6" class="justify-content-center align-items-center table-row">
+                    <psk-layout columns="7" class="justify-content-center align-items-center table-row">
                         <psk-label class="table-title">Consent Name & ID</psk-label>
                         <psk-label class="table-title">Type</psk-label>
                         <psk-label class="table-title">Active Version Approved</psk-label>
                         <psk-label class="table-title">TS Signature</psk-label>
+                        <psk-label class="table-title">TS Withdraw</psk-label>
                         <psk-label class="table-title">HCP Signature</psk-label>
                         <psk-label class="table-title">Options</psk-label>
                     </psk-layout>
@@ -47,11 +48,12 @@
                 </div>
 
                 <div class="general-table body" data-for="@econsents">
-                    <psk-layout columns="6" class="justify-content-center align-items-center table-row">
+                    <psk-layout columns="7" class="justify-content-center align-items-center table-row">
                         <psk-label class="table-cell">{{@name}}</psk-label>
                         <psk-label class="table-cell">{{@type}}</psk-label>
-                        <psk-label class="table-cell">Version {{@version}}</psk-label>
+                        <psk-label class="table-cell">{{@lastVersion}}</psk-label>
                         <psk-label class="table-cell">{{@tsSignedDate}}</psk-label>
+                        <psk-label class="table-cell">{{@tsWithdrawDate}}</psk-label>
                         <psk-label class="table-cell">{{@hcoDate}}</psk-label>
                         <div class="table-cell">
                             <div data-if="@showSigned">

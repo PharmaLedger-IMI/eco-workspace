@@ -52,11 +52,11 @@ export default class TrialParticipantController extends WebcController {
             if (err) {
                 return console.log(err);
             }
-
+            debugger;
             this.model.econsents = data.map((consent) => {
                 return {
                     ...consent,
-                    versionDateAsString: DateTimeService.convertStringToLocaleDate(consent.versionDate),
+                    versionDateAsString: DateTimeService.convertStringToLocaleDate(consent.versionDate)
                 };
             });
             this._initTrialParticipant();
@@ -92,13 +92,13 @@ export default class TrialParticipantController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
 
-            // this.navigateToPageTag('econsent-sign', {
-            //     trialSSI: this.model.trialSSI,
-            //     econsentSSI: this.model.econsentSSI,
-            //     tpUid: this.model.tpUid,
-            //     trialParticipantNumber: this.model.trialParticipantNumber,
-            //     ecoVersion: model.version
-            // });
+            debugger;
+            this.navigateToPageTag('econsent-sign', {
+                trialSSI: this.model.trialSSI,
+                econsentSSI: model.KeySSI,
+                ecoVersion: model.lastVersion,
+                controlsShouldBeVisible: false
+            });
         });
     }
 
@@ -135,11 +135,13 @@ export default class TrialParticipantController extends WebcController {
             this.navigateToPageTag('visits-procedures', this.model.trialSSI);
         });
     }
+
     _showFeedbackToast(title, message, alertType) {
         if (typeof this.feedbackEmitter === 'function') {
             this.feedbackEmitter(message, title, alertType);
         }
     }
+
 
     _attachHandlerAddTrialParticipantNumber() {
         this.onTagEvent('tp:setTpNumber', 'click', (model, target, event) => {
@@ -183,30 +185,32 @@ export default class TrialParticipantController extends WebcController {
                 return console.log(err);
             }
             this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.SUCCESS.ATTACH_TRIAL_PARTICIPANT_NUMBER);
-            this._sendMessageToPatient(this.model.trialSSI,trialParticipant, 'Tp Number was attached');
+            this._sendMessageToPatient(this.model.trialSSI, trialParticipant, 'Tp Number was attached');
         });
 
     }
 
-    _sendMessageToPatient( ssi, tp, shortMessage) {
+    _sendMessageToPatient(ssi, tp, shortMessage) {
 
         this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
             operation: 'update-tpNumber',
             ssi: ssi,
             useCaseSpecifics: {
                 tpNumber: tp.tpNumber,
-                tpName:  tp.tpName,
+                tpName: tp.tpName,
                 tpDid: tp.did
             },
             shortDescription: shortMessage,
         });
     }
+
     _computeEconsentsWithActions() {
         this.model.econsents.forEach(econsent => {
 
             econsent.versions.forEach(version => {
                 if (version.actions != undefined) {
-                    let tpVersions = version.actions.filter(action => action.tpNumber === this.model.tp.did && action.type ==='tp' );
+
+                    let tpVersions = version.actions.filter(action => action.tpNumber === this.model.tp.did && action.type === 'tp');
                     if (tpVersions && tpVersions.length > 0) {
                         let tpVersion = tpVersions[tpVersions.length - 1];
 
@@ -219,13 +223,14 @@ export default class TrialParticipantController extends WebcController {
                             }
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.WITHDRAW) {
                                 econsent.withdraw = true;
+                                econsent.tsWithdrawDate = tpVersion.toShowDate;
                             }
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.CONTACT) {
                                 econsent.contact = true;
                             }
                         }
                     }
-                    let hcoVersions = version.actions.filter(action => action.tpNumber === this.model.tp.did && action.type ==='hco' );
+                    let hcoVersions = version.actions.filter(action => action.tpNumber === this.model.tp.did && action.type === 'hco');
                     econsent.hcoSigned = false;
                     if (hcoVersions && hcoVersions.length > 0) {
                         let hcVersion = hcoVersions[hcoVersions.length - 1];
@@ -234,22 +239,27 @@ export default class TrialParticipantController extends WebcController {
                         econsent.hcoSigned = true;
 
                     }
-                    econsent.showSigned = econsent.signed&&!econsent.hcoSigned;
+                    econsent.showSigned = econsent.signed && !econsent.hcoSigned;
+
 
                 }
 
+                econsent.lastVersion = econsent.versions[econsent.versions.length - 1].version;
+
             })
+
+
         })
     }
 
     _getSite() {
 
-        this.SiteService.getSites((err,sites)=>{
+        this.SiteService.getSites((err, sites) => {
             if (err) {
                 return console.log(err);
             }
-            if(sites &&sites.length >0){
-                this.model.site = sites[sites.length-1];
+            if (sites && sites.length > 0) {
+                this.model.site = sites[sites.length - 1];
                 this._sendMessageToSponsor();
             }
         });
@@ -261,7 +271,7 @@ export default class TrialParticipantController extends WebcController {
             ssi: this.model.trialSSI,
             stageInfo: {
                 siteSSI: this.model.site.KeySSI,
-                status:  this.model.trial.stage
+                status: this.model.trial.stage
             },
             shortDescription: 'The stage of the site changed',
         });
