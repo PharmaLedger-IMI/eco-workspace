@@ -202,29 +202,40 @@ export default class TrialParticipantController extends WebcController {
         });
     }
 
+    _showButton(econsent, buttonName) {
+        let existingButtons = ['Sign', 'View', 'Contact'];
+        existingButtons.forEach(bn => {
+            econsent['show' + bn + 'Button'] = false;
+        })
+        econsent['show' + buttonName + 'Button'] = true;
+        return econsent;
+    }
+
     _computeEconsentsWithActions() {
         this.model.econsents.forEach(econsent => {
-
+            econsent = this._showButton(econsent, 'View');
             econsent.versions.forEach(version => {
+
                 if (version.actions != undefined) {
 
                     let tpVersions = version.actions.filter(action => action.tpNumber === this.model.tp.did && action.type === 'tp');
                     if (tpVersions && tpVersions.length > 0) {
                         let tpVersion = tpVersions[tpVersions.length - 1];
-
                         if (tpVersion && tpVersion.actionNeeded) {
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.TO_BE_SIGNED) {
+                                econsent = this._showButton(econsent, 'Sign');
                                 econsent.signed = true;
                                 this.model.tp.tpSigned = true;
                                 econsent.tsSignedDate = tpVersion.toShowDate;
-
                             }
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.WITHDRAW) {
+                                econsent = this._showButton(econsent, 'Contact');
                                 econsent.withdraw = true;
                                 econsent.tsWithdrawDate = tpVersion.toShowDate;
                             }
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.CONTACT) {
-                                econsent.contact = true;
+                                econsent = this._showButton(econsent, 'Contact');
+                                econsent.withdraw = true;
                                 econsent.tsWithdrawedIntentionDate = 'Intention';
                             }
                         }
@@ -239,15 +250,10 @@ export default class TrialParticipantController extends WebcController {
 
                     }
                     econsent.showSigned = econsent.signed && !econsent.hcoSigned;
-
-
                 }
 
                 econsent.lastVersion = econsent.versions[econsent.versions.length - 1].version;
-
             })
-
-
         })
     }
 

@@ -86,3 +86,18 @@
     color: red !important;
     font-weight: bold;
 }
+
+.display-block {
+    display: block !important;
+}
+
+.justify-buttons {
+    justify-content: space-evenly;
+}
+
+.sign-adjust-margin {
+    margin-right: 45px;
+}
+.view-adjust-margin {
+    margin-right: 40px;
+}

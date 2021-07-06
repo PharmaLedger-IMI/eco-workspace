@@ -30,9 +30,7 @@
                                 <button class="tp-button" data-tag="tp:setTpNumber">Set TS Number</button>
                             </div>
                         </div>
-
                     </div>
-
                 </div>
                 <div class="general-table">
                     <psk-layout columns="7" class="justify-content-center align-items-center table-row">
@@ -64,36 +62,22 @@
 
                         <psk-label class="table-cell">{{@hcoDate}}</psk-label>
                         <div class="table-cell">
-                            <div data-if="@showSigned">
-                                <div slot="true">
-                                    <button class="link-button" data-tag="consent:sign" data="@id">Sign</button>
-                                    <psk-label> |</psk-label>
-                                </div>
+                            <div data-if="@showSignButton">
+                                <button data-if="@showSignButton" class="link-button sign-adjust-margin" data="@id" data-tag="consent:sign">Sign</button>
                             </div>
-                            <div data-if="@withdraw">
-                                <div slot="true">
-                                    <button class="link-button" data-tag="consent:contactTS" data="@id">Contact TS
-                                    </button>
-                                    <psk-label> |</psk-label>
-                                </div>
+                            <div data-if="@showViewButton">
+                                <button  data-if="@showViewButton" class="link-button view-adjust-margin" data="@id" data-tag="consent:view">View</button>
                             </div>
-                            <div data-if="@contact">
-                                <div slot="true">
-
-                                    <button class="link-button" data-tag="consent:contactTS" data="@id">Contact</button>
-                                    <psk-label> |</psk-label>
-                                </div>
+                            <div data-if="@showContactButton">
+                                <button data-if="@showContactButton" class="link-button" data="@id" data-tag="consent:contactTS">Contact TS</button>
                             </div>
-                            <div data-if="@showSigned">
-                                <div slot="false">
-                                    <button class="link-button" data-tag="consent:view" data="@id">View</button>
-                                    <psk-label> |</psk-label>
-                                </div>
+                            <div>
+                                <psk-label> | </psk-label>
+                                <button class="link-button" data-tag="consent:history" data="@id">History</button>
                             </div>
-
-                            <button class="link-button" data-tag="consent:history" data="@id">History</button>
                         </div>
                     </psk-layout>
+                    <hr>
                 </div>
 
                 <button class="back-button" data-tag="back">Back</button>
