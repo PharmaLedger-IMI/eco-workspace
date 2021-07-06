@@ -1,5 +1,6 @@
 {
     "queues": [
+        "did:demo:hcoIdentity",
         "did:demo:sponsorIdentity"
     ]
 }

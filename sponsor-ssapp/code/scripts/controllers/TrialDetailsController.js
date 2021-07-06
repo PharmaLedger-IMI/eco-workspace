@@ -72,7 +72,7 @@ export default class TrialDetailsController extends WebcController {
       this.model.sites.forEach((x) => (previousSelectedState[x.country] = x.selected));
     }
 
-    this.model.sites = countries.map((x) => {
+    const result = countries.map((x) => {
       return {
         country: countryListAlpha2[x],
         sites:
@@ -92,37 +92,40 @@ export default class TrialDetailsController extends WebcController {
       };
     });
 
-    this.model.sites.sort((a, b) => {
+    result.sort((a, b) => {
       return a.country.toUpperCase() < b.country.toUpperCase()
         ? -1
         : a.country.toUpperCase() > b.country.toUpperCase()
         ? 1
         : 0;
     });
-    this.model.menu.find((x) => x.name === menuOptions.CountriesSites).data = this.model.sites;
+    this.model.sites = result;
+    this.model.menu.find((x) => x.name === menuOptions.CountriesSites).data = result;
   }
 
   attachEvents() {
     this.onTagClick('select-menu', async (model, target, event) => {
       const data = target.getAttribute('data-custom');
-      const option = this.model.menu.find((x) => x.name === data);
-      const index = this.model.menu.indexOf(option);
-
+      const menu = JSON.parse(JSON.stringify(this.model.menu));
+      const option = menu.find((x) => x.name === data);
+      const index = menu.indexOf(option);
       if (option.selectedOption[index] === false) {
-        this.model.menu.forEach((x) => x.name !== data && this.resetMenu(x));
-        const selectedMenuIdx = this.model.menu.findIndex((x) => x.name === data);
-        this.onSelectMenu(this.model.menu[selectedMenuIdx], selectedMenuIdx);
+        menu.forEach((x) => (x = this.resetMenu(x)));
+        this.model.menu = menu;
+        this.onSelectMenu(menu[index], index);
       } else {
-        option.data = false;
-        option.selected = false;
-        option.selectedOption[index] = false;
+        this.model.menu[index] = this.resetMenu(JSON.parse(JSON.stringify(this.model.menu[index])));
       }
     });
 
     this.onTagClick('select-country', async (model, target, event) => {
       const data = target.getAttribute('data-custom');
       await this.getSites();
-      this.model.sites.forEach((x) => (x.country === data ? (x.selected = !x.selected) : (x.selected = false)));
+      let menuData = JSON.parse(
+        JSON.stringify(this.model.menu.find((x) => x.name === menuOptions.CountriesSites).data)
+      );
+      menuData = menuData.map((x) => (x.country === data ? { ...x, selected: true } : { ...x, selected: false }));
+      this.model.menu.find((x) => x.name === menuOptions.CountriesSites).data = menuData;
     });
 
     this.onTagClick('country-on-hold', async (model, target, event) => {
@@ -160,7 +163,6 @@ export default class TrialDetailsController extends WebcController {
 
     this.onTagClick('site-edit', async (model, target, event) => {
       const data = target.getAttribute('data-custom');
-      console.log('Terminate ', data);
       // TODO
     });
 
@@ -253,7 +255,7 @@ export default class TrialDetailsController extends WebcController {
     this.onTagClick('select-consent-country', async (model, target, event) => {
       const data = target.getAttribute('data-custom');
       // await this.getSites();
-      const newSiteData = this.model.menu
+      const newSiteData = JSON.parse(JSON.stringify(this.model.menu))
         .find((x) => x.name === menuOptions.Consents)
         .data.site.map((x) => ({
           ...x,
@@ -265,51 +267,37 @@ export default class TrialDetailsController extends WebcController {
 
     this.onTagClick('select-consent-site', async (model, target, event) => {
       const data = target.getAttribute('data-custom');
-      // await this.getSites();
-
-      // const selectedCountryIdx = this.model.menu
-      //   .find((x) => x.name === menuOptions.Consents)
-      //   .data.site.findIndex((x) => x.selected);
-
-      // const selectedCountry = this.model.menu
-      //   .find((x) => x.name === menuOptions.Consents)
-      //   .data.site.find((x) => x.selected);
-
-      // const selectedSiteIdx = selectedCountry.sites.findIndex((x) => x.id === data);
-      // const selectedSite = selectedCountry.sites.find((x) => x.id === data);
-      // selectedSite.selected = !selectedSite.selected;
-
-      const newSiteData = this.model.menu
+      const newSiteData = JSON.parse(JSON.stringify(this.model.menu))
         .find((x) => x.name === menuOptions.Consents)
         .data.site.map((x) => ({
           ...x,
           sites: x.sites.map((y) => ({ ...y, selected: y.id === data ? !y.selected : false })),
         }));
-
-      // this.model.setChainValue(`menu.2.data.site.${selectedCountryIdx}.sites.${selectedSiteIdx}`, selectedSite);
       this.model.setChainValue('menu.2.data.site', newSiteData);
     });
 
     this.onTagClick('select-consent', async (model, target, event) => {
       const data = target.getAttribute('data-custom');
 
-      const selectedSite = this.model.menu
-        .find((x) => x.name === menuOptions.Consents)
-        .data.site.find((x) => x.selected === true)
-        .sites.find((x) => x.selected === true);
+      const siteData = JSON.parse(JSON.stringify(this.model.menu)).find((x) => x.name === menuOptions.Consents).data
+        .site;
+      const selectedSite = siteData.find((x) => x.selected === true).sites.find((x) => x.selected === true);
+
+      const selectedCountryIdx = siteData.findIndex((x) => x.selected === true);
+      const selectedSiteIdx = siteData.find((x) => x.selected === true).sites.findIndex((x) => x.selected === true);
 
       selectedSite.consents.forEach((x) => {
         if (x.id === data) x.selected = !x.selected;
         else x.selected = false;
       });
 
-      this.model.setChainValue('menu.2.data.site', this.model.menu[2].data.site);
+      this.model.setChainValue(`menu.2.data.site.${selectedCountryIdx}.sites.${selectedSiteIdx}`, selectedSite);
     });
 
     this.onTagClick('add-version', async (model, target, event) => {
       const data = target.getAttribute('data-custom');
 
-      const selectedSite = this.model.menu
+      const selectedSite = JSON.parse(JSON.stringify(this.model.menu))
         .find((x) => x.name === menuOptions.Consents)
         .data.site.find((x) => x.selected === true)
         .sites.find((x) => x.selected === true);
@@ -349,6 +337,7 @@ export default class TrialDetailsController extends WebcController {
     menu.selectedOption.fill(false);
     menu.data = false;
     menu.loading = true;
+    return menu;
   }
 
   activateMenu(menu, idx, data) {
@@ -356,6 +345,7 @@ export default class TrialDetailsController extends WebcController {
     menu.selected = true;
     menu.selectedOption[idx] = true;
     menu.loading = false;
+    return menu;
   }
 
   async onSelectMenu(menu, idx) {
@@ -363,15 +353,24 @@ export default class TrialDetailsController extends WebcController {
       case menuOptions.TrialDetails:
         await this.getTrial();
         const trial = JSON.parse(JSON.stringify(this.model.trial));
-        this.activateMenu(menu, idx, trial);
+        this.model.menu[idx] = JSON.parse(JSON.stringify(this.activateMenu(menu, idx, trial)));
         break;
       case menuOptions.CountriesSites:
         await this.getSites();
-        this.activateMenu(menu, idx, this.model.sites && this.model.sites.length > 0 && this.model.sites);
+        this.model.menu[idx] = JSON.parse(
+          JSON.stringify(
+            this.activateMenu(
+              menu,
+              idx,
+              this.model.sites && this.model.sites.length > 0 && JSON.parse(JSON.stringify(this.model.sites))
+            )
+          )
+        );
         break;
       case menuOptions.Consents:
         const data = await this.getConsents();
-        this.activateMenu(menu, idx, data);
+        this.model.menu[idx] = this.resetMenu(JSON.parse(JSON.stringify(this.model.menu[idx])));
+        this.model.menu[idx] = JSON.parse(JSON.stringify(this.activateMenu(menu, idx, data)));
         break;
       case menuOptions.VisitsProcedures:
         menu.loading = false;
@@ -386,7 +385,8 @@ export default class TrialDetailsController extends WebcController {
 
   async getConsents() {
     await this.getSites();
-    this.model.consents = await this.newConsentService.getTrialConsents(this.model.trial.keySSI);
+    const consents = await this.newConsentService.getTrialConsents(this.model.trial.keySSI);
+    this.model.consents = JSON.parse(JSON.stringify(consents));
 
     if (!this.model.trial) {
       await this.getTrial();
@@ -395,7 +395,7 @@ export default class TrialDetailsController extends WebcController {
       ...x,
     }));
 
-    const existingData = this.model.menu.find((x) => x.name === menuOptions.Consents).data;
+    const existingData = JSON.parse(JSON.stringify(this.model.menu.find((x) => x.name === menuOptions.Consents).data));
     if (existingData && existingData.length > 0) {
       //TODO: get state
     }
@@ -425,11 +425,11 @@ export default class TrialDetailsController extends WebcController {
         ? 1
         : 0;
     });
-    this.model.menu.find((x) => x.name === menuOptions.Consents).data = sitesData;
+    // this.model.menu.find((x) => x.name === menuOptions.Consents).data = sitesData;
 
-    const data = { trial: this.model.consents, site: sitesData };
+    const data = { trial: JSON.parse(JSON.stringify(consents)), site: sitesData };
     this.model.menu.find((x) => x.name === menuOptions.Consents).data = data;
-    return data;
+    return JSON.parse(JSON.stringify(data));
   }
 
   async changeSiteStatus(status, id) {
@@ -438,7 +438,7 @@ export default class TrialDetailsController extends WebcController {
   }
 
   getSiteConsents(consents) {
-    const result = this.model.consents.map((x) => {
+    const result = JSON.parse(JSON.stringify(this.model.consents)).map((x) => {
       return consents.find((y) => y.id === x.id) || x;
     });
     return JSON.parse(JSON.stringify(result.map((x) => ({ ...x, selected: false }))));
