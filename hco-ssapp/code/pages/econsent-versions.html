@@ -32,15 +32,10 @@
                     <psk-layout columns="5"
                                 class="justify-content-center align-items-center table-row econsent-row-blue">
                         <psk-label class="table-cell">{{@version}} - {{@versionDateAsString}}</psk-label>
-                        <div data-if="@tpSigned">
-                            <button slot="true" class="action-button smaller-btn" data-tag="econsent:sign">
-                                {{@tpApproval}}
-                            </button>
-                            <psk-label slot="false" class="table-cell">{{@tpApproval}}</psk-label>
-                        </div>
-                        <psk-label class="table-cell">{{@tpCaregiveApproval}}</psk-label>
+                        <psk-label class="table-cell">{{@tpApproval}}</psk-label>
                         <psk-label class="table-cell">{{@hcpApproval}}</psk-label>
-                        <psk-label class="table-cell">{{@hcpWithdraw}}</psk-label>
+                        <psk-label class="table-cell">{{@tpWithdraw}}</psk-label>
+                        <button class="link-button" data="@id" data-tag="version:view">View</button>
                     </psk-layout>
                     <hr/>
 

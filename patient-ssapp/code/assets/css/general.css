@@ -177,6 +177,13 @@ label.home-title {
     text-align: center;
 }
 
+.trial-name {
+    font-size: 20px;
+    font-weight: bold;
+    display: block;
+    text-align: center;
+}
+
 .tpNumber {
     font-size: 22px;
     font-weight: bold;

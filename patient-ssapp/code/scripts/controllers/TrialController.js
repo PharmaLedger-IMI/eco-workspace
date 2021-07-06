@@ -40,6 +40,11 @@ export default class TrialController extends WebcController {
                 return console.log(err);
             }
             this.model.trial = trial;
+            if (trial.name.length > 16) {
+                this.model.bigTitle = true;
+            } else {
+                this.model.lowTitle = true;
+            }
             this.model.tpEconsents = [];
             this.model.trial.color = Constants.getColorByTrialStatus(this.model.trial.status);
             this.TrialService.getEconsents(trial.keySSI, (err, data) => {

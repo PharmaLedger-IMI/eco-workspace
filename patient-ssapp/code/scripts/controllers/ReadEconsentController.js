@@ -89,7 +89,6 @@ export default class ReadEconsentController extends WebcController {
             event.stopImmediatePropagation();
             this.model.status.actions.push({name: 'signed'});
             this._saveStatus('sign');
-
         });
     }
 
@@ -146,35 +145,32 @@ export default class ReadEconsentController extends WebcController {
 
     sendMessageToSponsorAndHCO(action, ssi, shortMessage) {
         const currentDate = new Date();
+        this.TrialParticipantRepository.findAll((err, data) => {
+                if (err) {
+                    return console.log(err);
+                }
 
-
-    this.TrialParticipantRepository.findAll((err, data) => {
-            if (err) {
-                return console.log(err);
-            }
-
-            if (data && data.length > 0) {
-                this.model.tp = data[0];
-                let sendObject = {
-                    operation: 'update-econsent',
-                    ssi: ssi,
-                    useCaseSpecifics: {
-                        trialSSI: this.model.historyData.trialuid,
-                        tpNumber: this.model.tp.did,
-                        version: this.model.historyData.ecoVersion,
-                        action: {
-                            name: action,
-                            date: currentDate.toISOString(),
-                            toShowDate: currentDate.toLocaleDateString(),
+                if (data && data.length > 0) {
+                    this.model.tp = data[0];
+                    let sendObject = {
+                        operation: 'update-econsent',
+                        ssi: ssi,
+                        useCaseSpecifics: {
+                            trialSSI: this.model.historyData.trialuid,
+                            tpNumber: this.model.tp.did,
+                            version: this.model.historyData.ecoVersion,
+                            action: {
+                                name: action,
+                                date: currentDate.toISOString(),
+                                toShowDate: currentDate.toLocaleDateString(),
+                            },
                         },
-                    },
-                    shortDescription: shortMessage,
-                };
-                this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, sendObject);
-                this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, sendObject);
-            }
-        });
-
+                        shortDescription: shortMessage,
+                    };
+                    this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, sendObject);
+                    this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, sendObject);
+                }
+            });
     }
 
     _downloadFile = () => {

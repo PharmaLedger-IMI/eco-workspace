@@ -53,35 +53,30 @@ export default class EconsentVersionsController extends WebcController {
                 econsentVersion = {
                     ...econsentVersion,
                     tpApproval: '-',
-                    tpCaregiveApproval: '-',
                     hcpApproval: '-',
-                    hcpWithdraw: '-',
-                    tpSigned: false,
+                    tpWithdraw: '-',
                     versionDateAsString: DateTimeService.convertStringToLocaleDate(econsentVersion.versionDate)
                 }
                 econsentVersion.actions?.forEach((action) => {
                     switch (action.name) {
                         case 'sign': {
-                            econsentVersion.tpSigned = true;
                             econsentVersion.tpApproval = action.toShowDate;
                             econsentVersion.hcpApproval = 'Required';
                             break;
                         }
                         case 'withdraw': {
-                            econsentVersion.hcpWithdraw = 'TP Withdraw';
+                            econsentVersion.tpWithdraw = 'TP Withdraw';
                             break;
                         }
                         case 'withdraw-intention': {
                             econsentVersion.hcpApproval = 'Contact TP';
-                            econsentVersion.hcpWithdraw = 'Intention';
+                            econsentVersion.tpWithdraw = 'Intention';
                             break;
                         }
                     }
                 })
-
                 if (econsentVersion.hcoSign) {
                     econsentVersion.hcpApproval = data.hcoSign.toShowDate;
-                    econsentVersion.tpSigned = false;
                 }
 
                 return econsentVersion;

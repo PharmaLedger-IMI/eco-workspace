@@ -214,7 +214,6 @@ export default class EconsentSignController extends WebcController {
             currentVersion.actions = [];
         }
 
-
         const currentDate = new Date();
         currentVersion.actions.push({
             name: 'sign',

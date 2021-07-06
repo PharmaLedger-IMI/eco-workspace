@@ -1,7 +1,14 @@
 <link href="/assets/css/pages/trial.css" rel="stylesheet">
 <webc-container controller="TrialController">
     <div class="container-child">
-        <psk-label class="user-name">{{@trial.name}}</psk-label>
+
+        <div data-if="@lowTitle">
+            <psk-label class="user-name">{{@trial.name}}</psk-label>
+        </div>
+        <div data-if="@bigTitle">
+            <psk-label class="trial-name">{{@trial.name}}</psk-label>
+        </div>
+
         <psk-label class="tpNumber">{{@trial.status}}</psk-label>
 
         <div class="trial-details">
