@@ -33,6 +33,8 @@
     margin: 20px 0 40px 45%;
     height: 55px;
     width: 160px;
+    position: absolute;
+    bottom: 5px;
 }
 
 .action-button {
@@ -191,4 +193,8 @@ button {
 hr {
     margin-top: 0.2rem;
     margin-bottom: 0.2rem;
+}
+
+.table-like-elements > * {
+    display: table-row;
 }

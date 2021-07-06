@@ -22,7 +22,7 @@
                 </div>
                 <div class="trial-table">
                     <psk-layout columns="4" class="justify-content-center align-items-center table-row">
-                        <psk-label class="table-cell">Enrolled</psk-label>
+                        <psk-label class="table-cell">Status</psk-label>
                         <psk-label class="table-cell">Withdraw / Discontinued / Screen Failed</psk-label>
                         <psk-label class="table-cell">Completed</psk-label>
                         <psk-label class="table-cell">Consents Signed</psk-label>
@@ -31,7 +31,9 @@
                 </div>
                 <div class="trial-table">
                     <psk-layout columns="4" class="justify-content-center align-items-center table-row">
-                        <psk-label class="table-cell">{{@trialParticipant.enrolledDate}}</psk-label>
+                        <div data-for="@userActionsToShow" class="table-like-elements">
+                            <psk-label class="table-cell">{{@name}} - {{@date}}</psk-label>
+                        </div>
                         <psk-label class="table-cell">{{@lastBadAction}}</psk-label>
                         <psk-label class="table-cell">MOCK: N/A</psk-label>
                         <div class="table-cell">

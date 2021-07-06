@@ -11,77 +11,75 @@
                                  height='47' width='110'></psk-img>
                     </div>
                     <div>
-                        <psk-label class="main-title" label="Trial Participant"></psk-label>
+                        <psk-label class="main-title">Trial Subject: {{@tp.name}}</psk-label>
                     </div>
                     <button class="logout-button" data-tag="logout">Logout</button>
                 </div>
 
                 <div class="top-buttons">
-                    <button class="tp-button left" data-tag="tp:visits">Visits and Procedures</button>
-                    <button class="tp-button" data-tag="tp:setTpNumber">Set TP Number</button>
+
+                    <div class="button-slot" data-if="@tp.hcoSigned">
+                        <div slot="true">
+                            <button class="tp-button left" data-tag="tp:visits">Visits and Procedures</button>
+                        </div>
+                    </div>
+
+                    <div class="button-slot" data-if="@tp.tpNumber">
+                        <div slot="false">
+                            <div data-if="@tp.tpSigned">
+                                <button class="tp-button" data-tag="tp:setTpNumber">Set TS Number</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="general-table">
-                    <psk-layout columns="6" class="justify-content-center align-items-center table-row">
+                    <psk-layout columns="7" class="justify-content-center align-items-center table-row">
                         <psk-label class="table-title">Consent Name & ID</psk-label>
                         <psk-label class="table-title">Type</psk-label>
                         <psk-label class="table-title">Active Version Approved</psk-label>
                         <psk-label class="table-title">TS Signature</psk-label>
+                        <psk-label class="table-title">TS Withdraw</psk-label>
                         <psk-label class="table-title">HCP Signature</psk-label>
                         <psk-label class="table-title">Options</psk-label>
                     </psk-layout>
                     <hr/>
                 </div>
 
-                <div class="general-table" data-for="@econsents">
-                    <psk-layout columns="6" class="justify-content-center align-items-center table-row">
+                <div class="general-table body" data-for="@econsents">
+                    <psk-layout columns="7" class="justify-content-center align-items-center table-row">
                         <psk-label class="table-cell">{{@name}}</psk-label>
                         <psk-label class="table-cell">{{@type}}</psk-label>
-                        <psk-label class="table-cell">Version {{@version}}</psk-label>
+                        <psk-label class="table-cell">{{@lastVersion}}</psk-label>
                         <psk-label class="table-cell">{{@tsSignedDate}}</psk-label>
+                        <div data-if="@tsWithdrawedIntentionDate">
+                            <div slot="true">
+                                <psk-label class="table-cell red">{{@tsWithdrawedIntentionDate}}</psk-label>
+                            </div>
+                            <div slot="false">
+                                <psk-label class="table-cell">{{@tsWithdrawDate}}</psk-label>
+                            </div>
+                        </div>
+
                         <psk-label class="table-cell">{{@hcoDate}}</psk-label>
                         <div class="table-cell">
-                            <div data-if="@showSigned">
-                                <div slot="true">
-                                    <button class="link-button" data-tag="consent:sign" data="@id">Sign</button>
-                                    <psk-label> |</psk-label>
-                                </div>
+                            <div data-if="@showSignButton">
+                                <button data-if="@showSignButton" class="link-button sign-adjust-margin" data="@id" data-tag="consent:sign">Sign</button>
                             </div>
-                            <div data-if="@withdraw">
-                                <div slot="true">
-                                    <button class="link-button" data-tag="consent:contactTS" data="@id">Contact TS
-                                    </button>
-                                    <psk-label> |</psk-label>
-                                </div>
+                            <div data-if="@showViewButton">
+                                <button  data-if="@showViewButton" class="link-button view-adjust-margin" data="@id" data-tag="consent:view">View</button>
                             </div>
-                            <div data-if="@contact">
-                                <div slot="true">
-
-                                    <button class="link-button" data-tag="consent:contactTS" data="@id">Contact</button>
-                                    <psk-label> |</psk-label>
-                                </div>
+                            <div data-if="@showContactButton">
+                                <button data-if="@showContactButton" class="link-button" data="@id" data-tag="consent:contactTS">Contact TS</button>
                             </div>
-                            <div data-if="@showSigned">
-                                <div slot="false">
-                                    <button class="link-button" data-tag="consent:view" data="@id">View</button>
-                                    <psk-label> |</psk-label>
-                                </div>
+                            <div>
+                                <psk-label> | </psk-label>
+                                <button class="link-button" data-tag="consent:history" data="@id">History</button>
                             </div>
-
-                            <button class="link-button" data-tag="consent:history" data="@id">History</button>
                         </div>
                     </psk-layout>
+                    <hr>
                 </div>
-<!--                <div data-if="@tp.tpNumber">-->
-<!--                    <div slot="false">-->
-<!--                        <div data-if="@tp.tpSigned">-->
-<!--                            <button slot="true" data-tag="tp:setTpNumber">-->
-<!--                                SET TP NUMBER-->
-<!--                            </button>-->
-<!--                            <psk-label slot="false" class="table-cell">NOT YET SIGNED</psk-label>-->
-<!--                        </div>-->
-<!--                    </div>-->
 
-<!--                </div>-->
                 <button class="back-button" data-tag="back">Back</button>
             </div>
 

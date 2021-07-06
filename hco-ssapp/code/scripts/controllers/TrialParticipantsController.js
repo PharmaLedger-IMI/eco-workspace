@@ -1,4 +1,5 @@
 const {WebcController} = WebCardinal.controllers;
+import SiteService from '../services/SiteService.js';
 import Constants from '../utils/Constants.js';
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
@@ -28,8 +29,9 @@ export default class TrialParticipantsController extends WebcController {
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.SiteService = new SiteService(DSUStorage);
     }
 
     _initHandlers() {
@@ -143,8 +145,13 @@ export default class TrialParticipantsController extends WebcController {
                 'add-new-tp',
                 (event) => {
                     const response = event.detail;
+
+                    this.model.trial.stage = 'Recruiting';
+                    this.TrialService.updateTrialAsync(this.model.trial)
+
                     this.createTpDsu(response);
                     this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.SUCCESS.ADD_TRIAL_PARTICIPANT);
+                    this._getSite();
                 },
                 (event) => {
                     const response = event.detail;
@@ -187,6 +194,7 @@ export default class TrialParticipantsController extends WebcController {
         tp.status = Constants.TRIAL_PARTICIPANT_STATUS.PLANNED;
         tp.enrolledDate = currentDate.toLocaleDateString();
         let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
+        trialParticipant.actionNeeded = 'No action required';
         this.model.trialParticipants.push(trialParticipant);
         this.sendMessageToPatient(
             'add-to-trial',
@@ -197,7 +205,7 @@ export default class TrialParticipantsController extends WebcController {
     }
 
     sendMessageToPatient(operation, ssi, tp, shortMessage) {
-        this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
+        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
             operation: operation,
             ssi: ssi,
             useCaseSpecifics: {
@@ -220,6 +228,31 @@ export default class TrialParticipantsController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
             window.history.back();
+        });
+    }
+
+    _getSite() {
+
+        this.SiteService.getSites((err,sites)=>{
+            if (err) {
+                return console.log(err);
+            }
+            if(sites &&sites.length >0){
+                this.model.site = sites[sites.length-1];
+                this._sendMessageToSponsor();
+            }
+        });
+    }
+
+    _sendMessageToSponsor() {
+        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, {
+            operation: 'update-site-status',
+            ssi: this.model.trialSSI,
+            stageInfo: {
+                siteSSI: this.model.site.KeySSI,
+                status:  this.model.trial.stage
+            },
+            shortDescription: 'The stage of the site changed',
         });
     }
 }

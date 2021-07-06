@@ -42,7 +42,7 @@ export default class TrialConsentsController extends WebcController {
 
     this.keySSI = keySSI;
     this.consentsService = new ConsentsService(this.DSUStorage);
-    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.SPONSOR_IDENTITY);
+    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
     this.feedbackEmitter = null;
 
     this.setModel({
@@ -209,7 +209,7 @@ export default class TrialConsentsController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage) {
-    this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, {
+    this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, {
       operation: operation,
       ssi: ssi,
       shortDescription: shortMessage,

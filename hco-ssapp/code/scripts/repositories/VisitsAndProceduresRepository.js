@@ -1,10 +1,10 @@
 import SharedStorage from "../services/SharedStorage.js";
 
-class TrialParticipantRepository {
+class VisitsAndProceduresRepository {
 
     constructor(DSUStorage) {
         this.StorageService = SharedStorage.getInstance(DSUStorage);
-        this.tableName = 'trials_participants';
+        this.tableName = 'visits';
     }
 
     create = (key, trialParticipant, callback) =>
@@ -15,8 +15,6 @@ class TrialParticipantRepository {
 
     findBy = (trialKey, callback) => this.StorageService.getRecord(this.tableName, trialKey, callback);
 
-    findByAsync = async (trialKey) => this.StorageService.getRecordAsync(this.tableName, trialKey);
-
     findAll = (callback) => this.StorageService.getAllRecords(this.tableName, callback);
 
     findAllAsync = async () => this.StorageService.getAllRecordsAsync(this.tableName);
@@ -26,21 +24,21 @@ class TrialParticipantRepository {
     filterAsync = async (query, sort, limit) =>
         this.StorageService.filterAsync(this.tableName, query, sort, limit);
 
-
-
     update = (key, trialParticipant, callback) =>
         this.StorageService.updateRecord(this.tableName, key, trialParticipant, callback);
 
     updateAsync = (key, trialParticipant) =>
         this.StorageService.updateRecordAsync(this.tableName, key, trialParticipant);
 
+    delete = (key,callback) => this.StorageService.deleteRecord(this.tableName, key, callback);
+
 }
 
 export default {
     getInstance: (DSUStorage) => {
-        if (typeof window.trialParticipantRepositoryInstance === "undefined") {
-            window.trialParticipantRepositoryInstance = new TrialParticipantRepository(DSUStorage);
+        if (typeof window.visitsInstance === "undefined") {
+            window.visitsInstance = new VisitsAndProceduresRepository(DSUStorage);
         }
-        return window.trialParticipantRepositoryInstance;
+        return window.visitsInstance;
     }
 }

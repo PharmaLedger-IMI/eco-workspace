@@ -39,3 +39,39 @@
     font-size: 16px;
     margin-left: 10%;
 }
+
+#canvas-wrapper {
+    justify-content: space-evenly;
+    align-items: center;
+    overflow: scroll;
+    width: fit-content;
+    overflow-x: hidden;
+    height: 600px;
+}
+
+#canvas-parent {
+    max-height: 700px;
+}
+
+#canvas-parent > * {
+    direction: ltr;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

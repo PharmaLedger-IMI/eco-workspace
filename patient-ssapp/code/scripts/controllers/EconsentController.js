@@ -13,7 +13,11 @@ export default class EconsentController extends WebcController {
     this._initHandlers();
     this.model.econsent = {};
     this.model.historyData = this.history.win.history.state.state;
-    this.model.status = { actions: [] };
+
+    this.model.status = {
+      actions: [],
+      latest: 'N/A'
+    };
     this._initEconsent();
   }
 
@@ -28,6 +32,7 @@ export default class EconsentController extends WebcController {
     this._attachHandlerQuestion();
     this._attachHandlerVersions();
     this._attachHandlerWithdraw();
+    this._attachHandlerBack();
   }
 
   _initEconsent() {
@@ -48,7 +53,6 @@ export default class EconsentController extends WebcController {
           return console.error(err);
         }
         let status = data.find((element) => element.foreignConsentId === this.model.historyData.ecoId);
-        debugger;
         if (status === undefined) {
           return console.log(`Status not found for econsendId ${this.model.historyData.ecoId}`);
         }
@@ -59,6 +63,7 @@ export default class EconsentController extends WebcController {
           };
         });
         this.model.status = status;
+        this.model.status.latest = status.actions.length > 0 ? status.actions[status.actions.length - 1].name : 'N/A';
         this.model.signed = ConsentStatusMapper.isSigned(this.model.status.actions);
         this.model.declined = ConsentStatusMapper.isDeclined(this.model.status.actions);
       });
@@ -79,6 +84,7 @@ export default class EconsentController extends WebcController {
 
   _attachHandlerReadEconsent() {
     this.onTagClick('econsent:read', (model, target, event) => {
+
       this.navigateToPageTag('sign-econsent', { ...this.model.historyData });
     });
   }
@@ -95,6 +101,14 @@ export default class EconsentController extends WebcController {
     });
   }
 
+  _attachHandlerBack() {
+    this.onTagEvent('back', 'click', (model, target, event) => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      window.history.back();
+    });
+  }
+
   _attachHandlerWithdraw() {
     this.on('econsent:withdraw', (event) => {
       this.showModal('withdrawEconsent', {}, (err, response) => {
@@ -103,6 +117,7 @@ export default class EconsentController extends WebcController {
         }
         if (response) {
           this.model.status.actions.push({ name: 'withdraw' });
+          this.model.status.latest = 'Withdraw';
         }
         this.EconsentsStatusRepository.update(this.model.status.uid, this.model.status, (err, response) => {
           if (err) {
@@ -114,7 +129,7 @@ export default class EconsentController extends WebcController {
   }
 
   getEconsentFilePath(trialSSI, consentSSI, version, fileName) {
-    return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version + '/' + fileName;
+    return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version;
   }
 
   _downloadFile = () => {

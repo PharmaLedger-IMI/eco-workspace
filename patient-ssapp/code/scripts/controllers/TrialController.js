@@ -2,6 +2,7 @@ import Constants from './Constants.js';
 import TrialService from '../services/TrialService.js';
 import ConsentStatusMapper from "../utils/ConsentStatusMapper.js";
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
+import DateTimeService from '../services/DateTimeService.js';
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -17,7 +18,6 @@ export default class TrialController extends WebcController {
         let receivedObject = this.history.win.history.state.state;
         this.model.keyssi = receivedObject.trialSSI;
         this.model.tpNumber = receivedObject.tpNumber;
-        debugger;
         this._initServices(this.DSUStorage);
         this._initTrial();
         this._initHandlers();
@@ -31,6 +31,7 @@ export default class TrialController extends WebcController {
     _initHandlers() {
         this._attachHandlerConsentClick();
         this._attachHandlerSiteClick();
+        this._attachHandlerBack();
     }
 
     _initTrial() {
@@ -39,6 +40,11 @@ export default class TrialController extends WebcController {
                 return console.log(err);
             }
             this.model.trial = trial;
+            if (trial.name.length > 16) {
+                this.model.bigTitle = true;
+            } else {
+                this.model.lowTitle = true;
+            }
             this.model.tpEconsents = [];
             this.model.trial.color = Constants.getColorByTrialStatus(this.model.trial.status);
             this.TrialService.getEconsents(trial.keySSI, (err, data) => {
@@ -47,9 +53,11 @@ export default class TrialController extends WebcController {
                 }
 
                 this.model.econsents = data?.map(econsent => {
+                    let importantVersion = econsent.versions.sort((a, b) => new Date(b.versionDate) - new Date(a.versionDate))[0]
                     return econsent.versions.length === 0 ? econsent : {
                         ...econsent,
-                        ...econsent.versions.sort((a, b) => new Date(b.versionDate) - new Date(a.versionDate))[0]
+                        versionDateAsString: DateTimeService.convertStringToLocaleDate(importantVersion.versionDate),
+                        ...importantVersion
                     }
                 })
 
@@ -83,6 +91,14 @@ export default class TrialController extends WebcController {
     _attachHandlerSiteClick() {
         this.on('go-to-site', (event) => {
             this.navigateToPageByTag('site', event.data);
+        });
+    }
+
+    _attachHandlerBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
         });
     }
 

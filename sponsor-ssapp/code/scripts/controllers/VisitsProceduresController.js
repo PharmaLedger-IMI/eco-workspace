@@ -13,7 +13,7 @@ export default class VisitsProceduresController extends WebcController {
     let { id, keySSI } = this.history.location.state;
 
     this.keySSI = keySSI;
-    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.SPONSOR_IDENTITY);
+    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
     this.consentsService = new NewConsentService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
     this.feedbackEmitter = null;
@@ -372,7 +372,7 @@ export default class VisitsProceduresController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage) {
-    this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, {
+    this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, {
       operation: operation,
       ssi: ssi,
       shortDescription: shortMessage,

@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="assets/css/general.css">
     <link rel="stylesheet" href="webcardinal/webcardinal.css">
     <script type="module" src="webcardinal/webcardinal.js"></script>
+    <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
     <script>
         if (window.frameElement) {
             const iframeIdentity = window.frameElement.getAttribute('identity');
@@ -32,12 +33,28 @@
 </head>
 
 <body>
-    <webc-app-root>
-        <webc-app-container>
-            <webc-app-router>
-            </webc-app-router>
-        </webc-app-container>
-    </webc-app-root>
+<webc-app-root>
+    <webc-app-container>
+        <psk-example class="mobile-example">
+            <psk-mobile class="noPadding background" disable-header>
+                <webc-app-router>
+                </webc-app-router>
+                <footer class="eu-container">
+                    <div class="left-image-eu">
+                        <img src="assets/images/flageu.png" width="120"/>
+                    </div>
+                    <div class="right-text-eu">
+                        <label>
+                            This project has received funding from the European Union’s Horizon
+                            2020 research and innovation programme under grant agreement No 853992
+                        </label>
+                        <label>Copyright &copy; PharmaLedger Consortium 2020–2023</label>
+                    </div>
+                </footer>
+            </psk-mobile>
+        </psk-example>
+    </webc-app-container>
+</webc-app-root>
 </body>
 
 </html>

@@ -44,12 +44,13 @@ export default class EconsentSignController extends WebcController {
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
     }
 
     _initHandlers() {
         this._attachHandlerEconsentSign();
+        this._attachHandlerBack();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -89,7 +90,7 @@ export default class EconsentSignController extends WebcController {
             },
             shortDescription: shortMessage,
         };
-        this.CommunicationService.sendMessage(CommunicationService.identities.SPONSOR_IDENTITY, sendObject);
+        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, sendObject);
     }
 
     _getEconsentFilePath(trialSSI, consentSSI, version, fileName) {
@@ -120,11 +121,7 @@ export default class EconsentSignController extends WebcController {
             this.blob = new Blob([this.rawBlob], {
                 type: this.mimeType,
             });
-            if (this.mimeType.indexOf(TEXT_MIME_TYPE) !== -1) {
-                this._prepareTextEditorViewModel();
-            } else {
-                this._displayFile();
-            }
+            this._displayFile();
         });
     };
 
@@ -188,7 +185,6 @@ export default class EconsentSignController extends WebcController {
 
         window.URL = window.URL || window.webkitURL;
         const fileType = this.mimeType.split('/')[0];
-        debugger
         switch (fileType) {
             case 'image': {
                 this._loadImageFile();
@@ -207,7 +203,6 @@ export default class EconsentSignController extends WebcController {
         }
     }
 
-
     _updateEconsentWithDetails(message) {
 
         let currentVersionIndex = this.model.econsent.versions.findIndex(eco => eco.version === this.model.ecoVersion)
@@ -219,10 +214,9 @@ export default class EconsentSignController extends WebcController {
             currentVersion.actions = [];
         }
 
-
         const currentDate = new Date();
         currentVersion.actions.push({
-
+            name: 'sign',
             tpNumber: this.model.trialParticipantNumber,
             type: 'hco',
             status: Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED,
@@ -259,5 +253,13 @@ export default class EconsentSignController extends WebcController {
         });
 
 
+    }
+
+    _attachHandlerBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
+        });
     }
 }

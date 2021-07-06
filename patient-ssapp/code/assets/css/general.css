@@ -4,16 +4,223 @@
 }
 
 .long-button {
-    background-color: #00345b !important;
+    background-color: white;
     border: #00345b !important;
     box-shadow: none !important;
     border-radius: 0 !important;
     height: 45px;
     font-weight: bold;
     text-align: left;
-    font-size: 22px;
-    color: white;
-    width: 100%;
-    border-top: 1px solid white !important;
+    font-size: 16px;
+    color: #00345b !important;
+    border-top: 1px solid black!important;
     padding-left: 30px !important;
+    width: 90%;
+    margin-left: 5%;
+}
+
+
+webc-app-identity {
+    --avatar-radius: 0;
+}
+
+webc-app-menu[mode=horizontal] {
+    -moz-border-radius-topleft: 1rem;
+    -moz-border-radius-topright: 1rem;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    box-shadow: none;
+    background: #FFFFFF;
+}
+
+webc-app-menu[mode=horizontal] .app-menu webc-app-menu-item,
+webc-app-menu[mode=horizontal] .app-menu webc-app-menu-item a {
+    color: #FFFFFF;
+    padding: 0.125rem 0.75rem;
+    background: #008798;
+    border-radius: 0.25rem;
+    border: 1px solid transparent;
+    font-size: 18px;
+}
+
+webc-app-menu[mode=horizontal] .app-menu webc-app-menu-item:nth-last-child(2),
+webc-app-menu[mode=horizontal] .app-menu webc-app-menu-item:nth-last-child(2) a {
+    color: #000000;
+    background: transparent;
+}
+
+webc-app-menu[mode=horizontal] .app-menu webc-app-menu-item:hover,
+webc-app-menu[mode=horizontal] .app-menu webc-app-menu-item:focus,
+webc-app-menu[mode=horizontal] .app-menu webc-app-menu-item:active {
+    color: #000000;
+    background: transparent;
+    border-color: #008798;
+}
+
+webc-app-menu[mode=horizontal] .app-menu webc-app-menu-item:hover a,
+webc-app-menu[mode=horizontal] .app-menu webc-app-menu-item:focus a,
+webc-app-menu[mode=horizontal] .app-menu webc-app-menu-item:active a {
+    color: #000000;
+    background: transparent;
+}
+
+/* Homepage content */
+
+.container.home {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 100%;
+}
+
+label.home-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    background: #FFFFFF;
+    background: linear-gradient(rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 100%), linear-gradient(0deg, #EF193F, #EF193F);
+    background: -webkit-linear-gradient(rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 100%), -webkit-linear-gradient(0deg, #EF193F, #EF193F);
+    background: -moz-linear-gradient(rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 100%), -moz-linear-gradient(0deg, #EF193F, #EF193F);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.home-button-group {
+    width: 70%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    font-size: 18px;
+}
+
+.home-button-group button {
+    background: #008798;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    text-align: center;
+    text-decoration: none;
+    height: 4rem;
+    width: 10rem;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.home-button-group button:hover,
+.home-button-group button:active,
+.home-button-group button:focus {
+    background: transparent;
+    border: 1px solid #008798;
+    color: #000000;
+}
+
+/* FOOTER */
+.eu-container {
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    align-items: center;
+    font-weight: 600;
+    color: #FFFFFF;
+    position: absolute;
+    bottom: 0px;
+    padding-left: 2%;
+    padding-top: 10%;
+    padding-bottom: 3%;
+    background: #00345B;
+}
+
+.left-image-eu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.right-text-eu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 96%;
+    font-size: 9px;
+    margin-left: 2%;
+}
+
+.right-text-eu label {
+    text-align: center;
+}
+
+.container-child {
+    height: 100%;
+    padding: 5%;
+    border: 10px solid #00345B;
+    border-width: 10px 10px 0 10px;
+    /*border-top-left-radius: 25px;*/
+    /*border-top-right-radius: 25px;*/
+
+    /*width: 100%;*/
+    /*height: 100%;*/
+    /*background-image: url(assets/images/pharmaup.jpg);*/
+    /*background-size: cover;*/
+    /*background-repeat: no-repeat;*/
+    /*background-position: center;*/
+}
+
+.user-name {
+    font-size: 40px;
+    font-weight: bold;
+    display: block;
+    text-align: center;
+}
+
+.trial-name {
+    font-size: 20px;
+    font-weight: bold;
+    display: block;
+    text-align: center;
+}
+
+.tpNumber {
+    font-size: 22px;
+    font-weight: bold;
+    display: block;
+    text-align: center;
+}
+
+.econsents-button {
+    position: initial !important;
+}
+
+.back-button {
+    background-color: #008798;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-left: 26%;
+    height: 55px;
+    width: 130px;
+    position: absolute;
+    bottom: 130px;
+}
+
+.left-image-eu img {
+    max-width: 100%;
+}
+
+.patient-button-row-middle {
+    margin-top: 50px;
+}
+
+.container-child.eco-sign {
+    padding: 1%;
+}
+.container-child.eco-sign .back-button {
+    margin-left: 28.5%;
 }
