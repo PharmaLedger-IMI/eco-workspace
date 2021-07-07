@@ -47,31 +47,42 @@ export default class TrialController extends WebcController {
             }
             this.model.tpEconsents = [];
             this.model.trial.color = Constants.getColorByTrialStatus(this.model.trial.status);
-            this.TrialService.getEconsents(trial.keySSI, (err, data) => {
+            this.TrialService.getEconsents(trial.keySSI, async (err, data) => {
                 if (err) {
                     return console.log(err);
                 }
 
+                let lastAction = 'Consent required';
+                let statusesMappedByConsent = {};
+                let statuses = await this.EconsentsStatusRepository.findAllAsync();
+                statuses.forEach(status => {
+                    statusesMappedByConsent[status.foreignConsentId] = status;
+                })
+
                 this.model.econsents = data?.map(econsent => {
                     let importantVersion = econsent.versions.sort((a, b) => new Date(b.versionDate) - new Date(a.versionDate))[0]
+                    let status = statusesMappedByConsent[econsent.uid];
+
+                    if (status.actions.length > 0) {
+                        lastAction = status.actions[status.actions.length - 1].name;
+                    }
+                    lastAction = lastAction.split('-')
+                        .filter(action => action.length > 0)
+                        .map(action => action.charAt(0).toUpperCase() + action.slice(1))
+                        .join(" ");
+
                     return econsent.versions.length === 0 ? econsent : {
                         ...econsent,
                         versionDateAsString: DateTimeService.convertStringToLocaleDate(importantVersion.versionDate),
+                        status: {
+                            name: lastAction
+                        },
                         ...importantVersion
                     }
                 })
-
+                this._setTpStatus(statuses);
                 this.model.econsents[0].isMain = true;
-                this.EconsentsStatusRepository.findAll(( err,statuses) => {
-                    if (err) {
-                        return console.error(err);
-                    }
-                    this._setTpStatus(statuses);
-                });
-
             });
-
-
         });
     }
 

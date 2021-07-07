@@ -45,14 +45,14 @@ export default class TrialParticipantDetailsController extends WebcController {
         this.model.trialParticipant = await this.TrialParticipantRepository.findByAsync(this.model.tpUid);
 
         let userActions = await this._getUserActionsFromEconsents(keySSI, this.model.trialParticipant.did);
-
+        userActions = userActions.filter(ua => ua.action.type === 'tp');
         let userActionsToShow = [
             {
                 name: 'Enrolled',
                 date: this.model.trialParticipant.enrolledDate
             }
         ];
-        userActions.filter(ua => ua.action.type === 'tp').forEach(ua => {
+        userActions.forEach(ua => {
             let actualAction = ua.action;
             userActionsToShow.push({
                 name: actualAction.status,

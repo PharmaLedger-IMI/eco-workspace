@@ -174,24 +174,22 @@ export default class HomeController extends WebcController {
             name: data.tpName, tpNumber: data.tpNumber, did: data.tpDid
         }
 
-
-        if (!this.model.tp||!this.model.tp.name) {
+        if (!this.model.tp || !this.model.tp.name) {
             this.TrialParticipantRepository.create(trialParticipant, (err, data) => {
                 if (err) {
                     return console.log(err);
                 }
-
+                this._initTrialParticipant();
             });
         } else if (data.tpNumber) {
-
             this.model.tp.tpNumber = trialParticipant.tpNumber;
             this.model.tp.did = trialParticipant.tpDid;
             this.model.tp.name = trialParticipant.name;
             this.TrialParticipantRepository.update(this.model.tp.uid, this.model.tp, (err, data) => {
-                if (err) {
-                    return console.log(err);
+                    if (err) {
+                        return console.log(err);
+                    }
                 }
-            }
             );
         }
 
