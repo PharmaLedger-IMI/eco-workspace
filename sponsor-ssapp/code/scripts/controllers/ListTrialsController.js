@@ -1,5 +1,5 @@
 import TrialsService from '../services/TrialsService.js';
-import { trialStatusesEnum, trialTableHeaders } from '../constants/trial.js';
+import { trialStatusesEnum, trialTableHeaders, trialStagesEnum } from '../constants/trial.js';
 import CommunicationService from '../services/CommunicationService.js';
 import ParticipantsService from '../services/ParticipantsService.js';
 
@@ -12,22 +12,33 @@ const { WebcController } = WebCardinal.controllers;
 
 export default class ListTrialsController extends WebcController {
   statusesArray = Object.entries(trialStatusesEnum).map(([k, v]) => v);
+  stagesArray = Object.entries(trialStagesEnum).map(([k, v]) => v);
   itemsPerPageArray = [5, 10, 15, 20, 30];
 
   headers = trialTableHeaders;
 
-  countries = {
-    label: 'Select country',
-    placeholder: 'Please select an option',
-    required: false,
-    options: [],
-  };
+  // countries = {
+  //   label: 'Select country',
+  //   placeholder: 'Please select an option',
+  //   required: false,
+  //   options: [],
+  // };
 
   statuses = {
     label: 'Select a status',
     placeholder: 'Please select an option',
     required: false,
     options: this.statusesArray.map((x) => ({
+      label: x,
+      value: x,
+    })),
+  };
+
+  stages = {
+    label: 'Select a stage',
+    placeholder: 'Please select an option',
+    required: false,
+    options: this.stagesArray.map((x) => ({
       label: x,
       value: x,
     })),
@@ -64,7 +75,7 @@ export default class ListTrialsController extends WebcController {
 
     this.trialsService = new TrialsService(this.DSUStorage);
     this.participantsService = new ParticipantsService(this.DSUStorage);
-    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.SPONSOR_IDENTITY);
+    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
     this.CommunicationService.listenForMessages(async (err, data) => {
       if (err) {
         return console.error(err);
@@ -92,17 +103,18 @@ export default class ListTrialsController extends WebcController {
     });
     this.feedbackEmitter = null;
 
-    this.setModel({
+    this.model = {
       statuses: this.statuses,
-      countries: this.countries,
+      stages: this.stages,
+      // countries: this.countries,
       search: this.search,
       trials: [],
       pagination: this.pagination,
       headers: this.headers,
       clearButtonDisabled: true,
       type: 'trials',
-      tableLength: 5,
-    });
+      tableLength: 7,
+    };
 
     this.attachEvents();
 
@@ -116,28 +128,28 @@ export default class ListTrialsController extends WebcController {
   async getTrials() {
     try {
       this.trials = await this.trialsService.getTrials();
-      this.updateCountryOptions(this.trials);
+      // this.updateCountryOptions(this.trials);
       this.setTrialsModel(this.trials);
     } catch (error) {
       console.log(error);
-      this.showFeedbackToast('ERROR: There was an issue accessing trials object', 'Result', 'toast');
+      this.showFeedbackToast('ERROR', 'There was an issue accessing trials object', 'toast');
     }
   }
 
-  updateCountryOptions(trials) {
-    const countries = [];
+  // updateCountryOptions(trials) {
+  //   const countries = [];
 
-    trials.forEach((trial) =>
-      trial.countries.forEach((country) => !countries.includes(country) && countries.push(country))
-    );
+  //   trials.forEach((trial) =>
+  //     trial.countries.forEach((country) => !countries.includes(country) && countries.push(country))
+  //   );
 
-    this.model.countries = { ...this.countries, options: countries.map((x) => ({ label: x, value: x })) };
-  }
+  //   this.model.countries = { ...this.countries, options: countries.map((x) => ({ label: x, value: x })) };
+  // }
 
   setTrialsModel(trials) {
     const model = trials.map((trial) => ({
       ...trial,
-      countries: trial.countries.join(),
+      // countries: trial.countries.join(),
     }));
 
     this.model.trials = model;
@@ -148,11 +160,14 @@ export default class ListTrialsController extends WebcController {
   filterData() {
     let result = this.trials;
 
-    if (this.model.countries.value) {
-      result = result.filter((x) => x.countries.includes(this.model.countries.value));
-    }
+    // if (this.model.countries.value) {
+    //   result = result.filter((x) => x.countries.includes(this.model.countries.value));
+    // }
     if (this.model.statuses.value) {
       result = result.filter((x) => x.status === this.model.statuses.value);
+    }
+    if (this.model.stages.value) {
+      result = result.filter((x) => x.stage === this.model.stages.value);
     }
     if (this.model.search.value && this.model.search.value !== '') {
       result = result.filter((x) => x.name.toUpperCase().search(this.model.search.value.toUpperCase()) !== -1);
@@ -218,7 +233,6 @@ export default class ListTrialsController extends WebcController {
     });
 
     this.on('view-trial', async (event) => {
-      console.log(this.trials.find((x) => x.id === event.data));
       this.navigateToPageTag('trial', {
         id: event.data,
         keySSI: this.trials.find((x) => x.id === event.data).keySSI,
@@ -232,8 +246,9 @@ export default class ListTrialsController extends WebcController {
 
     this.onTagClick('filters-cleared', async (event) => {
       this.model.clearButtonDisabled = true;
-      this.model.countries.value = null;
+      // this.model.countries.value = null;
       this.model.statuses.value = null;
+      this.model.stages.value = null;
       this.model.search.value = null;
       this.filterData();
     });
@@ -248,7 +263,7 @@ export default class ListTrialsController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage) {
-    this.CommunicationService.sendMessage(CommunicationService.identities.HCO_IDENTITY, {
+    this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, {
       operation: operation,
       ssi: ssi,
       shortDescription: shortMessage,

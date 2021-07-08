@@ -1,33 +1,25 @@
-import { trialStatusesEnum } from '../constants/trial.js';
-import { countryListAlpha2 } from '../constants/countries.js';
+// import { countryListAlpha2 } from '../constants/countries.js';
 import TrialsService from '../services/TrialsService.js';
 
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
 
 export default class AddNewTrialModalController extends WebcController {
-  trialStatusesArray = Object.entries(trialStatusesEnum)
-    .map(([k, v]) => `${v}, ${v}`)
-    .join(' | ');
+  // trialStatusesArray = Object.entries(trialStatusesEnum)
+  //   .map(([k, v]) => `${v}, ${v}`)
+  //   .join(' | ');
 
-  trialCountriesArray = Object.entries(countryListAlpha2)
-    .map(([k, v]) => `${v}, ${k}`)
-    .join(' | ');
+  // trialCountriesArray = Object.entries(countryListAlpha2)
+  //   .map(([k, v]) => `${v}, ${k}`)
+  //   .join(' | ');
 
-  status = {
-    label: 'Select status',
-    placeholder: 'Please select an option',
-    required: true,
-    selectOptions: this.trialStatusesArray,
-  };
-
-  countries = {
-    label: 'List of countries',
-    placeholder: 'Please select an option',
-    required: true,
-    selectOptions: this.trialCountriesArray,
-    selectionType: 'multiple',
-  };
+  // countries = {
+  //   label: 'List of countries',
+  //   placeholder: 'Please select an option',
+  //   required: true,
+  //   selectOptions: this.trialCountriesArray,
+  //   selectionType: 'multiple',
+  // };
 
   name = {
     label: 'Name',
@@ -45,6 +37,22 @@ export default class AddNewTrialModalController extends WebcController {
     value: '',
   };
 
+  sponsor = {
+    label: 'Sponsor',
+    name: 'sponsor',
+    required: true,
+    placeholder: 'Please insert the sponsor...',
+    value: '',
+  };
+
+  did = {
+    label: 'Sponsor DID',
+    name: 'did',
+    required: true,
+    placeholder: 'Please insert the sponsor DID...',
+    value: '',
+  };
+
   constructor(...props) {
     super(...props);
 
@@ -56,8 +64,9 @@ export default class AddNewTrialModalController extends WebcController {
       trial: {
         id: this.id,
         name: this.name,
-        status: this.status,
-        countries: this.countries,
+        // countries: this.countries,
+        sponsor: this.sponsor,
+        did: this.did,
       },
       submitButtonDisabled: true,
     });
@@ -69,7 +78,6 @@ export default class AddNewTrialModalController extends WebcController {
     const idField = this.element.querySelector('#id-field');
     idField.addEventListener('keydown', () => {
       setTimeout(() => {
-        console.log(this.existingIds);
         if (this.existingIds.indexOf(this.model.trial.id.value) > -1) {
           this.model.trial.id = {
             ...this.model.trial.id,
@@ -112,11 +120,10 @@ export default class AddNewTrialModalController extends WebcController {
         this.model.submitButtonDisabled = true;
         const trial = {
           name: this.model.trial.name.value,
-          status: this.model.trial.status.value,
           id: this.model.trial.id.value,
-          countries: [this.model.trial.countries.value],
+          sponsor: this.model.trial.sponsor.value,
+          did: this.model.trial.did.value,
           consents: [],
-          participants: [],
         };
         const result = await this.trialsService.createTrial(trial);
         this.model.submitButtonDisabled = false;

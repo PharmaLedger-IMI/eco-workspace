@@ -3,10 +3,10 @@ const {WebcController} = WebCardinal.controllers;
 let getInitModel = () => {
     return {
         number: {
-            label: 'Trial Participant Number',
+            label: 'Trial Subject Number',
             name: 'number',
             required: true,
-            placeholder: 'Please insert the trial participant number...',
+            placeholder: 'Please insert the trial subject number...',
             value: '',
         },
     };

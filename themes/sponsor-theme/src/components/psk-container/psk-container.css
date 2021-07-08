@@ -16,7 +16,7 @@ psk-container.pdfViewer .content {
   background-color: white;
 }
 
-.ed-avatar-bordered-image #ed-profile-image {
+#ed-profile-image {
   border-radius: 90px;
   width: 124px;
   height: 124px;
@@ -25,11 +25,10 @@ psk-container.pdfViewer .content {
   top: 5px;
 }
 
-.ed-avatar-bordered-image #ed-profile-border {
+#ed-profile-border {
   border: 5px solid white;
   background-image: url(assets/images/profile-pic.jpg);
   background-repeat: round;
   width: 180px;
   height: 180px;
-  border-radius: 90px;
 }

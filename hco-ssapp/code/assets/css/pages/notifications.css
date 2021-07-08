@@ -26,13 +26,29 @@
 }
 
 .centered {
-    margin: 70px 25% 0px 30%;
     display: flex;
+    margin-top: 60px;
+    margin-left: 11.5%;
+}
+
+.button-container button {
+    width: 300px;
+    display: flex;
+    justify-content: center;
+    padding-top: 15px;
+}
+
+.button-container button div div {
+    margin-left: 10px;
+    margin-top: -5px;
 }
 
 .button-container {
-    display:flex;
     width: 33%;
+}
+
+.missing-buton-margin-right {
+    margin-right: 30%;
 }
 
 .main-button {
@@ -46,15 +62,8 @@
     height: 55px;
     width: 160px;
 }
-.back-button{
-    background-color: #008798;
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    font-size: 16px;
-    border-radius: 5px;
-    margin: 20px 0 40px 45%;
-    height: 55px;
-    width: 160px;
+
+.body{
+    height: 300px;
+    overflow: auto;
 }

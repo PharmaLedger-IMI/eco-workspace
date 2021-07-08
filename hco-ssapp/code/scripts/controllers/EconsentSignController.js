@@ -1,12 +1,12 @@
 import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
-
-const {WebcController} = WebCardinal.controllers;
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
 import CommunicationService from '../services/CommunicationService.js';
 import DateTimeService from '../services/DateTimeService.js';
 import FileDownloader from '../utils/FileDownloader.js';
 import Constants from '../utils/Constants.js';
+
+const {WebcController} = WebCardinal.controllers;
 
 const TEXT_MIME_TYPE = 'text/';
 
@@ -32,8 +32,8 @@ export default class EconsentSignController extends WebcController {
             showPageDown: true
         });
 
-        if (this.model.readOnly === undefined) {
-            this.model.readOnly = false;
+        if (this.model.controlsShouldBeVisible === undefined) {
+            this.model.controlsShouldBeVisible = true;
         }
 
         this._initServices(this.DSUStorage);
@@ -44,14 +44,13 @@ export default class EconsentSignController extends WebcController {
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
     }
 
     _initHandlers() {
         this._attachHandlerEconsentSign();
-        this._attachHandlerPdfPageUp();
-        this._attachHandlerPdfPageDown();
+        this._attachHandlerBack();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -91,7 +90,7 @@ export default class EconsentSignController extends WebcController {
             },
             shortDescription: shortMessage,
         };
-        this.CommunicationService.sendMessage(CommunicationService.identities.SPONSOR_IDENTITY, sendObject);
+        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, sendObject);
     }
 
     _getEconsentFilePath(trialSSI, consentSSI, version, fileName) {
@@ -108,56 +107,12 @@ export default class EconsentSignController extends WebcController {
                 toShowDate: currentDate.toLocaleDateString(),
             };
 
-            // this.TrialService.updateEconsent(this.model.trialSSI, this.model.econsent, (err, response) => {
-            //     if (err) {
-            //         return console.log(err);
-            //     }
-            // });
             this._updateEconsentWithDetails();
             this.sendMessageToSponsor('sign-econsent', Constants.MESSAGES.HCO.COMMUNICATION.SPONSOR.SIGN_ECONSENT);
             this.navigateToPageTag('home');
         });
     }
 
-    _attachHandlerPdfPageUp() {
-        this.onTagEvent('pdf-page-up', 'click', (model, target, event) => {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-
-            if (this.model.pdf.currentPage === 1) {
-                this.model.showPageUp = false;
-            }
-            if (this.model.pdf.currentPage + 1 < this.model.pdf.pagesNo) {
-                this.model.showPageDown = true;
-            }
-            if (this.model.pdf.currentPage <= 1) {
-                return;
-            }
-            this.model.pdf.currentPage = this.model.pdf.currentPage - 1;
-            this.renderPage(this.model.pdf.currentPage);
-        });
-    }
-
-    _attachHandlerPdfPageDown() {
-        this.onTagEvent('pdf-page-down', 'click', (model, target, event) => {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-
-            if (this.model.pdf.currentPage >= 1) {
-                this.model.showPageUp = true;
-            }
-            if (this.model.pdf.currentPage + 1 === this.model.pdf.pagesNo) {
-                this.model.showControls = true;
-                this.model.showPageDown = false;
-            }
-            if (this.model.pdf.currentPage >= this.model.pdf.pagesNo) {
-                this.model.showControls = true;
-                return;
-            }
-            this.model.pdf.currentPage = this.model.pdf.currentPage + 1;
-            this.renderPage(this.model.pdf.currentPage);
-        });
-    }
 
     _downloadFile = () => {
         this.FileDownloader.downloadFile((downloadedFile) => {
@@ -166,47 +121,17 @@ export default class EconsentSignController extends WebcController {
             this.blob = new Blob([this.rawBlob], {
                 type: this.mimeType,
             });
-            if (this.mimeType.indexOf(TEXT_MIME_TYPE) !== -1) {
-                this._prepareTextEditorViewModel();
-            } else {
-                this._displayFile();
-            }
+            this._displayFile();
         });
     };
 
     _loadPdfOrTextFile = () => {
-        this._loadBlob((base64Blob) => {
-            const obj = document.createElement('object');
-            obj.type = this.mimeType;
-            obj.data = base64Blob;
-            this._appendAsset(obj);
-        });
-    };
-
-    _loadBlob = (callback) => {
         const reader = new FileReader();
         reader.readAsDataURL(this.blob);
         reader.onloadend = () => {
             let base64data = reader.result;
-            this.initPDF(base64data.substr(base64data.indexOf(',')+1));
-            callback(base64data);
+            this.initPDF(base64data.substr(base64data.indexOf(',') + 1));
         };
-    };
-
-    _appendAsset = (assetObject) => {
-        return;
-        let content = this.element.querySelector('.content');
-        if (content) {
-            content.append(assetObject);
-        }
-
-        window.addEventListener("scroll", (event) => {
-            let myDiv = event.target;
-            if (myDiv.id === 'pdfViewer'
-                && myDiv.offsetHeight + myDiv.scrollTop >= myDiv.scrollHeight) {
-                this.model.showControls = true;
-            }
-        }, {capture: true});
     };
 
     initPDF(pdfData) {
@@ -221,7 +146,7 @@ export default class EconsentSignController extends WebcController {
             let myDiv = event.target;
             if (myDiv.id === 'canvas-wrapper'
                 && myDiv.offsetHeight + myDiv.scrollTop >= myDiv.scrollHeight) {
-                console.log('Scroll down -> should change the page here.')
+                this.model.showControls = true;
             }
         }, {capture: true});
     }
@@ -229,24 +154,25 @@ export default class EconsentSignController extends WebcController {
     renderPage = (pageNo) => {
         this.loadingTask.promise.then((pdf) => {
             this.model.pdf.pagesNo = pdf.numPages;
-            pdf.getPage(pageNo).then(page => {
-                const viewport = page.getViewport({scale: 1});
-
-                const canvas = document.getElementById('the-canvas');
-                const context = canvas.getContext('2d');
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-
-                const renderContext = {
-                    canvasContext: context,
-                    viewport: viewport
-                };
-                const renderTask = page.render(renderContext);
-                renderTask.promise.then(function () {
-                    console.log('Page rendered');
-                });
-            });
+            pdf.getPage(pageNo).then(result => this.handlePages(pdf, result));
         }, (reason) => console.error(reason));
+    }
+
+    handlePages = (thePDF, page) => {
+        const viewport = page.getViewport({scale: 1.5});
+        let canvas = document.createElement("canvas");
+        canvas.style.display = "block";
+        let context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        page.render({canvasContext: context, viewport: viewport});
+        document.getElementById('canvas-parent').appendChild(canvas);
+
+        this.model.pdf.currentPage = this.model.pdf.currentPage + 1;
+        let currPage = this.model.pdf.currentPage;
+        if (thePDF !== null && currPage <= this.model.pdf.pagesNo) {
+            thePDF.getPage(currPage).then(result => this.handlePages(thePDF, result));
+        }
     }
 
     _displayFile = () => {
@@ -277,7 +203,6 @@ export default class EconsentSignController extends WebcController {
         }
     }
 
-
     _updateEconsentWithDetails(message) {
 
         let currentVersionIndex = this.model.econsent.versions.findIndex(eco => eco.version === this.model.ecoVersion)
@@ -289,10 +214,9 @@ export default class EconsentSignController extends WebcController {
             currentVersion.actions = [];
         }
 
-
         const currentDate = new Date();
         currentVersion.actions.push({
-
+            name: 'sign',
             tpNumber: this.model.trialParticipantNumber,
             type: 'hco',
             status: Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED,
@@ -317,7 +241,7 @@ export default class EconsentSignController extends WebcController {
             if (tps && tps.length > 0) {
                 let tp = tps[0];
                 tp.actionNeeded = 'HCO SIGNED -no action required',
-                tp.tpSigned = true;
+                    tp.tpSigned = true;
                 tp.status = Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED;
                 this.TrialParticipantRepository.update(tp.uid, tp, (err, trialParticipant) => {
                     if (err) {
@@ -329,5 +253,13 @@ export default class EconsentSignController extends WebcController {
         });
 
 
+    }
+
+    _attachHandlerBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
+        });
     }
 }

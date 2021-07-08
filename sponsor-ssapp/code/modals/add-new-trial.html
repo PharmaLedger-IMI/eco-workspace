@@ -9,11 +9,14 @@
       <psk-input id="id-field" view-model="trial.id" event-name="id-changed"></psk-input>
     </div>
     <div class="m-2">
-      <psk-select view-model="trial.status"></psk-select>
+      <psk-input id="sponsor-field" disabled="true" view-model="trial.sponsor" event-name="sponsor-changed"></psk-input>
     </div>
-    <div class="d-flex flex-row m-2">
+    <div class="m-2">
+      <psk-input id="did-field" disabled="true" view-model="trial.did" event-name="did-changed"></psk-input>
+    </div>
+    <!-- <div class="d-flex flex-row m-2">
       <psk-select view-model="trial.countries"></psk-select>
-    </div>
+    </div> -->
   </div>
 
   <button class="btn btn-primary" slot="footer" data-tag="create-trial">Submit</button>

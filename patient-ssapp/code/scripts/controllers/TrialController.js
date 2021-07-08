@@ -2,6 +2,7 @@ import Constants from './Constants.js';
 import TrialService from '../services/TrialService.js';
 import ConsentStatusMapper from "../utils/ConsentStatusMapper.js";
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
+import DateTimeService from '../services/DateTimeService.js';
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -30,6 +31,7 @@ export default class TrialController extends WebcController {
     _initHandlers() {
         this._attachHandlerConsentClick();
         this._attachHandlerSiteClick();
+        this._attachHandlerBack();
     }
 
     _initTrial() {
@@ -38,31 +40,49 @@ export default class TrialController extends WebcController {
                 return console.log(err);
             }
             this.model.trial = trial;
+            if (trial.name.length > 16) {
+                this.model.bigTitle = true;
+            } else {
+                this.model.lowTitle = true;
+            }
             this.model.tpEconsents = [];
             this.model.trial.color = Constants.getColorByTrialStatus(this.model.trial.status);
-            this.TrialService.getEconsents(trial.keySSI, (err, data) => {
+            this.TrialService.getEconsents(trial.keySSI, async (err, data) => {
                 if (err) {
                     return console.log(err);
                 }
 
-                this.model.econsents = data?.map(econsent => {
-                    return econsent.versions.length === 0 ? econsent : {
-                        ...econsent,
-                        ...econsent.versions.sort((a, b) => new Date(b.versionDate) - new Date(a.versionDate))[0]
-                    }
+                let lastAction = 'Consent required';
+                let statusesMappedByConsent = {};
+                let statuses = await this.EconsentsStatusRepository.findAllAsync();
+                statuses.forEach(status => {
+                    statusesMappedByConsent[status.foreignConsentId] = status;
                 })
 
-                this.model.econsents[0].isMain = true;
-                this.EconsentsStatusRepository.findAll(( err,statuses) => {
-                    if (err) {
-                        return console.error(err);
+                this.model.econsents = data?.map(econsent => {
+                    let importantVersion = econsent.versions.sort((a, b) => new Date(b.versionDate) - new Date(a.versionDate))[0]
+                    let status = statusesMappedByConsent[econsent.uid];
+
+                    if (status.actions.length > 0) {
+                        lastAction = status.actions[status.actions.length - 1].name;
                     }
-                    this._setTpStatus(statuses);
-                });
+                    lastAction = lastAction.split('-')
+                        .filter(action => action.length > 0)
+                        .map(action => action.charAt(0).toUpperCase() + action.slice(1))
+                        .join(" ");
 
+                    return econsent.versions.length === 0 ? econsent : {
+                        ...econsent,
+                        versionDateAsString: DateTimeService.convertStringToLocaleDate(importantVersion.versionDate),
+                        status: {
+                            name: lastAction
+                        },
+                        ...importantVersion
+                    }
+                })
+                this._setTpStatus(statuses);
+                this.model.econsents[0].isMain = true;
             });
-
-
         });
     }
 
@@ -82,6 +102,14 @@ export default class TrialController extends WebcController {
     _attachHandlerSiteClick() {
         this.on('go-to-site', (event) => {
             this.navigateToPageByTag('site', event.data);
+        });
+    }
+
+    _attachHandlerBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
         });
     }
 

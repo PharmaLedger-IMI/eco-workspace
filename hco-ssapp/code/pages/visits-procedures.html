@@ -1,0 +1,62 @@
+<psk-page title="Home">
+    <link rel="stylesheet" href="/assets/css/pages/visits-procedures.css">
+    <webc-container controller="VisitsAndProceduresController">
+
+        <div class="main-background">
+            <div class="front">
+
+                <div class="top-container">
+                    <div class="pharma-logo">
+                        <psk-img class="ed-control-image" src="assets/images/pharmalogo.png"
+                                 height='47' width='110'></psk-img>
+                    </div>
+                    <div>
+                        <psk-label class="main-title" label="Visits and procedures "></psk-label>
+                    </div>
+                    <button class="logout-button" data-tag="logout">Logout</button>
+                </div>
+
+                <div class="general-table">
+                    <psk-layout columns="3" class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell-title">Visit</psk-label>
+                        <psk-label class="table-cell-title">Period</psk-label>
+                        <psk-label class="table-cell-title">Consent Assigned</psk-label>
+                    </psk-layout>
+                    <hr/>
+                </div>
+
+                <div class="general-table body" data-for="@visits">
+                    <psk-layout columns="3"
+                                class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell">{{@name}}</psk-label>
+                        <psk-label class="table-cell">{{@period}} {{@unit}}</psk-label>
+                        <button class="link-button" data-tag="goToAction" data="@id">Consent</button>
+                    </psk-layout>
+
+                </div>
+
+                <button class="back-button" data-tag="back">Back</button>
+            </div>
+
+            <div class="eu-container">
+                <div class="left-image-eu">
+                    <psk-img class="ed-control-image" src="assets/images/flageu.png"
+                             height='80' width='123'></psk-img>
+                </div>
+                <div class="right-text-eu">
+                    <strong>
+                        <psk-label class="eu-text">This project has received funding from the European Union’s Horizon
+                            2020 research and innovation programme under <br/>
+                            grant agreement No 853992 Copyright <br/>
+                            <span>&copy;  PharmaLedger Consortium 2020 –2023</span>
+                        </psk-label>
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+    </webc-container>
+</psk-page>
+
+

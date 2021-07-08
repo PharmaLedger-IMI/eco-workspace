@@ -10,9 +10,11 @@
                         <psk-img class="ed-control-image" src="assets/images/pharmalogo.png"
                                  height='47' width='110'></psk-img>
                     </div>
+                    <div>
+                        <psk-label class="main-title" label="@notificationType"></psk-label>
+                    </div>
                     <button class="logout-button" data-tag="logout">Logout</button>
                 </div>
-                <psk-label class="main-title" label="@notificationType"></psk-label>
 
                 <div class="general-table">
                     <psk-layout columns="2" class="justify-content-center align-items-center table-row">
@@ -22,7 +24,7 @@
                     <hr/>
                 </div>
 
-                <div class="general-table" data-for="@notifications">
+                <div class="general-table body" data-for="@notifications">
                     <psk-layout columns="2"
                                 class="justify-content-center align-items-center table-row">
                         <psk-label class="table-cell">{{@name}}</psk-label>

@@ -32,6 +32,12 @@
       "tag": "notifications-list"
     },
     {
+      "name": "Visits And Procedures List",
+      "path": "/visits-procedures",
+      "src": "visits-procedures.html",
+      "tag": "visits-procedures"
+    },
+    {
       "name": "Create trial",
       "tag": "create-trial",
       "indexed": false

@@ -17,9 +17,44 @@
     top: 5px;
 }
 
+.image-qr {
+    width: 124px;
+    height: 124px;
+    position: relative;
+    left: 5px;
+    top: 5px;
+}
+
 .home-default-bottom {
     width: 100%;
     height: 100%;
-    background-color: #00345B;
-    color: white;
+    color: #00345B;
+    background-color: white;
+}
+
+.patient-button-row .psk-card {
+    position: initial !important;
+}
+
+webc-container {
+    background-color: red;
+}
+
+.trial-img img {
+    filter: invert(100%);
+}
+
+.home-default-top {
+    width: 100%;
+    height: 100%;
+    margin: 20px 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background: white;
+    padding-top: 50px;
+}
+
+.home-default-top img {
+    padding: 10px;
 }

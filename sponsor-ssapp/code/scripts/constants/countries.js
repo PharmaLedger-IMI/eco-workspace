@@ -501,3 +501,19 @@ export const countryListAlpha2 = {
   ZW: 'Zimbabwe',
   AX: 'Åland Islands',
 };
+
+export const countryStatusesEnum = {
+  Active: 'Active',
+  OnHold: 'On Hold',
+  Cancelled: 'Cancelled',
+};
+
+export const countryStagesEnum = {
+  Created: 'Created',
+  Submission: 'Submission',
+  Initiated: 'Initiated',
+  Recruiting: 'Recruiting',
+  Enrolling: 'Enrolling',
+  Conducting: 'Conducting',
+  Completed: 'Completed',
+};

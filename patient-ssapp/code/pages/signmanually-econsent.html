@@ -1,50 +1,52 @@
-<psk-example class="mobile-example">
-    <psk-mobile class="noPadding background" disable-header>
-        <link rel="stylesheet" href="/assets/css/pages/consent.css">
-        <webc-container controller="SignManuallyController">
-            <div class="header-title">
-                <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
-                <psk-label class="scan-error-title" label="@econsent.name"></psk-label>
-            </div>
+<link href="/assets/css/pages/consent.css" rel="stylesheet">
+<webc-container controller="SignManuallyController">
+    <div class="container-child">
+        <div class="header-title">
+            <psk-button-link class="go-back-link" event-name="go-back" icon="arrow-left"></psk-button-link>
+            <psk-label class="scan-error-title" label="@econsent.name"></psk-label>
+        </div>
 
-            <div class="padding-sides">
-                <strong>
-                    <psk-echo value="By Manualy sign you have to upload econsent file with manual signuture on pages. You can download, print and scan. "></psk-echo>
-                </strong>
-                <hr/>
-                <div>
-                    <psk-echo value="Consent Information "></psk-echo>2
-                </div>
-                <div>
-                    <psk-echo value="Version "></psk-echo>
-                    <strong>
-                        <psk-echo value="@econsent.version"></psk-echo>
-                    </strong>
-                </div>
-                <div>
-                    <psk-echo value="Document date: "></psk-echo>
-                    <strong>
-                        <psk-echo value="@econsent.versionDate"></psk-echo>
-                    </strong>
-                </div>
-                <hr/>
-                <strong>
-                    <psk-echo value="Please make sure you upload the matchinhg file to this consent. You can also download the file to sign here."></psk-echo>
-                </strong>
-                <hr/>
-                <button class="consent-read" style="width: 80%"
-                        data-tag="econsent:download">Download
-                </button>
-                <psk-files-chooser style="width:100%" view-model="status.attachment" event-name="add-file"> </psk-files-chooser>
-                <hr/>
-                <strong>
-                    <psk-echo value="By clicking Send & Sign you agree to send the document file to the site"></psk-echo>
-                </strong>
-                <hr/>
-                <button class="consent-read" style="width: 80%"
-                        data-tag="econsent:sign">Send & Sign
-                </button>
+        <div class="padding-sides">
+            <strong>
+                <psk-echo
+                        value="By Manualy sign you have to upload econsent file with manual signuture on pages. You can download, print and scan. "></psk-echo>
+            </strong>
+            <hr/>
+            <div>
+                <psk-echo value="Consent Information "></psk-echo>
+                2
             </div>
-        </webc-container>
-    </psk-mobile>
-</psk-example>
+            <div>
+                <psk-echo value="Version "></psk-echo>
+                <strong>
+                    <psk-echo value="@econsent.version"></psk-echo>
+                </strong>
+            </div>
+            <div>
+                <psk-echo value="Document date: "></psk-echo>
+                <strong>
+                    <psk-echo value="@econsent.versionDate"></psk-echo>
+                </strong>
+            </div>
+            <hr/>
+            <strong>
+                <psk-echo
+                        value="Please make sure you upload the matchinhg file to this consent. You can also download the file to sign here."></psk-echo>
+            </strong>
+            <hr/>
+            <button class="consent-read" data-tag="econsent:download"
+                    style="width: 80%">Download
+            </button>
+            <psk-files-chooser event-name="add-file" style="width:100%"
+                               view-model="status.attachment"></psk-files-chooser>
+            <hr/>
+            <strong>
+                <psk-echo value="By clicking Send & Sign you agree to send the document file to the site"></psk-echo>
+            </strong>
+            <hr/>
+            <button class="consent-read" data-tag="econsent:sign"
+                    style="width: 80%">Send & Sign
+            </button>
+        </div>
+    </div>
+</webc-container>

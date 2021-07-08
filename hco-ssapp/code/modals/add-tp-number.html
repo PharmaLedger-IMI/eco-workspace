@@ -1,12 +1,19 @@
 <link rel="stylesheet" href="/assets/css/pages/addtp.css">
-<webc-skin href="/assets/css/pages/addtp.css">
-    <webc-container class="maxw" controller="AddTrialParticipantNumber">
-        <div class="top">
-            <div class="line">
-                <psk-input class="tp-input" view-model="@number"/>
-            </div>
-            <button class="tp-button" slot="footer" data-tag="tp:submit">Submit</button>
-            <button class="tp-button" slot="footer" data-tag="tp:cancel">Cancel</button>
+<link rel="stylesheet" href="/assets/css/pages/addtp.css">
+
+    <h2 slot="header" class="alert-title">Set Ts Number</h2>
+
+<webc-container class="maxw" controller="AddTrialParticipantNumber">
+    <div class="top">
+        <div class="line">
+            <psk-input class="tp-input" view-model="@number"/>
         </div>
-    </webc-container>
+
+    </div>
+
+    <div class="bottom">
+        <button class="tp-button wide-button inverted-colors" slot="footer" data-tag="tp:submit">Done</button>
+        <button class="tp-button wide-button inverted-colors" slot="footer" data-tag="tp:cancel">Cancel</button>
+    </div>
+</webc-container>
 </webc-skin>

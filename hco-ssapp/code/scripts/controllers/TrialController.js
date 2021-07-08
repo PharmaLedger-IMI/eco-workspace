@@ -28,7 +28,7 @@ export default class TrialController extends WebcController {
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.HCO_IDENTITY);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
     }
 
@@ -99,18 +99,21 @@ export default class TrialController extends WebcController {
         this.model.trialParticipants.push(trialParticipant);
         this.sendMessageToPatient(
             'add-to-trial',
+
             this.model.trialSSI,
-            trialParticipant.did,
+            trialParticipant,
             Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL
         );
     }
 
-    sendMessageToPatient(operation, ssi, trialParticipantNumber, shortMessage) {
-        this.CommunicationService.sendMessage(CommunicationService.identities.PATIENT_IDENTITY, {
+    sendMessageToPatient(operation, ssi, trialParticipant, shortMessage) {
+        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
             operation: operation,
             ssi: ssi,
             useCaseSpecifics: {
-                tpNumber: trialParticipantNumber,
+                tpNumber: trialParticipant.tpNumber,
+                tpName: trialParticipant.name,
+                did: trialParticipant.did
             },
             shortDescription: shortMessage,
         });

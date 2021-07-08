@@ -20,7 +20,6 @@ export default class ConsentsService extends DSUService {
     }
 
     if (result && result.consents) {
-      console.log(result.consents);
       return result.consents.filter((x) => !x.deleted);
     } else return [];
   }
@@ -76,7 +75,6 @@ export default class ConsentsService extends DSUService {
 
     const consents = await this.getTrialConsents(trialKeySSI);
 
-    await this.mountConsent(trialKeySSI, consent.uid);
     await this.mountConsent(trialKeySSI, consent.uid);
 
     return consent;

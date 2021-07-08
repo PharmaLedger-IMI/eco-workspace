@@ -1,5 +1,7 @@
 import getSharedStorage from './SharedDBStorageService.js';
 import DSUService from './DSUService.js';
+import { trialStatusesEnum } from '../constants/trial.js';
+import { trialStagesEnum } from '../constants/trial.js';
 
 export default class TrialsService extends DSUService {
   TRIALS_TABLE = 'trials';
@@ -17,19 +19,38 @@ export default class TrialsService extends DSUService {
     } else return [];
   }
 
+  /**
+   *
+   * @param {*} keySSI
+   * @returns
+   */
+
   async getTrial(keySSI) {
     const result = await this.getEntityAsync(keySSI);
     return result;
   }
 
+  async getTrialFromDB(id) {
+    return await this.storageService.getRecord(this.TRIALS_TABLE, id);
+  }
+
   async createTrial(data) {
-    const trial = await this.saveEntityAsync(data);
+    const trial = await this.saveEntityAsync({
+      ...data,
+      stage: trialStagesEnum.Created,
+      status: trialStatusesEnum.Active,
+      created: new Date().toISOString(),
+    });
     await this.addTrialToDB({
       id: trial.id,
       keySSI: trial.uid,
       name: trial.name,
       status: trial.status,
-      countries: trial.countries,
+      sponsor: trial.sponsor,
+      did: trial.did,
+      stage: trial.stage,
+      status: trial.status,
+      created: trial.created,
     });
     return trial;
   }

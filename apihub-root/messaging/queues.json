@@ -1,9 +1,4 @@
 {
-    "timeouts": {
-        "did:demo:sponsorIdentity": 500,
-        "did:demo:hcoIdentity": 500,
-        "did:demo:patientIdentity": 500
-    },
     "queues": [
         "did:demo:sponsorIdentity",
         "did:demo:hcoIdentity",

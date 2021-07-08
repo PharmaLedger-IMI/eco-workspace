@@ -1,0 +1,11 @@
+.visits-table-container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 1fr);
+  grid-template-rows: repeat(auto-fill, 120px);
+  grid-row-gap: 0.5em;
+  grid-column-gap: 1em;
+}
+
+.visits-table-container .item {
+}

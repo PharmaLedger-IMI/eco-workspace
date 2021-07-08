@@ -1,113 +1,111 @@
-<psk-example class="mobile-example">
-    <psk-mobile class="noPadding background" disable-header>
-        <link rel="stylesheet" href="/assets/css/pages/trial.css">
-        <webc-container controller="SiteController">
-            <div class="header-title">
-                <psk-button-link icon="arrow-left" class="go-back-link" event-name="go-back"></psk-button-link>
-                <psk-label class="scan-error-title" label="@site.name"></psk-label>
-            </div>
-            <hr>
-            <div class="subheader">
-                <psk-label class="subheader" label="SITE DATA "></psk-label>
-            </div>
-            <div class="padding-sides">
-                <div class="dispay-flex date-div justify-content-space-between">
-                    <div class="dispay-flex">
-                        <div class="left-image">
-                            <psk-img class="ed-control-image" src="assets/images/hospitalfirst.png"
-                                     height='80' width='80'></psk-img>
-                        </div>
-                        <div class="right-text">
-                            <strong>
+<link href="/assets/css/pages/trial.css" rel="stylesheet">
+<webc-container controller="SiteController">
+    <div class="container-child">
+        <div class="header-title">
+            <psk-button-link class="go-back-link" event-name="go-back" icon="arrow-left"></psk-button-link>
+            <psk-label class="scan-error-title" label="@site.name"></psk-label>
+        </div>
+        <hr>
+        <div class="subheader">
+            <psk-label class="subheader" label="SITE DATA "></psk-label>
+        </div>
+        <div class="padding-sides">
+            <div class="dispay-flex date-div justify-content-space-between">
+                <div class="dispay-flex">
+                    <div class="left-image">
+                        <psk-img class="ed-control-image" height='80'
+                                 src="assets/images/hospitalfirst.png" width='80'></psk-img>
+                    </div>
+                    <div class="right-text">
+                        <strong>
 
-                                <psk-echo value="@site.name"></psk-echo>
-                            </strong>
-                        </div>
+                            <psk-echo value="@site.name"></psk-echo>
+                        </strong>
                     </div>
                 </div>
-                <hr>
+            </div>
+            <hr>
+            <div class="dispay-flex date-div justify-content-space-between">
+                <div class="dispay-flex">
+                    <div class="left-image">
+                        <psk-img class="ed-control-image" height='40'
+                                 src="assets/images/phone.png" width='40'></psk-img>
+                    </div>
+                    <div class="right-text">
+                        <strong>
+                            <a href="tel:+4917640206387"/>
+                            <psk-echo value="@site.phone"></psk-echo>
+                        </strong>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="dispay-flex date-div justify-content-space-between">
+                <div class="dispay-flex">
+                    <div class="left-image">
+                        <psk-img class="ed-control-image" height='40'
+                                 src="assets/images/at.png" width='40'></psk-img>
+                    </div>
+                    <div class="right-text">
+                        <strong>
+                            <psk-echo value="@site.email"></psk-echo>
+                        </strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dispay-flex date-div justify-content-space-between">
+                <div class="dispay-flex">
+                    <div class="left-image">
+                        <psk-img class="ed-control-image" height='40'
+                                 src="assets/images/pin.png" width='40'></psk-img>
+                    </div>
+                    <div class="right-text">
+                        <strong>
+                            <psk-echo value="@site.address"></psk-echo>
+                        </strong>
+                    </div>
+                </div>
+            </div>
+            <div class="subheader">
+                <psk-label class="subheader" label="PRINCIPAL INVESTIGATOR"></psk-label>
+            </div>
+            <div class="padding-sides">
+                <div>
+                    <psk-echo value="Investigator Name : "></psk-echo>
+                    <strong>
+                        {{@sponsor.investigatorName}}
+                    </strong>
+                </div>
                 <div class="dispay-flex date-div justify-content-space-between">
                     <div class="dispay-flex">
                         <div class="left-image">
-                            <psk-img class="ed-control-image" src="assets/images/phone.png"
-                                     height='40' width='40'></psk-img>
+                            <psk-img class="ed-control-image" height='40'
+                                     src="assets/images/phone.png" width='40'></psk-img>
                         </div>
                         <div class="right-text">
                             <strong>
                                 <a href="tel:+4917640206387"/>
-                                <psk-echo value="@site.phone"></psk-echo>
+                                <psk-echo value="@site.investigatorPhone"></psk-echo>
                             </strong>
                         </div>
                     </div>
-
                 </div>
-
                 <div class="dispay-flex date-div justify-content-space-between">
                     <div class="dispay-flex">
                         <div class="left-image">
-                            <psk-img class="ed-control-image" src="assets/images/at.png"
-                                     height='40' width='40'></psk-img>
+                            <psk-img class="ed-control-image" height='40'
+                                     src="assets/images/at.png" width='40'></psk-img>
                         </div>
                         <div class="right-text">
                             <strong>
-                                <psk-echo value="@site.email"></psk-echo>
+                                <psk-echo value="@site.investigatorName"></psk-echo>
                             </strong>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dispay-flex date-div justify-content-space-between">
-                    <div class="dispay-flex">
-                        <div class="left-image">
-                            <psk-img class="ed-control-image" src="assets/images/pin.png"
-                                     height='40' width='40'></psk-img>
-                        </div>
-                        <div class="right-text">
-                            <strong>
-                                <psk-echo value="@site.address"></psk-echo>
-                            </strong>
-                        </div>
-                    </div>
-                </div>
-                <div class="subheader">
-                    <psk-label class="subheader" label="PRINCIPAL INVESTIGATOR"></psk-label>
-                </div>
-                <div class="padding-sides">
-                    <div>
-                        <psk-echo value="Investigator Name : "></psk-echo>
-                        <strong>
-                            {{@sponsor.investigatorName}}
-                        </strong>
-                    </div>
-                    <div class="dispay-flex date-div justify-content-space-between">
-                        <div class="dispay-flex">
-                            <div class="left-image">
-                                <psk-img class="ed-control-image" src="assets/images/phone.png"
-                                         height='40' width='40'></psk-img>
-                            </div>
-                            <div class="right-text">
-                                <strong>
-                                    <a href="tel:+4917640206387"/>
-                                    <psk-echo value="@site.investigatorPhone"></psk-echo>
-                                </strong>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dispay-flex date-div justify-content-space-between">
-                        <div class="dispay-flex">
-                            <div class="left-image">
-                                <psk-img class="ed-control-image" src="assets/images/at.png"
-                                         height='40' width='40'></psk-img>
-                            </div>
-                            <div class="right-text">
-                                <strong>
-                                    <psk-echo value="@site.investigatorName"></psk-echo>
-                                </strong>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </webc-container>
-    </psk-mobile>
-</psk-example>
+        </div>
+    </div>
+</webc-container>

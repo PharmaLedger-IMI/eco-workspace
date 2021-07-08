@@ -2,11 +2,14 @@
   <link rel="stylesheet" href="assets/css/trials.css" />
   <webc-container controller="ListTrialsController">
     <div class="d-flex flex-wrap justify-content-between align-items-center py-3 mb-5">
-      <div class="d-flex flex-column">
+      <!-- <div class="d-flex flex-column">
         <psk-select view-model="countries" event-name="filters-changed" event-data="country"></psk-select>
-      </div>
+      </div> -->
       <div class="d-flex flex-column">
         <psk-select view-model="statuses" event-name="filters-changed" event-data="status"></psk-select>
+      </div>
+      <div class="d-flex flex-column">
+        <psk-select view-model="stages" event-name="filters-changed" event-data="stage"></psk-select>
       </div>
       <div class="d-flex flex-column">
         <psk-input id="search-field" view-model="search" event-name="filters-changed" event-data="text"></psk-input>

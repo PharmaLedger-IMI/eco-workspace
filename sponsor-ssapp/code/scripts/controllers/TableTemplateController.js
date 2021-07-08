@@ -26,7 +26,7 @@ export default class TableTemplateController extends WebcController {
       () => {
         return this.model.type === 'trials';
       },
-      'form.email.isValid'
+      'type'
     );
 
     this.model.addExpression(
@@ -34,7 +34,7 @@ export default class TableTemplateController extends WebcController {
       () => {
         return this.model.type === 'consents';
       },
-      'form.email.isValid'
+      'type'
     );
 
     this.model.addExpression(
@@ -42,12 +42,11 @@ export default class TableTemplateController extends WebcController {
       () => {
         return this.model.type === 'participants';
       },
-      'form.email.isValid'
+      'type'
     );
 
     this.on('navigate-to-page', async (event) => {
       event.preventDefault();
-      console.log('event:', event);
       this.paginateData(this.model.data, event.data.value ? parseInt(event.data.value) : event.data);
     });
 
@@ -87,8 +86,8 @@ export default class TableTemplateController extends WebcController {
     });
   }
 
-  paginateData(dataIncoming, page = 1) {
-    const data = [...dataIncoming];
+  paginateData(data, page = 1) {
+    data = _.clone(data);
     if (data && data.length > 0) {
       const itemsPerPage = this.model.pagination.itemsPerPage;
       const length = data.length;
@@ -120,8 +119,6 @@ export default class TableTemplateController extends WebcController {
           : pages;
       this.model.pagination.currentPage = page;
       this.model.pagination.totalPages = pages.length;
-
-      console.log(JSON.stringify(this.model.pagination, null, 2));
     }
   }
 
@@ -136,21 +133,22 @@ export default class TableTemplateController extends WebcController {
       if (headers[idx].notSortable) return;
 
       if (headers[idx].asc || headers[idx].desc) {
-        this.model.data.reverse();
-        this.paginateData(this.model.data, this.model.pagination.currentPage);
+        const data = _.clone(this.model.data);
+        data.reverse();
+        this.model.data = data;
         this.model.headers = this.model.headers.map((x) => {
           if (x.column !== column) {
             return { ...x, asc: false, desc: false };
           } else return { ...x, asc: !headers[idx].asc, desc: !headers[idx].desc };
         });
       } else {
-        this.model.data = this.model.data.sort((a, b) => (a[column] >= b[column] ? 1 : -1));
-        this.paginateData(this.model.data, this.model.pagination.currentPage);
         this.model.headers = this.model.headers.map((x) => {
           if (x.column !== column) {
             return { ...x, asc: false, desc: false };
           } else return { ...x, asc: true, desc: false };
         });
+        const data = _.clone(this.model.data);
+        this.model.data = data.sort((a, b) => (a[column] >= b[column] ? 1 : -1));
       }
     } else {
       this.model.headers = this.model.headers.map((x) => ({ ...x, asc: false, desc: false }));

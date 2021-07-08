@@ -10,9 +10,11 @@
                         <psk-img class="ed-control-image" src="assets/images/pharmalogo.png"
                                  height='47' width='110'></psk-img>
                     </div>
+                    <div>
+                        <psk-label class="main-title">Trial History: {{@trial.name}}</psk-label>
+                    </div>
                     <button class="logout-button" data-tag="logout">Logout</button>
                 </div>
-                <psk-label class="main-title" label="Trial Management"></psk-label>
 
                 <div class="trial-table">
                     <psk-layout columns="5" class="justify-content-center align-items-center table-row">
@@ -26,20 +28,14 @@
                 </div>
 
 
-                <div class="trial-table" data-for="@versions">
+                <div class="trial-table body" data-for="@versions">
                     <psk-layout columns="5"
                                 class="justify-content-center align-items-center table-row econsent-row-blue">
                         <psk-label class="table-cell">{{@version}} - {{@versionDateAsString}}</psk-label>
-                        <psk-label class="table-cell">{{@versionDateAsString}}</psk-label>
-                        <div data-if="@tpSigned">
-                            <button slot="true" data-tag="econsent:sign">
-                                {{@tpApproval}}
-                            </button>
-                            <psk-label slot="false" class="table-cell">{{@tpApproval}}</psk-label>
-                        </div>
-                        <psk-label class="table-cell">{{@tpCaregiveApproval}}</psk-label>
+                        <psk-label class="table-cell">{{@tpApproval}}</psk-label>
                         <psk-label class="table-cell">{{@hcpApproval}}</psk-label>
-                        <psk-label class="table-cell">{{@hcpWithdraw}}</psk-label>
+                        <psk-label class="table-cell">{{@tpWithdraw}}</psk-label>
+                        <button class="link-button" data="@id" data-tag="version:view">View</button>
                     </psk-layout>
                     <hr/>
 
