@@ -474,3 +474,29 @@
     environment update
     environment update
     environment update
+    Fix navigation from menu and ssapp components (issue #269)
+    [Freeze]
+    Updated TIR apihub launcher to accept domains as either string or objects for easier config.
+    Fix navigation from menu and ssapp components (issue #269)
+    fixed createMarketplace swarm
+    environment update
+    Merge pull request #2 from daniel-visoiu/master
+    
+    Added "Test Contract Method" functionality for testing contract methods.
+    environment update
+    environment update
+    environment update
+    environment update
+    Fix navigation from menu and ssapp components (issue #269)
+    [Freeze]
+    Updated TIR apihub launcher to accept domains as either string or objects for easier config.
+    Fix navigation from menu and ssapp components (issue #269)
+    fixed createMarketplace swarm
+    configured workspace
+    Merge pull request #2 from daniel-visoiu/master
+    
+    Added "Test Contract Method" functionality for testing contract methods.
+    configured workspace
+    configured workspace
+    configured workspace
+    configured workspace
