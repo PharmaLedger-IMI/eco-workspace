@@ -149,6 +149,7 @@ export default class TrialParticipantController extends WebcController {
                 'add-tp-number',
                 (event) => {
                     this.model.tp.tpNumber = event.detail;
+                    this.sendMessageToProfessional(this.model.tp)
                     this._updateTrialParticipant(this.model.tp);
                     this.updateTrialStage();
                 },
@@ -163,6 +164,34 @@ export default class TrialParticipantController extends WebcController {
                     title: 'Attach Trial Participant Number',
                 };
         });
+    }
+
+    sendMessageToProfessional(tp) {
+        this.TrialService.getTrial(this.model.trialSSI, async (err, trial) => {
+            if (err) {
+                return console.log(err);
+            }
+            let messageForIot = {
+                trial: {
+                    id: trial.uid,
+                    name: trial.name,
+                    status: trial.status
+                },
+                participant: {
+                    id: tp.uid,
+                    name: tp.name,
+                    gender: tp.gender,
+                    enrolledDate: tp.enrolledDate,
+                    birthdate: tp.birthdate
+                }
+            }
+
+            this.CommunicationService.sendMessage(CommunicationService.identities.IOT.PROFESSIONAL_IDENTITY, {
+                operation: 'add-trial-subject',
+                useCaseSpecifics: messageForIot
+            });
+        });
+
     }
 
     updateTrialStage() {
