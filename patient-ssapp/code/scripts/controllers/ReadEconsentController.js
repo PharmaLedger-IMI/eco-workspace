@@ -137,7 +137,8 @@ export default class ReadEconsentController extends WebcController {
 
     _attachHandlerManuallySign() {
         this.onTagClick('manual:sign', (model, target, event) => {
-            this.navigateToPageTag('signmanually-econsent', {...this.model.historyData});
+            // TODO: It crashes for now. Comment it until we fix it.
+            // this.navigateToPageTag('signmanually-econsent', {...this.model.historyData});
         });
     }
 
