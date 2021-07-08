@@ -4,6 +4,7 @@ import CommunicationService from '../services/CommunicationService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
+
 const {WebcController} = WebCardinal.controllers;
 
 const TEXT_MIME_TYPE = 'text/';
@@ -50,12 +51,9 @@ export default class ReadEconsentController extends WebcController {
                 if (err) {
                     return console.error(err);
                 }
-                let currentStatus = data.find((element) => element.foreignConsentId === this.model.historyData.ecoId);
-                if (currentStatus === undefined) {
-                    currentStatus = {
-                        actions: []
-                    }
-                }
+                let relevantStatuses = data.filter((element) => element.foreignConsentId === this.model.historyData.ecoId);
+                let currentStatus = relevantStatuses.length > 0 ? relevantStatuses[relevantStatuses.length - 1] : {actions: []}
+
                 this.model.status = currentStatus;
                 this.model.signed = ConsentStatusMapper.isSigned(this.model.status.actions);
                 this.model.declined = ConsentStatusMapper.isDeclined(this.model.status.actions);
@@ -146,31 +144,31 @@ export default class ReadEconsentController extends WebcController {
     sendMessageToSponsorAndHCO(action, ssi, shortMessage) {
         const currentDate = new Date();
         this.TrialParticipantRepository.findAll((err, data) => {
-                if (err) {
-                    return console.log(err);
-                }
+            if (err) {
+                return console.log(err);
+            }
 
-                if (data && data.length > 0) {
-                    this.model.tp = data[0];
-                    let sendObject = {
-                        operation: 'update-econsent',
-                        ssi: ssi,
-                        useCaseSpecifics: {
-                            trialSSI: this.model.historyData.trialuid,
-                            tpNumber: this.model.tp.did,
-                            version: this.model.historyData.ecoVersion,
-                            action: {
-                                name: action,
-                                date: currentDate.toISOString(),
-                                toShowDate: currentDate.toLocaleDateString(),
-                            },
+            if (data && data.length > 0) {
+                this.model.tp = data[0];
+                let sendObject = {
+                    operation: 'update-econsent',
+                    ssi: ssi,
+                    useCaseSpecifics: {
+                        trialSSI: this.model.historyData.trialuid,
+                        tpNumber: this.model.tp.did,
+                        version: this.model.historyData.ecoVersion,
+                        action: {
+                            name: action,
+                            date: currentDate.toISOString(),
+                            toShowDate: currentDate.toLocaleDateString(),
                         },
-                        shortDescription: shortMessage,
-                    };
-                    this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, sendObject);
-                    this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, sendObject);
-                }
-            });
+                    },
+                    shortDescription: shortMessage,
+                };
+                this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, sendObject);
+                this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, sendObject);
+            }
+        });
     }
 
     _downloadFile = () => {
@@ -268,13 +266,13 @@ export default class ReadEconsentController extends WebcController {
     }
 
     async _saveStatus(operation) {
-        if (this.model.status && this.model.status.uid) {
-            await this.EconsentsStatusRepository.updateAsync(this.model.status.uid, this.model.status);
-            this.sendMessageToSponsorAndHCO(operation, this.model.econsent.keySSI, 'Tp' + operation);
-            this._finishActionSave();
-        } else {
+        if (this.model.status === undefined || this.model.status.uid === undefined) {
             //TODO implement when status is not set => optional consents
+            return;
         }
+        await this.EconsentsStatusRepository.updateAsync(this.model.status.uid, this.model.status);
+        this.sendMessageToSponsorAndHCO(operation, this.model.econsent.keySSI, 'Tp' + operation);
+        this._finishActionSave();
     }
 
     _finishActionSave() {
