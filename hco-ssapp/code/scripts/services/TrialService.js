@@ -10,6 +10,8 @@ export default class TrialService extends DSUService {
 
     getTrial = (uid, callback) => this.getEntity(uid, callback);
 
+    getTrialAsync = (uid) => this.getEntityAsync(uid);
+
     saveTrial = (data, callback) => this.saveEntity(data, callback);
 
     mountTrial = (keySSI, callback) => this.mountEntity(keySSI, callback);

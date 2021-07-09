@@ -166,30 +166,47 @@ export default class TrialParticipantController extends WebcController {
         });
     }
 
-    sendMessageToProfessional(tp) {
-        this.TrialService.getTrial(this.model.trialSSI, async (err, trial) => {
-            if (err) {
-                return console.log(err);
-            }
-            let messageForIot = {
-                trial: {
-                    id: trial.uid,
-                    name: trial.name,
-                    status: trial.status
-                },
-                participant: {
-                    id: tp.uid,
-                    name: tp.name,
-                    gender: tp.gender,
-                    enrolledDate: tp.enrolledDate,
-                    birthdate: tp.birthdate
+    async sendMessageToProfessional(tp) {
+        let trial = await this.TrialService.getTrialAsync(this.model.trialSSI);
+
+        let econsents = await this.TrialService.getEconsentsAsync(this.model.trialSSI);
+
+        let wantedAction = {
+            toShowDate: 'DD/MM/YYYY'
+        };
+
+        for (const econsent of econsents){
+            for (const version of econsent.versions){
+                let validActions = version.actions
+                    .filter(action => action.name === 'sign' && action.type === 'tp')
+                    .filter(action => tp.did === action.tpNumber);
+
+                if (validActions.length > 0) {
+                    wantedAction = validActions[0];
+                    break;
                 }
             }
+        }
 
-            this.CommunicationService.sendMessage(CommunicationService.identities.IOT.PROFESSIONAL_IDENTITY, {
-                operation: 'add-trial-subject',
-                useCaseSpecifics: messageForIot
-            });
+        let messageForIot = {
+            trial: {
+                id: trial.id,
+                name: trial.name,
+                status: trial.status
+            },
+            participant: {
+                id: tp.tpNumber,
+                name: tp.name,
+                gender: tp.gender,
+                enrolledDate: tp.enrolledDate,
+                birthdate: tp.birthdate,
+                signDate: wantedAction.toShowDate
+            }
+        }
+
+        this.CommunicationService.sendMessage(CommunicationService.identities.IOT.PROFESSIONAL_IDENTITY, {
+            operation: 'add-trial-subject',
+            useCaseSpecifics: messageForIot
         });
 
     }

@@ -59,7 +59,6 @@ export default class HomeController extends WebcController {
         this._attachHandlerNotifications();
         this._attachHandlerPatients();
         this._attachHandlerTrialManagement();
-        //this._demoOfDomainCommunications();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -158,17 +157,6 @@ export default class HomeController extends WebcController {
                     break;
                 }
             }
-        });
-    }
-
-    _demoOfDomainCommunications() {
-        this.CommunicationService.sendMessage(CommunicationService.identities.IOT.PROFESSIONAL_IDENTITY, {
-            operation: "operation",
-            ssi: "ssi",
-            shortDescription: "shortMessage",
-        });
-        this.CommunicationService.listenForMessages('iot', (err, data) => {
-            debugger
         });
     }
 
