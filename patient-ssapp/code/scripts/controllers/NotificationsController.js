@@ -1,4 +1,4 @@
-import Constants from './Constants.js';
+import Constants from "../utils/Constants.js";
 import NotificationsService from '../services/NotificationsService.js';
 
 const { WebcController } = WebCardinal.controllers;
@@ -30,7 +30,7 @@ export default class NotificationsController extends WebcController {
             name: notification.title,
             details: notification.shortDescription,
             type: notification.page,
-            icon: Constants.getIconByNotificationType(notification.page),
+
           };
         })
         .sort(function (a, b) {

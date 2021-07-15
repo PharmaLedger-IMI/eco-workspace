@@ -1,4 +1,4 @@
-import Constants from './Constants.js';
+import Constants from "../utils/Constants.js";
 import TrialService from '../services/TrialService.js';
 import ConsentStatusMapper from "../utils/ConsentStatusMapper.js";
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
@@ -46,7 +46,6 @@ export default class TrialController extends WebcController {
                 this.model.lowTitle = true;
             }
             this.model.tpEconsents = [];
-            this.model.trial.color = Constants.getColorByTrialStatus(this.model.trial.status);
             this.TrialService.getEconsents(trial.keySSI, async (err, data) => {
                 if (err) {
                     return console.log(err);

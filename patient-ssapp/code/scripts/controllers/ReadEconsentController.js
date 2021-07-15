@@ -85,9 +85,27 @@ export default class ReadEconsentController extends WebcController {
         this.onTagEvent('econsent:sign', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-            this.model.status.actions.push({name: 'signed'});
-            this._saveStatus('sign');
+            this.showModalFromTemplate(
+                'confirmation-alert',
+                (event) => {
+                    const response = event.detail;
+                    if (response) {
+                        this.model.status.actions.push({name: 'signed'});
+                        this._saveStatus('sign');
+                    }
+                },
+                (event) => {
+                    const response = event.detail;
+                },
+                {
+                    controller: 'ConfirmationAlertController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false,
+                    question: 'Are you sure you want to sign this ecosent ? ',
+                    title: 'Sign Econsent',
+                });
         });
+
     }
 
     _attachHandlerDecline() {
