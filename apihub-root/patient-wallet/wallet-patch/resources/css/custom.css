@@ -9,6 +9,10 @@ div.global_container {
     height: 100%;
 }
 
+div.global_container aside {
+    display: none !important;
+}
+
 div.global_container.is-mobile {
     width: 100%;
     flex-direction: column;
@@ -44,10 +48,6 @@ aside {
 
 .is-mobile .global_container {
     background-color: #f4f6fd !important;
-}
-
-.is-mobile section psk-app-router {
-    padding-top: 60px;
 }
 
 aside {
