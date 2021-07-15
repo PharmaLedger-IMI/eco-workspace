@@ -199,7 +199,7 @@ export default class TrialParticipantsController extends WebcController {
         this.sendMessageToPatient(
             'add-to-trial',
             this.model.trialSSI,
-            {tpNumber: '',tpName: tp.name, did: tp.did},
+            {tpNumber: '', tpName: tp.name, did: tp.did},
             Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL
         );
     }
@@ -210,7 +210,7 @@ export default class TrialParticipantsController extends WebcController {
             ssi: ssi,
             useCaseSpecifics: {
                 tpNumber: tp.tpNumber,
-                tpName:  tp.tpName,
+                tpName: tp.tpName,
                 tpDid: tp.did
             },
             shortDescription: shortMessage,
@@ -233,12 +233,12 @@ export default class TrialParticipantsController extends WebcController {
 
     _getSite() {
 
-        this.SiteService.getSites((err,sites)=>{
+        this.SiteService.getSites((err, sites) => {
             if (err) {
                 return console.log(err);
             }
-            if(sites &&sites.length >0){
-                this.model.site = sites[sites.length-1];
+            if (sites && sites.length > 0) {
+                this.model.site = sites[sites.length - 1];
                 this._sendMessageToSponsor();
             }
         });
@@ -250,7 +250,7 @@ export default class TrialParticipantsController extends WebcController {
             ssi: this.model.trialSSI,
             stageInfo: {
                 siteSSI: this.model.site.KeySSI,
-                status:  this.model.trial.stage
+                status: this.model.trial.stage
             },
             shortDescription: 'The stage of the site changed',
         });

@@ -50,7 +50,14 @@
                         <psk-label class="table-cell">{{@name}}</psk-label>
                         <psk-label class="table-cell">{{@type}}</psk-label>
                         <psk-label class="table-cell">{{@lastVersion}}</psk-label>
-                        <psk-label class="table-cell">{{@tsSignedDate}}</psk-label>
+                        <div data-if="@tsDeclined">
+                            <div slot="true">
+                                <psk-label class="table-cell red">{{@tsDeclined}}</psk-label>
+                            </div>
+                            <div slot="false">
+                                <psk-label class="table-cell">{{@tsSignedDate}}</psk-label>
+                            </div>
+                        </div>
                         <div data-if="@tsWithdrawedIntentionDate">
                             <div slot="true">
                                 <psk-label class="table-cell red">{{@tsWithdrawedIntentionDate}}</psk-label>
@@ -63,16 +70,22 @@
                         <psk-label class="table-cell">{{@hcoDate}}</psk-label>
                         <div class="table-cell">
                             <div data-if="@showSignButton">
-                                <button data-if="@showSignButton" class="link-button sign-adjust-margin" data="@id" data-tag="consent:sign">Sign</button>
+                                <button data-if="@showSignButton" class="link-button sign-adjust-margin" data="@id"
+                                        data-tag="consent:sign">Sign
+                                </button>
                             </div>
                             <div data-if="@showViewButton">
-                                <button  data-if="@showViewButton" class="link-button view-adjust-margin" data="@id" data-tag="consent:view">View</button>
+                                <button data-if="@showViewButton" class="link-button view-adjust-margin" data="@id"
+                                        data-tag="consent:view">View
+                                </button>
                             </div>
                             <div data-if="@showContactButton">
-                                <button data-if="@showContactButton" class="link-button" data="@id" data-tag="consent:contactTS">Contact TS</button>
+                                <button data-if="@showContactButton" class="link-button" data="@id"
+                                        data-tag="consent:contactTS">Contact TS
+                                </button>
                             </div>
                             <div>
-                                <psk-label> | </psk-label>
+                                <psk-label> |</psk-label>
                                 <button class="link-button" data-tag="consent:history" data="@id">History</button>
                             </div>
                         </div>

@@ -91,31 +91,26 @@ export default class ReadEconsentController extends WebcController {
     }
 
     _attachHandlerDecline() {
-        this.onTagEvent('econsent:withdraw', 'click', (model, target, event) => {
+        this.onTagEvent('econsent:decline', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
             this.showModalFromTemplate(
-                'withdraw-econsent',
+                'decline-consent',
                 (event) => {
                     const response = event.detail;
-                    let operation = 'withdraw';
-                    let message = 'TP withdraw consent.';
-                    if (response.withdraw) {
-                        this.model.status.actions.push({name: 'withdraw'});
-                    } else if (response.withdrawIntention) {
-                        this.model.status.actions.push({name: 'withdraw-intention'});
-                        operation = 'withdraw-intention';
-                        message = 'TP withdraw intention consent.';
+                    if (response) {
+                        let operation = ConsentStatusMapper.consentStatuses.decline.name;
+                        let message = ConsentStatusMapper.consentStatuses.decline.details;
+                        this.model.status.actions.push({name: ConsentStatusMapper.consentStatuses.decline.name});
+                        this._saveStatus(operation);
                     }
-
-                    this._saveStatus('withdraw-intention');
                 },
                 (event) => {
                     const response = event.detail;
                 }
             ),
                 {
-                    controller: 'WithdrawEconsent',
+                    controller: 'DeclineConsentController',
                     disableExpanding: false,
                     disableBackdropClosing: false,
                     title: 'Decline Econsent',
@@ -272,7 +267,7 @@ export default class ReadEconsentController extends WebcController {
             return;
         }
         await this.EconsentsStatusRepository.updateAsync(this.model.status.uid, this.model.status);
-        this.sendMessageToSponsorAndHCO(operation, this.model.econsent.keySSI, 'Tp' + operation);
+        this.sendMessageToSponsorAndHCO(operation, this.model.econsent.keySSI, 'Tp ' + operation);
         this._finishActionSave();
     }
 

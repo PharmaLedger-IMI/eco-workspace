@@ -190,6 +190,12 @@ export default class HomeController extends WebcController {
                     status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
                     break;
                 }
+                case 'Declined': {
+                    actionNeeded = 'TP Declined';
+                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpNumber + ' declined', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
+                    status = Constants.TRIAL_PARTICIPANT_STATUS.DECLINED;
+                    break;
+                }
                 case 'sign': {
                     tpSigned = true;
                     this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpNumber + ' signed', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
@@ -198,6 +204,7 @@ export default class HomeController extends WebcController {
                     break;
                 }
             }
+
             currentVersion.actions.push({
                 ...message.useCaseSpecifics.action,
                 tpNumber: message.useCaseSpecifics.tpNumber,
@@ -217,6 +224,7 @@ export default class HomeController extends WebcController {
                         if (err) {
                             return console.log(err);
                         }
+
                         console.log(trialParticipant);
                     });
                 }

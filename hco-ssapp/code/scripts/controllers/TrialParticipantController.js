@@ -279,6 +279,9 @@ export default class TrialParticipantController extends WebcController {
                                 econsent = this._showButton(econsent, 'Contact');
                                 econsent.tsWithdrawedIntentionDate = 'Intention';
                             }
+                            if (tpVersion.actionNeeded === Constants.ECO_STATUSES.DECLINED) {
+                                econsent.tsDeclined = 'Declined';
+                            }
                         }
                     }
                     let hcoVersions = version.actions.filter(action => action.tpNumber === this.model.tp.did && action.type === 'hco');
