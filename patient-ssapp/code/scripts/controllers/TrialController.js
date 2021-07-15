@@ -71,6 +71,10 @@ export default class TrialController extends WebcController {
                         .map(action => action.charAt(0).toUpperCase() + action.slice(1))
                         .join(" ");
 
+                    let lastActionStatus = ConsentStatusMapper.getStatus(lastAction);
+                    if (lastActionStatus !== undefined) {
+                        lastAction = lastActionStatus.displayValue;
+                    }
                     return econsent.versions.length === 0 ? econsent : {
                         ...econsent,
                         versionDateAsString: DateTimeService.convertStringToLocaleDate(importantVersion.versionDate),

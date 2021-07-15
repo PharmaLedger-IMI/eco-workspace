@@ -50,10 +50,6 @@ aside {
     background-color: #f4f6fd !important;
 }
 
-.is-mobile section psk-app-router {
-    padding-top: 60px;
-}
-
 aside {
     height: 100%;
     background-color: #4e73df;
