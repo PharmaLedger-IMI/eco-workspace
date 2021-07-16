@@ -73,6 +73,11 @@ export default class EconsentVersionsController extends WebcController {
                             econsentVersion.tpWithdraw = 'Intention';
                             break;
                         }
+                        case 'Declined': {
+                            econsentVersion.tsDeclined = 'Declined';
+                            break;
+                        }
+
                     }
                 })
                 if (econsentVersion.hcoSign) {
