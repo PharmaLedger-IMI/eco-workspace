@@ -123,6 +123,7 @@ export default class HomeController extends WebcController {
                     this._saveNotification(data.message, 'Your site was added to the trial ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
 
                     this.SiteService.mountSite(data.message.ssi, (err, site) => {
+
                         if (err) {
                             return console.log(err);
                         }

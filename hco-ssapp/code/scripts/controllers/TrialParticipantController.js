@@ -244,6 +244,9 @@ export default class TrialParticipantController extends WebcController {
                 tpName: tp.tpName,
                 tpDid: tp.did
             },
+            site: {
+              siteName: this.model.site.name
+            },
             shortDescription: shortMessage,
         });
     }

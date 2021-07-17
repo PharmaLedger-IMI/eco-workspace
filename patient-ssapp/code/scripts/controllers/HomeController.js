@@ -101,6 +101,7 @@ export default class HomeController extends WebcController {
                                     this._saveConsentsStatuses(consents);
                                 });
 
+
                                 console.log(trial);
                             }
                         );
@@ -170,8 +171,9 @@ export default class HomeController extends WebcController {
     }
 
     _saveTrialParticipantInfo(data) {
+
         let trialParticipant = {
-            name: data.tpName, tpNumber: data.tpNumber, did: data.tpDid
+            name: data.tpName, tpNumber: data.tpNumber, did: data.tpDid, site: data.site
         }
 
         if (!this.model.tp || !this.model.tp.name) {
@@ -181,7 +183,7 @@ export default class HomeController extends WebcController {
                 }
                 this._initTrialParticipant();
             });
-        } else if (data.tpNumber) {
+        } else  {
             this.model.tp.tpNumber = trialParticipant.tpNumber;
             this.model.tp.did = trialParticipant.tpDid;
             this.model.tp.name = trialParticipant.name;

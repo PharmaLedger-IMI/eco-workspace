@@ -53,6 +53,7 @@ export default class TrialParticipantsController extends WebcController {
             this.model.trial = trial;
             let actions = await this._getEconsentActionsMappedByUser(keySSI);
             this.model.trialParticipants = await this._getTrialParticipantsMappedWithActionRequired(actions);
+            this._getSite();
         });
     }
 
@@ -151,7 +152,7 @@ export default class TrialParticipantsController extends WebcController {
 
                     this.createTpDsu(response);
                     this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.SUCCESS.ADD_TRIAL_PARTICIPANT);
-                    this._getSite();
+
                 },
                 (event) => {
                     const response = event.detail;
@@ -205,13 +206,21 @@ export default class TrialParticipantsController extends WebcController {
     }
 
     sendMessageToPatient(operation, ssi, tp, shortMessage) {
+
         this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
             operation: operation,
             ssi: ssi,
             useCaseSpecifics: {
                 tpNumber: tp.tpNumber,
                 tpName: tp.tpName,
-                tpDid: tp.did
+                tpDid: tp.did,
+
+                site: {
+                    name: this.model.site?.name,
+                    number: this.model.site?.id,
+                    country: this.model.site?.country,
+                    status: this.model.site?.status
+                },
             },
             shortDescription: shortMessage,
         });
@@ -234,6 +243,7 @@ export default class TrialParticipantsController extends WebcController {
     _getSite() {
 
         this.SiteService.getSites((err, sites) => {
+
             if (err) {
                 return console.log(err);
             }
