@@ -54,6 +54,8 @@ export default class TrialController extends WebcController {
                 let lastAction = 'Consent required';
                 let statusesMappedByConsent = {};
                 let statuses = await this.EconsentsStatusRepository.findAllAsync();
+                statuses.filter(status => status.tpDid == this.model.tpNumber);
+
                 statuses.forEach(status => {
                     statusesMappedByConsent[status.foreignConsentId] = status;
                 })

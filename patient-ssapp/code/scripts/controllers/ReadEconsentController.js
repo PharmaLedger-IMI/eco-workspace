@@ -191,13 +191,15 @@ export default class ReadEconsentController extends WebcController {
 
     sendMessageToSponsorAndHCO(action, ssi, shortMessage) {
         const currentDate = new Date();
+        currentDate.setDate(currentDate.getDate()-1);
         this.TrialParticipantRepository.findAll((err, data) => {
+
             if (err) {
                 return console.log(err);
             }
 
             if (data && data.length > 0) {
-                this.model.tp = data[0];
+                this.model.tp = data[data.length-1];
                 let sendObject = {
                     operation: 'update-econsent',
                     ssi: ssi,

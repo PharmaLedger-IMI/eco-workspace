@@ -1,9 +1,9 @@
 import CommunicationService from '../services/CommunicationService.js';
 import TrialService from '../services/TrialService.js';
 import DateTimeService from '../services/DateTimeService.js';
-import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
 import NotificationsRepository from "../repositories/NotificationsRepository.js";
+import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -18,19 +18,6 @@ export default class HomeController extends WebcController {
         this._handleMessages();
     }
 
-    addMessageToNotificationDsu(message) {
-        let notification = {
-            ...message.message,
-            uid: message.message.ssi,
-            viewed: false,
-            startDate: DateTimeService.convertStringToLocaleDate(),
-        }
-        this.NotificationsRepository.create(notification, (err, data) => {
-            if (err) {
-                return console.error(err);
-            }
-        });
-    }
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
@@ -38,6 +25,7 @@ export default class HomeController extends WebcController {
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.PATIENT_IDENTITY);
         this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
+        this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
     }
 
     _initHandlers() {
@@ -69,51 +57,26 @@ export default class HomeController extends WebcController {
                             if (err) {
                                 return console.log(err);
                             }
-                            this._saveConsentsStatuses(consents);
+                            this._saveConsentsStatuses(consents, this.mode.tp?.did);
                         });
                     });
                     break;
                 }
                 case 'add-to-trial' : {
-                    this.addMessageToNotificationDsu(data);
+                    this.saveNotification(data);
                     this._saveTrialParticipantInfo(data.message.useCaseSpecifics);
-                    this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
-                        if (err) {
-                            return console.log(err);
-                        }
-                        trial.uid = trial.keySSI;
-                        this.TrialService.updateTrial(
-                            {
-                                ...trial,
-                                tpNumber: data.message.useCaseSpecifics.did,
-                            },
-                            (err, trial) => {
-                                if (err) {
-                                    return console.log(err);
-                                }
-                                this.model.trials.push(trial);
-                                this.TrialService.getEconsents(trial.keySSI, (err, consents) => {
-                                    if (err) {
-                                        return console.log(err);
-                                    }
-                                    this._saveConsentsStatuses(consents);
-                                });
-
-
-                                console.log(trial);
-                            }
-                        );
-                    });
+                    this.mountTrial (data);
                     break;
                 }
                 case 'update-tpNumber': {
-                    // this.addMessageToNotificationDsu(data);
+                    this.saveNotification(data);
                     this._saveTrialParticipantInfo(data.message.useCaseSpecifics);
                     break;
                 }
             }
         });
     }
+
 
     _attachHandlerTrialClick() {
         this.onTagEvent('home:trial', 'click', (trial, target, event) => {
@@ -122,7 +85,8 @@ export default class HomeController extends WebcController {
 
             this.navigateToPageTag('trial', {
                 trialSSI: trial.keySSI,
-                tpNumber: this.model.did,
+                tpNumber: this.model.tp.did,
+                isNewTp: this.model.isNewTp,
             });
         });
     }
@@ -139,13 +103,15 @@ export default class HomeController extends WebcController {
         });
     }
 
-    _saveConsentsStatuses(consents) {
+    _saveConsentsStatuses(consents, did) {
         consents.forEach((consent, i) => {
             consent.actions = [];
             if (consent.type === 'Mandatory') {
                 consent.actions.push({name: 'required'});
             }
             consent.foreignConsentId = consent.keySSI;
+
+            consent.tpDid = did;
             this.EconsentsStatusRepository.create(consent, (err, data) => {
                 if (err) {
                     return console.log(err);
@@ -163,35 +129,56 @@ export default class HomeController extends WebcController {
                 return console.log(err);
             }
             if (data && data.length > 0) {
-                this.model.tp = data[0];
+                this.model.tp = data[data.length - 1];
             }
         });
     }
 
-    _saveTrialParticipantInfo(data) {
+    async _saveTrialParticipantInfo(data) {
 
         let trialParticipant = {
-            name: data.tpName, tpNumber: data.tpNumber, did: data.tpDid, site: data.site
+            name: data.tpName, tpNumber: data.tpNumber, tpDid: data.tpDid, site: data.site
         }
 
         if (!this.model.tp || !this.model.tp.name) {
-            this.TrialParticipantRepository.create(trialParticipant, (err, data) => {
-                if (err) {
-                    return console.log(err);
-                }
-                this._initTrialParticipant();
-            });
+            this.model.tp = await this.TrialParticipantRepository.createAsync(trialParticipant);
         } else {
             this.model.tp.tpNumber = trialParticipant.tpNumber;
             this.model.tp.did = trialParticipant.tpDid;
-            this.model.tp.name = trialParticipant.name;
-            this.TrialParticipantRepository.update(this.model.tp.uid, this.model.tp, (err, data) => {
-                    if (err) {
-                        return console.log(err);
-                    }
-                }
-            );
+            if (trialParticipant.name) {
+
+                this.model.tp.name = trialParticipant.name;
+
+            }
+            this.model.tp = this.TrialParticipantRepository.updateAsync(this.model.tp.uid, this.model.tp);
         }
 
     }
+
+    async saveNotification(message) {
+        let notification = {
+            ...message.message,
+            uid: message.message.ssi,
+            viewed: false,
+            startDate: DateTimeService.convertStringToLocaleDate(),
+        }
+        let not = await this.NotificationsRepository.createAsync(notification, (err, data) => {
+            if (err) {
+                return console.error(err);
+            }
+        });
+    }
+
+    async mountTrial (data){
+
+        let  trial = await this.TrialService.mountTrialAsync(data.message.ssi);
+        this.TrialService.getEconsents(data.message.ssi, (err, consents) => {
+            if (err) {
+                return console.log(err);
+            }
+            this._saveConsentsStatuses(consents, data.message.useCaseSpecifics.did);
+        });
+
+    }
+
 }

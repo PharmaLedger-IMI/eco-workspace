@@ -4,7 +4,7 @@ class TrialParticipantRepository {
 
     constructor(DSUStorage) {
         this.StorageService = SharedStorage.getInstance(DSUStorage);
-        this.tableName = 'trial_participant';
+        this.tableName = 'trial_participants';
     }
 
     create = (key, trialParticipant, callback) =>
@@ -29,6 +29,8 @@ class TrialParticipantRepository {
 
     updateAsync = (key, trialParticipant) =>
         this.StorageService.updateRecordAsync(this.tableName, key, trialParticipant);
+
+    deleteAll = (callback) => this.StorageService.delete(this.tableName, callback);
 
 }
 
