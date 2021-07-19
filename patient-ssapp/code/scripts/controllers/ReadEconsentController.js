@@ -70,6 +70,7 @@ export default class ReadEconsentController extends WebcController {
         this._attachHandlerManuallySign();
         this._attachHandlerDownload();
         this._attachHandlerBack();
+        this._attachHandlerWithdraw();
     }
 
     _finishProcess(event, response) {
@@ -129,6 +130,39 @@ export default class ReadEconsentController extends WebcController {
             ),
                 {
                     controller: 'DeclineConsentController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false,
+                    title: 'Decline Econsent',
+                };
+        });
+    }
+
+    _attachHandlerWithdraw() {
+        this.onTagEvent('econsent:withdraw', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.showModalFromTemplate(
+                'withdraw-econsent',
+                (event) => {
+                    const response = event.detail;
+                    let operation = 'withdraw';
+                    let message = 'TP withdraw consent.';
+                    if (response.withdraw) {
+                        this.model.status.actions.push({name: 'withdraw'});
+                    } else if (response.withdrawIntention) {
+                        this.model.status.actions.push({name: 'withdraw-intention'});
+                        operation = 'withdraw-intention';
+                        message = 'TP withdraw intention consent.';
+                    }
+
+                    this._saveStatus('withdraw-intention');
+                },
+                (event) => {
+                    const response = event.detail;
+                }
+            ),
+                {
+                    controller: 'WithdrawEconsent',
                     disableExpanding: false,
                     disableBackdropClosing: false,
                     title: 'Decline Econsent',

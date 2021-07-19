@@ -11,17 +11,6 @@
 
                 <div class="dispay-flex date-div justify-content-space-between">
                     <div class="dispay-flex">
-                        <div class="left-image padding-image">
-                            <div data-if="@viewed">
-                                <container slot="true">
-                                    <img class="left-image gray-filter" height="60" src="@icon" width="50">
-                                </container>
-                                <container slot="false">
-                                    <img class="left-image" height="60" src="@icon" width="50">
-                                </container>
-
-                            </div>
-                        </div>
                         <div class="right-text" data-if="@viewed">
                             <container slot="true">
                                 <div>
@@ -52,8 +41,8 @@
                             </container>
 
                         </div>
-                        <psk-button-link class="go-back-link padding-top-35" data-tag="go-to-notification"
-                                         icon="arrow-right"></psk-button-link>
+                        <button class="go-back-link padding-top-35" data-tag="go-to-notification"
+                                         icon="arrow-right"></button>
                     </div>
                 </div>
             </div>
