@@ -170,6 +170,7 @@ export default class ReadEconsentController extends WebcController {
                     useCaseSpecifics: {
                         trialSSI: this.model.historyData.trialuid,
                         tpNumber: this.model.tp.did,
+                        tpDid: this.model.tp.did,
                         version: this.model.historyData.ecoVersion,
                         action: {
                             name: action,

@@ -104,6 +104,7 @@ export default class SignManuallyController extends WebcController {
       useCaseSpecifics: {
         trialSSI: this.model.historyData.trialuid,
         tpNumber: this.model.historyData.tpNumber,
+        tpDid: this.model.historyData.tpDid,
         version: this.model.historyData.ecoVersion,
         operationDate: new Date().toISOString(),
       },

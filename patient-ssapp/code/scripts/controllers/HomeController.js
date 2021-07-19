@@ -1,9 +1,9 @@
 import CommunicationService from '../services/CommunicationService.js';
 import TrialService from '../services/TrialService.js';
-import NotificationsService from '../services/NotificationsService.js';
 import DateTimeService from '../services/DateTimeService.js';
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
+import NotificationsRepository from "../repositories/NotificationsRepository.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -19,27 +19,25 @@ export default class HomeController extends WebcController {
     }
 
     addMessageToNotificationDsu(message) {
-        this.NotificationsService.saveNotification(
-            {
-                ...message.message,
-                uid: message.message.ssi,
-                viewed: false,
-                startDate: DateTimeService.convertStringToLocaleDate(),
-            },
-            (err, data) => {
-                if (err) {
-                    return console.log(err);
-                }
+        let notification = {
+            ...message.message,
+            uid: message.message.ssi,
+            viewed: false,
+            startDate: DateTimeService.convertStringToLocaleDate(),
+        }
+        this.NotificationsRepository.create(notification, (err, data) => {
+            if (err) {
+                return console.error(err);
             }
-        );
+        });
     }
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
-        this.NotificationsService = new NotificationsService(DSUStorage);
         this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.PATIENT_IDENTITY);
+        this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
     }
 
     _initHandlers() {
@@ -77,7 +75,7 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case 'add-to-trial' : {
-                   this.addMessageToNotificationDsu(data);
+                    this.addMessageToNotificationDsu(data);
                     this._saveTrialParticipantInfo(data.message.useCaseSpecifics);
                     this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                         if (err) {
@@ -183,7 +181,7 @@ export default class HomeController extends WebcController {
                 }
                 this._initTrialParticipant();
             });
-        } else  {
+        } else {
             this.model.tp.tpNumber = trialParticipant.tpNumber;
             this.model.tp.did = trialParticipant.tpDid;
             this.model.tp.name = trialParticipant.name;

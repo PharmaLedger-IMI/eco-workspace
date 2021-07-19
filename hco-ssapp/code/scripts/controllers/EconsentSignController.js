@@ -38,6 +38,7 @@ export default class EconsentSignController extends WebcController {
 
         this._initServices(this.DSUStorage);
         this._initHandlers();
+        this._initTrialParticipant();
         this._initConsent();
     }
 
@@ -74,13 +75,15 @@ export default class EconsentSignController extends WebcController {
     }
 
     sendMessageToSponsor(operation, shortMessage) {
+
         const currentDate = new Date();
         let sendObject = {
             operation: operation,
             ssi: this.model.econsentSSI,
             useCaseSpecifics: {
                 trialSSI: this.model.trialSSI,
-                tpNumber: this.model.trialParticipantNumber,
+                tpNumber: this.model.trialParticipant.tpNumber,
+                tpDid: this.model.trialParticipant.did,
                 version: this.model.ecoVersion,
                 action: {
                     name: 'sign',
@@ -234,25 +237,25 @@ export default class EconsentSignController extends WebcController {
         });
     }
 
-    _updateTrialParticipantStatus() {
-
+    _initTrialParticipant() {
         this.TrialParticipantRepository.filter(`did == ${this.model.trialParticipantNumber}`, 'ascending', 30, (err, tps) => {
 
             if (tps && tps.length > 0) {
-                let tp = tps[0];
-                tp.actionNeeded = 'HCO SIGNED -no action required',
-                    tp.tpSigned = true;
-                tp.status = Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED;
-                this.TrialParticipantRepository.update(tp.uid, tp, (err, trialParticipant) => {
-                    if (err) {
-                        return console.log(err);
-                    }
-                    console.log(trialParticipant);
-                });
+                this.model.trialParticipant = tps[0];
             }
         });
+    }
 
-
+    _updateTrialParticipantStatus() {
+        this.model.trialParticipant.actionNeeded = 'HCO SIGNED -no action required';
+        this.model.trialParticipant.tpSigned = true;
+        this.model.trialParticipant.status = Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED;
+        this.TrialParticipantRepository.update(this.model.trialParticipant.uid, this.model.trialParticipant, (err, trialParticipant) => {
+            if (err) {
+                return console.log(err);
+            }
+            console.log(trialParticipant);
+        });
     }
 
     _attachHandlerBack() {
