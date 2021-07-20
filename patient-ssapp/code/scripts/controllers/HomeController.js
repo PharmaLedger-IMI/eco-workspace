@@ -172,6 +172,7 @@ export default class HomeController extends WebcController {
     async mountTrial (data){
 
         let  trial = await this.TrialService.mountTrialAsync(data.message.ssi);
+        this.model.trials?.push(trial);
         this.TrialService.getEconsents(data.message.ssi, (err, consents) => {
             if (err) {
                 return console.log(err);
