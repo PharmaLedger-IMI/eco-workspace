@@ -57,7 +57,7 @@ export default class HomeController extends WebcController {
                             if (err) {
                                 return console.log(err);
                             }
-                            this._saveConsentsStatuses(consents, this.mode.tp?.did);
+                            this._saveConsentsStatuses(consents, this.model.tp?.did);
                         });
                     });
                     break;

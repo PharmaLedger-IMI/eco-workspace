@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/assets/css/pages/alerts.css">
+<h2 slot="header" class="alert-title">Withdraw Consent</h2>
 <webc-container class="maxw" controller="WithdrawEconsent">
 
     <header slot="header">
@@ -9,9 +10,22 @@
             <psk-label class="consent-question"
                        label="If you are considering to withdraw from the study we recommend to announce your decision to the study investigator by clicking the button Intention"></psk-label>
         </div>
-        <button class="withdraw-button" data-tag="withdraw-intention-on-click">WITHDRAW INTENTION</button>
-        <button data-tag="cancel">Cancel</button>
-        <button data-tag="withdraw-on-click">Withdraw</button>
+        <div class="dispay-flex">
+
+            <div>
+                <button class="long-button"
+                        data-tag="manual:sign">Withdraw Intention
+                </button>
+                <button class="long-button"
+                        data-tag="withdraw-on-click">Withdraw
+                </button>
+
+                <button class="long-button"
+                        data-tag="cancel">Cancel
+                </button>
+
+            </div>
+        </div>
     </main>
     <footer slot="footer">
     </footer>
