@@ -58,7 +58,8 @@ export default class TrialParticipantsController extends WebcController {
     }
 
     async _getTrialParticipantsMappedWithActionRequired(actions) {
-        return (await this.TrialParticipantRepository.findAllAsync())
+        let trialsR = (await this.TrialParticipantRepository.findAllAsync());
+        return trialsR
             .filter(tp => tp.trialNumber === this.model.trial.id)
             .map(tp => {
                 let tpActions = actions[tp.did];
@@ -80,8 +81,16 @@ export default class TrialParticipantsController extends WebcController {
                         break;
                     }
                     case 'sign': {
-                        actionNeeded = 'Acknowledgement required';
-                        break;
+                        switch (lastAction.action.type) {
+                            case 'hco': {
+                                actionNeeded = 'Consented by HCO';
+                                break;
+                            }
+                            case 'tp': {
+                                actionNeeded = 'Acknowledgement required';
+                                break;
+                            }
+                        }
                     }
                 }
                 return {
@@ -103,10 +112,10 @@ export default class TrialParticipantsController extends WebcController {
                         return actions;
                     }
                     version.actions.forEach(action => {
-                        if (actions[action.tpNumber] === undefined) {
-                            actions[action.tpNumber] = []
+                        if (actions[action.tpDid] === undefined) {
+                            actions[action.tpDid] = []
                         }
-                        actions[action.tpNumber].push({
+                        actions[action.tpDid].push({
                             econsent: {
                                 uid: econsent.uid,
                                 keySSI: econsent.keySSI,

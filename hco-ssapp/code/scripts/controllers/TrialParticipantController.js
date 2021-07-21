@@ -82,6 +82,7 @@ export default class TrialParticipantController extends WebcController {
                 econsentSSI: model.keySSI,
                 trialParticipantNumber: this.model.trialParticipantNumber,
                 tpUid: this.model.tpUid,
+                tpDid: this.model.tp.did,
             });
         });
     }
@@ -90,11 +91,11 @@ export default class TrialParticipantController extends WebcController {
         this.onTagEvent('consent:view', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-
             this.navigateToPageTag('econsent-sign', {
                 trialSSI: this.model.trialSSI,
                 econsentSSI: model.KeySSI,
                 ecoVersion: model.lastVersion,
+                tpDid: this.model.tp.did,
                 controlsShouldBeVisible: false
             });
         });
@@ -113,6 +114,7 @@ export default class TrialParticipantController extends WebcController {
                 econsentSSI: model.keySSI,
                 trialParticipantNumber: this.model.tp.did,
                 tpUid: this.model.tpUid,
+                tpDid: this.model.tp.did,
                 ecoVersion: ecoVersion
             });
         });
@@ -148,7 +150,7 @@ export default class TrialParticipantController extends WebcController {
             this.showModalFromTemplate(
                 'add-tp-number',
                 (event) => {
-                    this.model.tp.tpNumber = event.detail;
+                    this.model.tp.number = event.detail;
                     this.sendMessageToProfessional(this.model.tp)
                     this._updateTrialParticipant(this.model.tp);
                     this.updateTrialStage();
@@ -240,14 +242,11 @@ export default class TrialParticipantController extends WebcController {
             operation: 'update-tpNumber',
             ssi: ssi,
             useCaseSpecifics: {
-                tpNumber: tp.tpNumber,
-                tpName: tp.tpName,
+                tpNumber: tp.number,
+                tpName: tp.name,
                 tpDid: tp.did
             },
-            site: {
-              siteName: this.model.site.name
-            },
-            shortDescription: shortMessage,
+          shortDescription: shortMessage,
         });
     }
 
@@ -265,9 +264,13 @@ export default class TrialParticipantController extends WebcController {
             econsent = this._showButton(econsent, 'View');
             econsent.versions.forEach(version => {
                 if (version.actions != undefined) {
-                    let tpVersions = version.actions.filter(action => action.tpNumber === this.model.tp.did && action.type === 'tp');
+                    let validVersions = version.actions.filter(action => action.tpDid === this.model.tp.did);
+                    let tpVersions = validVersions.filter(action => action.type === 'tp');
+                    let hcoVersions = validVersions.filter(action => action.type === 'hco');
+
+                    let tpVersion = {};
                     if (tpVersions && tpVersions.length > 0) {
-                        let tpVersion = tpVersions[tpVersions.length - 1];
+                        tpVersion = tpVersions[tpVersions.length - 1];
                         if (tpVersion && tpVersion.actionNeeded) {
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.TO_BE_SIGNED) {
                                 econsent = this._showButton(econsent, 'Sign');
@@ -287,10 +290,14 @@ export default class TrialParticipantController extends WebcController {
                             }
                         }
                     }
-                    let hcoVersions = version.actions.filter(action => action.tpNumber === this.model.tp.did && action.type === 'hco');
                     if (hcoVersions && hcoVersions.length > 0) {
-                        let hcVersion = hcoVersions[hcoVersions.length - 1];
-                        econsent.hcoDate = hcVersion.toShowDate;
+                        let hcoVersion = hcoVersions[hcoVersions.length - 1];
+                        let hcoVersionIndex = validVersions.findIndex(v => v === hcoVersion);
+                        let tpVersionIndex = validVersions.findIndex(v => v === tpVersion);
+                        if (hcoVersion.name === 'sign' && hcoVersionIndex > tpVersionIndex) {
+                            econsent = this._showButton(econsent, 'View');
+                        }
+                        econsent.hcoDate = hcoVersion.toShowDate;
                         this.model.tp.hcoSigned = true;
 
                     }
