@@ -63,6 +63,23 @@ export default class SitesService extends DSUService {
     return updatedSite;
   }
 
+  async updateSiteStage(trialKeySSI, siteKeySSI, stage) {
+    // debugger;
+    console.log(trialKeySSI, siteKeySSI, stage);
+    const site = await this.getSite(siteKeySSI);
+
+    const updatedSiteDSU = await this.updateEntityAsync({ ...site, stage });
+
+    const siteDB = await this.getSiteFromDB(site.id, trialKeySSI);
+
+    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), siteDB.id, {
+      ...siteDB,
+      stage,
+    });
+
+    return updatedSite;
+  }
+
   async changeSiteStage(stage, id, trialKeySSI) {
     const site = await this.getSiteFromDB(id, trialKeySSI);
     const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.id, {

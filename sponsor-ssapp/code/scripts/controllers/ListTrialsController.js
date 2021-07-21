@@ -2,6 +2,7 @@ import TrialsService from '../services/TrialsService.js';
 import { trialStatusesEnum, trialTableHeaders, trialStagesEnum } from '../constants/trial.js';
 import CommunicationService from '../services/CommunicationService.js';
 import ParticipantsService from '../services/ParticipantsService.js';
+import SitesService from '../services/SitesService.js';
 
 import eventBusService from '../services/EventBusService.js';
 import { Topics } from '../constants/topics.js';
@@ -75,6 +76,7 @@ export default class ListTrialsController extends WebcController {
 
     this.trialsService = new TrialsService(this.DSUStorage);
     this.participantsService = new ParticipantsService(this.DSUStorage);
+    this.sitesService = new SitesService(this.DSUStorage);
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
     this.CommunicationService.listenForMessages(async (err, data) => {
       if (err) {
@@ -97,9 +99,19 @@ export default class ListTrialsController extends WebcController {
             },
             data.message.useCaseSpecifics.trialSSI
           );
+          eventBusService.emitEventListeners(Topics.RefreshParticipants + data.message.useCaseSpecifics.trialSSI, data);
+          break;
+        }
+        case 'update-site-status': {
+          if (data.message.stageInfo.siteSSI && data.message.stageInfo.status && data.message.ssi) {
+            await this.sitesService.updateSiteStage(
+              data.message.ssi,
+              data.message.stageInfo.siteSSI,
+              data.message.stageInfo.status
+            );
+          }
         }
       }
-      eventBusService.emitEventListeners(Topics.RefreshParticipants + data.message.useCaseSpecifics.trialSSI, data);
     });
     this.feedbackEmitter = null;
 
