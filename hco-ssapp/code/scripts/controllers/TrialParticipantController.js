@@ -148,7 +148,7 @@ export default class TrialParticipantController extends WebcController {
             this.showModalFromTemplate(
                 'add-tp-number',
                 (event) => {
-                    this.model.tp.tpNumber = event.detail;
+                    this.model.tp.number = event.detail;
                     this.sendMessageToProfessional(this.model.tp)
                     this._updateTrialParticipant(this.model.tp);
                     this.updateTrialStage();
@@ -240,14 +240,11 @@ export default class TrialParticipantController extends WebcController {
             operation: 'update-tpNumber',
             ssi: ssi,
             useCaseSpecifics: {
-                tpNumber: tp.tpNumber,
-                tpName: tp.tpName,
+                tpNumber: tp.number,
+                tpName: tp.name,
                 tpDid: tp.did
             },
-            site: {
-              siteName: this.model.site.name
-            },
-            shortDescription: shortMessage,
+          shortDescription: shortMessage,
         });
     }
 
@@ -265,7 +262,7 @@ export default class TrialParticipantController extends WebcController {
             econsent = this._showButton(econsent, 'View');
             econsent.versions.forEach(version => {
                 if (version.actions != undefined) {
-                    let validVersions = version.actions.filter(action => action.tpNumber === this.model.tp.did);
+                    let validVersions = version.actions.filter(action => action.tpDid === this.model.tp.did);
                     let tpVersions = validVersions.filter(action => action.type === 'tp');
                     let hcoVersions = validVersions.filter(action => action.type === 'hco');
 

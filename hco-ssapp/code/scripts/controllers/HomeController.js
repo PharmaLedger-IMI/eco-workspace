@@ -182,24 +182,24 @@ export default class HomeController extends WebcController {
                 case 'withdraw': {
                     actionNeeded = 'TP Withdrawed';
                     status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
-                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpNumber + ' withdraw', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
+                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' withdraw', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
                     break;
                 }
                 case 'withdraw-intention': {
                     actionNeeded = 'Reconsent required';
-                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpNumber + ' withdraw', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
+                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' withdraw', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
                     status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
                     break;
                 }
                 case 'Declined': {
                     actionNeeded = 'TP Declined';
-                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpNumber + ' declined', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
+                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' declined', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
                     status = Constants.TRIAL_PARTICIPANT_STATUS.DECLINED;
                     break;
                 }
                 case 'sign': {
                     tpSigned = true;
-                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpNumber + ' signed', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
+                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' signed', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
                     actionNeeded = 'Acknowledgement required';
                     status = Constants.TRIAL_PARTICIPANT_STATUS.SCREENED;
                     break;
@@ -208,13 +208,13 @@ export default class HomeController extends WebcController {
 
             currentVersion.actions.push({
                 ...message.useCaseSpecifics.action,
-                tpNumber: message.useCaseSpecifics.tpNumber,
+                tpDid: message.useCaseSpecifics.tpDid,
                 status: status,
                 type: 'tp',
                 actionNeeded: actionNeeded
             });
 
-            this.TrialParticipantRepository.filter(`did == ${message.useCaseSpecifics.tpNumber}`, 'ascending', 30, (err, tps) => {
+            this.TrialParticipantRepository.filter(`did == ${message.useCaseSpecifics.tpDid}`, 'ascending', 30, (err, tps) => {
                 if (tps && tps.length > 0) {
                     let tp = tps[0];
                     tp.actionNeeded = actionNeeded;

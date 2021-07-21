@@ -84,7 +84,7 @@ export default class TrialParticipantDetailsController extends WebcController {
             : initials + ' - ' + lastBadAction.action.toShowDate;
     }
 
-    async _getUserActionsFromEconsents(keySSI, tpNumber) {
+    async _getUserActionsFromEconsents(keySSI, tpDid) {
         // TODO: re-check this logic.
         let userActions = [];
         (await this.TrialService.getEconsentsAsync(keySSI))
@@ -97,7 +97,7 @@ export default class TrialParticipantDetailsController extends WebcController {
                         return userActions;
                     }
                     version.actions.forEach(action => {
-                        if (action.tpNumber === tpNumber) {
+                        if (action.tpDid === tpDid) {
                             userActions.push({
                                 econsent: {
                                     uid: econsent.uid,

@@ -82,7 +82,7 @@ export default class EconsentSignController extends WebcController {
             ssi: this.model.econsentSSI,
             useCaseSpecifics: {
                 trialSSI: this.model.trialSSI,
-                tpNumber: this.model.trialParticipant.tpNumber,
+                tpNumber: this.model.trialParticipant.number,
                 tpDid: this.model.trialParticipant.did,
                 version: this.model.ecoVersion,
                 action: {
@@ -220,7 +220,7 @@ export default class EconsentSignController extends WebcController {
         const currentDate = new Date();
         currentVersion.actions.push({
             name: 'sign',
-            tpNumber: this.model.trialParticipantNumber,
+            did: this.model.tpDid,
             type: 'hco',
             status: Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED,
             actionNeeded: 'HCO SIGNED -no action required',

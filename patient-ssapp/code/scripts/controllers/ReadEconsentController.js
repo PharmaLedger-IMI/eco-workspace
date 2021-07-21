@@ -192,7 +192,7 @@ export default class ReadEconsentController extends WebcController {
     sendMessageToSponsorAndHCO(action, ssi, shortMessage) {
         const currentDate = new Date();
         currentDate.setDate(currentDate.getDate());
-       
+
         this.TrialParticipantRepository.findAll((err, data) => {
 
             if (err) {
@@ -206,8 +206,8 @@ export default class ReadEconsentController extends WebcController {
                     ssi: ssi,
                     useCaseSpecifics: {
                         trialSSI: this.model.historyData.trialuid,
-                        tpNumber: this.model.tp.tpDid,
-                        tpDid: this.model.tp.tpDid,
+                        tpNumber: this.model.tp.number,
+                        tpDid: this.model.tp.did,
                         version: this.model.historyData.ecoVersion,
                         action: {
                             name: action,
