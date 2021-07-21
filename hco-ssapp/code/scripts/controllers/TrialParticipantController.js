@@ -82,6 +82,7 @@ export default class TrialParticipantController extends WebcController {
                 econsentSSI: model.keySSI,
                 trialParticipantNumber: this.model.trialParticipantNumber,
                 tpUid: this.model.tpUid,
+                tpDid: this.model.tp.did,
             });
         });
     }
@@ -90,11 +91,11 @@ export default class TrialParticipantController extends WebcController {
         this.onTagEvent('consent:view', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-
             this.navigateToPageTag('econsent-sign', {
                 trialSSI: this.model.trialSSI,
                 econsentSSI: model.KeySSI,
                 ecoVersion: model.lastVersion,
+                tpDid: this.model.tp.did,
                 controlsShouldBeVisible: false
             });
         });
@@ -113,6 +114,7 @@ export default class TrialParticipantController extends WebcController {
                 econsentSSI: model.keySSI,
                 trialParticipantNumber: this.model.tp.did,
                 tpUid: this.model.tpUid,
+                tpDid: this.model.tp.did,
                 ecoVersion: ecoVersion
             });
         });

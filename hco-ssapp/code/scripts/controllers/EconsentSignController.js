@@ -207,7 +207,6 @@ export default class EconsentSignController extends WebcController {
     }
 
     _updateEconsentWithDetails(message) {
-
         let currentVersionIndex = this.model.econsent.versions.findIndex(eco => eco.version === this.model.ecoVersion)
         if (currentVersionIndex === -1) {
             return console.log(`Version ${message.useCaseSpecifics.version} of the econsent ${message.ssi} does not exist.`)
@@ -220,7 +219,7 @@ export default class EconsentSignController extends WebcController {
         const currentDate = new Date();
         currentVersion.actions.push({
             name: 'sign',
-            did: this.model.tpDid,
+            tpDid: this.model.tpDid,
             type: 'hco',
             status: Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED,
             actionNeeded: 'HCO SIGNED -no action required',
