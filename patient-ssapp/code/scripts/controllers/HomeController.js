@@ -65,12 +65,13 @@ export default class HomeController extends WebcController {
                 case 'add-to-trial' : {
                     this.saveNotification(data);
                     this._saveTrialParticipantInfo(data.message.useCaseSpecifics);
-                    this.mountTrial (data);
+                    this.mountTrial(data);
                     break;
                 }
                 case 'update-tpNumber': {
+
                     this.saveNotification(data);
-                    this._saveTrialParticipantInfo(data.message.useCaseSpecifics);
+                    this._updateTrialParticipant(data.message.useCaseSpecifics);
                     break;
                 }
             }
@@ -85,7 +86,7 @@ export default class HomeController extends WebcController {
 
             this.navigateToPageTag('trial', {
                 trialSSI: trial.keySSI,
-                tpNumber: this.model.tp.did,
+                tpDid: this.model.tp.did,
                 isNewTp: this.model.isNewTp,
             });
         });
@@ -117,6 +118,7 @@ export default class HomeController extends WebcController {
                     return console.log(err);
                 }
                 console.log('database record' + data);
+
             })
 
         });
@@ -137,23 +139,18 @@ export default class HomeController extends WebcController {
     async _saveTrialParticipantInfo(data) {
 
         let trialParticipant = {
-            name: data.tpName, tpNumber: data.tpNumber, tpDid: data.tpDid, site: data.site
+            name: data.tpName, did: data.tpDid, site: data.site
         }
+        this.model.tp = await this.TrialParticipantRepository.createAsync(trialParticipant);
+    }
 
-        if (!this.model.tp || !this.model.tp.name) {
-            this.model.tp = await this.TrialParticipantRepository.createAsync(trialParticipant);
-        } else {
-            this.model.tp.tpNumber = trialParticipant.tpNumber;
-            this.model.tp.did = trialParticipant.tpDid;
-            if (trialParticipant.name) {
+    async _updateTrialParticipant(data) {
 
-                this.model.tp.name = trialParticipant.name;
-
-            }
-            this.model.tp = this.TrialParticipantRepository.updateAsync(this.model.tp.uid, this.model.tp);
-        }
+        this.model.tp.number =  data.number;
+        await this.TrialParticipantRepository.updateAsync(this.model.tp.uid, this.model.tp);
 
     }
+
 
     async saveNotification(message) {
         let notification = {
@@ -169,7 +166,7 @@ export default class HomeController extends WebcController {
         });
     }
 
-    async mountTrial (data){
+    async mountTrial(data) {
 
         let  trial = await this.TrialService.mountTrialAsync(data.message.ssi);
         this.model.trials?.push(trial);

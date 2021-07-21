@@ -103,10 +103,10 @@ export default class TrialParticipantsController extends WebcController {
                         return actions;
                     }
                     version.actions.forEach(action => {
-                        if (actions[action.tpNumber] === undefined) {
-                            actions[action.tpNumber] = []
+                        if (actions[action.tpDid] === undefined) {
+                            actions[action.tpDid] = []
                         }
-                        actions[action.tpNumber].push({
+                        actions[action.tpDid].push({
                             econsent: {
                                 uid: econsent.uid,
                                 keySSI: econsent.keySSI,
