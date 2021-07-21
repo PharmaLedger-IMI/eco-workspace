@@ -265,9 +265,13 @@ export default class TrialParticipantController extends WebcController {
             econsent = this._showButton(econsent, 'View');
             econsent.versions.forEach(version => {
                 if (version.actions != undefined) {
-                    let tpVersions = version.actions.filter(action => action.tpNumber === this.model.tp.did && action.type === 'tp');
+                    let validVersions = version.actions.filter(action => action.tpNumber === this.model.tp.did);
+                    let tpVersions = validVersions.filter(action => action.type === 'tp');
+                    let hcoVersions = validVersions.filter(action => action.type === 'hco');
+
+                    let tpVersion = {};
                     if (tpVersions && tpVersions.length > 0) {
-                        let tpVersion = tpVersions[tpVersions.length - 1];
+                        tpVersion = tpVersions[tpVersions.length - 1];
                         if (tpVersion && tpVersion.actionNeeded) {
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.TO_BE_SIGNED) {
                                 econsent = this._showButton(econsent, 'Sign');
@@ -287,10 +291,14 @@ export default class TrialParticipantController extends WebcController {
                             }
                         }
                     }
-                    let hcoVersions = version.actions.filter(action => action.tpNumber === this.model.tp.did && action.type === 'hco');
                     if (hcoVersions && hcoVersions.length > 0) {
-                        let hcVersion = hcoVersions[hcoVersions.length - 1];
-                        econsent.hcoDate = hcVersion.toShowDate;
+                        let hcoVersion = hcoVersions[hcoVersions.length - 1];
+                        let hcoVersionIndex = validVersions.findIndex(v => v === hcoVersion);
+                        let tpVersionIndex = validVersions.findIndex(v => v === tpVersion);
+                        if (hcoVersion.name === 'sign' && hcoVersionIndex > tpVersionIndex) {
+                            econsent = this._showButton(econsent, 'View');
+                        }
+                        econsent.hcoDate = hcoVersion.toShowDate;
                         this.model.tp.hcoSigned = true;
 
                     }
