@@ -209,6 +209,7 @@ export default class ReadEconsentController extends WebcController {
                         tpNumber: this.model.tp.number,
                         tpDid: this.model.tp.did,
                         version: this.model.historyData.ecoVersion,
+                        siteSSI: this.model.tp.site?.keySSI,
                         action: {
                             name: action,
                             date: currentDate.toISOString(),

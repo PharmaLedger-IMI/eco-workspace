@@ -228,7 +228,8 @@ export default class TrialParticipantsController extends WebcController {
                     name: this.model.site?.name,
                     number: this.model.site?.id,
                     country: this.model.site?.country,
-                    status: this.model.site?.status
+                    status: this.model.site?.status,
+                    keySSI: this.model.site?.keySSI,
                 },
             },
             shortDescription: shortMessage,
@@ -253,6 +254,7 @@ export default class TrialParticipantsController extends WebcController {
 
         this.SiteService.getSites((err, sites) => {
 
+            //this.model.site = sites?.filter(site=> site.trialKeySSI === this.model.trial.keySSI);
             if (err) {
                 return console.log(err);
             }

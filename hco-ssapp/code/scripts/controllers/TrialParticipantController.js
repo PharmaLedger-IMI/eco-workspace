@@ -313,6 +313,8 @@ export default class TrialParticipantController extends WebcController {
             if (err) {
                 return console.log(err);
             }
+
+           // this.model.site = sites?.filter(site=> site.trialKeySSI === this.model.trial.keySSI);
             if (sites && sites.length > 0) {
                 this.model.site = sites[sites.length - 1];
                 this._sendMessageToSponsor();

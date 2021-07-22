@@ -5,6 +5,7 @@ import CommunicationService from '../services/CommunicationService.js';
 import DateTimeService from '../services/DateTimeService.js';
 import FileDownloader from '../utils/FileDownloader.js';
 import Constants from '../utils/Constants.js';
+import SiteService from '../services/SiteService.js';
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -38,6 +39,7 @@ export default class EconsentSignController extends WebcController {
 
         this._initServices(this.DSUStorage);
         this._initHandlers();
+        this._initSite();
         this._initTrialParticipant();
         this._initConsent();
     }
@@ -47,6 +49,7 @@ export default class EconsentSignController extends WebcController {
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.SiteService = new SiteService(DSUStorage);
     }
 
     _initHandlers() {
@@ -76,6 +79,7 @@ export default class EconsentSignController extends WebcController {
 
     sendMessageToSponsor(operation, shortMessage) {
 
+
         const currentDate = new Date();
         let sendObject = {
             operation: operation,
@@ -85,6 +89,7 @@ export default class EconsentSignController extends WebcController {
                 tpNumber: this.model.trialParticipant.number,
                 tpDid: this.model.trialParticipant.did,
                 version: this.model.ecoVersion,
+                siteSSI: this.model.site.keySSI,
                 action: {
                     name: 'sign',
                     date: DateTimeService.getCurrentDateAsISOString(),
@@ -264,4 +269,13 @@ export default class EconsentSignController extends WebcController {
             window.history.back();
         });
     }
+
+    async _initSite() {
+
+        let sites = await this.SiteService.getSitesAsync();
+        if (sites && sites.length > 0) {
+            this.model.site = sites[sites.length - 1];
+        }
+    }
+
 }
