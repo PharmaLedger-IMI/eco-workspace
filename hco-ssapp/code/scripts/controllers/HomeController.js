@@ -109,6 +109,7 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case 'site-status-change': {
+                    this._refreshSite(data.message);
                     this._saveNotification(data.message, 'The status of site was changed', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
 
                     break;
@@ -157,6 +158,15 @@ export default class HomeController extends WebcController {
 
                     break;
                 }
+            }
+        });
+    }
+
+    _refreshSite(message) {
+
+        this.SiteService.mountSite(message.data.site, (err, site) => {
+            if (err) {
+                return console.log(err);
             }
         });
     }
