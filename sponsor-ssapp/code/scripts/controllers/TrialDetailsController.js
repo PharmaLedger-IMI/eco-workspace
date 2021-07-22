@@ -435,10 +435,10 @@ export default class TrialDetailsController extends WebcController {
   async changeSiteStatus(status, id) {
     const updated = await this.sitesService.changeSiteStatus(status, id, this.model.trial.keySSI);
     // this.sendMessageToHco('site-status-change', updated.keySSI, 'Status was updated');
-    this.CommunicationService.sendMessage(did, {
+    this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, {
       operation: 'site-status-change',
       data: {
-        site: ssi,
+        site: updated.keySSI,
         status: status,
       },
       shortDescription: 'Status was updated',
