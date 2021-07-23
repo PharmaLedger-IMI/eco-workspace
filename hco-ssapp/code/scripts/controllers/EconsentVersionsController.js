@@ -116,4 +116,19 @@ export default class EconsentVersionsController extends WebcController {
             window.history.back();
         });
     }
+
+    _attachHandlerView() {
+        this.onTagEvent('consent:view', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            this.navigateToPageTag('econsent-sign', {
+                trialSSI: this.model.trialSSI,
+                econsentSSI:  model.econsentSSI,
+                ecoVersion: model.lastVersion,
+                tpDid: this.model.tp.did,
+                controlsShouldBeVisible: false
+            });
+        });
+    }
 }

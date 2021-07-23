@@ -177,8 +177,8 @@ export default class TrialParticipantController extends WebcController {
             toShowDate: 'DD/MM/YYYY'
         };
 
-        for (const econsent of econsents){
-            for (const version of econsent.versions){
+        for (const econsent of econsents) {
+            for (const version of econsent.versions) {
                 let validActions = version.actions
                     .filter(action => action.name === 'sign' && action.type === 'tp')
                     .filter(action => tp.did === action.tpNumber);
@@ -246,7 +246,7 @@ export default class TrialParticipantController extends WebcController {
                 tpName: tp.name,
                 tpDid: tp.did
             },
-          shortDescription: shortMessage,
+            shortDescription: shortMessage,
         });
     }
 
@@ -282,8 +282,12 @@ export default class TrialParticipantController extends WebcController {
                                 econsent.tsWithdrawDate = tpVersion.toShowDate;
                             }
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.CONTACT) {
-                                econsent = this._showButton(econsent, 'Contact');
-                                econsent.tsWithdrawedIntentionDate = 'Intention';
+                                                            if (tpVersion.status === 'Withdrawed') {
+                                    econsent.tsWithdrawDate = tpVersion.toShowDate;
+                                } else {
+                                    econsent = this._showButton(econsent, 'Contact');
+                                    econsent.tsWithdrawedIntentionDate = 'Intention';
+                                }
                             }
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.DECLINED) {
                                 econsent.tsDeclined = 'Declined';
@@ -314,7 +318,7 @@ export default class TrialParticipantController extends WebcController {
                 return console.log(err);
             }
 
-           // this.model.site = sites?.filter(site=> site.trialKeySSI === this.model.trial.keySSI);
+            // this.model.site = sites?.filter(site=> site.trialKeySSI === this.model.trial.keySSI);
             if (sites && sites.length > 0) {
                 this.model.site = sites[sites.length - 1];
                 this._sendMessageToSponsor();

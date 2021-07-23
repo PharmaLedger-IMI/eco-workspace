@@ -70,6 +70,7 @@ export default class TrialManagementController extends WebcController {
     }
 
     _initTrial() {
+
         this.TrialService.getTrials((err, data) => {
             if (err) {
                 return console.error(err);

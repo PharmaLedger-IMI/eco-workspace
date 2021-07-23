@@ -52,6 +52,7 @@ export default class HomeController extends WebcController {
             data = JSON.parse(data);
             switch (data.message.operation) {
                 case 'refresh-trial': {
+
                     this.TrialService.reMountTrial(data.message.ssi, (err, trial) => {
                         this.TrialService.getEconsents(trial.keySSI, (err, consents) => {
                             if (err) {
@@ -104,8 +105,9 @@ export default class HomeController extends WebcController {
         });
     }
 
-    _saveConsentsStatuses(consents, did) {
-        consents.forEach((consent, i) => {
+    async _saveConsentsStatuses(consents, did) {
+        for (const consent of consents) {
+            let i = consents.indexOf(consent);
             consent.actions = [];
             if (consent.type === 'Mandatory') {
                 consent.actions.push({name: 'required'});
@@ -113,15 +115,9 @@ export default class HomeController extends WebcController {
             consent.foreignConsentId = consent.keySSI;
 
             consent.tpDid = did;
-            this.EconsentsStatusRepository.create(consent, (err, data) => {
-                if (err) {
-                    return console.log(err);
-                }
-                console.log('database record' + data);
+            let eco= await this.EconsentsStatusRepository.createAsync(consent);
 
-            })
-
-        });
+        }
     }
 
     _initTrialParticipant() {
