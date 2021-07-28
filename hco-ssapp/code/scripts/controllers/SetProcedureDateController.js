@@ -17,7 +17,6 @@ export default class SetProcedureDateController extends WebcController {
     constructor(...props) {
         super(...props);
         this.setModel(getInitModel());
-        debugger
         this._initHandlers();
     }
 

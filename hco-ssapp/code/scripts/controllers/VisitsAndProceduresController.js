@@ -3,6 +3,7 @@ import NotificationsRepository from "../repositories/VisitsAndProceduresReposito
 const {WebcController} = WebCardinal.controllers;
 import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
 import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
+import DateTimeService from '../services/DateTimeService.js';
 
 let getInitModel = () => {
     return {
@@ -14,11 +15,10 @@ export default class VisitsAndProceduresController extends WebcController {
     constructor(...props) {
         super(...props);
         this.setModel({
-                ...getInitModel(),
-                trialSSI: this.history.win.history.state.state,
-                visits: []
-            }
-        )
+            ...getInitModel(),
+            ...this.history.win.history.state.state,
+            visits: []
+        });
         ;
         this._initServices(this.DSUStorage);
         this._initHandlers();
@@ -38,7 +38,6 @@ export default class VisitsAndProceduresController extends WebcController {
 
     async _initVisits() {
 
-        debugger;
         this.model.visits = await this.VisitsAndProceduresRepository.findAllAsync();
         if (this.model.visits && this.model.visits.length > 0) {
             this.model.tp = await this.TrialParticipantRepository.findByAsync(this.model.tpUid);
@@ -49,9 +48,9 @@ export default class VisitsAndProceduresController extends WebcController {
             } else {
                 this.model.visits.forEach(visit => {
                     debugger;
-                    let visitTp = this.model.tp.visits.filter(v => v.id === visit.id);
-                    visit.confirmed = v.confirmed;
-                    visit.date = v.date;
+                    let visitTp = this.model.tp.visits.filter(v => v.uid === visit.uid)[0];
+                    visit.confirmed = visitTp.confirmed;
+                    visit.date = visitTp.date;
                 })
             }
         }
@@ -61,12 +60,9 @@ export default class VisitsAndProceduresController extends WebcController {
     _updateTrialParticipantVisit(visit) {
         if (!this.model.tp.visits)
             this.model.tp.visits = this.visits;
-        this.model.tp.visits.forEach(v => {
-            if (v.id === visit.id) {
-                v = visit;
-            }
-        })
-        debugger;
+
+        let objIndex = this.model.tp.visits.findIndex((obj => obj.uid == visit.uid));
+        this.model.tp.visits[objIndex] = visit;
         this.TrialParticipantRepository.updateAsync(this.model.tp.uid, this.model.tp);
     }
 
@@ -100,8 +96,11 @@ export default class VisitsAndProceduresController extends WebcController {
                 'set-procedure-date',
                 (event) => {
                     debugger;
-                    model.date = event.detail;
-                    this._updateVisit(model);
+
+                    let date = new Date();
+                    date.setTime(event.detail);
+                    model.date = date.toISOString(),
+                        this._updateVisit(model);
                     this._updateTrialParticipantVisit(model);
                 },
                 (event) => {
@@ -118,11 +117,8 @@ export default class VisitsAndProceduresController extends WebcController {
     }
 
     _updateVisit(visit) {
-        this.model.visits.forEach(v => {
-            if (v.id === visit.id) {
-                v = visit;
-            }
-        })
+        let objIndex = this.model.visits.findIndex((obj => obj.uid == visit.uid));
+        this.model.visits[objIndex] = visit;
 
 
     }
