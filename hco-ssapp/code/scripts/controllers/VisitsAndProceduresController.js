@@ -2,6 +2,7 @@ import NotificationsRepository from "../repositories/VisitsAndProceduresReposito
 
 const {WebcController} = WebCardinal.controllers;
 import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
+import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
 
 let getInitModel = () => {
     return {
@@ -14,7 +15,8 @@ export default class VisitsAndProceduresController extends WebcController {
         super(...props);
         this.setModel({
                 ...getInitModel(),
-                trialSSI: this.history.win.history.state.state
+                trialSSI: this.history.win.history.state.state,
+                visits: []
             }
         )
         ;
@@ -26,23 +28,51 @@ export default class VisitsAndProceduresController extends WebcController {
     _initHandlers() {
         this._attachHandlerBack();
         this._attachHandlerDetails();
+        this._attachHandlerSetDate();
     }
 
     _initServices(DSUStorage) {
         this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
+        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
     }
 
-    _initVisits() {
+    async _initVisits() {
 
-        this.VisitsAndProceduresRepository.findAll((err, data) => {
-
-            if (err) {
-                return console.log(err);
+        debugger;
+        this.model.visits = await this.VisitsAndProceduresRepository.findAllAsync();
+        if (this.model.visits && this.model.visits.length > 0) {
+            this.model.tp = await this.TrialParticipantRepository.findByAsync(this.model.tpUid);
+            if (!this.model.tp.visits || this.model.tp.visits.length < 1) {
+                this.model.tp.visits = this.model.visits;
+                this._updateTrialParticipant();
+                return;
+            } else {
+                this.model.visits.forEach(visit => {
+                    debugger;
+                    let visitTp = this.model.tp.visits.filter(v => v.id === visit.id);
+                    visit.confirmed = v.confirmed;
+                    visit.date = v.date;
+                })
             }
+        }
 
-            this.model.visits = data.filter(visit => visit.trialSSI === this.model.trialSSI);
+    }
 
-        });
+    _updateTrialParticipantVisit(visit) {
+        if (!this.model.tp.visits)
+            this.model.tp.visits = this.visits;
+        this.model.tp.visits.forEach(v => {
+            if (v.id === visit.id) {
+                v = visit;
+            }
+        })
+        debugger;
+        this.TrialParticipantRepository.updateAsync(this.model.tp.uid, this.model.tp);
+    }
+
+    _updateTrialParticipant() {
+        this.model.tp.visits = this.model.visits;
+        this.TrialParticipantRepository.updateAsync(this.model.tp.uid, this.model.tp);
     }
 
     _attachHandlerBack() {
@@ -62,5 +92,39 @@ export default class VisitsAndProceduresController extends WebcController {
         });
     }
 
+    _attachHandlerSetDate() {
+        this.onTagEvent('procedure:setDate', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.showModalFromTemplate(
+                'set-procedure-date',
+                (event) => {
+                    debugger;
+                    model.date = event.detail;
+                    this._updateVisit(model);
+                    this._updateTrialParticipantVisit(model);
+                },
+                (event) => {
+                    const response = event.detail;
+                }
+            ),
+                {
+                    controller: 'SetProcedureDateController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false,
+                    title: 'Set Procedure Date',
+                };
+        });
+    }
+
+    _updateVisit(visit) {
+        this.model.visits.forEach(v => {
+            if (v.id === visit.id) {
+                v = visit;
+            }
+        })
+
+
+    }
 
 }
