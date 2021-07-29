@@ -65,13 +65,21 @@ export default class EconsentSignController extends WebcController {
             if (err) {
                 return console.log(err);
             }
+
             this.model.econsent = {
                 ...econsent,
                 versionDateAsString: DateTimeService.convertStringToLocaleDate(econsent.versionDate),
             };
-            let ecoVersion = this.model.ecoVersion;
-            let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
-            let econsentFilePath = this._getEconsentFilePath(this.model.trialSSI, this.model.econsentSSI, ecoVersion, currentVersion.attachment);
+
+            let currentVersion = '';
+            if (this.model.ecoVersion) {
+                currentVersion = econsent.versions.find(eco => eco.version === this.model.ecoVersion);
+            } else {
+                currentVersion = econsent.versions[econsent.versions.length - 1];
+                this.model.ecoVersion = currentVersion.version;
+            }
+
+            let econsentFilePath = this._getEconsentFilePath(this.model.trialSSI, this.model.econsentSSI, this.model.ecoVersion, currentVersion.attachment);
             this.FileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
             this._downloadFile();
         });

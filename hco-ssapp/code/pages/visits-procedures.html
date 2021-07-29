@@ -17,26 +17,29 @@
                 </div>
 
                 <div class="general-table">
-                    <psk-layout columns="5" class="justify-content-center align-items-center table-row">
-                        <psk-label class="table-cell-title">Procedure Name </psk-label>
+                    <psk-layout columns="6" class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell-title">Procedure Name</psk-label>
                         <psk-label class="table-cell-title">Period</psk-label>
                         <psk-label class="table-cell-title">Consent Assigned</psk-label>
                         <psk-label class="table-cell-title">Proposed Date</psk-label>
-                        <psk-label class="table-cell-title">Confirmed</psk-label>
+                        <psk-label class="table-cell-title">Ts Acceptance</psk-label>
+                        <psk-label class="table-cell-title">Confirmation</psk-label>
                     </psk-layout>
                     <hr/>
                 </div>
 
                 <div class="general-table body" data-for="@visits">
-                    <psk-layout columns="5"
+                    <psk-layout columns="6"
                                 class="justify-content-center align-items-center table-row">
                         <psk-label class="table-cell">{{@name}}</psk-label>
                         <psk-label class="table-cell">{{@period}} {{@unit}}</psk-label>
-                        <button class="link-button" data-tag="goToAction" data="@id">Consent</button>
-                        <psk-label class="table-cell">Proposed date</psk-label>
+                        <button class="link-button" data-tag="viewConsent" data="@id">Consent</button>
+
                         <div data-if="@date">
                             <div slot="true">
-                                <psk-label class="table-cell">{{@date}}</psk-label>
+                                <button class="link-button view-adjust-margin" data="@id"
+                                        data-tag="procedure:editDate">{{@date}}
+                                </button>
                             </div>
                             <div slot="false">
                                 <button class="link-button view-adjust-margin" data="@id"
@@ -44,9 +47,14 @@
                                 </button>
                             </div>
                         </div>
+                        <div data-if="@tsAcceptance">
+                            <psk-label slot="true" class="table-cell">@tsAcceptance</psk-label>
+                            <psk-label slot="false" class="table-cell">Required</psk-label>
+                        </div>
                         <div data-if="@confirmed">
-                            <button class="link-button view-adjust-margin" data="@id"
-                                    data-tag="consent:view">Confirmed
+                            <psk-label slot="true" class="table-cell">Confirmed</psk-label>
+                            <button slot="false" class="link-button view-adjust-margin" data="@id"
+                                    data-tag="visit:setConfirmation">Confirm TS
                             </button>
                         </div>
 

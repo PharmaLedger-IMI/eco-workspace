@@ -69,6 +69,11 @@ export default class HomeController extends WebcController {
                     this.mountTrial(data);
                     break;
                 }
+
+                case 'schedule-visit' :{
+                    this.saveNotification(data);
+                    this._saveVisit ();
+                }
                 case 'update-tpNumber': {
 
                     this.saveNotification(data);
@@ -172,6 +177,10 @@ export default class HomeController extends WebcController {
             }
             this._saveConsentsStatuses(consents, data.message.useCaseSpecifics.did);
         });
+
+    }
+
+    _saveVisit (){
 
     }
 
