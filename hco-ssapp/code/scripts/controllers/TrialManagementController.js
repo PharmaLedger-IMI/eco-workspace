@@ -36,7 +36,6 @@ export default class TrialManagementController extends WebcController {
     constructor(...props) {
         super(...props);
 
-        console.log('Constructor TM Controller');
         this.setModel(getInitModel());
         this._initServices(this.DSUStorage);
         this._initHandlers();
