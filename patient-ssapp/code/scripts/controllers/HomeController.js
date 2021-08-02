@@ -4,6 +4,7 @@ import DateTimeService from '../services/DateTimeService.js';
 import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
 import NotificationsRepository from "../repositories/NotificationsRepository.js";
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
+import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -26,12 +27,14 @@ export default class HomeController extends WebcController {
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.PATIENT_IDENTITY);
         this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
         this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
+        this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
     }
 
     _initHandlers() {
         this._attachHandlerTrialClick();
         this._attachHandlerNotifications();
         this._attachHandlerSites();
+        this._attachHandlerVisits ();
     }
 
     _initTrials() {
@@ -72,7 +75,7 @@ export default class HomeController extends WebcController {
 
                 case 'schedule-visit' :{
                     this.saveNotification(data);
-                    this._saveVisit ();
+                    this._saveVisit (data.message.useCaseSpecifics.visit);
                 }
                 case 'update-tpNumber': {
 
@@ -107,6 +110,12 @@ export default class HomeController extends WebcController {
     _attachHandlerNotifications() {
         this.onTagClick('home:notifications', (event) => {
             this.navigateToPageTag('notifications');
+        });
+    }
+
+    _attachHandlerVisits(){
+        this.onTagClick('home:visits', (event) => {
+            this.navigateToPageTag('visits-procedures');
         });
     }
 
@@ -180,8 +189,23 @@ export default class HomeController extends WebcController {
 
     }
 
-    _saveVisit (){
 
+
+    _saveVisit (visitToBeAdded){
+        debugger;
+        this.VisitsAndProceduresRepository.createAsync(visitToBeAdded, (err, visitCreated) => {
+            if (err) {
+                return console.error(err);
+            }
+            this.model.tp.hasNewVisits = true;
+            this.TrialParticipantRepository.update(this.model.tp.uid, this.model.tp, (err,data)=>{
+                if(err)
+                {
+                    console.log(err);
+                }
+            })
+
+        })
     }
 
 }

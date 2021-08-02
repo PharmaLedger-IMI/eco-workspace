@@ -20,6 +20,12 @@
       "tag": "notifications"
     },
     {
+      "name": "Visits And Procedures List",
+      "path": "/visits-procedures",
+      "src": "visits-procedures.html",
+      "tag": "visits-procedures"
+    },
+    {
       "name": "Econsent",
       "path": "/econsent",
       "src": "econsent.html",
