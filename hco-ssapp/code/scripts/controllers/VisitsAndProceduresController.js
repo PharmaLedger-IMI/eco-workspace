@@ -89,7 +89,6 @@ export default class VisitsAndProceduresController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
 
-            debugger;
             this.navigateToPageTag('econsent-sign', {
                 trialSSI: model.trialSSI,
                 econsentSSI: model.consentSSI,
@@ -145,9 +144,10 @@ export default class VisitsAndProceduresController extends WebcController {
                     period: visit.period,
                     consentSSI: visit.consentSSI,
                     date: visit.date,
+                    id: visit.id
                 },
             },
-            shortDescription: Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.SCHEDULE_VISIT ,
+            shortDescription: Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.SCHEDULE_VISIT,
         });
     }
 

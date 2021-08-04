@@ -32,6 +32,7 @@ export default class VisitsAndProceduresController extends WebcController {
         this._attachHandlerBack();
         this._attachHandlerDetails();
         this._attachHandlerDecline();
+        this._attachHandlerConfirm();
     }
 
     _initServices(DSUStorage) {
@@ -43,33 +44,13 @@ export default class VisitsAndProceduresController extends WebcController {
     async _initVisits() {
 
         this.model.visits = await this.VisitsAndProceduresRepository.findAllAsync();
+        debugger
         if (this.model.visits && this.model.visits.length > 0) {
-            this.model.tp = await this.TrialParticipantRepository.findByAsync(this.model.tpUid);
-            if (!this.model.tp.visits || this.model.tp.visits.length < 1) {
-                this.model.tp.visits = this.model.visits;
-                this._updateTrialParticipant();
-                return;
-            } else {
-                this.model.visits.forEach(visit => {
-
-                    let visitTp = this.model.tp.visits.filter(v => v.uid === visit.uid)[0];
-                    visit.confirmed = visitTp.confirmed;
-                    visit.date = visitTp.date;
-                })
-            }
+            let tps = await this.TrialParticipantRepository.findAllAsync();
+            this.model.tp = tps[0];
         }
-
     }
 
-    _updateTrialParticipantVisit(visit) {
-        if (!this.model.tp.visits)
-            this.model.tp.visits = this.visits;
-
-        let objIndex = this.model.tp.visits.findIndex((obj => obj.uid == visit.uid));
-        this.model.tp.visits[objIndex] = visit;
-        this.TrialParticipantRepository.updateAsync(this.model.tp.uid, this.model.tp);
-        this.sendMessageToPatient(visit);
-    }
 
     _updateTrialParticipant() {
         this.model.tp.visits = this.model.visits;
@@ -99,7 +80,7 @@ export default class VisitsAndProceduresController extends WebcController {
         });
     }
 
-    _attachHandlerDecline (){
+    _attachHandlerDecline() {
         this.onTagEvent('visit:decline', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
@@ -108,11 +89,10 @@ export default class VisitsAndProceduresController extends WebcController {
                 (event) => {
                     const response = event.detail;
                     if (response) {
-                        this.model.status.actions.push({name: 'signed'});
-                        this.model.accepted = true;
-                        this.model.declined = false;
-                        this._saveVisit (model)
-                        this.sendMessageToHCO(model, 'Visit Accepted');
+                        model.accepted = false;
+                        model.declined = true;
+                        this._updateVisit(model);
+                        this.sendMessageToHCO(model, Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.VISIT_DECLINED);
                     }
                 },
                 (event) => {
@@ -122,25 +102,51 @@ export default class VisitsAndProceduresController extends WebcController {
                     controller: 'ConfirmationAlertController',
                     disableExpanding: false,
                     disableBackdropClosing: false,
-                    question: 'Are you sure you want to sign this ecosent ? ',
-                    title: 'Sign Econsent',
+                    question: 'Are you sure you want to decline this visit? ',
+                    title: 'Decline visit',
+                });
+        });
+    }
+
+    _attachHandlerConfirm() {
+        this.onTagEvent('visit:confirm', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.showModalFromTemplate(
+                'confirmation-alert',
+                (event) => {
+                    const response = event.detail;
+                    if (response) {
+                        model.accepted = true;
+                        model.declined = false;
+                        this._updateVisit(model);
+                        this.sendMessageToHCO(model, Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.VISIT_ACCEPTED);
+                    }
+                },
+                (event) => {
+                    const response = event.detail;
+                },
+                {
+                    controller: 'ConfirmationAlertController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false,
+                    question: 'Are you sure you want to confirm this visit? ',
+                    title: 'Accept visit',
                 });
         });
     }
 
 
-
     _updateVisit(visit) {
         let objIndex = this.model.visits.findIndex((obj => obj.uid == visit.uid));
         this.model.visits[objIndex] = visit;
+        this.VisitsAndProceduresRepository.updateAsync(visit.uid, visit);
     }
 
-    sendMessageToHCO(visit,message) {
+    sendMessageToHCO(visit, message) {
 
-        debugger
-        //TODO : add a visit id or key that comes from sponsor
         this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, {
-            operation: Constants.MESSAGES.HCO.COMMUNICATION.TYPE.SCHEDULE_VISIT,
+            operation: Constants.MESSAGES.HCO.COMMUNICATION.TYPE.VISIT_RESPONSE,
             ssi: visit.trialSSI,
             useCaseSpecifics: {
                 tpDid: this.model.tp.did,
@@ -151,22 +157,13 @@ export default class VisitsAndProceduresController extends WebcController {
                     period: visit.period,
                     consentSSI: visit.consentSSI,
                     date: visit.date,
-                    accepted:visit.accepted,
-                    declined: visit.declined
+                    accepted: visit.accepted,
+                    declined: visit.declined,
+                    id: visit.id
                 },
             },
-            shortDescription: message ,
+            shortDescription: message,
         });
     }
 
-    _saveVisit (visitToBeAdded){
-        debugger;
-
-        this.VisitsAndProceduresRepository.update(visitToBeAdded.uid, visitToBeAdded, (err, visitCreated) => {
-            if (err) {
-                return console.error(err);
-            }
-
-        })
-    }
 }

@@ -139,6 +139,13 @@ export default class HomeController extends WebcController {
                     break;
                 }
 
+                case Constants.MESSAGES.HCO.COMMUNICATION.TYPE.VISIT_RESPONSE: {
+
+                    this._saveNotification(data.message, data.shortDescription, 'view visits', Constants.NOTIFICATIONS_TYPE.MILESTONES_REMINDERS);
+                    this._updateVisit(data.message);
+                    break;
+                }
+
                 case 'add-trial-consent': {
 
                     this._saveNotification(data.message, 'New consent was added to trial  ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
@@ -312,7 +319,8 @@ export default class HomeController extends WebcController {
                                     consentSSI: item.consent.keySSI,
                                     trialSSI: message,
                                     period: visit.period,
-                                    unit: visit.unit
+                                    unit: visit.unit,
+                                    id: visit.id
                                 };
 
                                 this.VisitsAndProceduresRepository.create(visitToBeAdded, (err, visitCreated) => {
@@ -354,6 +362,26 @@ export default class HomeController extends WebcController {
             } else {
                 this._saveVisit(trialSSI);
             }
+        });
+    }
+
+    _updateVisit(message) {
+        this.TrialParticipantRepository.filter(`did == ${message.useCaseSpecifics.tpDid}`, 'ascending', 30, (err, tps) => {
+            if (err) {
+                console.log(err);
+            }
+            let tp = tps[0];
+            debugger;
+            let objIndex = tp?.visits?.findIndex((obj => obj.id == message.useCaseSpecifics.visit.id));
+            tp.visits[objIndex].accepted = message.useCaseSpecifics.visit.accepted;
+            tp.visits[objIndex].declined = message.useCaseSpecifics.visit.declined;
+            this.TrialParticipantRepository.update(tp.uid, tp, (err, data) => {
+                if (err) {
+                    console.log(err);
+                }
+            })
+
+
         });
     }
 }

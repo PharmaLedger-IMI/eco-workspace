@@ -57,7 +57,6 @@ function unmount(path, callback) {
 
 function listDSUs(path, callback) {
     securityContext.getMainDSU((err, mainDSU) => {
-        debugger;
         if (err) {
             return callback(err);
         }
@@ -71,9 +70,7 @@ function loadDSU(keySSI, callback) {
 }
 
 function readFile(path, callback) {
-    debugger
     securityContext.getMainDSU((err, mainDSU) => {
-        debugger
         if (err) {
             return callback(err);
         }

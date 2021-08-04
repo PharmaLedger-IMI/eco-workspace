@@ -34,7 +34,7 @@ export default class HomeController extends WebcController {
         this._attachHandlerTrialClick();
         this._attachHandlerNotifications();
         this._attachHandlerSites();
-        this._attachHandlerVisits ();
+        this._attachHandlerVisits();
     }
 
     _initTrials() {
@@ -73,9 +73,9 @@ export default class HomeController extends WebcController {
                     break;
                 }
 
-                case 'schedule-visit' :{
+                case 'schedule-visit' : {
                     this.saveNotification(data);
-                    this._saveVisit (data.message.useCaseSpecifics.visit);
+                    this._saveVisit(data.message.useCaseSpecifics.visit);
                 }
                 case 'update-tpNumber': {
 
@@ -113,9 +113,14 @@ export default class HomeController extends WebcController {
         });
     }
 
-    _attachHandlerVisits(){
+    _attachHandlerVisits() {
+        debugger
         this.onTagClick('home:visits', (event) => {
-            this.navigateToPageTag('visits-procedures');
+            this.navigateToPageTag('visits-procedures', {
+                tpDid: this.model.tp.did,
+                tpUid: this.model.tp.uid
+            });
+            ;
         });
     }
 
@@ -129,7 +134,7 @@ export default class HomeController extends WebcController {
             consent.foreignConsentId = consent.keySSI;
 
             consent.tpDid = did;
-            let eco= await this.EconsentsStatusRepository.createAsync(consent);
+            let eco = await this.EconsentsStatusRepository.createAsync(consent);
 
         }
     }
@@ -156,7 +161,7 @@ export default class HomeController extends WebcController {
 
     async _updateTrialParticipant(data) {
 
-        this.model.tp.number =  data.number;
+        this.model.tp.number = data.number;
         await this.TrialParticipantRepository.updateAsync(this.model.tp.uid, this.model.tp);
 
     }
@@ -178,7 +183,7 @@ export default class HomeController extends WebcController {
 
     async mountTrial(data) {
 
-        let  trial = await this.TrialService.mountTrialAsync(data.message.ssi);
+        let trial = await this.TrialService.mountTrialAsync(data.message.ssi);
         this.model.trials?.push(trial);
         this.TrialService.getEconsents(data.message.ssi, (err, consents) => {
             if (err) {
@@ -190,17 +195,15 @@ export default class HomeController extends WebcController {
     }
 
 
+    _saveVisit(visitToBeAdded) {
 
-    _saveVisit (visitToBeAdded){
-        debugger;
         this.VisitsAndProceduresRepository.createAsync(visitToBeAdded, (err, visitCreated) => {
             if (err) {
                 return console.error(err);
             }
             this.model.tp.hasNewVisits = true;
-            this.TrialParticipantRepository.update(this.model.tp.uid, this.model.tp, (err,data)=>{
-                if(err)
-                {
+            this.TrialParticipantRepository.update(this.model.tp.uid, this.model.tp, (err, data) => {
+                if (err) {
                     console.log(err);
                 }
             })

@@ -1,4 +1,4 @@
-<link href="/assets/css/pages/trial.css" rel="stylesheet">
+<link href="/assets/css/pages/visits.css" rel="stylesheet">
 <webc-container controller="VisitsAndProceduresController">
     <div class="container-child">
         <div class=header-title>
@@ -12,19 +12,29 @@
 
                 <div class="layout-content">
                     <div>
+                        <strong>Procedure Name: </strong>
                         {{@name}}
                     </div>
                     <div>
+                        <strong>Period: </strong>
                         {{@period}} {{@unit}}
                     </div>
 
                     <div>
-                        <psk-echo value="Date: "></psk-echo>
+                        <strong>Date: </strong>
                         {{@date}}
                     </div>
                     <div>
+                        <strong>Accepted: </strong>
+                        {{@accepted}}
+                    </div>
+                    <div>
+                        <strong>Declined: </strong>
+                        {{@declined}}
+                    </div>
+                    <div>
                         <button class="long-button green" data="@uid" data-tag="visit:confirm"
-                        >Withdraw
+                        >Accept
                         </button>
                     </div>
                     <div>
