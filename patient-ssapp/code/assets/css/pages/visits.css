@@ -168,3 +168,11 @@
     width: 90%;
     margin-left: 5%;
 }
+
+.long-button  red{
+    color: red !important;
+}
+
+.long-button  green{
+    color: green !important;
+}

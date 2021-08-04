@@ -1,5 +1,5 @@
 <link href="/assets/css/pages/trial.css" rel="stylesheet">
-<webc-container controller="VisitsAndProceduresController">
+<webc-container controller="VisitDetailsController">
     <div class="container-child">
         <div class=header-title>
             <psk-button-link class="go-back-link" event-name="go-back" icon="arrow-left"></psk-button-link>
@@ -21,16 +21,6 @@
                     <div>
                         <psk-echo value="Date: "></psk-echo>
                         {{@date}}
-                    </div>
-                    <div>
-                        <button class="long-button green" data="@uid" data-tag="visit:confirm"
-                        >Withdraw
-                        </button>
-                    </div>
-                    <div>
-                        <button class="long-button red" data="@uid" data-tag="visit:decline"
-                        >Decline
-                        </button>
                     </div>
                 </div>
                 <div>

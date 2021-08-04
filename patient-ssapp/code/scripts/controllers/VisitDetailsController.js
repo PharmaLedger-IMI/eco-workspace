@@ -14,24 +14,24 @@ let getInitModel = () => {
     };
 };
 
-export default class VisitsAndProceduresController extends WebcController {
+export default class VisitDetailsController extends WebcController {
     constructor(...props) {
         super(...props);
         this.setModel({
             ...getInitModel(),
             ...this.history.win.history.state.state,
-            visits: []
+
         });
         ;
         this._initServices(this.DSUStorage);
         this._initHandlers();
-        this._initVisits();
+        this._initVisit();
     }
 
     _initHandlers() {
         this._attachHandlerBack();
         this._attachHandlerDetails();
-        this._attachHandlerDecline();
+        this._attachHandlerSetDate();
     }
 
     _initServices(DSUStorage) {
@@ -40,24 +40,15 @@ export default class VisitsAndProceduresController extends WebcController {
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
     }
 
-    async _initVisits() {
+    async _initVisit() {
 
-        this.model.visits = await this.VisitsAndProceduresRepository.findAllAsync();
-        if (this.model.visits && this.model.visits.length > 0) {
-            this.model.tp = await this.TrialParticipantRepository.findByAsync(this.model.tpUid);
-            if (!this.model.tp.visits || this.model.tp.visits.length < 1) {
-                this.model.tp.visits = this.model.visits;
-                this._updateTrialParticipant();
-                return;
-            } else {
-                this.model.visits.forEach(visit => {
+         this.VisitsAndProceduresRepository.findBy(this.model.visitUID, (err,data)=>{
+             if(err){
+                 console.log(err);
+             }
+             this.model.visit = data;
+         });
 
-                    let visitTp = this.model.tp.visits.filter(v => v.uid === visit.uid)[0];
-                    visit.confirmed = visitTp.confirmed;
-                    visit.date = visitTp.date;
-                })
-            }
-        }
 
     }
 
@@ -99,47 +90,41 @@ export default class VisitsAndProceduresController extends WebcController {
         });
     }
 
-    _attachHandlerDecline (){
-        this.onTagEvent('visit:decline', 'click', (model, target, event) => {
+    _attachHandlerSetDate() {
+        this.onTagEvent('procedure:setDate', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
             this.showModalFromTemplate(
-                'confirmation-alert',
+                'set-procedure-date',
                 (event) => {
-                    const response = event.detail;
-                    if (response) {
-                        this.model.status.actions.push({name: 'signed'});
-                        this.model.accepted = true;
-                        this.model.declined = false;
-                        this._saveVisit (model)
-                        this.sendMessageToHCO(model, 'Visit Accepted');
-                    }
+
+                    let date = new Date();
+                    date.setTime(event.detail);
+                    model.date = date.toISOString(),
+                        this._updateVisit(model);
+                    this._updateTrialParticipantVisit(model);
                 },
                 (event) => {
                     const response = event.detail;
-                },
+                }
+            ),
                 {
-                    controller: 'ConfirmationAlertController',
+                    controller: 'SetProcedureDateController',
                     disableExpanding: false,
                     disableBackdropClosing: false,
-                    question: 'Are you sure you want to sign this ecosent ? ',
-                    title: 'Sign Econsent',
-                });
+                    title: 'Set Procedure Date',
+                };
         });
     }
-
-
 
     _updateVisit(visit) {
         let objIndex = this.model.visits.findIndex((obj => obj.uid == visit.uid));
         this.model.visits[objIndex] = visit;
     }
 
-    sendMessageToHCO(visit,message) {
+    sendMessageToPatient(visit) {
 
-        debugger
-        //TODO : add a visit id or key that comes from sponsor
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, {
+        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
             operation: Constants.MESSAGES.HCO.COMMUNICATION.TYPE.SCHEDULE_VISIT,
             ssi: visit.trialSSI,
             useCaseSpecifics: {
@@ -151,22 +136,11 @@ export default class VisitsAndProceduresController extends WebcController {
                     period: visit.period,
                     consentSSI: visit.consentSSI,
                     date: visit.date,
-                    accepted:visit.accepted,
-                    declined: visit.declined
                 },
             },
-            shortDescription: message ,
+            shortDescription: Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.SCHEDULE_VISIT ,
         });
     }
 
-    _saveVisit (visitToBeAdded){
-        debugger;
 
-        this.VisitsAndProceduresRepository.update(visitToBeAdded.uid, visitToBeAdded, (err, visitCreated) => {
-            if (err) {
-                return console.error(err);
-            }
-
-        })
-    }
 }
