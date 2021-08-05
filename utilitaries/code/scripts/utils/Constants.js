@@ -2,7 +2,8 @@ const MESSAGES = {
     HCO: {
         COMMUNICATION: {
             SPONSOR: {
-                SIGN_ECONSENT: 'HCO signed econsent'
+                SIGN_ECONSENT: 'HCO signed econsent',
+                VISIT_CONFIRMED : 'HCO confirmed a visit'
             },
             PATIENT: {
                 ADD_TO_TRIAL: 'You were added to trial',
@@ -14,7 +15,8 @@ const MESSAGES = {
             TYPE :{
                 ADD_TO_TRIAL : 'add-to-trial',
                 SCHEDULE_VISIT: 'schedule-visit',
-                VISIT_RESPONSE: 'visit-response'
+                VISIT_RESPONSE: 'visit-response',
+                VISIT_CONFIRMED: 'visit-confirmed'
             }
         },
         FEEDBACK: {

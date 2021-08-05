@@ -32,6 +32,7 @@ export default class VisitsAndProceduresController extends WebcController {
         this._attachHandlerBack();
         this._attachHandlerDetails();
         this._attachHandlerSetDate();
+        this._attachHandlerConfirm();
     }
 
     _initServices(DSUStorage) {
@@ -54,6 +55,8 @@ export default class VisitsAndProceduresController extends WebcController {
 
                     let visitTp = this.model.tp.visits.filter(v => v.uid === visit.uid)[0];
                     visit.confirmed = visitTp.confirmed;
+                    visit.accepted = visitTp.accepted;
+                    visit.declined = visitTp.declined;
                     visit.date = visitTp.date;
                 })
             }
@@ -151,5 +154,54 @@ export default class VisitsAndProceduresController extends WebcController {
         });
     }
 
+    _attachHandlerConfirm() {
+        this.onTagEvent('visit:confirm', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.showModalFromTemplate(
+                'confirmation-alert',
+                (event) => {
+                    const response = event.detail;
+                    if (response) {
+                        model.confirmed =true;
+                        this._updateVisit(model);
+                        this.sendMessageToSponsor(model);
+                    }
+                },
+                (event) => {
+                    const response = event.detail;
+                },
+                {
+                    controller: 'ConfirmationAlertController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false,
+                    question: 'Are you sure you want to confirm this visit, The patient attended to visit ? ',
+                    title: 'Confirm visit',
+                });
+        });
+    }
+
+    sendMessageToSponsor(visit) {
+
+
+        const currentDate = new Date();
+        let sendObject = {
+            operation: Constants.MESSAGES.HCO.COMMUNICATION.TYPE.VISIT_CONFIRMED,
+            ssi: this.model.econsentSSI,
+            useCaseSpecifics: {
+                trialSSI: visit.trialSSI,
+                tpNumber: this.model.tp.number,
+                tpDid: this.model.tp.did,
+
+                visit: {
+                    id: visit.id,
+                    date: DateTimeService.getCurrentDateAsISOString(),
+                    toShowDate: currentDate.toLocaleDateString(),
+                },
+            },
+            shortDescription: Constants.MESSAGES.HCO.COMMUNICATION.SPONSOR.VISIT_CONFIRMED,
+        };
+        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, sendObject);
+    }
 
 }

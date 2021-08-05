@@ -50,6 +50,7 @@ export default class NotificationsController extends WebcController {
             this.model.notTypes.trialUpdates = this.model.notifications.filter(not => not.type === Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES)?.length > 0;
             this.model.notTypes.withdraws = this.model.notifications.filter(not => not.type === Constants.NOTIFICATIONS_TYPE.WITHDRAWS)?.length > 0;
             this.model.notTypes.consentUpdates = this.model.notifications.filter(not => not.type === Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES)?.length > 0;
+            this.model.notTypes.milestones = this.model.notifications.filter(not => not.type === Constants.NOTIFICATIONS_TYPE.MILESTONES_REMINDERS)?.length > 0;
         });
     }
 

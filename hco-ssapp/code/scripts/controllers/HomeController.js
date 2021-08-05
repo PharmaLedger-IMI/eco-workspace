@@ -141,7 +141,8 @@ export default class HomeController extends WebcController {
 
                 case Constants.MESSAGES.HCO.COMMUNICATION.TYPE.VISIT_RESPONSE: {
 
-                    this._saveNotification(data.message, data.shortDescription, 'view visits', Constants.NOTIFICATIONS_TYPE.MILESTONES_REMINDERS);
+
+
                     this._updateVisit(data.message);
                     break;
                 }
@@ -379,6 +380,10 @@ export default class HomeController extends WebcController {
                 if (err) {
                     console.log(err);
                 }
+
+                let notification = message;
+                notification.tpUid = data.uid;
+                this._saveNotification(notification, message.shortDescription, 'view visits', Constants.NOTIFICATIONS_TYPE.MILESTONES_REMINDERS);
             })
 
 

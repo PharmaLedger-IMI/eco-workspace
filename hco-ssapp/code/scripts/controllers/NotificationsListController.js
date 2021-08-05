@@ -1,4 +1,5 @@
 import NotificationsRepository from "../repositories/NotificationsRepository.js";
+
 const {WebcController} = WebCardinal.controllers;
 
 let getInitModel = () => {
@@ -15,10 +16,10 @@ export default class NotificationsListController extends WebcController {
         this.model.notificationType = this.history.win.history.state.state.notType;
         this._initServices(this.DSUStorage);
         this._initNotifications();
-        this._initHandlers ();
+        this._initHandlers();
     }
 
-    _initHandlers (){
+    _initHandlers() {
         this._attachHandlerBack();
         this._attachHandlerTrialParticipants();
     }
@@ -35,8 +36,8 @@ export default class NotificationsListController extends WebcController {
                 return console.log(err);
             }
 
-            this.model.notifications = data.filter (not => not.type.trim() === this.model.notificationType.trim() )
-           });
+            this.model.notifications = data.filter(not => not.type.trim() === this.model.notificationType.trim())
+        });
     }
 
     _attachHandlerBack() {
@@ -52,11 +53,20 @@ export default class NotificationsListController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
 
-            if (model.recommendedAction === 'view trial'){
+            if (model.recommendedAction === 'view trial') {
                 this.navigateToPageTag('trial-participants', model.ssi);
             }
-            if (model.recommendedAction === 'view trial participants'){
+            if (model.recommendedAction === 'view trial participants') {
                 this.navigateToPageTag('trial-participants', model.ssi);
+            }
+
+            if (model.recommendedAction === 'view visits') {
+
+                debugger;
+                this.navigateToPageTag('visits-procedures', {
+                    trialSSI: this.model.ssi,
+                    tpUid: this.model.tpUid,
+                });
             }
 
         });

@@ -51,13 +51,20 @@
                             <psk-label slot="true" class="table-cell">@tsAcceptance</psk-label>
                             <psk-label slot="false" class="table-cell">Required</psk-label>
                         </div>
-                        <div data-if="@confirmed">
-                            <psk-label slot="true" class="table-cell">Confirmed</psk-label>
-                            <button slot="false" class="link-button view-adjust-margin" data="@id"
-                                    data-tag="visit:setConfirmation">Confirm TS
-                            </button>
+                        <div class="confirmation">
+                            <div data-if="@confirmed">
+                                <psk-label slot="true" class="table-cell">Confirmed</psk-label>
+                                <button slot="false" class="link-button view-adjust-margin" data="@id"
+                                        data-tag="visit:confirm">Confirm TS
+                                </button>
+                            </div>
+                            <div class="confirmation-item" data-if="@accepted">
+                                <div slot="true" class="box green"></div>
+                            </div>
+                            <div class="confirmation-item" data-if="@declined">
+                                <div slot="true" class="box red"></div>
+                            </div>
                         </div>
-
                     </psk-layout>
 
                 </div>
