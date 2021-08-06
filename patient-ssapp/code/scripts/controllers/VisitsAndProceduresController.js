@@ -44,7 +44,7 @@ export default class VisitsAndProceduresController extends WebcController {
     async _initVisits() {
 
         this.model.visits = await this.VisitsAndProceduresRepository.findAllAsync();
-        debugger
+
         if (this.model.visits && this.model.visits.length > 0) {
             let tps = await this.TrialParticipantRepository.findAllAsync();
             this.model.tp = tps[0];
@@ -70,7 +70,6 @@ export default class VisitsAndProceduresController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
 
-            debugger;
             this.navigateToPageTag('econsent-sign', {
                 trialSSI: model.trialSSI,
                 econsentSSI: model.consentSSI,

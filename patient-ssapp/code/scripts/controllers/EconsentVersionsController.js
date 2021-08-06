@@ -1,41 +1,78 @@
 import TrialService from '../services/TrialService.js';
+import DateTimeService from "../services/DateTimeService.js";
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 
-const { WebcController } = WebCardinal.controllers;
 
+const {WebcController} = WebCardinal.controllers;
+let getInitModel = () => {
+    return {
+        econsent: {},
+        versions: [],
+    };
+};
 export default class EconsentVersionsController extends WebcController {
     constructor(...props) {
         super(...props);
-        this.setModel({});
-        this._initServices(this.DSUStorage);
-        this.model.econsent = {};
-        this.model.historyData = this.history.win.history.state.state;
-        this.model.status = { actions: [] };
+
         this.model.versions = [];
-        this._initEconsent();
+        this.setModel({});
+        let receivedObject = this.history.win.history.state.state;
+        this.model.trialSSI = receivedObject.trialSSI;
+        this.model.econsentSSI = receivedObject.econsentSSI;
+        this.model.tpDid = receivedObject.tpDid;
+        this._initServices(this.DSUStorage);
+        this._initHandlers();
+        this._initTrialAndConsent();
     }
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
+
     }
 
+    _initHandlers() {
+        this._attachHandlerBack();
+    }
 
-    _initEconsent() {
-        this.TrialService.getEconsent(this.model.historyData.trialuid, this.model.historyData.ecoId, (err, econsent) => {
+    _initTrialAndConsent() {
+        this.TrialService.getTrial(this.model.trialSSI, (err, trial) => {
             if (err) {
                 return console.log(err);
             }
-            this.model.econsent = econsent;
-            this.model.versions = econsent.versions;
+            this.model.trial = trial;
+        });
+        this.TrialService.getEconsent(this.model.trialSSI, this.model.econsentSSI, (err, data) => {
+            if (err) {
+                return console.log(err);
+            }
+            this.model.econsent = data;
 
-            this.EconsentsStatusRepository.filter(`foreignConsentId == ${this.model.historyData.ecoId}`, 'ascending', 30,(err,data)=>{
-                if (err) {
-                    return console.error(err);
-                }
-                console.log(data);
-            });
-         });
+            this.model.versions = data.versions;
+        });
     }
 
+
+    _attachHandlerBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
+        });
+    }
+
+    _attachHandlerView() {
+        this.onTagEvent('consent:view', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            this.navigateToPageTag('econsent-sign', {
+                trialSSI: this.model.trialSSI,
+                econsentSSI: model.econsentSSI,
+                ecoVersion: model.lastVersion,
+                tpDid: this.model.tp.did,
+                controlsShouldBeVisible: false
+            });
+        });
+    }
 }

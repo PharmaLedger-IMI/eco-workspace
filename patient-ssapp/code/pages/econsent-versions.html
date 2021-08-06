@@ -5,39 +5,30 @@
             <psk-button-link class="go-back-link" event-name="go-back" icon="arrow-left"></psk-button-link>
             <psk-label class="scan-error-title" label="Consent History"></psk-label>
         </div>
-        <div class="padding-sides" data-for="@versions">
-
-            <div class="dispay-flex date-div justify-content-space-between" data="@keySSI"
-                 data-tag="go-to-econsent">
-                <div class="dispay-flex">
-
-
-                    <div class="left-image padding-image">
-                        <psk-img class="left-image" height='40'
-                                 src="assets/images/document_black.png" width='40'></psk-img>
-                    </div>
+        <div  data-for="@versions">
+            <psk-layout columns="3" template-columns="10% 50% 40%"
+                        class="justify-content-center align-items-center table-row"
+                       >
+                <div>
+                    <psk-img class="left-image" height='40'
+                             src="assets/images/document_black.png" width='40'></psk-img>
+                </div>
+                <div class="layout-content">
+                    <strong>
+                        {{@version}}
+                    </strong>
                     <div>
-                        <div>
-                            <strong class="dispay-flex line-text">
-                                {{@name}}
-                                {{@type}}
-                            </strong>
-                        </div>
-                        <div>
-                            <strong class="line-text">
-                                <psk-echo value="Version: "></psk-echo>
-                                {{@version}}
-                            </strong>
-                        </div>
-                        <div>
-                            <strong class="line-text">
-                                <psk-echo value="Version Date: "></psk-echo>
-                                {{@versionDate}}
-                            </strong>
-                        </div>
+                       {{@versionDateAsString}}
+                    </div>
+                    <div >
+                        ({{@type}})
                     </div>
                 </div>
+                <div class="layout-content">
+
+                </div>
+            </psk-layout>
             </div>
-        </div>
+
     </div>
 </webc-container>

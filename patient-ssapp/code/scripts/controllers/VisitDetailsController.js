@@ -80,7 +80,6 @@ export default class VisitDetailsController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
 
-            debugger;
             this.navigateToPageTag('econsent-sign', {
                 trialSSI: model.trialSSI,
                 econsentSSI: model.consentSSI,

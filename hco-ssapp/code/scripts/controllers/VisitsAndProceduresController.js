@@ -57,6 +57,16 @@ export default class VisitsAndProceduresController extends WebcController {
                     visit.confirmed = visitTp.confirmed;
                     visit.accepted = visitTp.accepted;
                     visit.declined = visitTp.declined;
+                    if (!visit.accepted &&!visit.declined){
+                        visit.tsAcceptance = 'Required';
+                    }else {
+                        if(visit.accepted){
+                            visit.tsAcceptance = 'Agreed';
+                        }
+                        else{
+                            visit.tsAcceptance = 'Declined';
+                        }
+                    }
                     visit.date = visitTp.date;
                 })
             }

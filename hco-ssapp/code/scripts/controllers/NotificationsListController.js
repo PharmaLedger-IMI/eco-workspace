@@ -62,7 +62,6 @@ export default class NotificationsListController extends WebcController {
 
             if (model.recommendedAction === 'view visits') {
 
-                debugger;
                 this.navigateToPageTag('visits-procedures', {
                     trialSSI: this.model.ssi,
                     tpUid: this.model.tpUid,

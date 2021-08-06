@@ -141,8 +141,6 @@ export default class HomeController extends WebcController {
 
                 case Constants.MESSAGES.HCO.COMMUNICATION.TYPE.VISIT_RESPONSE: {
 
-
-
                     this._updateVisit(data.message);
                     break;
                 }
@@ -372,7 +370,6 @@ export default class HomeController extends WebcController {
                 console.log(err);
             }
             let tp = tps[0];
-            debugger;
             let objIndex = tp?.visits?.findIndex((obj => obj.id == message.useCaseSpecifics.visit.id));
             tp.visits[objIndex].accepted = message.useCaseSpecifics.visit.accepted;
             tp.visits[objIndex].declined = message.useCaseSpecifics.visit.declined;

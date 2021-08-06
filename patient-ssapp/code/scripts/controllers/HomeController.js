@@ -114,7 +114,7 @@ export default class HomeController extends WebcController {
     }
 
     _attachHandlerVisits() {
-        debugger
+
         this.onTagClick('home:visits', (event) => {
             this.navigateToPageTag('visits-procedures', {
                 tpDid: this.model.tp.did,
