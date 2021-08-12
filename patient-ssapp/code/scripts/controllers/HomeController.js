@@ -72,13 +72,15 @@ export default class HomeController extends WebcController {
                     this.mountTrial(data);
                     break;
                 }
-
                 case 'schedule-visit' : {
                     this.saveNotification(data);
                     this._saveVisit(data.message.useCaseSpecifics.visit);
                 }
+                case 'update-visit' : {
+                    this.saveNotification(data);
+                    this._updateVisit(data.message.useCaseSpecifics.visit);
+                }
                 case 'update-tpNumber': {
-
                     this.saveNotification(data);
                     this._updateTrialParticipant(data.message.useCaseSpecifics);
                     break;
@@ -196,7 +198,6 @@ export default class HomeController extends WebcController {
 
 
     _saveVisit(visitToBeAdded) {
-
         this.VisitsAndProceduresRepository.createAsync(visitToBeAdded, (err, visitCreated) => {
             if (err) {
                 return console.error(err);
@@ -208,6 +209,19 @@ export default class HomeController extends WebcController {
                 }
             })
 
+        })
+    }
+
+    _updateVisit(visitToBeUpdated) {
+        this.VisitsAndProceduresRepository.filter(`id == ${visitToBeUpdated.id}`, 'ascending', 1, (err, visits) => {
+            if (err || visits.length === 0) {
+                return;
+            }
+            this.VisitsAndProceduresRepository.update(visits[0].pk, visitToBeUpdated, (err, updatedVisit) => {
+                if (err) {
+                    return err;
+                }
+            })
         })
     }
 

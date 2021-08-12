@@ -176,3 +176,61 @@
 .long-button  green{
     color: green !important;
 }
+
+.main-visit {
+    margin: 10px 0px 40px 0px;
+}
+
+.title {
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #00345B;
+}
+
+.subtitle-date {
+    display: flex;
+}
+
+.subtitle-status {
+    text-align: center;
+    margin: 10px;
+}
+
+.img-div {
+    margin-right: 15px;
+}
+
+.paragraph {
+    margin-bottom: 15px;
+}
+
+.date-text {
+    font-size: 25px;
+}
+
+.text-block {
+    color: #00345B;
+}
+
+.centred-button,
+.title,
+.layout-content
+{
+    color: #00345B;
+}
+
+.long-button {
+    text-align: center;
+    padding-left: 0px !important;
+    margin-left: 0px !important;
+}
+
+.green-row {
+    color: #6b7879;
+}
+
+.display-flex-row {
+    display: flex;
+}

@@ -1,12 +1,12 @@
-import NotificationsRepository from "../repositories/VisitsAndProceduresRepository.js";
-
-const {WebcController} = WebCardinal.controllers;
 import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
 import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
 import DateTimeService from '../services/DateTimeService.js';
 
 import CommunicationService from "../services/CommunicationService.js";
 import Constants from "../utils/Constants.js";
+import TrialService from "../services/TrialService.js";
+
+const {WebcController} = WebCardinal.controllers;
 
 let getInitModel = () => {
     return {
@@ -32,56 +32,68 @@ export default class VisitsAndProceduresController extends WebcController {
         this._attachHandlerBack();
         this._attachHandlerDetails();
         this._attachHandlerSetDate();
+        this._attachHandlerEditDate();
         this._attachHandlerConfirm();
     }
 
     _initServices(DSUStorage) {
+        this.TrialService = new TrialService(DSUStorage);
         this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
     }
 
     async _initVisits() {
-
-        this.model.visits = await this.VisitsAndProceduresRepository.findAllAsync();
-        if (this.model.visits && this.model.visits.length > 0) {
-            this.model.tp = await this.TrialParticipantRepository.findByAsync(this.model.tpUid);
-            if (!this.model.tp.visits || this.model.tp.visits.length < 1) {
-                this.model.tp.visits = this.model.visits;
-                this._updateTrialParticipant();
-                return;
-            } else {
-                this.model.visits.forEach(visit => {
-
-                    let visitTp = this.model.tp.visits.filter(v => v.uid === visit.uid)[0];
-                    visit.confirmed = visitTp.confirmed;
-                    visit.accepted = visitTp.accepted;
-                    visit.declined = visitTp.declined;
-                    if (!visit.accepted &&!visit.declined){
-                        visit.tsAcceptance = 'Required';
-                    }else {
-                        if(visit.accepted){
-                            visit.tsAcceptance = 'Agreed';
-                        }
-                        else{
-                            visit.tsAcceptance = 'Declined';
-                        }
-                    }
-                    visit.date = visitTp.date;
-                })
+        this.TrialService.getEconsents(this.model.trialSSI, async (err, econsents) => {
+            if (err) {
+                return err;
             }
-        }
+            let visits = await this.VisitsAndProceduresRepository.findAllAsync();
+            this.model.visits = visits.map(visit => {
+                return {
+                    ...visit,
+                    econsent: econsents[0]
+                }
+            });
+            if (this.model.visits && this.model.visits.length > 0) {
+                this.model.tp = await this.TrialParticipantRepository.findByAsync(this.model.tpUid);
+                if (!this.model.tp.visits || this.model.tp.visits.length < 1) {
+                    this.model.tp.visits = this.model.visits;
+                    this._updateTrialParticipant();
+                    return;
+                } else {
+                    this.model.visits.forEach(visit => {
 
+                        let visitTp = this.model.tp.visits.filter(v => v.uid === visit.uid)[0];
+                        visit.confirmed = visitTp.confirmed;
+                        visit.accepted = visitTp.accepted;
+                        visit.declined = visitTp.declined;
+                        if (!visit.accepted && !visit.declined) {
+                            visit.tsAcceptance = 'Required';
+                        } else {
+                            if (visit.accepted) {
+                                visit.tsAcceptance = 'Agreed';
+                            } else {
+                                visit.tsAcceptance = 'Declined';
+                            }
+                        }
+                        visit.date = visitTp.date;
+                        visit.toShowDate = DateTimeService.convertStringToLocaleDate(visitTp.date);
+                    })
+                }
+            }
+        });
     }
 
-    _updateTrialParticipantVisit(visit) {
-        if (!this.model.tp.visits)
+    _updateTrialParticipantVisit(visit, operation) {
+        if (!this.model.tp.visits) {
             this.model.tp.visits = this.visits;
+        }
 
         let objIndex = this.model.tp.visits.findIndex((obj => obj.uid == visit.uid));
         this.model.tp.visits[objIndex] = visit;
         this.TrialParticipantRepository.updateAsync(this.model.tp.uid, this.model.tp);
-        this.sendMessageToPatient(visit);
+        this.sendMessageToPatient(visit, operation);
     }
 
     _updateTrialParticipant() {
@@ -112,18 +124,26 @@ export default class VisitsAndProceduresController extends WebcController {
     }
 
     _attachHandlerSetDate() {
-        this.onTagEvent('procedure:setDate', 'click', (model, target, event) => {
+        this._attachHandlerOperationDate('Set Procedure Date', 'procedure:setDate', Constants.MESSAGES.HCO.COMMUNICATION.TYPE.SCHEDULE_VISIT)
+    }
+
+    _attachHandlerEditDate() {
+        this._attachHandlerOperationDate('Edit Procedure Date', 'procedure:editDate', Constants.MESSAGES.HCO.COMMUNICATION.TYPE.UPDATE_VISIT)
+    }
+
+    _attachHandlerOperationDate(title, eventName, operation) {
+        this.onTagEvent(eventName, 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
             this.showModalFromTemplate(
                 'set-procedure-date',
                 (event) => {
-
                     let date = new Date();
                     date.setTime(event.detail);
-                    model.date = date.toISOString(),
-                        this._updateVisit(model);
-                    this._updateTrialParticipantVisit(model);
+                    model.date = date.toISOString();
+                    model.toShowDate = DateTimeService.convertStringToLocaleDate(date);
+                    this._updateVisit(model);
+                    this._updateTrialParticipantVisit(model, operation);
                 },
                 (event) => {
                     const response = event.detail;
@@ -132,8 +152,7 @@ export default class VisitsAndProceduresController extends WebcController {
                 {
                     controller: 'SetProcedureDateController',
                     disableExpanding: false,
-                    disableBackdropClosing: false,
-                    title: 'Set Procedure Date',
+                    disableBackdropClosing: false
                 };
         });
     }
@@ -143,10 +162,9 @@ export default class VisitsAndProceduresController extends WebcController {
         this.model.visits[objIndex] = visit;
     }
 
-    sendMessageToPatient(visit) {
-
+    sendMessageToPatient(visit, operation) {
         this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
-            operation: Constants.MESSAGES.HCO.COMMUNICATION.TYPE.SCHEDULE_VISIT,
+            operation: operation,
             ssi: visit.trialSSI,
             useCaseSpecifics: {
                 tpDid: this.model.tp.did,
@@ -157,6 +175,7 @@ export default class VisitsAndProceduresController extends WebcController {
                     period: visit.period,
                     consentSSI: visit.consentSSI,
                     date: visit.date,
+                    unit: visit.unit,
                     id: visit.id
                 },
             },
@@ -173,7 +192,7 @@ export default class VisitsAndProceduresController extends WebcController {
                 (event) => {
                     const response = event.detail;
                     if (response) {
-                        model.confirmed =true;
+                        model.confirmed = true;
                         this._updateVisit(model);
                         this.sendMessageToSponsor(model);
                     }

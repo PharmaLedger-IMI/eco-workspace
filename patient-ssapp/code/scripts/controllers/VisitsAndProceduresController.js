@@ -20,9 +20,15 @@ export default class VisitsAndProceduresController extends WebcController {
         this.setModel({
             ...getInitModel(),
             ...this.history.win.history.state.state,
-            visits: []
+            visits: [],
+            selectedVisit: {
+                active: false,
+                details: 'General details and description of the trial in case it provided by the Sponsor/Site regarding specific particularities of the Trial or general message for Trial Subject',
+                toRemember: 'General details and description of the trial in case it provided by the Sponsor/Site regarding specific particularities of the Trial or general message for Trial Subject',
+                procedures: 'General details and description of the trial in case it provided by the Sponsor/Site regarding specific particularities of the Trial or general message for Trial Subject',
+            }
         });
-        ;
+        // TODO: Change mock data from details, toRemember and procedures.
         this._initServices(this.DSUStorage);
         this._initHandlers();
         this._initVisits();
@@ -31,6 +37,8 @@ export default class VisitsAndProceduresController extends WebcController {
     _initHandlers() {
         this._attachHandlerBack();
         this._attachHandlerDetails();
+        this._attachHandlerAcceptVisit();
+        this._attachHandlerChangeSelectedVisit();
         this._attachHandlerDecline();
         this._attachHandlerConfirm();
     }
@@ -42,15 +50,19 @@ export default class VisitsAndProceduresController extends WebcController {
     }
 
     async _initVisits() {
-
-        this.model.visits = await this.VisitsAndProceduresRepository.findAllAsync();
+        this.model.visits = (await this.VisitsAndProceduresRepository.findAllAsync())
+            .map(visit => {
+                return {
+                    ...visit,
+                    toShowDate: DateTimeService.convertStringToLocaleDate(visit.date)
+                }
+            });
 
         if (this.model.visits && this.model.visits.length > 0) {
             let tps = await this.TrialParticipantRepository.findAllAsync();
             this.model.tp = tps[0];
         }
     }
-
 
     _updateTrialParticipant() {
         this.model.tp.visits = this.model.visits;
@@ -135,6 +147,48 @@ export default class VisitsAndProceduresController extends WebcController {
         });
     }
 
+    _attachHandlerChangeSelectedVisit() {
+        this.onTagEvent('accept-or-decline-visit', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.showModalFromTemplate(
+                'visit-accept-or-decline',
+                (event) => {
+                    let accepted = event.detail.accepted;
+                    model = this.model.selectedVisit.model;
+                    let status = accepted ? 'Accepted' : 'Declined';
+                    model = {
+                        ...model,
+                        accepted: accepted,
+                        declined: !accepted,
+                        status: status
+                    }
+                    this.model.selectedVisit.model = model;
+                    this._updateVisit(model);
+                    if(accepted) {
+                        return this.sendMessageToHCO(model, Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.VISIT_ACCEPTED);
+                    }
+                    this.sendMessageToHCO(model, Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.VISIT_DECLINED);
+                },
+                (event) => {
+                }
+            ),
+                {
+                    controller: 'VisitAcceptOrDeclineController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false
+                };
+        });
+    }
+
+    _attachHandlerAcceptVisit() {
+        this.onTagEvent('go-to-visit', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.model.selectedVisit.active = true;
+            this.model.selectedVisit.model = model;
+        });
+    }
 
     _updateVisit(visit) {
         let objIndex = this.model.visits.findIndex((obj => obj.uid == visit.uid));
@@ -143,7 +197,6 @@ export default class VisitsAndProceduresController extends WebcController {
     }
 
     sendMessageToHCO(visit, message) {
-
         this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, {
             operation: Constants.MESSAGES.HCO.COMMUNICATION.TYPE.VISIT_RESPONSE,
             ssi: visit.trialSSI,
