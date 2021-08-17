@@ -75,3 +75,19 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+.long-button {
+    background-color: white;
+    border: #40A5B2 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    height: 35px;
+    font-weight: bold;
+    text-align: left;
+    font-size: 13px;
+    color: #40A5B2 !important;
+    border-top: 1px solid black!important;
+    padding-left: 30px !important;
+    width: 90%;
+    margin-left: 5%;
+}

@@ -3,11 +3,12 @@
     <div class="container-child">
         <psk-label class="user-name">{{@econsent.name}}</psk-label>
         <psk-label class="tpNumber">{{@econsent.version}} - {{@econsent.versionDate}}</psk-label>
-        <psk-label class="tpNumber">{{@status.latest}}</psk-label>
+        <psk-label class="consent-status">{{@status.latest}}</psk-label>
 
         <div class="patient-button-row-middle">
-            <button class="long-button" data-tag="econsent:read">View, Sign or Download</button>
-            <button class="long-button" data-tag="econsent:versions">Consent History Trial</button>
+            <button class="long-button" data-tag="econsent:read">View and Sign</button>
+            <button class="long-button" data-tag="econsent:download">Download</button>
+            <button class="long-button" data-tag="econsent:versions">Site Consent History</button>
             <button class="long-button" data-tag="econsent:question">Ask Question</button>
         </div>
         <button class="back-button" data-tag="back">Back</button>

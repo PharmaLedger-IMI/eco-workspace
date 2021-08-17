@@ -47,6 +47,7 @@ export default class EconsentController extends WebcController {
             let econsentFilePath = this.getEconsentFilePath(this.model.historyData.trialuid, this.model.historyData.ecoId, ecoVersion, currentVersion.attachment);
             this.fileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
             this.model.econsent.versionDate = new Date(currentVersion.versionDate).toLocaleDateString('sw');
+            this.model.econsent.version = currentVersion.version;
             this._downloadFile();
 
             this.EconsentsStatusRepository.findAll((err, data) => {
