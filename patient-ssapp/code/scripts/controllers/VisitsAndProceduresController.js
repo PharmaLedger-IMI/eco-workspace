@@ -191,9 +191,9 @@ export default class VisitsAndProceduresController extends WebcController {
     }
 
     _updateVisit(visit) {
-        let objIndex = this.model.visits.findIndex((obj => obj.uid == visit.uid));
+        let objIndex = this.model.visits.findIndex((obj => obj.pk == visit.pk));
         this.model.visits[objIndex] = visit;
-        this.VisitsAndProceduresRepository.updateAsync(visit.uid, visit);
+        this.VisitsAndProceduresRepository.updateAsync(visit.pk, visit);
     }
 
     sendMessageToHCO(visit, message) {
@@ -203,14 +203,15 @@ export default class VisitsAndProceduresController extends WebcController {
             useCaseSpecifics: {
                 tpDid: this.model.tp.did,
                 trialSSI: visit.trialSSI,
-
                 visit: {
+                    details: visit.details,
+                    toRemember: visit.toRemember,
+                    procedures: visit.procedures,
                     name: visit.name,
                     period: visit.period,
                     consentSSI: visit.consentSSI,
                     date: visit.date,
-                    accepted: visit.accepted,
-                    declined: visit.declined,
+                    unit: visit.unit,
                     id: visit.id
                 },
             },

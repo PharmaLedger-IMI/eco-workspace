@@ -38,6 +38,12 @@
       "tag": "visits-procedures"
     },
     {
+      "name": "Visit Edit",
+      "path": "/visit-edit",
+      "src": "visit-edit.html",
+      "tag": "visit-edit"
+    },
+    {
       "name": "Create trial",
       "tag": "create-trial",
       "indexed": false

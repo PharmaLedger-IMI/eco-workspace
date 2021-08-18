@@ -7,9 +7,9 @@ let getInitModel = () => {
             name: 'procedureDate',
             required: true,
             placeholder: 'Please set the date ',
-            dataFormat: 'DD MM YYYY',
             value: '',
         },
+
     };
 };
 

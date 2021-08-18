@@ -1,0 +1,80 @@
+<psk-page title="Home">
+    <link rel="stylesheet" href="/assets/css/pages/visit-edit.css">
+    <webc-container controller="VisitEditController">
+
+        <div class="main-background">
+            <div class="front">
+
+                <div class="top-container">
+                    <div class="pharma-logo">
+                        <psk-img class="ed-control-image" src="assets/images/pharmalogo.png"
+                                 height='47' width='110'></psk-img>
+                    </div>
+                    <div>
+                        <psk-label class="main-title" label="Visit Edit"></psk-label>
+                    </div>
+                    <button class="logout-button" data-tag="logout">Logout</button>
+                </div>
+
+                <div class="general-table body">
+                    <div class="display-flex">
+                        Visit date:
+                        <div data-if="@existingVisit.toShowDate">
+                            <div slot="true">
+                                {{@existingVisit.toShowDate}} -
+                                <button class="link-button view-adjust-margin" data="@id"
+                                        data-tag="procedure:editDate">Edit
+                                </button>
+                            </div>
+                            <div slot="false">
+                                DD/MM/YYYY
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>Period: {{@existingVisit.period}} {{@existingVisit.unit}}</div>
+                    <div class="margin-top-10">
+                        <strong>Visit Details</strong>
+                        <div>
+                            <textarea data-view-model="@details"></textarea>
+                        </div>
+                    </div>
+                    <div class="margin-top-10">
+                        <strong>Things to remember</strong>
+                        <div>
+                            <textarea data-view-model="@toRemember"></textarea>
+                        </div>
+                    </div>
+                    <div class="margin-top-10">
+                        <strong>Procedures</strong>
+                        <div>
+                            <textarea data-view-model="@procedures"></textarea>
+                        </div>
+                    </div>
+                    <button class="back-button margin-left-35-percent" data-tag="save">Save</button>
+                </div>
+                <button class="back-button margin-left-35-percent" data-tag="back">Back</button>
+            </div>
+
+            <div class="eu-container">
+                <div class="left-image-eu">
+                    <psk-img class="ed-control-image" src="assets/images/flageu.png"
+                             height='80' width='123'></psk-img>
+                </div>
+                <div class="right-text-eu">
+                    <strong>
+                        <psk-label class="eu-text">This project has received funding from the European Union’s Horizon
+                            2020 research and innovation programme under <br/>
+                            grant agreement No 853992 Copyright <br/>
+                            <span>&copy;  PharmaLedger Consortium 2020 –2023</span>
+                        </psk-label>
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+    </webc-container>
+</psk-page>
+
+

@@ -129,12 +129,16 @@ export default class VisitDetailsController extends WebcController {
             useCaseSpecifics: {
                 tpDid: this.model.tp.did,
                 trialSSI: visit.trialSSI,
-
                 visit: {
+                    details: visit.details,
+                    toRemember: visit.toRemember,
+                    procedures: visit.procedures,
                     name: visit.name,
                     period: visit.period,
                     consentSSI: visit.consentSSI,
                     date: visit.date,
+                    unit: visit.unit,
+                    id: visit.id
                 },
             },
             shortDescription: Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.SCHEDULE_VISIT ,
