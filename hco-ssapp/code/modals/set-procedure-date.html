@@ -5,7 +5,8 @@
 <webc-container class="maxw" controller="SetProcedureDateController">
     <div class="top">
         <div class="line">
-            <psk-date-input class="tp-input" view-model="@procedureDate"></psk-date-input>
+            <label class="datetime-label" for="birthdaytime">{{@procedureDate.label}}</label>
+            <input type="datetime-local" id="birthdaytime" name="birthdaytime" data-view-model="@procedureDate">
         </div>
 
     </div>

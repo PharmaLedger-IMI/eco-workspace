@@ -299,8 +299,7 @@ export default class HomeController extends WebcController {
     }
 
     _saveVisit(message) {
-
-
+        let demoMessage = 'General details and description of the trial in case it provided by the Sponsor/Site regarding specific particularities of the Trial or general message for Trial Subject';
         this.TrialService.getEconsents(message, (err, consents) => {
             if (err) {
                 return console.error(err);
@@ -314,6 +313,9 @@ export default class HomeController extends WebcController {
                         if (item.visits && item.visits.length > 0) {
                             item.visits.forEach(visit => {
                                 let visitToBeAdded = {
+                                    details: demoMessage,
+                                    toRemember: demoMessage,
+                                    procedures: demoMessage,
                                     name: item.name,
                                     consentSSI: item.consent.keySSI,
                                     trialSSI: message,

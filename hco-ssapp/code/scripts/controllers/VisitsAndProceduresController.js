@@ -32,8 +32,8 @@ export default class VisitsAndProceduresController extends WebcController {
         this._attachHandlerBack();
         this._attachHandlerDetails();
         this._attachHandlerSetDate();
-        this._attachHandlerEditDate();
         this._attachHandlerConfirm();
+        this._attachHandlerEditVisit();
     }
 
     _initServices(DSUStorage) {
@@ -78,7 +78,7 @@ export default class VisitsAndProceduresController extends WebcController {
                             }
                         }
                         visit.date = visitTp.date;
-                        visit.toShowDate = DateTimeService.convertStringToLocaleDate(visitTp.date);
+                        visit.toShowDate = DateTimeService.convertStringToLocaleDateTimeString(visitTp.date);
                     })
                 }
             }
@@ -119,31 +119,21 @@ export default class VisitsAndProceduresController extends WebcController {
                 econsentSSI: model.consentSSI,
                 controlsShouldBeVisible: false
             });
-
         });
     }
 
     _attachHandlerSetDate() {
-        this._attachHandlerOperationDate('Set Procedure Date', 'procedure:setDate', Constants.MESSAGES.HCO.COMMUNICATION.TYPE.SCHEDULE_VISIT)
-    }
-
-    _attachHandlerEditDate() {
-        this._attachHandlerOperationDate('Edit Procedure Date', 'procedure:editDate', Constants.MESSAGES.HCO.COMMUNICATION.TYPE.UPDATE_VISIT)
-    }
-
-    _attachHandlerOperationDate(title, eventName, operation) {
-        this.onTagEvent(eventName, 'click', (model, target, event) => {
+        this.onTagEvent('procedure:setDate', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
             this.showModalFromTemplate(
                 'set-procedure-date',
                 (event) => {
-                    let date = new Date();
-                    date.setTime(event.detail);
-                    model.date = date.toISOString();
-                    model.toShowDate = DateTimeService.convertStringToLocaleDate(date);
+                    let date = new Date(event.detail);
+                    model.date = event.detail;
+                    model.toShowDate = DateTimeService.convertStringToLocaleDateTimeString(date);
                     this._updateVisit(model);
-                    this._updateTrialParticipantVisit(model, operation);
+                    this._updateTrialParticipantVisit(model, Constants.MESSAGES.HCO.COMMUNICATION.TYPE.SCHEDULE_VISIT);
                 },
                 (event) => {
                     const response = event.detail;
@@ -171,6 +161,9 @@ export default class VisitsAndProceduresController extends WebcController {
                 trialSSI: visit.trialSSI,
 
                 visit: {
+                    details: visit.details,
+                    toRemember: visit.toRemember,
+                    procedures: visit.procedures,
                     name: visit.name,
                     period: visit.period,
                     consentSSI: visit.consentSSI,
@@ -210,9 +203,18 @@ export default class VisitsAndProceduresController extends WebcController {
         });
     }
 
+    _attachHandlerEditVisit() {
+        this.onTagEvent('visit:edit', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('visit-edit', {
+                tpUid: this.model.tpUid,
+                existingVisit: model
+            });
+        });
+    }
+
     sendMessageToSponsor(visit) {
-
-
         const currentDate = new Date();
         let sendObject = {
             operation: Constants.MESSAGES.HCO.COMMUNICATION.TYPE.VISIT_CONFIRMED,

@@ -15,6 +15,7 @@ const MESSAGES = {
             TYPE :{
                 ADD_TO_TRIAL : 'add-to-trial',
                 SCHEDULE_VISIT: 'schedule-visit',
+                UPDATE_VISIT: 'update-visit',
                 VISIT_RESPONSE: 'visit-response',
                 VISIT_CONFIRMED: 'visit-confirmed'
             }
