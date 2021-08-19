@@ -176,7 +176,6 @@ export default class SignManuallyController extends WebcController {
     async _saveStatus(operation) {
 
         this.EcosentService.saveEconsentFile(this.file, this.model.econsent, (err, data) => {
-            debugger;
             if (err){
                 console.log(err);
             }

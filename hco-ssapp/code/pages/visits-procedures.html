@@ -17,24 +17,54 @@
                 </div>
 
                 <div class="general-table">
-                    <psk-layout columns="8" class="justify-content-center align-items-center table-row">
-                        <psk-label class="table-cell-title">Procedures</psk-label>
-                        <psk-label class="table-cell-title">Period</psk-label>
-                        <psk-label class="table-cell-title">Consent Reference</psk-label>
-                        <psk-label class="table-cell-title">Date</psk-label>
+                    <psk-layout columns="6" class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell-title">Visits</psk-label>
+                        <!--                        <psk-label class="table-cell-title">Procedures</psk-label>-->
+                        <psk-label class="table-cell-title">Predefined Period</psk-label>
+                        <!--                        <psk-label class="table-cell-title">Consent Reference</psk-label>-->
+                        <psk-label class="table-cell-title">Proposed Date</psk-label>
                         <psk-label class="table-cell-title">Ts Acceptance</psk-label>
-                        <psk-label class="table-cell-title">Confirm</psk-label>
+                        <psk-label class="table-cell-title">Planned Date</psk-label>
                         <psk-label class="table-cell-title">Actions</psk-label>
                     </psk-layout>
                     <hr/>
                 </div>
 
                 <div class="general-table body" data-for="@visits">
-                    <psk-layout columns="8"
+                    <psk-layout columns="6"
                                 class="justify-content-center align-items-center table-row">
-                        <psk-label class="table-cell">{{@name}}</psk-label>
+                        <psk-label class="table-cell">#1 Screening</psk-label>
+                        <!--                        <psk-label class="table-cell">{{@name}}</psk-label>-->
                         <psk-label class="table-cell">{{@period}} {{@unit}}</psk-label>
-                        <button class="link-button" data-tag="viewConsent" data="@id">{{@econsent.name}}</button>
+                        <!--                        <button class="link-button" data-tag="viewConsent" data="@id">{{@econsent.name}}</button>-->
+
+                        <div data-if="@date">
+                            <div slot="true">
+                                {{@toShowDate}} -
+                                <button class="link-button view-adjust-margin" data="@id"
+                                        data-tag="procedure:editDate">Edit
+                                </button>
+                            </div>
+                            <div slot="false">
+                                dd/mm/yyyy
+                            </div>
+                        </div>
+
+                        <psk-label class="table-cell">{{@tsAcceptance}}</psk-label>
+                        <!--                        <div class="confirmation">-->
+                        <!--                            <div data-if="@confirmed">-->
+                        <!--                                <div slot="true" class="box green"></div>-->
+                        <!--                                <button slot="false" class="link-button view-adjust-margin" data="@id"-->
+                        <!--                                        data-tag="visit:confirm">Confirm TS-->
+                        <!--                                </button>-->
+                        <!--                            </div>-->
+                        <!--                            <div class="confirmation-item" data-if="@accepted">-->
+                        <!--                                <div slot="true" class="box green"></div>-->
+                        <!--                            </div>-->
+                        <!--                            <div class="confirmation-item" data-if="@declined">-->
+                        <!--                                <div slot="true" class="box red"></div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
 
                         <div data-if="@date">
                             <div slot="true">
@@ -45,28 +75,18 @@
                             </div>
                         </div>
 
-                        <psk-label class="table-cell">{{@tsAcceptance}}</psk-label>
-                        <div class="confirmation">
-                            <div data-if="@confirmed">
-                                <div slot="true" class="box green"></div>
-                                <button slot="false" class="link-button view-adjust-margin" data="@id"
-                                        data-tag="visit:confirm">Confirm TS
-                                </button>
-                            </div>
-                            <div class="confirmation-item" data-if="@accepted">
-                                <div slot="true" class="box green"></div>
-                            </div>
-                            <div class="confirmation-item" data-if="@declined">
-                                <div slot="true" class="box red"></div>
-                            </div>
-                        </div>
-                        <div class="special-row">
-                            <button class="link-button view-adjust-margin" data="@id"
-                                    data-tag="visit:edit">Edit
-                            </button>
+                        <div class="special-row-two">
                             <div data-if="@date">
                                 <button slot="false" class="link-button view-adjust-margin"
                                         data="@id" data-tag="procedure:setDate">Schedule
+                                </button>
+                            </div>
+                            <button class="link-button view-adjust-margin" data="@id"
+                                    data-tag="visit:edit">View
+                            </button>
+                            <div data-if="@confirmed">-->
+                                <button slot="false" class="link-button view-adjust-margin" data="@id"
+                                        data-tag="visit:confirm">Confirm Date
                                 </button>
                             </div>
                         </div>

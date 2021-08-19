@@ -44,6 +44,12 @@
       "tag": "visit-edit"
     },
     {
+      "name": "Visits",
+      "path": "/visits",
+      "src": "visits.html",
+      "tag": "visits"
+    },
+    {
       "name": "Create trial",
       "tag": "create-trial",
       "indexed": false

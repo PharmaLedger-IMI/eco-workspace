@@ -38,6 +38,12 @@
       "tag": "sign-econsent"
     },
     {
+      "name": "ProceduresView",
+      "path": "/procedures-view",
+      "src": "procedures-view.html",
+      "tag": "procedures-view"
+    },
+    {
       "name": "SignManuallyEconsent",
       "path": "/signmanually-econsent",
       "src": "signmanually-econsent.html",

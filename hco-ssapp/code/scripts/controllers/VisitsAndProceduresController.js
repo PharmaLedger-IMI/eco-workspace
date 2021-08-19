@@ -33,6 +33,7 @@ export default class VisitsAndProceduresController extends WebcController {
         this._attachHandlerDetails();
         this._attachHandlerSetDate();
         this._attachHandlerConfirm();
+        this._attachHandlerEditDate();
         this._attachHandlerEditVisit();
     }
 
@@ -49,12 +50,33 @@ export default class VisitsAndProceduresController extends WebcController {
                 return err;
             }
             let visits = await this.VisitsAndProceduresRepository.findAllAsync();
-            this.model.visits = visits.map(visit => {
-                return {
-                    ...visit,
+            // TODO: AUXILIARY METHOD TO COMPUTE VISITS BY PROCEDURES; TO BE DELETED AFTER
+            //  SPONSOR SENDS THE VISITS PROPERLY
+            let proceduresMappedByVisits = {}
+            visits.forEach((visit) => {
+                if (proceduresMappedByVisits[visit.id] === undefined) {
+                    proceduresMappedByVisits[visit.id] = [];
+                }
+                proceduresMappedByVisits[visit.id].push(visit);
+            });
+            let newVisits = [];
+            Object.keys(proceduresMappedByVisits).forEach((key) => {
+
+                let visit = {
+                    ...proceduresMappedByVisits[key][0],
+                    procedures: proceduresMappedByVisits[key],
                     econsent: econsents[0]
                 }
-            });
+                newVisits.push(visit)
+            })
+            this.model.visits = newVisits;
+            // END TODO
+            // this.model.visits = visits.map(visit => {
+            //     return {
+            //         ...visit,
+            //         econsent: econsents[0]
+            //     }
+            // });
             if (this.model.visits && this.model.visits.length > 0) {
                 this.model.tp = await this.TrialParticipantRepository.findByAsync(this.model.tpUid);
                 if (!this.model.tp.visits || this.model.tp.visits.length < 1) {
@@ -147,9 +169,50 @@ export default class VisitsAndProceduresController extends WebcController {
         });
     }
 
+    _attachHandlerEditDate() {
+        this.onTagEvent('procedure:editDate', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.showModalFromTemplate(
+                'set-procedure-date',
+                (event) => {
+                    let visitIndex = model.tp.visits.findIndex(v => v.pk === model.existingVisit.pk)
+                    let date = new Date(event.detail);
+                    model.date = event.detail;
+                    model.tp.visits[visitIndex].date = event.detail;
+                    model.tp.visits[visitIndex].toShowDate = DateTimeService.convertStringToLocaleDateTimeString(date);
+                    this.model.existingVisit.toShowDate = DateTimeService.convertStringToLocaleDateTimeString(date);
+                    this.model.visit = model.tp.visits[visitIndex];
+                    this.TrialParticipantRepository.updateAsync(model.tpUid, model.tp);
+                    this.VisitsAndProceduresRepository.updateAsync(this.model.visit.pk, this.model.visit);
+                    this.sendMessageToPatient(model.tp.visits[visitIndex], Constants.MESSAGES.HCO.COMMUNICATION.TYPE.UPDATE_VISIT);
+                },
+                (event) => {
+                    const response = event.detail;
+                }
+            ),
+                {
+                    controller: 'SetProcedureDateController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false
+                };
+        });
+    }
+
     _updateVisit(visit) {
         let objIndex = this.model.visits.findIndex((obj => obj.uid == visit.uid));
         this.model.visits[objIndex] = visit;
+        let toBeChangedVisits = this.model.visits.filter(v => v.id === visit.id);
+        toBeChangedVisits.forEach(v => {
+            let auxV = {
+                ...v,
+                accepted: v.accepted,
+                declined: v.declined,
+                confirmed: v.confirmed
+            }
+            this.VisitsAndProceduresRepository.updateAsync(v.pk, auxV);
+        })
+
     }
 
     sendMessageToPatient(visit, operation) {
@@ -161,6 +224,7 @@ export default class VisitsAndProceduresController extends WebcController {
                 trialSSI: visit.trialSSI,
 
                 visit: {
+                    confirmed: visit.confirmed,
                     details: visit.details,
                     toRemember: visit.toRemember,
                     procedures: visit.procedures,

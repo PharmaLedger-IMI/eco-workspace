@@ -1,0 +1,23 @@
+.schedule-day {
+    margin-bottom: 20px;
+}
+
+.day-title {
+    margin: 10px 0px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.visits {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.visit {
+    border: 1px solid blueviolet;
+    margin: 0px 10px 10px 0px;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 1px 1px 5px 0px rgb(0 0 255 / 75%);
+    width: 300px;
+}
