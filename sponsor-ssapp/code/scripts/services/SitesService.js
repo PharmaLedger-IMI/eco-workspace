@@ -94,7 +94,7 @@ export default class SitesService extends DSUService {
   }
 
   async updateSiteConsents(data, id, trialKeySSI) {
-    debugger;
+
     const site = await this.getSiteFromDB(id, trialKeySSI);
     const existingConsent = site.consents.find((x) => x.id === data.id);
     if (existingConsent) {

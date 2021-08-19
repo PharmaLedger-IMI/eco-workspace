@@ -14,32 +14,35 @@ export default class EconsentService extends DSUService {
 
     saveEconsent = (data, callback) => this.saveEntity(data, callback);
 
-    saveEconsentFile(file, data, callback) {
-        this.DSUStorage.call('createSSIAndMount', this._getEconsentsPath(data.id), (err, keySSI) => {
-            if (err) {
-                callback(err, undefined);
-                return;
-            }
-            data.KeySSI = keySSI;
-            data.uid = keySSI;
-            this.DSUStorage.uploadFile(
-                this._getEconsentsPath(data.id),
-                file,
-                undefined,
-                (err, keySSI) => {
-                    if (err) {
-                        callback(err, undefined);
-                        return;
-                    }
-                    console.log("The econsent file is saved  ");
+    saveEconsentAsync = (data, path) => this.saveEntityAsync(data, path);
+
+    saveEconsentFile(file, eco, callback) {
+
+
+        this.DSUStorage.uploadFile(
+            this._getEconsentsFilePath(eco.KeySSI, eco.id),
+            file,
+            undefined,
+            (err, keySSI) => {
+                if (err) {
+                    callback(err, undefined);
+                    return;
                 }
-            );
-        })
+                console.log("The econsent file is saved  ");
+                callback(err, data.uid);
+            }
+        );
+
     }
 
     _getEconsentsPath(ecosentID) {
 
         return this.ECONSENT_PATH + '/' + ecosentID;
+    }
+
+    _getEconsentsFilePath(keySSI, ecosentId) {
+
+        return this._getEconsentsPath(ecosentId) + '/' + keySSI + '/';
     }
 
     mountEconsent = (keySSI, callback) => this.mountEntity(keySSI, callback);
