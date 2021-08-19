@@ -6,6 +6,7 @@ import DateTimeService from '../services/DateTimeService.js';
 import FileDownloader from '../utils/FileDownloader.js';
 import Constants from '../utils/Constants.js';
 import SiteService from '../services/SiteService.js';
+import PatientEcosentService from "../services/PatientEcosentService.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -50,6 +51,7 @@ export default class EconsentSignController extends WebcController {
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
         this.SiteService = new SiteService(DSUStorage);
+        ;
     }
 
     _initHandlers() {
@@ -79,9 +81,25 @@ export default class EconsentSignController extends WebcController {
                 this.model.ecoVersion = currentVersion.version;
             }
 
-            let econsentFilePath = this._getEconsentFilePath(this.model.trialSSI, this.model.econsentSSI, this.model.ecoVersion, currentVersion.attachment);
-            this.FileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
-            this._downloadFile();
+            if (this.model.isManuallySigned) {
+
+                this.PatientEcosentService = new PatientEcosentService(this.DSUStorage, this.model.econsent.id);
+                this.PatientEcosentService.mountEcosent(this.model.manualKeySSI, (err, data) => {
+                    if (err) {
+                        return console.log(err);
+                    }
+                    debugger;
+                    let econsentFilePath = this._getEconsentManualFilePath(this.model.econsent.id, data.keySSI, this.model.manualAttachment);
+                    this.FileDownloader = new FileDownloader(econsentFilePath, this.model.manualAttachment);
+                    this._downloadFile();
+                })
+
+            } else {
+                let econsentFilePath = this._getEconsentFilePath(this.model.trialSSI, this.model.econsentSSI, this.model.ecoVersion, currentVersion.attachment);
+                this.FileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
+                this._downloadFile();
+            }
+
         });
     }
 
@@ -97,7 +115,7 @@ export default class EconsentSignController extends WebcController {
                 tpNumber: this.model.trialParticipant.number,
                 tpDid: this.model.trialParticipant.did,
                 version: this.model.ecoVersion,
-                siteSSI: this.model.site.keySSI,
+                siteSSI: this.model.site?.keySSI,
                 action: {
                     name: 'sign',
                     date: DateTimeService.getCurrentDateAsISOString(),
@@ -111,6 +129,10 @@ export default class EconsentSignController extends WebcController {
 
     _getEconsentFilePath(trialSSI, consentSSI, version, fileName) {
         return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version + '/' + fileName;
+    }
+
+    _getEconsentManualFilePath(ecoID, consentSSI, fileName) {
+        return '/econsents/' + ecoID + '/' + consentSSI;
     }
 
     _attachHandlerEconsentSign() {

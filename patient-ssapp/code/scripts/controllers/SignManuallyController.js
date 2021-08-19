@@ -4,6 +4,7 @@ import CommunicationService from '../services/CommunicationService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 import EconsentService from "../services/EconsentService.js";
+import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -35,6 +36,7 @@ export default class SignManuallyController extends WebcController {
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.PATIENT_IDENTITY);
         this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
         this.EcosentService = new EconsentService(DSUStorage);
+        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
     }
 
     _initConsent() {
@@ -100,8 +102,8 @@ export default class SignManuallyController extends WebcController {
                     controller: 'ConfirmationAlertController',
                     disableExpanding: false,
                     disableBackdropClosing: false,
-                    question: 'Are you sure you want to sign this ecosent ? ',
-                    title: 'Sign Econsent',
+                    question: 'Are you sure you want to send this file  ? ',
+                    title: 'Send Signed Econsent',
                 });
         });
 
@@ -126,21 +128,42 @@ export default class SignManuallyController extends WebcController {
         });
     }
 
-    sendMessageToSponsorAndHCO(operation, ssi, shortMessage) {
-        let sendObject = {
-            operation: operation,
-            ssi: ssi,
-            useCaseSpecifics: {
-                trialSSI: this.model.historyData.trialuid,
-                tpNumber: this.model.historyData.tpNumber,
-                tpDid: this.model.historyData.tpDid,
-                version: this.model.historyData.ecoVersion,
-                operationDate: new Date().toISOString(),
-            },
-            shortDescription: shortMessage,
-        };
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, sendObject);
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, sendObject);
+    sendMessageToSponsorAndHCO(action, ssi, shortMessage, fileSSI, fileName) {
+        const currentDate = new Date();
+        currentDate.setDate(currentDate.getDate());
+
+        this.TrialParticipantRepository.findAll((err, data) => {
+
+            if (err) {
+                return console.log(err);
+            }
+
+            if (data && data.length > 0) {
+                this.model.tp = data[data.length - 1];
+                let sendObject = {
+                    operation: 'update-econsent',
+                    ssi: ssi,
+                    useCaseSpecifics: {
+                        trialSSI: this.model.historyData.trialuid,
+                        tpNumber: this.model.tp.number,
+                        tpDid: this.model.tp.did,
+                        version: this.model.historyData.ecoVersion,
+                        siteSSI: this.model.tp.site?.keySSI,
+                        action: {
+                            name: action,
+                            date: currentDate.toISOString(),
+                            toShowDate: currentDate.toLocaleDateString(),
+                            isManual: true,
+                            fileSSI: fileSSI,
+                            attachment: fileName
+                        },
+                    },
+                    shortDescription: shortMessage,
+                };
+                this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, sendObject);
+                this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, sendObject);
+            }
+        });
     }
 
     _downloadFile = () => {
@@ -168,18 +191,23 @@ export default class SignManuallyController extends WebcController {
         );
     }
 
-    _finishActionSave() {
+    _finishActionSave(fileSSI, fileName) {
         this.navigateToPageTag('home');
-        this.sendMessageToSponsorAndHCO('sign-econsent', this.model.econsent.keySSI, 'TP signed econsent ');
+        this.sendMessageToSponsorAndHCO('sign', this.model.historyData.ecoId, 'TP signed econsent ', fileSSI, fileName);
     }
 
     async _saveStatus(operation) {
+        debugger
+        await this.EconsentsStatusRepository.updateAsync(this.model.status.uid, this.model.status);
+        let eco = await this.EcosentService.saveEconsentAsync(this.model.econsent, '/econsents/' + this.model.econsent.id);
 
         this.EcosentService.saveEconsentFile(this.file, this.model.econsent, (err, data) => {
             if (err){
                 console.log(err);
             }
-            console.log(data);
+            let fileName = this.file[0].name;
+            this._finishActionSave(eco.KeySSI, fileName);
+
 
         });
 
@@ -187,9 +215,6 @@ export default class SignManuallyController extends WebcController {
             //TODO implement when status is not set => optional consents
             return;
         }
-        await this.EconsentsStatusRepository.updateAsync(this.model.status.uid, this.model.status);
 
-        this.sendMessageToSponsorAndHCO(operation, this.model.econsent.keySSI, 'Tp ' + operation);
-        this.navigateToPageTag('home');
     }
 }

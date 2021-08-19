@@ -112,6 +112,9 @@ export default class TrialParticipantController extends WebcController {
             this.navigateToPageTag('econsent-sign', {
                 trialSSI: this.model.trialSSI,
                 econsentSSI: model.keySSI,
+                isManuallySigned: model.isManuallySigned ,
+                manualKeySSI: model.manualKeySSI ,
+                manualAttachment: model.manualAttachment,
                 trialParticipantNumber: this.model.tp.did,
                 tpUid: this.model.tpUid,
                 tpDid: this.model.tp.did,
@@ -276,9 +279,14 @@ export default class TrialParticipantController extends WebcController {
                         tpVersion = tpVersions[tpVersions.length - 1];
                         if (tpVersion && tpVersion.actionNeeded) {
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.TO_BE_SIGNED) {
+
                                 econsent = this._showButton(econsent, 'Sign');
                                 this.model.tp.tpSigned = true;
                                 econsent.tsSignedDate = tpVersion.toShowDate;
+                                econsent.isManuallySigned = tpVersion.isManual;
+                                econsent.manualAttachment = tpVersion.attachment;
+                                econsent.manualKeySSI = tpVersion.fileSSI;
+
                             }
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.WITHDRAW) {
                                 econsent = this._showButton(econsent, 'Contact');
@@ -309,6 +317,7 @@ export default class TrialParticipantController extends WebcController {
 
                     }
                 }
+
                 econsent.lastVersion = econsent.versions[econsent.versions.length - 1].version;
             })
         })
