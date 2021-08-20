@@ -197,7 +197,6 @@ export default class SignManuallyController extends WebcController {
     }
 
     async _saveStatus(operation) {
-        debugger
         await this.EconsentsStatusRepository.updateAsync(this.model.status.uid, this.model.status);
         let eco = await this.EcosentService.saveEconsentAsync(this.model.econsent, '/econsents/' + this.model.econsent.id);
 

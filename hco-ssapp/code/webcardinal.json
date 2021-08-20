@@ -89,6 +89,12 @@
       "path": "/notifications",
       "src": "notifications.html",
       "tag": "notifications"
+    },
+    {
+      "name": "ProceduresView",
+      "path": "/procedures-view",
+      "src": "procedures-view.html",
+      "tag": "procedures-view"
     }
   ],
   "pagesFallback": {

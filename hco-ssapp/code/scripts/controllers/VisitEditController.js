@@ -16,11 +16,7 @@ let getInitModel = () => {
         toRemember: {
             name: "toRemember",
             placeholder: "To Remember"
-        },
-        procedures: {
-            name: "procedures",
-            placeholder: "Procedures"
-        },
+        }
     };
 };
 
@@ -39,6 +35,7 @@ export default class VisitEditController extends WebcController {
 
     _initHandlers() {
         this._attachHandlerBack();
+        this._attachHandlerViewProcedures();
         this._attachHandlerSaveDetails();
     }
 
@@ -54,7 +51,6 @@ export default class VisitEditController extends WebcController {
 
         this.model.details.value = this._getTextOrDefault(this.model.visit.details);
         this.model.toRemember.value = this._getTextOrDefault(this.model.visit.toRemember);
-        this.model.procedures.value = JSON.stringify(this.model.visit.procedures.map(p => p.name))
 
         this.TrialParticipantRepository.findBy(this.model.tpUid, (err, tp) => {
             if (err) {
@@ -72,6 +68,16 @@ export default class VisitEditController extends WebcController {
             return 'General details and description of the trial in case it provided by the Sponsor/Site regarding specific particularities of the Trial or general message for Trial Subject';
         }
         return text;
+    }
+
+    _attachHandlerViewProcedures() {
+        this.onTagEvent('procedures:view', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('procedures-view', {
+                visitId: model.visit.id
+            });
+        });
     }
 
     _attachHandlerBack() {
