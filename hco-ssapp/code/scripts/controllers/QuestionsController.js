@@ -1,5 +1,6 @@
 import Constants from "../utils/Constants.js";
 import QuestionsRepository from "../repositories/QuestionsRepository.js";
+import CommunicationService from "../services/CommunicationService.js";
 
 
 const {WebcController} = WebCardinal.controllers;
@@ -16,6 +17,7 @@ export default class QuestionsController extends WebcController {
 
     _initServices(DSUStorage) {
         this.QuestionsRepository = QuestionsRepository.getInstance(DSUStorage);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
     }
 
     _initQuestions() {
@@ -39,7 +41,8 @@ export default class QuestionsController extends WebcController {
                 (event) => {
                     const response = event.detail;
                     if (response) {
-                        this._updateQuestion(response);
+                        model.answer = response;
+                        this._updateQuestion(model);
                     }
                 },
                 (event) => {
@@ -57,6 +60,27 @@ export default class QuestionsController extends WebcController {
 
 
     _updateQuestion(response) {
+        this.QuestionsRepository.update(response.pk, response, (err, data) => {
+            if (err) {
+                console.log(err);
+            }
+            this._sendMessageToPatient(data);
+        })
+    }
+
+    _sendMessageToPatient(question) {
+
+        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
+            operation: 'question-response',
+
+            useCaseSpecifics: {
+
+                question: {
+                    ...question
+                },
+            },
+            shortDescription: 'Hco answered to question ',
+        });
 
     }
 

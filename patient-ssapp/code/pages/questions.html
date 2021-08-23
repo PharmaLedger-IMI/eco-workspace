@@ -25,6 +25,12 @@
                             <psk-echo value="Date: "></psk-echo>
                             {{@date}}
                         </div>
+                        <div   data-if="@answer">
+                            <div slot="true">
+                                <psk-echo value="Answer from HCO: "></psk-echo>
+                                {{@answer}}
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div>

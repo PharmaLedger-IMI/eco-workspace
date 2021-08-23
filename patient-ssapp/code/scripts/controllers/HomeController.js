@@ -5,6 +5,7 @@ import TrialParticipantRepository from "../repositories/TrialParticipantReposito
 import NotificationsRepository from "../repositories/NotificationsRepository.js";
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
+import QuestionsRepository from "../repositories/QuestionsRepository.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -28,6 +29,7 @@ export default class HomeController extends WebcController {
         this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
         this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
         this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
+        this.QuestionsRepository = QuestionsRepository.getInstance(DSUStorage);
     }
 
     _initHandlers() {
@@ -85,6 +87,10 @@ export default class HomeController extends WebcController {
                     this.saveNotification(data);
                     this._updateTrialParticipant(data.message.useCaseSpecifics);
                     break;
+                }
+                case 'question-response': {
+                    this.saveNotification(data);
+                    this._updateQuestion(data.message.useCaseSpecifics);
                 }
             }
         });
@@ -232,4 +238,13 @@ export default class HomeController extends WebcController {
         })
     }
 
+    _updateQuestion(data) {
+        if (data.question) {
+            this.QuestionsRepository.update(data.question.pk, data.question, (err, created) => {
+                if (err) {
+                    console.log(err);
+                }
+            })
+        }
+    }
 }

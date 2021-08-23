@@ -35,10 +35,15 @@
                         <psk-label class="table-cell">{{@ecoVersion}}</psk-label>
                         <psk-label class="table-cell">{{@question}}</psk-label>
 
-
-                        <div class="table-cell">
-                            <button class="link-button" data-tag="question:answer" data="@id">Answer</button>
+                        <div  class="table-cell" data-if="@answer">
+                            <div slot="true">
+                                <strong>Answered</strong>
+                            </div>
+                            <div slot="false">
+                                <button class="link-button" data-tag="question:answer" data="@id">Answer</button>
+                            </div>
                         </div>
+
                     </psk-layout>
                     <hr/>
                 </div>
