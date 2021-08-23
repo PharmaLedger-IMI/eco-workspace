@@ -88,7 +88,7 @@ export default class EconsentSignController extends WebcController {
                     if (err) {
                         return console.log(err);
                     }
-                    debugger;
+
                     let econsentFilePath = this._getEconsentManualFilePath(this.model.econsent.id, data.keySSI, this.model.manualAttachment);
                     this.FileDownloader = new FileDownloader(econsentFilePath, this.model.manualAttachment);
                     this._downloadFile();

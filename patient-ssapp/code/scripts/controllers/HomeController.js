@@ -35,6 +35,7 @@ export default class HomeController extends WebcController {
         this._attachHandlerNotifications();
         this._attachHandlerSites();
         this._attachHandlerVisits();
+        this._attachHandlerQuestions();
     }
 
     _initTrials() {
@@ -112,6 +113,12 @@ export default class HomeController extends WebcController {
     _attachHandlerNotifications() {
         this.onTagClick('home:notifications', (event) => {
             this.navigateToPageTag('notifications');
+        });
+    }
+
+    _attachHandlerQuestions() {
+        this.onTagClick('home:questionns', (event) => {
+            this.navigateToPageTag('questions');
         });
     }
 

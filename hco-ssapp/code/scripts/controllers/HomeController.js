@@ -7,6 +7,7 @@ import SharedStorage from '../services/SharedStorage.js';
 import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
 import NotificationsRepository from "../repositories/NotificationsRepository.js";
 import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
+import QuestionsRepository from "../repositories/QuestionsRepository.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -53,6 +54,7 @@ export default class HomeController extends WebcController {
         this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
         this.SiteService = new SiteService(DSUStorage);
         this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
+        this.QuestionsRepository = QuestionsRepository.getInstance(DSUStorage);
     }
 
     _initHandlers() {
@@ -136,6 +138,11 @@ export default class HomeController extends WebcController {
                         });
                     });
 
+                    break;
+                }
+
+                case 'ask-question': {
+                    this._saveQuestion(data.message);
                     break;
                 }
 
@@ -364,6 +371,17 @@ export default class HomeController extends WebcController {
                 this._saveVisit(trialSSI);
             }
         });
+    }
+
+    _saveQuestion(message) {
+        this.QuestionsRepository.create(message.useCaseSpecifics.question.pk, message.useCaseSpecifics.question, (err, data) => {
+            if (err) {
+                console.log(err);
+            }
+            let notification = message;
+
+            this._saveNotification(notification, message.shortDescription, 'view questions', Constants.NOTIFICATIONS_TYPE.TRIAL_SUBJECT_QUESTIONS);
+        })
     }
 
     _updateVisit(message) {

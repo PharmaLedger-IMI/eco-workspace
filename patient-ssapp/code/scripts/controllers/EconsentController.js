@@ -102,8 +102,10 @@ export default class EconsentController extends WebcController {
     }
 
     _attachHandlerQuestion() {
-        this.on('econsent:question', (event) => {
-            console.log('econsent:question');
+        this.onTagClick('econsent:question', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('ask-question', {...this.model.historyData});
         });
     }
 

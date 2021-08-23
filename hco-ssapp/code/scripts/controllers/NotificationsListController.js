@@ -68,6 +68,11 @@ export default class NotificationsListController extends WebcController {
                 });
             }
 
+            if (model.recommendedAction === 'view questions') {
+
+                this.navigateToPageTag('questions');
+            }
+
         });
     }
 
