@@ -41,6 +41,7 @@ export default class VisitsAndProceduresController extends WebcController {
         this._attachHandlerChangeSelectedVisit();
         this._attachHandlerDecline();
         this._attachHandlerConfirm();
+        this._attachHandlerViewProcedures();
     }
 
     _initServices(DSUStorage) {
@@ -86,6 +87,17 @@ export default class VisitsAndProceduresController extends WebcController {
                 trialSSI: model.trialSSI,
                 econsentSSI: model.consentSSI,
                 controlsShouldBeVisible: false
+            });
+
+        });
+    }
+    _attachHandlerViewProcedures() {
+        this.onTagEvent('procedures:view', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            this.navigateToPageTag('procedures-view', {
+                procedures: model.visits.filter(visit => visit.id === model.selectedVisit.model.id),
             });
 
         });
@@ -212,6 +224,8 @@ export default class VisitsAndProceduresController extends WebcController {
                     consentSSI: visit.consentSSI,
                     date: visit.date,
                     unit: visit.unit,
+                    accepted: visit.accepted,
+                    declined: visit.declined,
                     id: visit.id
                 },
             },

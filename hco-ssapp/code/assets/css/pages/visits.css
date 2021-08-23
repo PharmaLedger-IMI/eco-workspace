@@ -3,8 +3,7 @@
     margin-left: 20%;
 }
 .body{
-    height: 300px;
-    overflow: auto;
+    height: 500px;
 }
 .table-cell {
     font-size: 16px;
@@ -53,12 +52,15 @@
     background-color: green;
 }
 
-.special-row {
-    display: flex;
-    justify-content: space-between;
-    width: 110px;
+textarea {
+    width: 700px;
+    height: 100px;
 }
-.special-row-two {
-    display: flex;
-    justify-content: space-between;
+
+.margin-top-10 {
+    margin-top: 10px;
+}
+
+.margin-left-35-percent {
+    margin-left: 35% !important;
 }

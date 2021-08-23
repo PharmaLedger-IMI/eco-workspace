@@ -197,13 +197,11 @@ export default class SignManuallyController extends WebcController {
     }
 
     async _saveStatus(operation) {
-
         await this.EconsentsStatusRepository.updateAsync(this.model.status.uid, this.model.status);
         let eco = await this.EcosentService.saveEconsentAsync(this.model.econsent, '/econsents/' + this.model.econsent.id);
 
-        this.EcosentService.saveEconsentFile(this.file, eco, (err, fileSSI) => {
-
-            if (err) {
+        this.EcosentService.saveEconsentFile(this.file, this.model.econsent, (err, data) => {
+            if (err){
                 console.log(err);
             }
             let fileName = this.file[0].name;

@@ -58,6 +58,7 @@ export default class HomeController extends WebcController {
     }
 
     _initHandlers() {
+        this._attachHandlerVisits();
         this._attachHandlerNotifications();
         this._attachHandlerPatients();
         this._attachHandlerTrialManagement();
@@ -291,6 +292,14 @@ export default class HomeController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
             this.navigateToPageTag('notifications');
+        });
+    }
+
+    _attachHandlerVisits() {
+        this.onTagEvent('home:visits', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('visits');
         });
     }
 

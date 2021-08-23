@@ -1,6 +1,5 @@
 import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
 import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
-import DateTimeService from '../services/DateTimeService.js';
 
 import CommunicationService from "../services/CommunicationService.js";
 import Constants from "../utils/Constants.js";
@@ -17,11 +16,7 @@ let getInitModel = () => {
         toRemember: {
             name: "toRemember",
             placeholder: "To Remember"
-        },
-        procedures: {
-            name: "procedures",
-            placeholder: "Procedures"
-        },
+        }
     };
 };
 
@@ -40,7 +35,7 @@ export default class VisitEditController extends WebcController {
 
     _initHandlers() {
         this._attachHandlerBack();
-        this._attachHandlerEditDate();
+        this._attachHandlerViewProcedures();
         this._attachHandlerSaveDetails();
     }
 
@@ -56,7 +51,6 @@ export default class VisitEditController extends WebcController {
 
         this.model.details.value = this._getTextOrDefault(this.model.visit.details);
         this.model.toRemember.value = this._getTextOrDefault(this.model.visit.toRemember);
-        this.model.procedures.value = this._getTextOrDefault(this.model.visit.procedures);
 
         this.TrialParticipantRepository.findBy(this.model.tpUid, (err, tp) => {
             if (err) {
@@ -76,41 +70,21 @@ export default class VisitEditController extends WebcController {
         return text;
     }
 
+    _attachHandlerViewProcedures() {
+        this.onTagEvent('procedures:view', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('procedures-view', {
+                visitId: model.visit.id
+            });
+        });
+    }
+
     _attachHandlerBack() {
         this.onTagEvent('back', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
             window.history.back();
-        });
-    }
-
-    _attachHandlerEditDate() {
-        this.onTagEvent('procedure:editDate', 'click', (model, target, event) => {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            this.showModalFromTemplate(
-                'set-procedure-date',
-                (event) => {
-                    let visitIndex = model.tp.visits.findIndex(v => v.pk === model.existingVisit.pk)
-                    let date = new Date(event.detail);
-                    model.date = event.detail;
-                    model.tp.visits[visitIndex].date = event.detail;
-                    model.tp.visits[visitIndex].toShowDate = DateTimeService.convertStringToLocaleDateTimeString(date);
-                    this.model.existingVisit.toShowDate = DateTimeService.convertStringToLocaleDateTimeString(date);
-                    this.model.visit = model.tp.visits[visitIndex];
-                    this.TrialParticipantRepository.updateAsync(model.tpUid, model.tp);
-                    this.VisitsAndProceduresRepository.updateAsync(this.model.visit.pk, this.model.visit);
-                    this.sendMessageToPatient(model.tp.visits[visitIndex], Constants.MESSAGES.HCO.COMMUNICATION.TYPE.UPDATE_VISIT);
-                },
-                (event) => {
-                    const response = event.detail;
-                }
-            ),
-                {
-                    controller: 'SetProcedureDateController',
-                    disableExpanding: false,
-                    disableBackdropClosing: false
-                };
         });
     }
 
@@ -125,6 +99,7 @@ export default class VisitEditController extends WebcController {
             this.TrialParticipantRepository.updateAsync(model.tpUid, model.tp);
             this.VisitsAndProceduresRepository.updateAsync(model.tp.visits[visitIndex].pk, model.tp.visits[visitIndex]);
             this.sendMessageToPatient(model.tp.visits[visitIndex], Constants.MESSAGES.HCO.COMMUNICATION.TYPE.UPDATE_VISIT);
+            window.history.back();
         });
     }
 

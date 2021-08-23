@@ -11,7 +11,7 @@ export default class EconsentService {
     }
 
     getEconsentsModel(trialID, callback) {
-        debugger
+
 
         let econsentPath = this._getEconsentsPath(trialID);
         this.DSUStorage.call('listDSUs', econsentPath, (err, dsuList) => {
@@ -65,7 +65,7 @@ export default class EconsentService {
     }
 
     saveEconsent(trialID,file, data, callback) {
-        debugger;
+
         this.DSUStorage.call('createSSIAndMount', this._getEconsentsPath(trialID), (err, keySSI) => {
             if (err) {
                 callback(err, undefined);

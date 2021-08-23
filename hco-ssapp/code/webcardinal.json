@@ -44,6 +44,12 @@
       "tag": "visit-edit"
     },
     {
+      "name": "Visits",
+      "path": "/visits",
+      "src": "visits.html",
+      "tag": "visits"
+    },
+    {
       "name": "Create trial",
       "tag": "create-trial",
       "indexed": false
@@ -89,6 +95,12 @@
       "path": "/notifications",
       "src": "notifications.html",
       "tag": "notifications"
+    },
+    {
+      "name": "ProceduresView",
+      "path": "/procedures-view",
+      "src": "procedures-view.html",
+      "tag": "procedures-view"
     }
   ],
   "pagesFallback": {

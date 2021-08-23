@@ -1,0 +1,25 @@
+<link href="/assets/css/pages/visits.css" rel="stylesheet">
+<webc-container controller="ProceduresViewController">
+    <div class="container-child">
+        <div class="title">Procedures</div>
+
+        <div class="trial-table">
+            <psk-layout columns="2" class="justify-content-center align-items-center table-row">
+                <psk-label class="table-cell">Name</psk-label>
+                <psk-label class="table-cell">Completed</psk-label>
+            </psk-layout>
+            <hr/>
+        </div>
+        <div class="trial-table body" data-for="@procedures">
+            <psk-layout columns="2" class="justify-content-center align-items-center table-row">
+                <psk-label class="table-cell">{{@name}}</psk-label>
+                <div>
+                    <psk-label data-if="@completed" class="table-cell">X</psk-label>
+                </div>
+            </psk-layout>
+        </div>
+
+        <button class="back-button" data-tag="back">Back</button>
+    </div>
+    </div>
+</webc-container>
