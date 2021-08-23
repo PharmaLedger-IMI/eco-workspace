@@ -29,13 +29,35 @@ export default class QuestionsController extends WebcController {
         });
     }
 
-
     _attachQuestionAnswer() {
         this.onTagEvent('question:answer', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-            this.navigateToPageTag('question', model.uid);
+
+            this.showModalFromTemplate(
+                'answer-question',
+                (event) => {
+                    const response = event.detail;
+                    if (response) {
+                        this._updateQuestion(response);
+                    }
+                },
+                (event) => {
+                    const response = event.detail;
+                },
+                {
+                    controller: 'AnswerQuestionController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false,
+
+                    title: model.question,
+                });
         });
+    }
+
+
+    _updateQuestion(response) {
+
     }
 
     _attachHandlerBack() {

@@ -101,7 +101,7 @@ export default class AsqQuestionController extends WebcController {
     sendMessageToHCO(action, ssi, shortMessage, question) {
         const currentDate = new Date();
         currentDate.setDate(currentDate.getDate());
-        debugger;
+
         this.TrialParticipantRepository.findAll((err, data) => {
 
             if (err) {
