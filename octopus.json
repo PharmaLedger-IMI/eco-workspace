@@ -450,16 +450,33 @@
       ]
     },
     {
-      "name": "hco-wallet_bind_to_menu-wallet-prototype",
+      "name": "hco-wallet-loader-build",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd apihub-root/hco-wallet/loader && npm run build"
+        }
+      ]
+    },
+    {
+      "name": "hco-wallet_bind_to_hco_ssapp",
       "src": "",
       "actions": [
         {
           "type": "execute",
-          "cmd": "cd menu-wallet-prototype && npm run build"
+          "cmd": "cd hco-ssapp && npm run build"
         },
         {
           "type": "copy",
-          "src": "./menu-wallet-prototype/seed",
+          "src": "./hco-ssapp/seed",
+          "target": "./apihub-root/hco-wallet/apps-patch/hco-ssapp/seed",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "./hco-ssapp/seed",
           "target": "./apihub-root/hco-wallet/wallet-patch/seed",
           "options": {
             "overwrite": true
@@ -468,16 +485,33 @@
       ]
     },
     {
-      "name": "patient-wallet_bind_to_menu-wallet-prototype",
+      "name": "patient-wallet-loader-build",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd apihub-root/patient-wallet/loader && npm run build"
+        }
+      ]
+    },
+    {
+      "name": "patient_wallet_bind_to_patient_ssapp",
       "src": "",
       "actions": [
         {
           "type": "execute",
-          "cmd": "cd menu-wallet-prototype && npm run build"
+          "cmd": "cd patient-ssapp && npm run build"
         },
         {
           "type": "copy",
-          "src": "./menu-wallet-prototype/seed",
+          "src": "./patient-ssapp/seed",
+          "target": "./apihub-root/patient-wallet/apps-patch/patient-ssapp/seed",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "./patient-ssapp/seed",
           "target": "./apihub-root/patient-wallet/wallet-patch/seed",
           "options": {
             "overwrite": true
