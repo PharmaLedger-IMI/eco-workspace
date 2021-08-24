@@ -257,6 +257,15 @@
           "cmd": "cd patient-ssapp && npm install"
         }
       ]
+    },
+    {
+      "name": "eco-services",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd eco-services && npm install"
+        }
+      ]
     }
   ],
   "build": [

@@ -1,4 +1,3 @@
-import CommunicationService from '../services/CommunicationService.js';
 import TrialService from '../services/TrialService.js';
 import DateTimeService from '../services/DateTimeService.js';
 import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
@@ -8,6 +7,9 @@ import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRe
 import QuestionsRepository from "../repositories/QuestionsRepository.js";
 
 const {WebcController} = WebCardinal.controllers;
+
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
 
 export default class HomeController extends WebcController {
     constructor(...props) {
@@ -19,7 +21,6 @@ export default class HomeController extends WebcController {
         this._initTrialParticipant();
         this._handleMessages();
     }
-
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
