@@ -196,11 +196,13 @@ export default class NewConsentService extends DSUService {
     for (const consent of consents) {
       const consentVisits = visits.filter((x) => x.consent.keySSI === consent.keySSI);
       if (consentVisits && consentVisits.length > 0) {
-        consent.procedures = consentVisits;
+        console.log(consent.keySSI);
+        consent.visits = consentVisits;
         const updatedConsent = await this.updateEntityAsync(consent);
         await this.updateConsentToDB(consent, trialKeySSI);
       } else {
-        consent.procedures = [];
+        console.log(consent.keySSI);
+        consent.visits = [];
         const updatedConsent = await this.updateEntityAsync(consent);
         await this.updateConsentToDB(consent, trialKeySSI);
       }

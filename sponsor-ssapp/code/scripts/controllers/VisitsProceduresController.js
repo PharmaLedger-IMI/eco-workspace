@@ -26,7 +26,7 @@ export default class VisitsProceduresController extends WebcController {
       trial: null,
       notEditable: true,
       filters: [],
-      filteredProcedures: [],
+      filteredVisits: [],
     };
 
     this.attachEvents();
@@ -49,33 +49,34 @@ export default class VisitsProceduresController extends WebcController {
     this.model.consents = await this.consentsService.getTrialConsents(this.keySSI);
     this.model.filters = this.model.consents.map((x) => ({ name: x.name, selected: true }));
 
-    const procedures = [];
+    const visits = [];
     if (this.model.consents && this.model.consents.length > 0) {
       this.model.consents.forEach((x) => {
-        if (x.procedures && x.procedures.length > 0) {
-          x.procedures.forEach((y) => procedures.push(y));
+        if (x.visits && x.visits.length > 0) {
+          x.visits.forEach((y) => visits.push(y));
         }
       });
     }
 
-    await this.loadModel(procedures);
+    await this.loadModel(visits);
 
     return;
   }
 
-  async loadModel(procedures) {
-    procedures.sort((a, b) => a.id - b.id);
+  async loadModel(visits) {
+    visits.sort((a, b) => a.id - b.id);
 
-    this.model.procedures = procedures.map((x) => {
+    this.model.visits = visits.map((x) => {
       return {
         id: x.id,
+        uuid: x.uuid,
         inputId: 'input_' + x.id,
         selectId: 'select_' + x.id,
         name: {
-          label: 'Procedure',
-          name: 'procedure',
+          label: 'Visit',
+          name: 'visit',
           required: true,
-          placeholder: 'Procedure...',
+          placeholder: 'Visit...',
           value: x.name,
           type: 'text',
         },
@@ -89,13 +90,22 @@ export default class VisitsProceduresController extends WebcController {
             selected: x.consent.keySSI === y.keySSI ? 'selected' : null,
           })),
         },
-        visits: x.visits.map((y) => ({
+        procedures: x.procedures.map((y) => ({
           id: x.id + ':' + y.id,
+          uuid: y.uuid,
           checkbox: {
             type: 'checkbox',
             placeholder: 'enabled',
             label: y.id,
             checked: y.checked,
+          },
+          name: {
+            label: 'Procedure',
+            name: 'procedure',
+            required: true,
+            placeholder: 'Procedure...',
+            value: y.name,
+            type: 'text',
           },
           period: {
             label: 'Period',
@@ -119,6 +129,11 @@ export default class VisitsProceduresController extends WebcController {
         })),
       };
     });
+
+    const procedures = JSON.parse(JSON.stringify(this.model.visits[0].procedures));
+    this.model.procedures = procedures.map((y, idx) => ({
+      id: idx,
+    }));
     this.filter();
     return;
   }
@@ -130,7 +145,7 @@ export default class VisitsProceduresController extends WebcController {
   }
 
   filter() {
-    this.model.filteredProcedures = this.model.procedures.filter((x) =>
+    this.model.filteredVisits = this.model.visits.filter((x) =>
       x.consent.options.reduce((acc, y) => {
         return this.model.filters.find((z) => z.name === y.label).selected && y.selected === 'selected' ? true : acc;
       }, false)
@@ -139,11 +154,11 @@ export default class VisitsProceduresController extends WebcController {
 
   attachEvents() {
     this.model.addExpression(
-      'proceduresExist',
+      'visitsExist',
       () => {
-        return this.model.procedures && Array.isArray(this.model.procedures) && this.model.procedures.length > 0;
+        return this.model.visits && Array.isArray(this.model.visits) && this.model.visits.length > 0;
       },
-      'procedures'
+      'visits'
     );
 
     this.on('openFeedback', (e) => {
@@ -159,30 +174,31 @@ export default class VisitsProceduresController extends WebcController {
       this.model.notEditable = !this.model.notEditable;
     });
 
-    this.onTagClick('filter-procedures', async (model, target, event) => {
+    this.onTagClick('filter-visits', async (model, target, event) => {
       const data = target.getAttribute('data-custom');
       const selectedFilter = this.model.filters.find((x) => x.name === data);
       selectedFilter.selected = !selectedFilter.selected;
 
-      if (this.model.procedures && Array.isArray(this.model.procedures) && this.model.procedures.length > 0) {
+      if (this.model.visits && Array.isArray(this.model.visits) && this.model.visits.length > 0) {
         this.filter();
       }
     });
 
-    this.onTagEvent('addProcedure', 'click', () => {
-      const procedures = JSON.parse(JSON.stringify(this.model.procedures));
+    this.onTagEvent('addVisit', 'click', () => {
+      const visits = JSON.parse(JSON.stringify(this.model.visits));
 
-      const newProcedures = [
-        ...procedures,
+      const newVisits = [
+        ...visits,
         {
-          id: procedures.length,
-          inputId: 'input_' + procedures.length,
-          selectId: 'select_' + procedures.length,
+          id: visits.length,
+          uuid: uuidv4(),
+          inputId: 'input_' + visits.length,
+          selectId: 'select_' + visits.length,
           name: {
-            label: 'Procedure',
-            name: 'procedure',
+            label: 'Visit',
+            name: 'visit',
             required: true,
-            placeholder: 'Procedure...',
+            placeholder: 'Visit...',
             value: '',
             type: 'text',
           },
@@ -195,10 +211,19 @@ export default class VisitsProceduresController extends WebcController {
               value: x.keySSI,
             })),
           },
-          visits:
-            this.model.visits.length > 0
-              ? this.model.visits.map((y) => ({
-                  id: procedures.length + ':' + y.id,
+          procedures:
+            this.model.procedures.length > 0
+              ? this.model.procedures.map((y) => ({
+                  id: visits.length + ':' + y.id,
+                  uuid: uuidv4(),
+                  name: {
+                    label: 'Procedure',
+                    name: 'procedure',
+                    required: true,
+                    placeholder: 'Procedure...',
+                    value: '',
+                    type: 'text',
+                  },
                   checkbox: {
                     type: 'checkbox',
                     placeholder: 'enabled',
@@ -214,7 +239,7 @@ export default class VisitsProceduresController extends WebcController {
                     type: 'number',
                   },
                   timeUnit: {
-                    id: 'unit_' + procedures.length + '_' + y.id,
+                    id: 'unit_' + visits.length + '_' + y.id,
                     label: 'Select a time unit',
                     placeholder: 'Please select an option',
                     required: true,
@@ -229,31 +254,40 @@ export default class VisitsProceduresController extends WebcController {
         },
       ];
 
-      // this.model.setChainValue('procedures', newProcedures);
-      this.model.procedures = newProcedures;
+      // this.model.setChainValue('visits', newVisits);
+      this.model.visits = newVisits;
     });
 
-    this.onTagEvent('removeProcedure', 'click', () => {
-      if (this.model.procedures.length === 0) return;
-      // const procedures = JSON.parse(JSON.stringify(this.model.procedures));
-      // this.model.setChainValue('procedures', procedures.slice(0, -1));
+    this.onTagEvent('removeVisit', 'click', () => {
+      if (this.model.visits.length === 0) return;
+      // const visits = JSON.parse(JSON.stringify(this.model.visits));
+      // this.model.setChainValue('visits', visits.slice(0, -1));
 
-      this.model.procedures = this.model.procedures.slice(0, -1);
+      this.model.visits = this.model.visits.slice(0, -1);
     });
 
-    this.onTagEvent('addVisit', 'click', () => {
-      const visits = JSON.parse(JSON.stringify(this.model.visits));
-      this.model.setChainValue('visits', [
-        ...visits,
+    this.onTagEvent('addProcedure', 'click', () => {
+      const procedures = JSON.parse(JSON.stringify(this.model.procedures));
+      this.model.setChainValue('procedures', [
+        ...procedures,
         {
-          id: visits.length,
+          id: procedures.length,
         },
       ]);
-      // this.model.visits = [...this.model.visits, { id: this.model.visits.length }];
-      const newProcedures = this.model.procedures.map((x) => ({
+      // this.model.procedures = [...this.model.procedures, { id: this.model.procedures.length }];
+      const newVisits = this.model.visits.map((x) => ({
         ...x,
-        visits: this.model.visits.map((y) => ({
+        procedures: this.model.procedures.map((y) => ({
           id: x.id + ':' + y.id,
+          uuid: !!x.procedures[parseInt(y.id)] ? x.procedures[parseInt(y.id)].uuid : uuidv4(),
+          name: {
+            label: 'Procedure',
+            name: 'procedure',
+            required: true,
+            placeholder: 'Procedure...',
+            value: !!x.procedures[parseInt(y.id)] ? x.procedures[parseInt(y.id)].name.value : '',
+            type: 'text',
+          },
           checkbox: {
             type: 'checkbox',
             placeholder: 'enabled',
@@ -265,7 +299,7 @@ export default class VisitsProceduresController extends WebcController {
             name: 'period',
             required: true,
             placeholder: 'Period...',
-            value: !!x.visits[parseInt(y.id)] ? x.visits[parseInt(y.id)].period.value : '',
+            value: !!x.procedures[parseInt(y.id)] ? x.procedures[parseInt(y.id)].period.value : '',
             type: 'number',
           },
           timeUnit: {
@@ -306,27 +340,27 @@ export default class VisitsProceduresController extends WebcController {
         })),
       }));
       // this.model.setChainValue('procedures', newProcedures);
-      this.model.procedures = newProcedures;
+      this.model.visits = newVisits;
     });
 
-    this.onTagEvent('removeVisit', 'click', () => {
-      if (this.model.visits.length === 0) return;
-      // const visits = JSON.parse(JSON.stringify(this.model.visits));
-      // this.model.setChainValue('visits', visits.slice(0, -1));
-      this.model.visits = this.model.visits.slice(0, -1);
-      // this.model.visits.splice(0, -1);
-      const newProcedures = this.model.procedures.map((x) => ({
+    this.onTagEvent('removeProcedure', 'click', () => {
+      if (this.model.procedures.length === 0) return;
+      // const procedures = JSON.parse(JSON.stringify(this.model.procedures));
+      // this.model.setChainValue('procedures', procedures.slice(0, -1));
+      this.model.procedures = this.model.procedures.slice(0, -1);
+      // this.model.procedures.splice(0, -1);
+      const newVisits = this.model.visits.map((x) => ({
         ...x,
-        visits: x.visits.slice(0, -1),
+        procedures: x.procedures.slice(0, -1),
       }));
       // this.model.setChainValue('procedures', newProcedures);
-      this.model.procedures = newProcedures;
+      this.model.visits = newVisits;
     });
 
     this.onTagEvent('submitData', 'click', async () => {
       let error = null;
-      const result = this.model.procedures.map((x, idx) => {
-        if (x.name.value === '' || !x.visits || x.visits.length === 0) {
+      const result = this.model.visits.map((x, idx) => {
+        if (x.name.value === '' || !x.procedures || x.procedures.length === 0) {
           // this.showFeedbackToast('Error', 'All procedures must have a name and at least one visit', 'toast');
           error = true;
           // return;
@@ -334,19 +368,22 @@ export default class VisitsProceduresController extends WebcController {
         const targetElement = this.element.querySelector('#' + x.selectId);
         return {
           id: idx,
+          uuid: x.uuid,
           name: x.name.value,
           consent: {
             keySSI: targetElement.value,
             id: this.model.consents.find((x) => x.keySSI === targetElement.value).id,
             name: targetElement.options[targetElement.selectedIndex].text,
           },
-          visits: x.visits.map((y, visitIdx) => {
+          procedures: x.procedures.map((y, visitIdx) => {
             const targetElementUnit = this.element.querySelector('#' + y.timeUnit.id);
             if (!y.period.value && y.checkbox.checked) {
               error = true;
             }
             return {
               id: visitIdx,
+              uuid: y.uuid,
+              name: y.name.value,
               checked: y.checkbox.checked,
               period: y.period.value,
               unit: targetElementUnit.value,
