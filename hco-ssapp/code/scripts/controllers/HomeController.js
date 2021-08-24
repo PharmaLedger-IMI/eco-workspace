@@ -8,6 +8,7 @@ import TrialParticipantRepository from '../repositories/TrialParticipantReposito
 import NotificationsRepository from "../repositories/NotificationsRepository.js";
 import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
 import QuestionsRepository from "../repositories/QuestionsRepository.js";
+import BaseRepository from "../repositories/BaseRepository.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -51,7 +52,7 @@ export default class HomeController extends WebcController {
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.StorageService = SharedStorage.getInstance(DSUStorage);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
-        this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
+        this.NotificationsRepository = BaseRepository.getInstance(DSUStorage,'notifications');
         this.SiteService = new SiteService(DSUStorage);
         this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
         this.QuestionsRepository = QuestionsRepository.getInstance(DSUStorage);
