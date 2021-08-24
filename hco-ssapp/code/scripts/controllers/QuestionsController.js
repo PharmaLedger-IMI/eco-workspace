@@ -1,5 +1,6 @@
 import Constants from "../utils/Constants.js";
 import QuestionsRepository from "../repositories/QuestionsRepository.js";
+import CommunicationService from "../services/CommunicationService.js";
 
 
 const {WebcController} = WebCardinal.controllers;
@@ -16,6 +17,7 @@ export default class QuestionsController extends WebcController {
 
     _initServices(DSUStorage) {
         this.QuestionsRepository = QuestionsRepository.getInstance(DSUStorage);
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
     }
 
     _initQuestions() {
@@ -29,13 +31,57 @@ export default class QuestionsController extends WebcController {
         });
     }
 
-
     _attachQuestionAnswer() {
         this.onTagEvent('question:answer', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-            this.navigateToPageTag('question', model.uid);
+
+            this.showModalFromTemplate(
+                'answer-question',
+                (event) => {
+                    const response = event.detail;
+                    if (response) {
+                        model.answer = response;
+                        this._updateQuestion(model);
+                    }
+                },
+                (event) => {
+                    const response = event.detail;
+                },
+                {
+                    controller: 'AnswerQuestionController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false,
+
+                    title: model.question,
+                });
         });
+    }
+
+
+    _updateQuestion(response) {
+        this.QuestionsRepository.update(response.pk, response, (err, data) => {
+            if (err) {
+                console.log(err);
+            }
+            this._sendMessageToPatient(data);
+        })
+    }
+
+    _sendMessageToPatient(question) {
+
+        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
+            operation: 'question-response',
+
+            useCaseSpecifics: {
+
+                question: {
+                    ...question
+                },
+            },
+            shortDescription: 'Hco answered to question ',
+        });
+
     }
 
     _attachHandlerBack() {

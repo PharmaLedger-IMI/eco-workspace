@@ -3,6 +3,23 @@
   "dependencies": [],
   "prebuild": [
     {
+      "name": "building eco-services",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd ../eco-services && npm run build"
+        },
+        {
+          "type": "copy",
+          "src": "../eco-services/build/bundles/ecoServices.js",
+          "target": "code/scripts/bundles/ecoServices.js",
+          "options": {
+            "overwrite": true
+          }
+        }
+      ]
+    },
+    {
       "name": "PSK bundles",
       "src": "",
       "actions": [
