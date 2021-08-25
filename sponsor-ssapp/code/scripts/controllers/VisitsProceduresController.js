@@ -130,10 +130,12 @@ export default class VisitsProceduresController extends WebcController {
       };
     });
 
-    const procedures = JSON.parse(JSON.stringify(this.model.visits[0].procedures));
-    this.model.procedures = procedures.map((y, idx) => ({
-      id: idx,
-    }));
+    if (this.model.visits && this.model.visits.length > 0) {
+      const procedures = JSON.parse(JSON.stringify(this.model.visits[0].procedures));
+      this.model.procedures = procedures.map((y, idx) => ({
+        id: idx,
+      }));
+    }
     this.filter();
     return;
   }
