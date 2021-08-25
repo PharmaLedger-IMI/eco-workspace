@@ -1,0 +1,19 @@
+<link rel="stylesheet" href="/assets/css/pages/addtp.css">
+
+<h2 slot="header" class="alert-title">Set Procedure Date</h2>
+
+<webc-container class="maxw" controller="SetProcedureDateController">
+    <div class="top">
+        <div class="line">
+            <label class="datetime-label" for="birthdaytime">{{@procedureDate.label}}</label>
+            <input type="datetime-local" id="birthdaytime" name="birthdaytime" data-view-model="@procedureDate">
+        </div>
+
+    </div>
+
+    <div class="bottom">
+        <button class="tp-button wide-button inverted-colors" slot="footer" data-tag="tp:submit">Done</button>
+        <button class="tp-button wide-button inverted-colors" slot="footer" data-tag="tp:cancel">Cancel</button>
+    </div>
+</webc-container>
+</webc-skin>

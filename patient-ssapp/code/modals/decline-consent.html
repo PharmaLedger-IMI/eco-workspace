@@ -1,0 +1,18 @@
+<link rel="stylesheet" href="/assets/css/pages/general_modal.css">
+
+<h2 slot="header" class="alert-title">Confirmation Decline</h2>
+
+<webc-container class="maxw" controller="DeclineConsentController">
+    <div class="top">
+        <div class="line">
+            <psk-label class="tp-title" >Are you sure you want to decline this consent?</psk-label>
+        </div>
+
+    </div>
+
+    <div class="bottom">
+        <button class="tp-button wide-button inverted-colors" slot="footer" data-tag="decline:submit">Yes</button>
+        <button class="tp-button wide-button inverted-colors" slot="footer" data-tag="decline:cancel">Cancel</button>
+    </div>
+</webc-container>
+</webc-skin>

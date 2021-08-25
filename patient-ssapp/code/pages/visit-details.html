@@ -1,0 +1,36 @@
+<link href="/assets/css/pages/trial.css" rel="stylesheet">
+<webc-container controller="VisitDetailsController">
+    <div class="container-child">
+        <div class=header-title>
+            <psk-button-link class="go-back-link" event-name="go-back" icon="arrow-left"></psk-button-link>
+            <psk-label class="scan-error-title" label="Visits and Procedures"></psk-label>
+        </div>
+        <div data-for="@visits">
+            <psk-layout columns="2" template-columns=" 70% 30%"
+                        class="justify-content-center align-items-center table-row"
+                        data="@keySSI" data-tag="go-to-econsent">
+
+                <div class="layout-content">
+                    <div>
+                        {{@name}}
+                    </div>
+                    <div>
+                        {{@period}} {{@unit}}
+                    </div>
+
+                    <div>
+                        <psk-echo value="Date: "></psk-echo>
+                        {{@date}}
+                    </div>
+                </div>
+                <div>
+                    <psk-img class="left-image" height='20'
+                             src="assets/images/notification.png" width='20'></psk-img>
+                </div>
+                <hr class="layout-hr">
+            </psk-layout>
+        </div>
+
+    </div>
+    </div>
+</webc-container>

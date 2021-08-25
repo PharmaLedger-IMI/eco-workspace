@@ -5,7 +5,10 @@
             <div class="home-default-top">
                 <psk-img src="assets/images/pharma_logo.png"></psk-img>
             </div>
-
+            <psk-button class="invisible-button notification-button" data-tag="home:notifications">
+                <psk-img class="ed-control-image" src="assets/images/notification.png"
+                         height='40' width='40'></psk-img>
+            </psk-button>
             <psk-layout-item class="home-image">
                 <psk-container class="ed-avatar-bordered-image">
 
@@ -66,8 +69,19 @@
                 </div>
 
                 <psk-card class="patient-button-row">
+<!--                    <div>-->
+<!--                        <div data-if="@tp.hasNewVisits">-->
+<!--                            <div slot="true">-->
+<!--                                <psk-img class="table-cell" src="assets/images/notification.png"-->
+<!--                                         height='30' width='34'></psk-img>-->
+<!--                            </div>-->
+
+<!--                        </div>-->
+
+<!--                        <button class="long-button" data-tag="home:visits">Visits</button>-->
+<!--                    </div>-->
                     <button class="long-button" data-tag="home:visits">Visits</button>
-                    <button class="long-button" data-tag="home:questionnaire">FAQ</button>
+                    <button class="long-button" data-tag="home:questionns">FAQ</button>
                     <button class="long-button" data-tag="home:site">Study Contact Information</button>
                 </psk-card>
             </psk-layout-item>

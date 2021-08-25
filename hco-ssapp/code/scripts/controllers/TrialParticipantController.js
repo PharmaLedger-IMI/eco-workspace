@@ -82,6 +82,7 @@ export default class TrialParticipantController extends WebcController {
                 econsentSSI: model.keySSI,
                 trialParticipantNumber: this.model.trialParticipantNumber,
                 tpUid: this.model.tpUid,
+                tpDid: this.model.tp.did,
             });
         });
     }
@@ -90,11 +91,11 @@ export default class TrialParticipantController extends WebcController {
         this.onTagEvent('consent:view', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-
             this.navigateToPageTag('econsent-sign', {
                 trialSSI: this.model.trialSSI,
                 econsentSSI: model.KeySSI,
                 ecoVersion: model.lastVersion,
+                tpDid: this.model.tp.did,
                 controlsShouldBeVisible: false
             });
         });
@@ -111,8 +112,12 @@ export default class TrialParticipantController extends WebcController {
             this.navigateToPageTag('econsent-sign', {
                 trialSSI: this.model.trialSSI,
                 econsentSSI: model.keySSI,
+                isManuallySigned: model.isManuallySigned ,
+                manualKeySSI: model.manualKeySSI ,
+                manualAttachment: model.manualAttachment,
                 trialParticipantNumber: this.model.tp.did,
                 tpUid: this.model.tpUid,
+                tpDid: this.model.tp.did,
                 ecoVersion: ecoVersion
             });
         });
@@ -130,7 +135,10 @@ export default class TrialParticipantController extends WebcController {
         this.onTagEvent('tp:visits', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-            this.navigateToPageTag('visits-procedures', this.model.trialSSI);
+            this.navigateToPageTag('visits-procedures', {
+                trialSSI: this.model.trialSSI,
+                tpUid: this.model.tpUid,
+            });
         });
     }
 
@@ -148,7 +156,8 @@ export default class TrialParticipantController extends WebcController {
             this.showModalFromTemplate(
                 'add-tp-number',
                 (event) => {
-                    this.model.tp.tpNumber = event.detail;
+                    this.model.tp.number = event.detail;
+                    this.sendMessageToProfessional(this.model.tp)
                     this._updateTrialParticipant(this.model.tp);
                     this.updateTrialStage();
                 },
@@ -163,6 +172,51 @@ export default class TrialParticipantController extends WebcController {
                     title: 'Attach Trial Participant Number',
                 };
         });
+    }
+
+    async sendMessageToProfessional(tp) {
+        let trial = await this.TrialService.getTrialAsync(this.model.trialSSI);
+
+        let econsents = await this.TrialService.getEconsentsAsync(this.model.trialSSI);
+
+        let wantedAction = {
+            toShowDate: 'DD/MM/YYYY'
+        };
+
+        for (const econsent of econsents) {
+            for (const version of econsent.versions) {
+                let validActions = version.actions
+                    .filter(action => action.name === 'sign' && action.type === 'tp')
+                    .filter(action => tp.did === action.tpNumber);
+
+                if (validActions.length > 0) {
+                    wantedAction = validActions[0];
+                    break;
+                }
+            }
+        }
+
+        let messageForIot = {
+            trial: {
+                id: trial.id,
+                name: trial.name,
+                status: trial.status
+            },
+            participant: {
+                id: tp.tpNumber,
+                name: tp.name,
+                gender: tp.gender,
+                enrolledDate: tp.enrolledDate,
+                birthdate: tp.birthdate,
+                signDate: wantedAction.toShowDate
+            }
+        }
+
+        this.CommunicationService.sendMessage(CommunicationService.identities.IOT.PROFESSIONAL_IDENTITY, {
+            operation: 'add-trial-subject',
+            useCaseSpecifics: messageForIot
+        });
+
     }
 
     updateTrialStage() {
@@ -194,8 +248,8 @@ export default class TrialParticipantController extends WebcController {
             operation: 'update-tpNumber',
             ssi: ssi,
             useCaseSpecifics: {
-                tpNumber: tp.tpNumber,
-                tpName: tp.tpName,
+                tpNumber: tp.number,
+                tpName: tp.name,
                 tpDid: tp.did
             },
             shortDescription: shortMessage,
@@ -216,33 +270,54 @@ export default class TrialParticipantController extends WebcController {
             econsent = this._showButton(econsent, 'View');
             econsent.versions.forEach(version => {
                 if (version.actions != undefined) {
-                    let tpVersions = version.actions.filter(action => action.tpNumber === this.model.tp.did && action.type === 'tp');
+                    let validVersions = version.actions.filter(action => action.tpDid === this.model.tp.did);
+                    let tpVersions = validVersions.filter(action => action.type === 'tp');
+                    let hcoVersions = validVersions.filter(action => action.type === 'hco');
+
+                    let tpVersion = {};
                     if (tpVersions && tpVersions.length > 0) {
-                        let tpVersion = tpVersions[tpVersions.length - 1];
+                        tpVersion = tpVersions[tpVersions.length - 1];
                         if (tpVersion && tpVersion.actionNeeded) {
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.TO_BE_SIGNED) {
+
                                 econsent = this._showButton(econsent, 'Sign');
                                 this.model.tp.tpSigned = true;
                                 econsent.tsSignedDate = tpVersion.toShowDate;
+                                econsent.isManuallySigned = tpVersion.isManual;
+                                econsent.manualAttachment = tpVersion.attachment;
+                                econsent.manualKeySSI = tpVersion.fileSSI;
+
                             }
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.WITHDRAW) {
                                 econsent = this._showButton(econsent, 'Contact');
                                 econsent.tsWithdrawDate = tpVersion.toShowDate;
                             }
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.CONTACT) {
-                                econsent = this._showButton(econsent, 'Contact');
-                                econsent.tsWithdrawedIntentionDate = 'Intention';
+                                                            if (tpVersion.status === 'Withdrawed') {
+                                    econsent.tsWithdrawDate = tpVersion.toShowDate;
+                                } else {
+                                    econsent = this._showButton(econsent, 'Contact');
+                                    econsent.tsWithdrawedIntentionDate = 'Intention';
+                                }
+                            }
+                            if (tpVersion.actionNeeded === Constants.ECO_STATUSES.DECLINED) {
+                                econsent.tsDeclined = 'Declined';
                             }
                         }
                     }
-                    let hcoVersions = version.actions.filter(action => action.tpNumber === this.model.tp.did && action.type === 'hco');
                     if (hcoVersions && hcoVersions.length > 0) {
-                        let hcVersion = hcoVersions[hcoVersions.length - 1];
-                        econsent.hcoDate = hcVersion.toShowDate;
+                        let hcoVersion = hcoVersions[hcoVersions.length - 1];
+                        let hcoVersionIndex = validVersions.findIndex(v => v === hcoVersion);
+                        let tpVersionIndex = validVersions.findIndex(v => v === tpVersion);
+                        if (hcoVersion.name === 'sign' && hcoVersionIndex > tpVersionIndex) {
+                            econsent = this._showButton(econsent, 'View');
+                        }
+                        econsent.hcoDate = hcoVersion.toShowDate;
                         this.model.tp.hcoSigned = true;
 
                     }
                 }
+
                 econsent.lastVersion = econsent.versions[econsent.versions.length - 1].version;
             })
         })
@@ -254,6 +329,8 @@ export default class TrialParticipantController extends WebcController {
             if (err) {
                 return console.log(err);
             }
+
+            // this.model.site = sites?.filter(site=> site.trialKeySSI === this.model.trial.keySSI);
             if (sites && sites.length > 0) {
                 this.model.site = sites[sites.length - 1];
                 this._sendMessageToSponsor();

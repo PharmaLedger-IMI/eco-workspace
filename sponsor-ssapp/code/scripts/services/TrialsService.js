@@ -49,7 +49,6 @@ export default class TrialsService extends DSUService {
       sponsor: trial.sponsor,
       did: trial.did,
       stage: trial.stage,
-      status: trial.status,
       created: trial.created,
     });
     return trial;

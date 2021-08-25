@@ -1,0 +1,75 @@
+<psk-page title="Trial Management">
+    <link rel="stylesheet" href="/assets/css/pages/trial-management.css">
+    <webc-container controller="QuestionsController">
+
+        <div class="main-background">
+            <div class="front">
+
+                <div class="top-container">
+                    <div class="pharma-logo">
+                        <psk-img class="ed-control-image" src="assets/images/pharmalogo.png"
+                                 height='47' width='110'></psk-img>
+                    </div>
+                    <div>
+                        <psk-label class="main-title" label="Patients Questions"></psk-label>
+                    </div>
+                    <button class="logout-button" data-tag="logout">Logout</button>
+                </div>
+
+                <div class="trial-table">
+                    <psk-layout columns="4" class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell-title">Patient</psk-label>
+
+                        <psk-label class="table-cell-title">Ecosent</psk-label>
+                        <psk-label class="table-cell-title">Question</psk-label>
+                        <psk-label class="table-cell-title">Options</psk-label>
+                    </psk-layout>
+                    <hr/>
+                </div>
+
+                <div class="trial-table body" data-for="@questions">
+                    <psk-layout columns="4"
+                                class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell">{{@patient}}</psk-label>
+
+                        <psk-label class="table-cell">{{@ecoVersion}}</psk-label>
+                        <psk-label class="table-cell">{{@question}}</psk-label>
+
+                        <div  class="table-cell" data-if="@answer">
+                            <div slot="true">
+                                <strong>Answered</strong>
+                            </div>
+                            <div slot="false">
+                                <button class="link-button" data-tag="question:answer" data="@id">Answer</button>
+                            </div>
+                        </div>
+
+                    </psk-layout>
+                    <hr/>
+                </div>
+
+                <button class="back-button" data-tag="back">Back</button>
+            </div>
+
+            <div class="eu-container">
+                <div class="left-image-eu">
+                    <psk-img class="ed-control-image" src="assets/images/flageu.png"
+                             height='80' width='123'></psk-img>
+                </div>
+                <div class="right-text-eu">
+                    <strong>
+                        <psk-label class="eu-text">This project has received funding from the European Union’s Horizon
+                            2020 research and innovation programme under <br/>
+                            grant agreement No 853992 Copyright <br/>
+                            <span>&copy;  PharmaLedger Consortium 2020 – 2023</span>
+                        </psk-label>
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+    </webc-container>
+</psk-page>
+
+

@@ -1,0 +1,46 @@
+<link href="/assets/css/pages/trial.css" rel="stylesheet">
+<webc-container controller="QuestionsController">
+    <div class="container-child">
+        <div class=header-title>
+            <psk-button-link class="go-back-link" event-name="go-back" icon="arrow-left"></psk-button-link>
+            <psk-label class="scan-error-title" label="Questions"></psk-label>
+        </div>
+        <div data-for="@questions">
+            <psk-layout columns="2" template-columns=" 80% 20%"
+                        class="justify-content-center align-items-center table-row"
+                        data="@keySSI" data-tag="go-to-question">
+
+                <div class="layout-content">
+                    <div class="right-text">
+                        <div>
+                            <strong>
+                                {{@question}}
+                            </strong>
+                        </div>
+                        <div>
+                            {{@answer}}
+                        </div>
+
+                        <div>
+                            <psk-echo value="Date: "></psk-echo>
+                            {{@date}}
+                        </div>
+                        <div   data-if="@answer">
+                            <div slot="true">
+                                <psk-echo value="Answer from HCO: "></psk-echo>
+                                {{@answer}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <psk-img class="left-image" height='20'
+                             src="assets/images/notification.png" width='20'></psk-img>
+                </div>
+
+            </psk-layout>
+        </div>
+
+    </div>
+    </div>
+</webc-container>

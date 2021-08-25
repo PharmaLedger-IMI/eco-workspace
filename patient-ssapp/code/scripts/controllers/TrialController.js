@@ -1,4 +1,4 @@
-import Constants from './Constants.js';
+import Constants from "../utils/Constants.js";
 import TrialService from '../services/TrialService.js';
 import ConsentStatusMapper from "../utils/ConsentStatusMapper.js";
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
@@ -18,6 +18,7 @@ export default class TrialController extends WebcController {
         let receivedObject = this.history.win.history.state.state;
         this.model.keyssi = receivedObject.trialSSI;
         this.model.tpNumber = receivedObject.tpNumber;
+        this.model.tpDid = receivedObject.tpDid;
         this._initServices(this.DSUStorage);
         this._initTrial();
         this._initHandlers();
@@ -46,7 +47,6 @@ export default class TrialController extends WebcController {
                 this.model.lowTitle = true;
             }
             this.model.tpEconsents = [];
-            this.model.trial.color = Constants.getColorByTrialStatus(this.model.trial.status);
             this.TrialService.getEconsents(trial.keySSI, async (err, data) => {
                 if (err) {
                     return console.log(err);
@@ -55,6 +55,8 @@ export default class TrialController extends WebcController {
                 let lastAction = 'Consent required';
                 let statusesMappedByConsent = {};
                 let statuses = await this.EconsentsStatusRepository.findAllAsync();
+                statuses.filter(status => status.tpDid == this.model.tpDid);
+
                 statuses.forEach(status => {
                     statusesMappedByConsent[status.foreignConsentId] = status;
                 })
@@ -71,6 +73,10 @@ export default class TrialController extends WebcController {
                         .map(action => action.charAt(0).toUpperCase() + action.slice(1))
                         .join(" ");
 
+                    let lastActionStatus = ConsentStatusMapper.getStatus(lastAction);
+                    if (lastActionStatus !== undefined) {
+                        lastAction = lastActionStatus.displayValue;
+                    }
                     return econsent.versions.length === 0 ? econsent : {
                         ...econsent,
                         versionDateAsString: DateTimeService.convertStringToLocaleDate(importantVersion.versionDate),
@@ -91,7 +97,7 @@ export default class TrialController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
             this.navigateToPageTag('econsent', {
-                tpNumber: this.model.tpNumber,
+                tpDid: this.model.tpDid,
                 trialuid: this.model.keyssi,
                 ecoId: model.uid,
                 ecoVersion: model.version,

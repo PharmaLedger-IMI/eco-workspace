@@ -1,7 +1,7 @@
 const {WebcController} = WebCardinal.controllers;
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
-import CommunicationService from '../services/CommunicationService.js';
+
 import DateTimeService from '../services/DateTimeService.js';
 
 let getInitModel = () => {
@@ -26,7 +26,6 @@ export default class EconsentVersionsController extends WebcController {
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
     }
 
     _initHandlers() {
@@ -73,6 +72,11 @@ export default class EconsentVersionsController extends WebcController {
                             econsentVersion.tpWithdraw = 'Intention';
                             break;
                         }
+                        case 'Declined': {
+                            econsentVersion.tsDeclined = 'Declined';
+                            break;
+                        }
+
                     }
                 })
                 if (econsentVersion.hcoSign) {
@@ -109,6 +113,21 @@ export default class EconsentVersionsController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
             window.history.back();
+        });
+    }
+
+    _attachHandlerView() {
+        this.onTagEvent('consent:view', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            this.navigateToPageTag('econsent-sign', {
+                trialSSI: this.model.trialSSI,
+                econsentSSI: model.econsentSSI,
+                ecoVersion: model.lastVersion,
+                tpDid: this.model.tp.did,
+                controlsShouldBeVisible: false
+            });
         });
     }
 }

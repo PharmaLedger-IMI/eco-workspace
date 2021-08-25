@@ -4,6 +4,7 @@ const { WebcController } = WebCardinal.controllers;
 export default class TrialController extends WebcController {
   constructor(...props) {
     super(...props);
+
     this.setModel({
       id: null,
     });

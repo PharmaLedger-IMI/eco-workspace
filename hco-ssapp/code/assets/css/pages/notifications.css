@@ -67,3 +67,13 @@
     height: 300px;
     overflow: auto;
 }
+
+.link-button {
+    background-color: white !important;
+    border: white !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    text-align: left;
+    font-size: 16px;
+    color: #2F80ED;
+}

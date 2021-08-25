@@ -1,7 +1,7 @@
 let LOADER_GLOBALS = {
   THEME: 'app',
   LABELS_DICTIONARY: {
-    APP_NAME: 'Sponsor wallet',
+    APP_NAME: 'Sponsor App',
     APP_DESCRIPTION: 'Prepare to access e-leaflets world',
     NEW_WALLET: 'New Wallet',
     ACCESS_WALLET: 'Access Wallet',

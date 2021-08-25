@@ -54,6 +54,25 @@
     text-align: right;
 }
 
+.consent-status {
+    color: #40A5B2;
+    font-size: 18px;
+    font-weight: bold;
+    display: block;
+    text-align: center;
+}
+
+.subheader-blue {
+    color: #40A5B2;
+    height: 35px;
+    font-weight: bold;
+    text-align: left;
+    font-size: 13px;
+    padding-left: 30px !important;
+    width: 90%;
+    margin-left: 5%;
+}
+
 .line-text {
     color: #00345b;
     font-weight: bold;
@@ -151,4 +170,26 @@
 .layout-hr {
     width: 350px;
     margin-top: 0;
+}
+
+.long-button {
+    background-color: white;
+    border: #40A5B2 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    height: 35px;
+    font-weight: bold;
+    text-align: left;
+    font-size: 13px;
+    color: #40A5B2 !important;
+    border-top: 1px solid black!important;
+    padding-left: 30px !important;
+    width: 90%;
+    margin-left: 5%;
+}
+
+.long-button consent {
+
+    border-top: none !important;
+
 }

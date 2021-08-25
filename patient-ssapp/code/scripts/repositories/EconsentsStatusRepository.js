@@ -17,6 +17,7 @@ class EconsentsStatusRepository {
 
     findAll = (callback) => this.StorageService.getAllRecords(this.tableName, callback);
 
+
     findAllAsync = async () => this.StorageService.getAllRecordsAsync(this.tableName);
 
     filter = (query, sort, limit, callback) => this.StorageService.filter(this.tableName, query, sort, limit, callback);

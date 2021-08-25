@@ -1,0 +1,24 @@
+<link href="/assets/css/pages/questions.css" rel="stylesheet">
+<webc-container controller="AsqQuestionController">
+    <div class="container-child">
+
+        <div >
+            <psk-label class="consent-name">{{@ecosent.name}}</psk-label>
+        </div>
+
+        <div class="trial-details">
+            <strong>Ask Question </strong>
+            <p>You can ask questions related to this ecosent. If you have other questions you can contact directly the site or the HCO. </p>
+        </div>
+
+        <div class="margin-top-10">
+            <strong>Question</strong>
+            <div>
+                <textarea style="width: 90%; height: 250px" data-view-model="@question"></textarea>
+            </div>
+        </div>
+
+        <button class="submit-button" data-tag="question-submit">SUBMIT</button>
+        <button class="back-button" data-tag="back">Back</button>
+    </div>
+</webc-container>

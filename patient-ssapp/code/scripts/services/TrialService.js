@@ -14,13 +14,21 @@ export default class TrialService extends DSUService {
 
     mountTrial = (keySSI, callback) => this.mountEntity(keySSI, callback);
 
+    mountTrialAsync = (keySSI) => this.mountEntityAsync(keySSI);
+
     reMountTrial = (keySSI, callback) => {
         this.unmountEntity(keySSI, () => this.mountEntity(keySSI, callback))
     };
 
+
+    getTrialAsync = (uid) => this.getEntityAsync(uid);
+
     updateTrial = (data, callback) => this.updateEntity(data, callback);
+    updateTrialAsync = (data) => this.updateEntityAsync(data);
 
     getEconsents = (trialSSI, callback) => this.getEntities(this._getEconsentsPath(trialSSI), callback);
+
+    getEconsentsAsync = (trialSSI) =>this.getEntitiesAsync(this._getEconsentsPath(trialSSI));
 
     getEconsent = (trialSSI, econsentSSI, callback) => this.getEntity(econsentSSI, this._getEconsentsPath(trialSSI), callback)
 

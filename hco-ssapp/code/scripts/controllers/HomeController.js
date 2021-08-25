@@ -7,6 +7,7 @@ import SharedStorage from '../services/SharedStorage.js';
 import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
 import NotificationsRepository from "../repositories/NotificationsRepository.js";
 import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
+import QuestionsRepository from "../repositories/QuestionsRepository.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -53,13 +54,14 @@ export default class HomeController extends WebcController {
         this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
         this.SiteService = new SiteService(DSUStorage);
         this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
+        this.QuestionsRepository = QuestionsRepository.getInstance(DSUStorage);
     }
 
     _initHandlers() {
+        this._attachHandlerVisits();
         this._attachHandlerNotifications();
         this._attachHandlerPatients();
         this._attachHandlerTrialManagement();
-        //this._demoOfDomainCommunications();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -110,6 +112,7 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case 'site-status-change': {
+                    this._refreshSite(data.message);
                     this._saveNotification(data.message, 'The status of site was changed', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
 
                     break;
@@ -124,6 +127,7 @@ export default class HomeController extends WebcController {
                     this._saveNotification(data.message, 'Your site was added to the trial ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
 
                     this.SiteService.mountSite(data.message.ssi, (err, site) => {
+
                         if (err) {
                             return console.log(err);
                         }
@@ -135,6 +139,17 @@ export default class HomeController extends WebcController {
                         });
                     });
 
+                    break;
+                }
+
+                case 'ask-question': {
+                    this._saveQuestion(data.message);
+                    break;
+                }
+
+                case Constants.MESSAGES.HCO.COMMUNICATION.TYPE.VISIT_RESPONSE: {
+
+                    this._updateVisit(data.message);
                     break;
                 }
 
@@ -161,14 +176,12 @@ export default class HomeController extends WebcController {
         });
     }
 
-    _demoOfDomainCommunications() {
-        this.CommunicationService.sendMessage(CommunicationService.identities.IOT.PROFESSIONAL_IDENTITY, {
-            operation: "operation",
-            ssi: "ssi",
-            shortDescription: "shortMessage",
-        });
-        this.CommunicationService.listenForMessages('iot', (err, data) => {
-            debugger
+    _refreshSite(message) {
+
+        this.SiteService.mountSite(message.data.site, (err, site) => {
+            if (err) {
+                return console.log(err);
+            }
         });
     }
 
@@ -193,32 +206,39 @@ export default class HomeController extends WebcController {
                 case 'withdraw': {
                     actionNeeded = 'TP Withdrawed';
                     status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
-                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpNumber + ' withdraw', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
+                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' withdraw', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
                     break;
                 }
                 case 'withdraw-intention': {
                     actionNeeded = 'Reconsent required';
-                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpNumber + ' withdraw', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
+                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' withdraw', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
                     status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
+                    break;
+                }
+                case 'Declined': {
+                    actionNeeded = 'TP Declined';
+                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' declined', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
+                    status = Constants.TRIAL_PARTICIPANT_STATUS.DECLINED;
                     break;
                 }
                 case 'sign': {
                     tpSigned = true;
-                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpNumber + ' signed', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
+                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' signed', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
                     actionNeeded = 'Acknowledgement required';
                     status = Constants.TRIAL_PARTICIPANT_STATUS.SCREENED;
                     break;
                 }
             }
+
             currentVersion.actions.push({
                 ...message.useCaseSpecifics.action,
-                tpNumber: message.useCaseSpecifics.tpNumber,
+                tpDid: message.useCaseSpecifics.tpDid,
                 status: status,
                 type: 'tp',
                 actionNeeded: actionNeeded
             });
 
-            this.TrialParticipantRepository.filter(`did == ${message.useCaseSpecifics.tpNumber}`, 'ascending', 30, (err, tps) => {
+            this.TrialParticipantRepository.filter(`did == ${message.useCaseSpecifics.tpDid}`, 'ascending', 30, (err, tps) => {
                 if (tps && tps.length > 0) {
                     let tp = tps[0];
                     tp.actionNeeded = actionNeeded;
@@ -229,6 +249,7 @@ export default class HomeController extends WebcController {
                         if (err) {
                             return console.log(err);
                         }
+
                         console.log(trialParticipant);
                     });
                 }
@@ -274,6 +295,14 @@ export default class HomeController extends WebcController {
         });
     }
 
+    _attachHandlerVisits() {
+        this.onTagEvent('home:visits', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('visits');
+        });
+    }
+
     _saveNotification(notification, name, reccomendedAction, type) {
         notification.type = type;
         notification.name = name;
@@ -286,8 +315,7 @@ export default class HomeController extends WebcController {
     }
 
     _saveVisit(message) {
-
-
+        let demoMessage = 'General details and description of the trial in case it provided by the Sponsor/Site regarding specific particularities of the Trial or general message for Trial Subject';
         this.TrialService.getEconsents(message, (err, consents) => {
             if (err) {
                 return console.error(err);
@@ -301,11 +329,15 @@ export default class HomeController extends WebcController {
                         if (item.visits && item.visits.length > 0) {
                             item.visits.forEach(visit => {
                                 let visitToBeAdded = {
+                                    details: demoMessage,
+                                    toRemember: demoMessage,
+                                    procedures: demoMessage,
                                     name: item.name,
                                     consentSSI: item.consent.keySSI,
                                     trialSSI: message,
                                     period: visit.period,
-                                    unit: visit.unit
+                                    unit: visit.unit,
+                                    id: visit.id
                                 };
 
                                 this.VisitsAndProceduresRepository.create(visitToBeAdded, (err, visitCreated) => {
@@ -347,6 +379,40 @@ export default class HomeController extends WebcController {
             } else {
                 this._saveVisit(trialSSI);
             }
+        });
+    }
+
+    _saveQuestion(message) {
+        this.QuestionsRepository.create(message.useCaseSpecifics.question.pk, message.useCaseSpecifics.question, (err, data) => {
+            if (err) {
+                console.log(err);
+            }
+            let notification = message;
+
+            this._saveNotification(notification, message.shortDescription, 'view questions', Constants.NOTIFICATIONS_TYPE.TRIAL_SUBJECT_QUESTIONS);
+        })
+    }
+
+    _updateVisit(message) {
+        this.TrialParticipantRepository.filter(`did == ${message.useCaseSpecifics.tpDid}`, 'ascending', 30, (err, tps) => {
+            if (err) {
+                console.log(err);
+            }
+            let tp = tps[0];
+            let objIndex = tp?.visits?.findIndex((obj => obj.id == message.useCaseSpecifics.visit.id));
+            tp.visits[objIndex].accepted = message.useCaseSpecifics.visit.accepted;
+            tp.visits[objIndex].declined = message.useCaseSpecifics.visit.declined;
+            this.TrialParticipantRepository.update(tp.uid, tp, (err, data) => {
+                if (err) {
+                    console.log(err);
+                }
+
+                let notification = message;
+                notification.tpUid = data.uid;
+                this._saveNotification(notification, message.shortDescription, 'view visits', Constants.NOTIFICATIONS_TYPE.MILESTONES_REMINDERS);
+            })
+
+
         });
     }
 }

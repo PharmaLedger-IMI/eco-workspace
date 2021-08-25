@@ -37,4 +37,8 @@ trial-table tr:nth-child(even){background-color: #00345B;}
     height: 300px;
     overflow: auto;
 }
+.red {
+    color: red !important;
+    font-weight: bold;
+}
 

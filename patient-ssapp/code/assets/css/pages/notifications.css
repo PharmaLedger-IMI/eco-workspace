@@ -31,12 +31,22 @@
     padding-right: 25px;
     padding-top: 10px;
 }
-
+.data-block {
+    display: block;
+    margin-left: 20px;
+}
 .date-div .right-text {
     padding-top: 15px;
 }
 
+.right-text{
+    width: 70%;
+}
 .gray-filter {
     filter: opacity(50%);
 }
 
+.go-back-link  {
+    font-size: 25px;
+    margin-right: 10px;
+}

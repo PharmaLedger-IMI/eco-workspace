@@ -500,3 +500,17 @@
     configured workspace
     configured workspace
     configured workspace
+    Fix navigation from menu and ssapp components (issue #269)
+    [Freeze]
+
+    Merge branch 'master' of http://github.com/privatesky/privatesky
+    Fix navigation from menu and ssapp components (issue #269)
+    fixed createMarketplace swarm
+    Put back write user credentials in wallet
+    Merge pull request #2 from daniel-visoiu/master
+    
+    Added "Test Contract Method" functionality for testing contract methods.
+    Put back write user credentials in wallet
+    Put back write user credentials in wallet
+    Put back write user credentials in wallet
+    Put back write user credentials in wallet

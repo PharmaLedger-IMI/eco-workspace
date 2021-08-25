@@ -1,0 +1,23 @@
+<link rel="stylesheet" href="/assets/css/pages/addtp.css">
+
+<h2 slot="header" class="alert-title">Answer Question</h2>
+
+
+<div class="top">
+
+    <div class="line">
+
+        <psk-label class="tp-title"> {{@title}}</psk-label>
+
+    </div>
+    <div class="line">
+
+        <textarea style="width: 90%; height: 250px" data-view-model="@answer"></textarea>
+    </div>
+
+</div>
+
+<div class="bottom">
+    <button class="tp-button wide-button inverted-colors" slot="footer" data-tag="tp:submit">Send</button>
+    <button class="tp-button wide-button inverted-colors" slot="footer" data-tag="tp:cancel">Cancel</button>
+</div>

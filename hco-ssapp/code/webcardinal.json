@@ -38,6 +38,18 @@
       "tag": "visits-procedures"
     },
     {
+      "name": "Visit Edit",
+      "path": "/visit-edit",
+      "src": "visit-edit.html",
+      "tag": "visit-edit"
+    },
+    {
+      "name": "Visits",
+      "path": "/visits",
+      "src": "visits.html",
+      "tag": "visits"
+    },
+    {
       "name": "Create trial",
       "tag": "create-trial",
       "indexed": false
@@ -73,10 +85,22 @@
       "tag": "econsent-sign"
     },
     {
+      "name": "Questions",
+      "path": "/questions",
+      "src": "questions.html",
+      "tag": "questions"
+    },
+    {
       "name": "Notifications",
       "path": "/notifications",
       "src": "notifications.html",
       "tag": "notifications"
+    },
+    {
+      "name": "ProceduresView",
+      "path": "/procedures-view",
+      "src": "procedures-view.html",
+      "tag": "procedures-view"
     }
   ],
   "pagesFallback": {

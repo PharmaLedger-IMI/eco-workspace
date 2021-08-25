@@ -7,13 +7,15 @@ class VisitsAndProceduresRepository {
         this.tableName = 'visits';
     }
 
-    create = (key, trialParticipant, callback) =>
-        this.StorageService.insertRecord(this.tableName, key, trialParticipant, callback);
+    create = (key, visit, callback) =>
+        this.StorageService.insertRecord(this.tableName, key, visit, callback);
 
-    createAsync = (key, trialParticipant) =>
-        this.StorageService.insertRecordAsync(this.tableName, key, trialParticipant);
+    createAsync = (key, visit) =>
+        this.StorageService.insertRecordAsync(this.tableName, key, visit);
 
-    findBy = (trialKey, callback) => this.StorageService.getRecord(this.tableName, trialKey, callback);
+    findBy = (visitKey, callback) => this.StorageService.getRecord(this.tableName, visitKey, callback);
+
+    findByAsync = (visitKey) => this.StorageService.getRecordAsync(this.tableName, visitKey);
 
     findAll = (callback) => this.StorageService.getAllRecords(this.tableName, callback);
 
@@ -24,11 +26,11 @@ class VisitsAndProceduresRepository {
     filterAsync = async (query, sort, limit) =>
         this.StorageService.filterAsync(this.tableName, query, sort, limit);
 
-    update = (key, trialParticipant, callback) =>
-        this.StorageService.updateRecord(this.tableName, key, trialParticipant, callback);
+    update = (key, visit, callback) =>
+        this.StorageService.updateRecord(this.tableName, key, visit, callback);
 
-    updateAsync = (key, trialParticipant) =>
-        this.StorageService.updateRecordAsync(this.tableName, key, trialParticipant);
+    updateAsync = (key, visit) =>
+        this.StorageService.updateRecordAsync(this.tableName, key, visit);
 
     delete = (key,callback) => this.StorageService.deleteRecord(this.tableName, key, callback);
 

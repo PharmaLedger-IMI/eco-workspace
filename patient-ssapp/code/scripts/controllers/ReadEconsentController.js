@@ -70,6 +70,7 @@ export default class ReadEconsentController extends WebcController {
         this._attachHandlerManuallySign();
         this._attachHandlerDownload();
         this._attachHandlerBack();
+        this._attachHandlerWithdraw();
     }
 
     _finishProcess(event, response) {
@@ -85,12 +86,58 @@ export default class ReadEconsentController extends WebcController {
         this.onTagEvent('econsent:sign', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-            this.model.status.actions.push({name: 'signed'});
-            this._saveStatus('sign');
+            this.showModalFromTemplate(
+                'confirmation-alert',
+                (event) => {
+                    const response = event.detail;
+                    if (response) {
+                        this.model.status.actions.push({name: 'signed'});
+                        this._saveStatus('sign');
+                    }
+                },
+                (event) => {
+                    const response = event.detail;
+                },
+                {
+                    controller: 'ConfirmationAlertController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false,
+                    question: 'Are you sure you want to sign this ecosent ? ',
+                    title: 'Sign Econsent',
+                });
         });
+
     }
 
     _attachHandlerDecline() {
+        this.onTagEvent('econsent:decline', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.showModalFromTemplate(
+                'decline-consent',
+                (event) => {
+                    const response = event.detail;
+                    if (response) {
+                        let operation = ConsentStatusMapper.consentStatuses.decline.name;
+                        let message = ConsentStatusMapper.consentStatuses.decline.details;
+                        this.model.status.actions.push({name: ConsentStatusMapper.consentStatuses.decline.name});
+                        this._saveStatus(operation);
+                    }
+                },
+                (event) => {
+                    const response = event.detail;
+                }
+            ),
+                {
+                    controller: 'DeclineConsentController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false,
+                    title: 'Decline Econsent',
+                };
+        });
+    }
+
+    _attachHandlerWithdraw() {
         this.onTagEvent('econsent:withdraw', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
@@ -138,26 +185,31 @@ export default class ReadEconsentController extends WebcController {
     _attachHandlerManuallySign() {
         this.onTagClick('manual:sign', (model, target, event) => {
             // TODO: It crashes for now. Comment it until we fix it.
-            // this.navigateToPageTag('signmanually-econsent', {...this.model.historyData});
+            this.navigateToPageTag('signmanually-econsent', {...this.model.historyData});
         });
     }
 
     sendMessageToSponsorAndHCO(action, ssi, shortMessage) {
         const currentDate = new Date();
+        currentDate.setDate(currentDate.getDate());
+
         this.TrialParticipantRepository.findAll((err, data) => {
+
             if (err) {
                 return console.log(err);
             }
 
             if (data && data.length > 0) {
-                this.model.tp = data[0];
+                this.model.tp = data[data.length-1];
                 let sendObject = {
                     operation: 'update-econsent',
                     ssi: ssi,
                     useCaseSpecifics: {
                         trialSSI: this.model.historyData.trialuid,
-                        tpNumber: this.model.tp.did,
+                        tpNumber: this.model.tp.number,
+                        tpDid: this.model.tp.did,
                         version: this.model.historyData.ecoVersion,
+                        siteSSI: this.model.tp.site?.keySSI,
                         action: {
                             name: action,
                             date: currentDate.toISOString(),
@@ -272,7 +324,7 @@ export default class ReadEconsentController extends WebcController {
             return;
         }
         await this.EconsentsStatusRepository.updateAsync(this.model.status.uid, this.model.status);
-        this.sendMessageToSponsorAndHCO(operation, this.model.econsent.keySSI, 'Tp' + operation);
+        this.sendMessageToSponsorAndHCO(operation, this.model.econsent.keySSI, 'Tp ' + operation);
         this._finishActionSave();
     }
 

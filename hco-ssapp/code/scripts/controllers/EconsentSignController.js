@@ -5,6 +5,8 @@ import CommunicationService from '../services/CommunicationService.js';
 import DateTimeService from '../services/DateTimeService.js';
 import FileDownloader from '../utils/FileDownloader.js';
 import Constants from '../utils/Constants.js';
+import SiteService from '../services/SiteService.js';
+import PatientEcosentService from "../services/PatientEcosentService.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -38,6 +40,8 @@ export default class EconsentSignController extends WebcController {
 
         this._initServices(this.DSUStorage);
         this._initHandlers();
+        this._initSite();
+        this._initTrialParticipant();
         this._initConsent();
     }
 
@@ -46,6 +50,8 @@ export default class EconsentSignController extends WebcController {
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.SiteService = new SiteService(DSUStorage);
+        ;
     }
 
     _initHandlers() {
@@ -61,27 +67,54 @@ export default class EconsentSignController extends WebcController {
             if (err) {
                 return console.log(err);
             }
+
             this.model.econsent = {
                 ...econsent,
                 versionDateAsString: DateTimeService.convertStringToLocaleDate(econsent.versionDate),
             };
-            let ecoVersion = this.model.ecoVersion;
-            let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
-            let econsentFilePath = this._getEconsentFilePath(this.model.trialSSI, this.model.econsentSSI, ecoVersion, currentVersion.attachment);
-            this.FileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
-            this._downloadFile();
+
+            let currentVersion = '';
+            if (this.model.ecoVersion) {
+                currentVersion = econsent.versions.find(eco => eco.version === this.model.ecoVersion);
+            } else {
+                currentVersion = econsent.versions[econsent.versions.length - 1];
+                this.model.ecoVersion = currentVersion.version;
+            }
+
+            if (this.model.isManuallySigned) {
+
+                this.PatientEcosentService = new PatientEcosentService(this.DSUStorage, this.model.econsent.id);
+                this.PatientEcosentService.mountEcosent(this.model.manualKeySSI, (err, data) => {
+                    if (err) {
+                        return console.log(err);
+                    }
+                    let econsentFilePath = this._getEconsentManualFilePath(this.model.econsent.id, data.keySSI, this.model.manualAttachment);
+                    this.FileDownloader = new FileDownloader(econsentFilePath, this.model.manualAttachment);
+                    this._downloadFile();
+                })
+
+            } else {
+                let econsentFilePath = this._getEconsentFilePath(this.model.trialSSI, this.model.econsentSSI, this.model.ecoVersion, currentVersion.attachment);
+                this.FileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
+                this._downloadFile();
+            }
+
         });
     }
 
     sendMessageToSponsor(operation, shortMessage) {
+
+
         const currentDate = new Date();
         let sendObject = {
             operation: operation,
             ssi: this.model.econsentSSI,
             useCaseSpecifics: {
                 trialSSI: this.model.trialSSI,
-                tpNumber: this.model.trialParticipantNumber,
+                tpNumber: this.model.trialParticipant.number,
+                tpDid: this.model.trialParticipant.did,
                 version: this.model.ecoVersion,
+                siteSSI: this.model.site?.keySSI,
                 action: {
                     name: 'sign',
                     date: DateTimeService.getCurrentDateAsISOString(),
@@ -95,6 +128,10 @@ export default class EconsentSignController extends WebcController {
 
     _getEconsentFilePath(trialSSI, consentSSI, version, fileName) {
         return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version + '/' + fileName;
+    }
+
+    _getEconsentManualFilePath(ecoID, consentSSI, fileName) {
+        return '/econsents/' + ecoID + '/' + consentSSI;
     }
 
     _attachHandlerEconsentSign() {
@@ -204,7 +241,6 @@ export default class EconsentSignController extends WebcController {
     }
 
     _updateEconsentWithDetails(message) {
-
         let currentVersionIndex = this.model.econsent.versions.findIndex(eco => eco.version === this.model.ecoVersion)
         if (currentVersionIndex === -1) {
             return console.log(`Version ${message.useCaseSpecifics.version} of the econsent ${message.ssi} does not exist.`)
@@ -217,7 +253,7 @@ export default class EconsentSignController extends WebcController {
         const currentDate = new Date();
         currentVersion.actions.push({
             name: 'sign',
-            tpNumber: this.model.trialParticipantNumber,
+            tpDid: this.model.tpDid,
             type: 'hco',
             status: Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED,
             actionNeeded: 'HCO SIGNED -no action required',
@@ -234,25 +270,25 @@ export default class EconsentSignController extends WebcController {
         });
     }
 
-    _updateTrialParticipantStatus() {
-
+    _initTrialParticipant() {
         this.TrialParticipantRepository.filter(`did == ${this.model.trialParticipantNumber}`, 'ascending', 30, (err, tps) => {
 
             if (tps && tps.length > 0) {
-                let tp = tps[0];
-                tp.actionNeeded = 'HCO SIGNED -no action required',
-                    tp.tpSigned = true;
-                tp.status = Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED;
-                this.TrialParticipantRepository.update(tp.uid, tp, (err, trialParticipant) => {
-                    if (err) {
-                        return console.log(err);
-                    }
-                    console.log(trialParticipant);
-                });
+                this.model.trialParticipant = tps[0];
             }
         });
+    }
 
-
+    _updateTrialParticipantStatus() {
+        this.model.trialParticipant.actionNeeded = 'HCO SIGNED -no action required';
+        this.model.trialParticipant.tpSigned = true;
+        this.model.trialParticipant.status = Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED;
+        this.TrialParticipantRepository.update(this.model.trialParticipant.uid, this.model.trialParticipant, (err, trialParticipant) => {
+            if (err) {
+                return console.log(err);
+            }
+            console.log(trialParticipant);
+        });
     }
 
     _attachHandlerBack() {
@@ -262,4 +298,13 @@ export default class EconsentSignController extends WebcController {
             window.history.back();
         });
     }
+
+    async _initSite() {
+
+        let sites = await this.SiteService.getSitesAsync();
+        if (sites && sites.length > 0) {
+            this.model.site = sites[sites.length - 1];
+        }
+    }
+
 }

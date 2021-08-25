@@ -111,7 +111,6 @@ export default class TrialController extends WebcController {
             operation: operation,
             ssi: ssi,
             useCaseSpecifics: {
-                tpNumber: trialParticipant.tpNumber,
                 tpName: trialParticipant.name,
                 did: trialParticipant.did
             },

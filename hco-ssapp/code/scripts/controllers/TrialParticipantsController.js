@@ -53,11 +53,13 @@ export default class TrialParticipantsController extends WebcController {
             this.model.trial = trial;
             let actions = await this._getEconsentActionsMappedByUser(keySSI);
             this.model.trialParticipants = await this._getTrialParticipantsMappedWithActionRequired(actions);
+            this._getSite();
         });
     }
 
     async _getTrialParticipantsMappedWithActionRequired(actions) {
-        return (await this.TrialParticipantRepository.findAllAsync())
+        let trialsR = (await this.TrialParticipantRepository.findAllAsync());
+        return trialsR
             .filter(tp => tp.trialNumber === this.model.trial.id)
             .map(tp => {
                 let tpActions = actions[tp.did];
@@ -79,8 +81,16 @@ export default class TrialParticipantsController extends WebcController {
                         break;
                     }
                     case 'sign': {
-                        actionNeeded = 'Acknowledgement required';
-                        break;
+                        switch (lastAction.action.type) {
+                            case 'hco': {
+                                actionNeeded = 'Consented by HCO';
+                                break;
+                            }
+                            case 'tp': {
+                                actionNeeded = 'Acknowledgement required';
+                                break;
+                            }
+                        }
                     }
                 }
                 return {
@@ -102,10 +112,10 @@ export default class TrialParticipantsController extends WebcController {
                         return actions;
                     }
                     version.actions.forEach(action => {
-                        if (actions[action.tpNumber] === undefined) {
-                            actions[action.tpNumber] = []
+                        if (actions[action.tpDid] === undefined) {
+                            actions[action.tpDid] = []
                         }
-                        actions[action.tpNumber].push({
+                        actions[action.tpDid].push({
                             econsent: {
                                 uid: econsent.uid,
                                 keySSI: econsent.keySSI,
@@ -151,7 +161,7 @@ export default class TrialParticipantsController extends WebcController {
 
                     this.createTpDsu(response);
                     this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.SUCCESS.ADD_TRIAL_PARTICIPANT);
-                    this._getSite();
+
                 },
                 (event) => {
                     const response = event.detail;
@@ -199,19 +209,28 @@ export default class TrialParticipantsController extends WebcController {
         this.sendMessageToPatient(
             'add-to-trial',
             this.model.trialSSI,
-            {tpNumber: '',tpName: tp.name, did: tp.did},
+            {tpNumber: '', tpName: tp.name, did: tp.did},
             Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL
         );
     }
 
     sendMessageToPatient(operation, ssi, tp, shortMessage) {
+
         this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
             operation: operation,
             ssi: ssi,
             useCaseSpecifics: {
                 tpNumber: tp.tpNumber,
-                tpName:  tp.tpName,
-                tpDid: tp.did
+                tpName: tp.tpName,
+                tpDid: tp.did,
+
+                site: {
+                    name: this.model.site?.name,
+                    number: this.model.site?.id,
+                    country: this.model.site?.country,
+                    status: this.model.site?.status,
+                    keySSI: this.model.site?.keySSI,
+                },
             },
             shortDescription: shortMessage,
         });
@@ -233,12 +252,14 @@ export default class TrialParticipantsController extends WebcController {
 
     _getSite() {
 
-        this.SiteService.getSites((err,sites)=>{
+        this.SiteService.getSites((err, sites) => {
+
+            //this.model.site = sites?.filter(site=> site.trialKeySSI === this.model.trial.keySSI);
             if (err) {
                 return console.log(err);
             }
-            if(sites &&sites.length >0){
-                this.model.site = sites[sites.length-1];
+            if (sites && sites.length > 0) {
+                this.model.site = sites[sites.length - 1];
                 this._sendMessageToSponsor();
             }
         });
@@ -250,7 +271,7 @@ export default class TrialParticipantsController extends WebcController {
             ssi: this.model.trialSSI,
             stageInfo: {
                 siteSSI: this.model.site.KeySSI,
-                status:  this.model.trial.stage
+                status: this.model.trial.stage
             },
             shortDescription: 'The stage of the site changed',
         });

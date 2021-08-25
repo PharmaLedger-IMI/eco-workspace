@@ -2,11 +2,22 @@ const MESSAGES = {
     HCO: {
         COMMUNICATION: {
             SPONSOR: {
-                SIGN_ECONSENT: 'HCO signed econsent'
+                SIGN_ECONSENT: 'HCO signed econsent',
+                VISIT_CONFIRMED : 'HCO confirmed a visit'
             },
             PATIENT: {
                 ADD_TO_TRIAL: 'You were added to trial',
-                REFRESH_TRIAL: 'Trial needs to be refreshed.'
+                REFRESH_TRIAL: 'Trial needs to be refreshed.',
+                SCHEDULE_VISIT : 'A visit was scheduled.',
+                VISIT_DECLINED: 'A visit was declined by the patient',
+                VISIT_ACCEPTED: 'A visit was accepted by the patient'
+            },
+            TYPE :{
+                ADD_TO_TRIAL : 'add-to-trial',
+                SCHEDULE_VISIT: 'schedule-visit',
+                UPDATE_VISIT: 'update-visit',
+                VISIT_RESPONSE: 'visit-response',
+                VISIT_CONFIRMED: 'visit-confirmed'
             }
         },
         FEEDBACK: {
@@ -23,7 +34,8 @@ const MESSAGES = {
 const ECO_STATUSES = {
     TO_BE_SIGNED :'Acknowledgement required',
     WITHDRAW :'TP Withdrawed',
-    CONTACT: 'Reconsent required'
+    CONTACT: 'Reconsent required',
+    DECLINED: 'TP Declined'
 }
 
 const NOTIFICATIONS_TYPE  = {

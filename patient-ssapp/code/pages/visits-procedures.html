@@ -1,0 +1,98 @@
+<link href="/assets/css/pages/visits.css" rel="stylesheet">
+<webc-container controller="VisitsAndProceduresController">
+    <div class="container-child">
+        <div data-if="@selectedVisit.active" class="main-visit">
+            <div class="title">{{@selectedVisit.model.name}}</div>
+            <psk-layout columns="2" template-columns="15% 85%"
+                        class="justify-content-center align-items-center table-row
+                        subtitle-date" data-if="@selectedVisit.model.status">
+                <div class="img-div">
+                    <psk-img class="left-image" height='60' width='60'
+                             src="assets/images/calendar.png"></psk-img>
+                </div>
+                <div class="date-text">{{@selectedVisit.model.toShowDate}}</div>
+            </psk-layout>
+
+            <div class="subtitle-status" data-if="@selectedVisit.model.status">
+                <div slot="true">
+                    {{@selectedVisit.model.status}}
+                </div>
+                <div slot="false">
+                    <button class="long-button green centred-button" data="@selectedVisit.model.uid"
+                            data-tag="accept-or-decline-visit">
+                        Accept or Decline
+                    </button>
+                </div>
+            </div>
+            <div class="text-block">
+                <div class="paragraph">
+                    <strong>Visit Details</strong>
+                    <div>
+                        {{@selectedVisit.model.details}}
+                    </div>
+                </div>
+                <div class="paragraph">
+                    <strong>Things to remember</strong>
+                    <div>
+                        {{@selectedVisit.model.toRemember}}
+                    </div>
+                </div>
+                <div class="paragraph">
+                    <button class="link-button" data="@id" data-tag="procedures:view">Procedures</button>
+                </div>
+            </div>
+
+        </div>
+
+        <hr class="layout-hr">
+
+        <div class="title">Visits Schedule</div>
+
+        <div data-for="@visits">
+            <psk-layout columns="2" template-columns="15% 85%"
+                        class="justify-content-center align-items-center table-row"
+                        data="@keySSI" data-tag="go-to-visit">
+                <div>
+                    <psk-img class="left-image" height='40' width='40'
+                             src="assets/images/calendar.png"></psk-img>
+                </div>
+                <div class="layout-content green-row">
+                    <div class="display-flex-row">
+                        <strong>{{@name}}</strong>
+                        <div data-if="@accepted">
+                            - {{@toShowDate}}
+                        </div>
+                    </div>
+                    <div>
+                        <strong>Period: </strong>
+                        {{@period}} {{@unit}}
+                    </div>
+
+
+                    <!--                    <div>-->
+                    <!--                        <strong>Accepted: </strong>-->
+                    <!--                        {{@accepted}}-->
+                    <!--                    </div>-->
+                    <!--                    <div>-->
+                    <!--                        <strong>Declined: </strong>-->
+                    <!--                        {{@declined}}-->
+                    <!--                    </div>-->
+                    <!--                    <div>-->
+                    <!--                        <button class="long-button green" data="@uid" data-tag="visit:confirm"-->
+                    <!--                        >Accept-->
+                    <!--                        </button>-->
+                    <!--                    </div>-->
+                    <!--                    <div>-->
+                    <!--                        <button class="long-button red" data="@uid" data-tag="visit:decline"-->
+                    <!--                        >Decline-->
+                    <!--                        </button>-->
+                    <!--                    </div>-->
+                </div>
+                <hr class="layout-hr">
+            </psk-layout>
+        </div>
+
+        <button class="back-button" data-tag="back">Back</button>
+    </div>
+    </div>
+</webc-container>

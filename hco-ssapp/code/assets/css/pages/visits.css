@@ -1,0 +1,66 @@
+.general-table{
+    width: 60%;
+    margin-left: 20%;
+}
+.body{
+    height: 500px;
+}
+.table-cell {
+    font-size: 16px;
+    color: #000000;
+    font-size: 16px;
+}
+
+.table-cell-title {
+    font-size: 16px;
+    color: #000000;
+    font-weight: bold;
+}
+
+.link-button {
+    background-color: white !important;
+    border: white !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    text-align: left;
+    font-size: 16px;
+    color: #2F80ED;
+}
+
+.box {
+    float: left;
+    height: 20px;
+    width: 20px;
+    margin-bottom: 15px;
+    border: 1px solid black;
+    clear: both;
+}
+
+.confirmation{
+    display:flex;
+}
+
+.confirmation-item{
+    margin-left: 5px;
+}
+
+.red {
+    background-color: red;
+}
+
+.green {
+    background-color: green;
+}
+
+textarea {
+    width: 700px;
+    height: 100px;
+}
+
+.margin-top-10 {
+    margin-top: 10px;
+}
+
+.margin-left-35-percent {
+    margin-left: 35% !important;
+}

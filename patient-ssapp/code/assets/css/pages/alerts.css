@@ -20,6 +20,22 @@
     margin-right: 10px;
     margin-left: 10px;
 }
+.long-button {
+    background-color: #FAFAFA;
+    border: #00345b !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    height: 45px;
+    font-weight: bold;
+    text-align: left;
+    font-size: 16px;
+    color: #00345b !important;
+    border-top: 1px solid black!important;
+    padding-left: 30px !important;
+    width: 90%;
+    margin-left: 5%;
+}
+
 
 .cancel-button {
     background-color: white !important;

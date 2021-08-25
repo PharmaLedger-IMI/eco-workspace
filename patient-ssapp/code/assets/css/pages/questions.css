@@ -1,0 +1,29 @@
+.margin-top-10 {
+    margin-top: 10px;
+}
+
+.consent-name{
+    color: #40A5B2;
+    font-size: 20px;
+    font-weight: bold;
+    display: block;
+    text-align: center;
+}
+
+.trial-details {
+    margin: 10% 0;
+}
+
+.submit-button {
+    background-color: white;
+    border: #40A5B2 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    height: 35px;
+    font-weight: bold;
+    text-align: center;
+    font-size: 13px;
+    color: #40A5B2 !important;
+    width: 90%;
+    margin-left: 5%;
+}

@@ -8,6 +8,8 @@ export default class SiteService extends DSUService {
 
     getSites = (callback) => this.getEntities(callback);
 
+    getSitesAsync = () => this.getEntitiesAsync();
+
     getSite = (uid, callback) => this.getEntity(uid, callback);
 
     saveSite = (data, callback) => this.saveEntity(data, callback);

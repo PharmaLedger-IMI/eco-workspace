@@ -1,5 +1,5 @@
-import Constants from './Constants.js';
-import NotificationsService from '../services/NotificationsService.js';
+import Constants from "../utils/Constants.js";
+import NotificationsRepository from "../repositories/NotificationsRepository.js";
 
 const { WebcController } = WebCardinal.controllers;
 
@@ -13,16 +13,16 @@ export default class NotificationsController extends WebcController {
   }
 
   _initServices(DSUStorage) {
-    this.NotificationsService = new NotificationsService(DSUStorage);
+    this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
   }
 
   _initNotifications() {
     this.model.notifications = [];
-    this.NotificationsService.getNotifications((err, data) => {
+    this.NotificationsRepository.findAll((err, data) => {
       if (err) {
         return console.log(err);
       }
-      let notificationsMappedAndSorted = data.notifications
+      let notificationsMappedAndSorted = data
         .map((notification) => {
           return {
             ...notification,
@@ -30,7 +30,7 @@ export default class NotificationsController extends WebcController {
             name: notification.title,
             details: notification.shortDescription,
             type: notification.page,
-            icon: Constants.getIconByNotificationType(notification.page),
+
           };
         })
         .sort(function (a, b) {
