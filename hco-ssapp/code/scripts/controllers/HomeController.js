@@ -1,8 +1,6 @@
-import Constants from "../utils/Constants.js";
 import SiteService from '../services/SiteService.js';
 import TrialService from '../services/TrialService.js';
 import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
-import NotificationsRepository from "../repositories/NotificationsRepository.js";
 import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
 import QuestionsRepository from "../repositories/QuestionsRepository.js";
 import BaseRepository from "../repositories/BaseRepository.js";
@@ -12,7 +10,7 @@ const {WebcController} = WebCardinal.controllers;
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
 const SharedStorage = ecoServices.SharedStorage;
-
+const Constants = ecoServices.Constants;
 let getInitModel = () => {
     return {
         title: 'HomePage',
