@@ -3,10 +3,12 @@ import NotificationsRepository from "../repositories/VisitsAndProceduresReposito
 const {WebcController} = WebCardinal.controllers;
 import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
 import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
-import DateTimeService from '../services/DateTimeService.js';
-
-import CommunicationService from "../services/CommunicationService.js";
 import Constants from "../utils/Constants.js";
+
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
+const DateTimeService = ecoServices.DateTimeService;
+const Constants = ecoServices.Constants;
 
 let getInitModel = () => {
     return {

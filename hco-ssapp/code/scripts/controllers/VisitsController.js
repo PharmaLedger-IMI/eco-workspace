@@ -1,8 +1,9 @@
 import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
 import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
-
-import CommunicationService from "../services/CommunicationService.js";
 import TrialService from "../services/TrialService.js";
+
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
 
 const {WebcController} = WebCardinal.controllers;
 

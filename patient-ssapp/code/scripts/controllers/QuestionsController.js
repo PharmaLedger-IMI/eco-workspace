@@ -1,7 +1,8 @@
-import Constants from "../utils/Constants.js";
+
 import QuestionsRepository from "../repositories/QuestionsRepository.js";
 
-
+const ecoServices = require('eco-services');
+const Constants = ecoServices.Constants;
 const { WebcController } = WebCardinal.controllers;
 
 export default class QuestionsController extends WebcController {

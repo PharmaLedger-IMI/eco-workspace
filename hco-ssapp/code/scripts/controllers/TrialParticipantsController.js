@@ -1,10 +1,12 @@
 const {WebcController} = WebCardinal.controllers;
 import SiteService from '../services/SiteService.js';
-import Constants from '../utils/Constants.js';
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
-import CommunicationService from '../services/CommunicationService.js';
 import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
+
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
+const Constants = ecoServices.Constants;
 
 let getInitModel = () => {
     return {

@@ -1,8 +1,8 @@
 import TrialService from '../services/TrialService.js';
-import DateTimeService from "../services/DateTimeService.js";
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 
-
+const ecoServices = require('eco-services');
+const DateTimeService = ecoServices.DateTimeService;
 const {WebcController} = WebCardinal.controllers;
 let getInitModel = () => {
     return {

@@ -1,16 +1,18 @@
 import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
-import CommunicationService from '../services/CommunicationService.js';
-import DateTimeService from '../services/DateTimeService.js';
-import FileDownloader from '../utils/FileDownloader.js';
-import Constants from '../utils/Constants.js';
 import SiteService from '../services/SiteService.js';
 import PatientEcosentService from "../services/PatientEcosentService.js";
 
 const {WebcController} = WebCardinal.controllers;
 
 const TEXT_MIME_TYPE = 'text/';
+
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
+const DateTimeService = ecoServices.DateTimeService;
+const Constants = ecoServices.Constants;
+const FileDownloader = ecoServices.FileDownloader;
 
 let getInitModel = () => {
     return {
@@ -34,6 +36,7 @@ export default class EconsentSignController extends WebcController {
             showPageDown: true
         });
 
+        debugger;
         if (this.model.controlsShouldBeVisible === undefined) {
             this.model.controlsShouldBeVisible = true;
         }

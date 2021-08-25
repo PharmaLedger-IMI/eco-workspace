@@ -1,4 +1,5 @@
-import SharedStorage from "../services/SharedStorage.js";
+const ecoServices = require('eco-services');
+const SharedStorage = ecoServices.SharedStorage;
 
 class TrialParticipantRepository {
 

@@ -1,7 +1,9 @@
-import Constants from "../utils/Constants.js";
-import QuestionsRepository from "../repositories/QuestionsRepository.js";
-import CommunicationService from "../services/CommunicationService.js";
 
+import QuestionsRepository from "../repositories/QuestionsRepository.js";
+
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
+const Constants = ecoServices.Constants;
 
 const {WebcController} = WebCardinal.controllers;
 

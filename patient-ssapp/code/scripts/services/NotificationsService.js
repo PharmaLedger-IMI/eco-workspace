@@ -1,5 +1,8 @@
 import NotificationMapper from "../utils/NotificationMapper.js";
-import DSUService from "./DSUService.js";
+
+const ecoServices = require('eco-services');
+const DSUService = ecoServices.DSUService;
+
 export default class NotificationsService  extends DSUService {
 
     constructor(DSUStorage) {

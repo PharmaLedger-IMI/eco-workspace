@@ -1,10 +1,11 @@
 import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
 import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
-import DateTimeService from '../services/DateTimeService.js';
-
-import CommunicationService from "../services/CommunicationService.js";
-import Constants from "../utils/Constants.js";
 import TrialService from "../services/TrialService.js";
+
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
+const DateTimeService = ecoServices.DateTimeService;
+const Constants = ecoServices.Constants;
 
 const {WebcController} = WebCardinal.controllers;
 

@@ -1,11 +1,11 @@
 import TrialService from '../services/TrialService.js';
-
-import CommunicationService from '../services/CommunicationService.js';
-
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 import EconsentService from "../services/EconsentService.js";
 import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
 import QuestionsRepository from "../repositories/QuestionsRepository.js";
+
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
 
 const {WebcController} = WebCardinal.controllers;
 

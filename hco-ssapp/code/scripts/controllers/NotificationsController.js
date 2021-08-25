@@ -1,6 +1,8 @@
 import NotificationsRepository from "../repositories/NotificationsRepository.js";
-import Constants from "../utils/Constants.js";
 import BaseRepository from "../repositories/BaseRepository.js";
+
+const ecoServices = require('eco-services');
+const Constants = ecoServices.Constants;
 
 const {WebcController} = WebCardinal.controllers;
 

@@ -1,10 +1,12 @@
 import TrialService from '../services/TrialService.js';
-import FileDownloader from '../utils/FileDownloader.js';
-import CommunicationService from '../services/CommunicationService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
 import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 import EconsentService from "../services/EconsentService.js";
 import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
+
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
+const FileDownloader = ecoServices.FileDownloader;
 
 const {WebcController} = WebCardinal.controllers;
 
