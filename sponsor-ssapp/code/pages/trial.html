@@ -1,204 +1,196 @@
 <psk-page title="Trial">
-    <webc-container controller="TrialController">
-        <link rel="stylesheet" href="assets/css/trials.css"/>
-        <div class="d-flex flex-row" style="font-size: 18px !important">
+  <webc-container controller="TrialController">
+    <link rel="stylesheet" href="assets/css/trials.css" />
+    <div class="d-flex flex-row" style="font-size: 18px !important">
+      <psk-link page="trials"> Trials</psk-link>
+      <span> / </span>
+      <div style="display: inline-block">
+        <psk-label label="@id"></psk-label>
+      </div>
+    </div>
 
-            <psk-link page="trials"> Trials</psk-link>
-            <span> / </span>
-            <div style="display: inline-block">
-                <psk-label label="@id"></psk-label>
+    <br />
+
+    <psk-tab-navigator default="0">
+      <!-- *************** Trial Overview ******************** -->
+      <psk-tab title="Trial Overview">
+        <webc-template template="trial-overview" data-view-model="@"></webc-template>
+      </psk-tab>
+
+      <!-- *************** Trial Monitoring ******************** -->
+      <psk-tab title="Trial Monitoring">
+        <webc-template template="trial-monitoring" data-view-model="@"></webc-template>
+      </psk-tab>
+
+      <!-- *************** Trial Details ******************** -->
+      <psk-tab title="Trial Details">
+        <webc-template template="trial-details" data-view-model="@"></webc-template>
+      </psk-tab>
+
+      <!-- *************** PARTICIPANTS ******************** -->
+      <psk-tab title="Participants">
+        <webc-container controller="TrialParticipantsController">
+          <!-- **************** PARTICIPANTS TOP BAR ************************* -->
+          <div
+            class="d-flex flex-wrap justify-content-between align-items-center mt-3 mb-3"
+            style="margin-bottom: 20px"
+          >
+            <div class="d-flex flex-column">
+              <psk-input id="search-field-participants" view-model="search" event-name="filters-changed"></psk-input>
+            </div>
+          </div>
+
+          <!-- *************** PARTICIPANTS TABLE ********************* -->
+          <psk-condition condition="@participantsArrayNotEmpty">
+            <div slot="condition-true">
+              <webc-template template="table-template" data-view-model="@"></webc-template>
+            </div>
+            <div slot="condition-false">
+              <div>No participants available.</div>
+            </div>
+          </psk-condition>
+        </webc-container>
+      </psk-tab>
+
+      <!-- *************** INFORM CONSENTS ******************** -->
+      <psk-tab title="Inform Consents">
+        <webc-container controller="TrialConsentsController">
+          <!-- **************** INFORM CONSENTS TOP BAR ************************* -->
+          <div
+            class="d-flex flex-wrap justify-content-between align-items-center mt-3 mb-3"
+            style="margin-bottom: 20px"
+          >
+            <div class="d-flex flex-column">
+              <psk-input id="search-field-consents" view-model="search" event-name="filters-changed"></psk-input>
+            </div>
+            <button class="btn btn-primary" data-tag="add-consent">Add consent</button>
+          </div>
+          <!-- *************** INFORM CONSENT TABLE ********************* -->
+          <psk-condition condition="@consentsArrayNotEmpty">
+            <div slot="condition-true">
+              <webc-template template="table-template" data-view-model="@"></webc-template>
+            </div>
+            <div slot="condition-false">
+              <div>No consents available.</div>
+            </div>
+          </psk-condition>
+        </webc-container>
+      </psk-tab>
+
+      <!-- *************** Visits & Procedures ******************** -->
+      <psk-tab title="Visits & Procedures">
+        <webc-container controller="VisitsProceduresController">
+          <div data-if="@dataLoaded">
+            <div data-if="@notEditable">
+              <container slot="false">
+                <div class="row">
+                  <button disabled="@notEditable" class="btn btn-primary mr-2 ml-2" data-tag="addVisit">
+                    Add a Visit
+                  </button>
+                  <button disabled="@notEditable" class="btn btn-secondary" data-tag="removeVisit">
+                    Remove a Visit
+                  </button>
+                  <button disabled="@notEditable" class="btn btn-primary ml-auto mr-2" data-tag="addProcedure">
+                    Add a Procedure
+                  </button>
+                  <button disabled="@notEditable" class="btn btn-secondary mr-2" data-tag="removeProcedure">
+                    Remove a Procedure
+                  </button>
+                </div>
+                <div data-for="@visits" class="mt-3">
+                  <div class="d-flex flex-row w-100 align-items-center mt-2">
+                    <input class="form-control" style="max-width: 150px" id="@inputId" data-view-model="@name" />
+                    <span class="flex-grow-1" data-for="@procedures">
+                      <div class="ml-2 mr-2 d-flex flex-row mb-2 mt-2 align-items-center">
+                        <label class="ml-2 mr-2 bold"> {{ @checkbox.label }}. </label>
+                        <input
+                          class="ml-2 mr-2 form-control"
+                          style="height: 30px; max-width: 50px"
+                          data-view-model="@checkbox"
+                        />
+                        <input class="form-control ml-2 mr-2" style="max-width: 150px" data-view-model="@name" />
+                        <input class="form-control ml-2 mr-2" style="max-width: 90px" data-view-model="@period" />
+                        <select
+                          class="form-control ml-2 mr-2"
+                          style="max-width: 150px"
+                          id="@timeUnit.id"
+                          data-for="@timeUnit.options"
+                        >
+                          <option value="@value" selected="@selected">{{@label}}</option>
+                        </select>
+                      </div>
+                    </span>
+                    <select
+                      class="form-control"
+                      style="max-width: 150px"
+                      name="@consent.name"
+                      id="@selectId"
+                      data-for="@consent.options"
+                    >
+                      <option value="@value" selected="@selected">{{@label}}</option>
+                    </select>
+                  </div>
+                </div>
+              </container>
+              <container slot="true">
+                <div data-for="@filters">
+                  <div data-if="@selected" class="m-2">
+                    <container slot="false">
+                      <button class="btn btn-bare" data-tag="filter-visits" data-custom="@name">{{ @name }}</button>
+                    </container>
+                    <container slot="true">
+                      <button class="btn btn-primary" data-tag="filter-visits" data-custom="@name">{{ @name }}</button>
+                    </container>
+                  </div>
+                </div>
+                <div data-for="@filteredVisits" class="mt-3">
+                  <div class="d-flex flex-row w-100 align-items-center mt-2">
+                    <div style="max-width: 150px">{{ @name.value }}</div>
+                    <span class="flex-grow-1" data-for="@procedures">
+                      <div class="ml-2 mr-2 d-flex flex-row mb-2 mt-2 align-items-center">
+                        <div class="ml-2 mr-2 font-weight-bold">{{ @checkbox.label }}.</div>
+                        <div style="max-width: 150px">{{ @checkbox.value }}</div>
+                        <div class="ml-2 mr-2 font-weight-bold" style="max-width: 150px">{{ @name.value }}</div>
+                        <div style="max-width: 150px">{{ @period.value }}</div>
+                        <select
+                          disabled="true"
+                          class="form-control ml-2 mr-2"
+                          style="max-width: 150px"
+                          id="@timeUnit.id"
+                          data-for="@timeUnit.options"
+                        >
+                          <option value="@value" selected="@selected">{{@label}}</option>
+                        </select>
+                      </div>
+                    </span>
+                    <select
+                      disabled="true"
+                      class="form-control"
+                      style="max-width: 150px"
+                      name="@consent.name"
+                      id="@selectId"
+                      data-for="@consent.options"
+                    >
+                      <option value="@value" selected="@selected">{{@label}}</option>
+                    </select>
+                  </div>
+                </div>
+              </container>
             </div>
 
-        </div>
-
-        <br/>
-
-        <psk-tab-navigator default="0">
-            <!-- *************** Trial Overview ******************** -->
-            <psk-tab title="Trial Overview">
-                <webc-template template="trial-overview" data-view-model="@"></webc-template>
-            </psk-tab>
-
-            <!-- *************** Trial Monitoring ******************** -->
-            <psk-tab title="Trial Monitoring">
-                <webc-template template="trial-monitoring" data-view-model="@"></webc-template>
-            </psk-tab>
-
-            <!-- *************** Trial Details ******************** -->
-            <psk-tab title="Trial Details">
-                <webc-template template="trial-details" data-view-model="@"></webc-template>
-            </psk-tab>
-
-            <!-- *************** PARTICIPANTS ******************** -->
-            <psk-tab title="Participants">
-                <webc-container controller="TrialParticipantsController">
-                    <!-- **************** PARTICIPANTS TOP BAR ************************* -->
-                    <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 mb-3"
-                         style="margin-bottom: 20px">
-                        <div class="d-flex flex-column">
-                            <psk-input id="search-field-participants" view-model="search"
-                                       event-name="filters-changed"></psk-input>
-                        </div>
-                    </div>
-
-                    <!-- *************** PARTICIPANTS TABLE ********************* -->
-                    <psk-condition condition="@participantsArrayNotEmpty">
-                        <div slot="condition-true">
-                            <webc-template template="table-template" data-view-model="@"></webc-template>
-                        </div>
-                        <div slot="condition-false">
-                            <div>No participants available.</div>
-                        </div>
-                    </psk-condition>
-                </webc-container>
-            </psk-tab>
-
-            <!-- *************** INFORM CONSENTS ******************** -->
-            <psk-tab title="Inform Consents">
-                <webc-container controller="TrialConsentsController">
-                    <!-- **************** INFORM CONSENTS TOP BAR ************************* -->
-                    <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 mb-3"
-                         style="margin-bottom: 20px">
-                        <div class="d-flex flex-column">
-                            <psk-input id="search-field-consents" view-model="search"
-                                       event-name="filters-changed"></psk-input>
-                        </div>
-                        <button class="btn btn-primary" data-tag="add-consent">Add consent</button>
-                    </div>
-                    <!-- *************** INFORM CONSENT TABLE ********************* -->
-                    <psk-condition condition="@consentsArrayNotEmpty">
-                        <div slot="condition-true">
-                            <webc-template template="table-template" data-view-model="@"></webc-template>
-                        </div>
-                        <div slot="condition-false">
-                            <div>No consents available.</div>
-                        </div>
-                    </psk-condition>
-                </webc-container>
-            </psk-tab>
-
-            <!-- *************** Visits & Procedures ******************** -->
-            <psk-tab title="Visits & Procedures">
-                <webc-container controller="VisitsProceduresController">
-                    <div data-if="@dataLoaded">
-                        <div data-if="@notEditable">
-                            <container slot="false">
-                                <div class="row">
-                                    <button disabled="@notEditable" class="btn btn-primary mr-2 ml-2"
-                                            data-tag="addProcedure">
-                                        Add a Procedure
-                                    </button>
-                                    <button disabled="@notEditable" class="btn btn-secondary"
-                                            data-tag="removeProcedure">
-                                        Remove a Procedure
-                                    </button>
-                                    <button disabled="@notEditable" class="btn btn-primary ml-auto mr-2"
-                                            data-tag="addVisit">
-                                        Add a Visit
-                                    </button>
-                                    <button disabled="@notEditable" class="btn btn-secondary mr-2"
-                                            data-tag="removeVisit">
-                                        Remove a Visit
-                                    </button>
-                                </div>
-                                <div data-for="@procedures" class="mt-3">
-                                    <div class="d-flex flex-row w-100 align-items-center mt-2">
-                                        <input class="form-control" style="max-width: 150px" id="@inputId"
-                                               data-view-model="@name"/>
-                                        <span class="flex-grow-1" data-for="@visits">
-                    <div class="ml-2 mr-2 d-flex flex-row mb-2 mt-2 align-items-center">
-                      <label class="ml-2 mr-2 bold"> {{ @checkbox.label }}. </label>
-                      <input
-                              class="ml-2 mr-2 form-control"
-                              style="height: 30px; max-width: 50px"
-                              data-view-model="@checkbox"
-                      />
-                      <input class="form-control ml-2 mr-2" style="max-width: 90px" data-view-model="@period"/>
-                      <select
-                              class="form-control ml-2 mr-2"
-                              style="max-width: 150px"
-                              id="@timeUnit.id"
-                              data-for="@timeUnit.options"
-                      >
-                        <option value="@value" selected="@selected">{{@label}}</option>
-                      </select>
-                    </div>
-                  </span>
-                                        <select
-                                                class="form-control"
-                                                style="max-width: 150px"
-                                                name="@consent.name"
-                                                id="@selectId"
-                                                data-for="@consent.options"
-                                        >
-                                            <option value="@value" selected="@selected">{{@label}}</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </container>
-                            <container slot="true">
-                                <div data-for="@filters">
-                                    <div data-if="@selected" class="m-2">
-                                        <container slot="false">
-                                            <button class="btn btn-bare" data-tag="filter-procedures"
-                                                    data-custom="@name">{{ @name }}
-                                            </button>
-                                        </container>
-                                        <container slot="true">
-                                            <button class="btn btn-primary" data-tag="filter-procedures"
-                                                    data-custom="@name">
-                                                {{ @name }}
-                                            </button>
-                                        </container>
-                                    </div>
-                                </div>
-                                <div data-for="@filteredProcedures" class="mt-3">
-                                    <div class="d-flex flex-row w-100 align-items-center mt-2">
-                                        <div style="max-width: 150px">{{ @name.value }}</div>
-                                        <span class="flex-grow-1" data-for="@visits">
-                    <div class="ml-2 mr-2 d-flex flex-row mb-2 mt-2 align-items-center">
-                      <div class="ml-2 mr-2 font-weight-bold">{{ @checkbox.label }}.</div>
-                      <div style="max-width: 150px">{{ @checkbox.value }}</div>
-                      <div style="max-width: 150px">{{ @period.value }}</div>
-                      <select
-                              disabled="true"
-                              class="form-control ml-2 mr-2"
-                              style="max-width: 150px"
-                              id="@timeUnit.id"
-                              data-for="@timeUnit.options"
-                      >
-                        <option value="@value" selected="@selected">{{@label}}</option>
-                      </select>
-                    </div>
-                  </span>
-                                        <select
-                                                disabled="true"
-                                                class="form-control"
-                                                style="max-width: 150px"
-                                                name="@consent.name"
-                                                id="@selectId"
-                                                data-for="@consent.options"
-                                        >
-                                            <option value="@value" selected="@selected">{{@label}}</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </container>
-                        </div>
-
-                        <div data-if="@notEditable">
-                            <container slot="false">
-                                <button class="mt-2 btn btn-primary" data-tag="submitData">Submit</button>
-                                <button class="mt-2 btn btn-primary" data-tag="cancel">Cancel</button>
-                            </container>
-                            <container slot="true">
-                                <button class="mt-2 btn btn-primary" data-tag="edit">Edit</button>
-                            </container>
-                        </div>
-                    </div>
-                    <psk-list-feedbacks messages-to-display="5" time-alive="3000"></psk-list-feedbacks>
-                </webc-container>
-            </psk-tab>
-        </psk-tab-navigator>
-    </webc-container>
+            <div data-if="@notEditable">
+              <container slot="false">
+                <button class="mt-2 btn btn-primary" data-tag="submitData">Submit</button>
+                <button class="mt-2 btn btn-primary" data-tag="cancel">Cancel</button>
+              </container>
+              <container slot="true">
+                <button class="mt-2 btn btn-primary" data-tag="edit">Edit</button>
+              </container>
+            </div>
+          </div>
+          <psk-list-feedbacks messages-to-display="5" time-alive="3000"></psk-list-feedbacks>
+        </webc-container>
+      </psk-tab>
+    </psk-tab-navigator>
+  </webc-container>
 </psk-page>
