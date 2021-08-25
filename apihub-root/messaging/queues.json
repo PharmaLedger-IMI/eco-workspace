@@ -1,7 +1,0 @@
-{
-    "queues": [
-        "did:demo:hcoIdentity",
-        "did:demo:patientIdentity",
-        "did:demo:sponsorIdentity"
-    ]
-}
