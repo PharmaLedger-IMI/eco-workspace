@@ -11,6 +11,7 @@ apihub-root/hco-wallet/loader
 apihub-root/sponsor-wallet/loader
 apihub-root/internal-volume/domains
 apihub-root/external-volume/domains
+apihub-root/messaging/queues.json
 dossier-explorer-ssapp
 node_modules
 package-lock.json
