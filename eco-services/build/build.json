@@ -1,0 +1,6 @@
+{
+  "ecoServices": {
+    "deps": "eco-services",
+    "autoLoad": true
+  }
+}
