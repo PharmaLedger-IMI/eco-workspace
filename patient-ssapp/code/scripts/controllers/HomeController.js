@@ -10,6 +10,7 @@ const {WebcController} = WebCardinal.controllers;
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
 const DateTimeService = ecoServices.DateTimeService;
+const DIDService = ecoServices.DIDService;
 
 export default class HomeController extends WebcController {
     constructor(...props) {
@@ -20,6 +21,9 @@ export default class HomeController extends WebcController {
         this._initTrials();
         this._initTrialParticipant();
         this._handleMessages();
+
+        // TODO: Work in progress:
+        this.CommunicationService = DIDService.getCommunicationServiceInstanceAsync(this);
     }
 
     _initServices(DSUStorage) {

@@ -1,5 +1,4 @@
-
- class DSUService {
+class DSUService {
 
     PATH = "/";
 
@@ -142,5 +141,4 @@
     }
 }
 
-
- module.exports = DSUService;
+module.exports = DSUService;

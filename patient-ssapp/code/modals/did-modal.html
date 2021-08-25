@@ -1,0 +1,75 @@
+<style>
+    .center-line {
+        margin: 20px 0 20px 0;
+        justify-content: center;
+        display: flex;
+    }
+
+    .center-line-block {
+        margin: 20px 0 20px 0;
+        display: block;
+    }
+
+    .center-bottom {
+        margin: 20px 0 20px 0;
+        justify-content: center;
+        display: flex;
+        padding: 0;
+    }
+
+    #did {
+        padding: 2px 5px;
+        width: 90%;
+    }
+
+    .red-error {
+        color: red;
+    }
+
+    .green-success {
+        color: green;
+    }
+
+    .red-error,
+    .green-success {
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .tp-button {
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        text-transform: uppercase;
+        vertical-align: center;
+        font-size: 16px;
+        width: 40%;
+        background-color: white !important;
+        color: #008798 !important;
+        border: 1px solid #008798 !important;
+    }
+
+    psk-barcode-generator psk-card:nth-child(2) {
+        display: none;
+    }
+</style>
+<h3 slot="header" class="alert-title">{{@title}}</h3>
+<div class="top">
+    <div class="center-line">
+        <input id="did" type="text" data-view-model="@did">
+    </div>
+    <div data-if="@errorMessage" class="center-line">
+        <div class="red-error">{{@errorMessage}}. Please try another one.</div>
+    </div>
+    <div  data-if="@completed" class="center-line-block">
+        <div class="green-success">DID created successfully. You can now share your identity with your friends.</div>
+        <psk-barcode-generator type="qrcode" size="16" data="@confirmedDid"></psk-barcode-generator>
+    </div>
+</div>
+<div class="center-bottom" data-if="@completed">
+    <button class="tp-button" slot="false" data-tag="did:save">Save</button>
+    <button class="tp-button" slot="true" data-tag="did:exit">Done</button>
+</div>
+<div slot="footer"></div>
+

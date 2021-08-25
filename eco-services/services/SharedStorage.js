@@ -28,7 +28,7 @@ class SharedStorage {
 
     getAllRecordsAsync = async (tableName) => this.asyncMyFunction(this.getAllRecords, [tableName]);
 
-    insertRecord = (tableName, key, record, callback) =>  {
+    insertRecord = (tableName, key, record, callback) => {
         if (typeof record === 'function') {
             callback = record;
         }
@@ -119,11 +119,12 @@ class SharedStorage {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
         }
+
         return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
     }
-
 }
-const getInstance =  (DSUStorage) => {
+
+const getInstance = (DSUStorage) => {
     if (typeof window.sharedStorageInstance === "undefined") {
         window.sharedStorageInstance = new SharedStorage(DSUStorage)
     }
@@ -134,11 +135,3 @@ let toBeReturnedObject = {
 }
 
 module.exports = toBeReturnedObject;
-// export default {
-//     getInstance: (DSUStorage) => {
-//         if (typeof window.sharedStorageInstance === "undefined") {
-//             window.sharedStorageInstance = new SharedStorage(DSUStorage)
-//         }
-//         return window.sharedStorageInstance;
-//     }
-// }
