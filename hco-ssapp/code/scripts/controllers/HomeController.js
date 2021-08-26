@@ -11,6 +11,7 @@ const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
 const SharedStorage = ecoServices.SharedStorage;
 const Constants = ecoServices.Constants;
+const DIDService = ecoServices.DIDService;
 let getInitModel = () => {
     return {
         title: 'HomePage',
@@ -45,8 +46,7 @@ export default class HomeController extends WebcController {
         this._handleMessages();
     }
 
-
-    _initServices(DSUStorage) {
+    async _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.StorageService = SharedStorage.getInstance(DSUStorage);
@@ -55,6 +55,8 @@ export default class HomeController extends WebcController {
         this.SiteService = new SiteService(DSUStorage);
         this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
         this.QuestionsRepository = QuestionsRepository.getInstance(DSUStorage);
+
+        let auxCommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
     }
 
     _initHandlers() {
