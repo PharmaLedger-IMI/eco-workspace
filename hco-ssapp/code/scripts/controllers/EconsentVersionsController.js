@@ -18,7 +18,6 @@ export default class EconsentVersionsController extends WebcController {
             ...getInitModel(),
             ...this.history.win.history.state.state,
         });
-        debugger;
         this._initServices(this.DSUStorage);
         this._initHandlers();
         this._initTrialAndConsent();
