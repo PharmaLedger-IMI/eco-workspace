@@ -104,7 +104,7 @@ export default class ReadEconsentController extends WebcController {
                     controller: 'ConfirmationAlertController',
                     disableExpanding: false,
                     disableBackdropClosing: false,
-                    question: 'Are you sure you want to sign this ecosent ? ',
+                    question: 'Are you sure you want to sign this ecosent? ',
                     title: 'Sign Econsent',
                 });
         });

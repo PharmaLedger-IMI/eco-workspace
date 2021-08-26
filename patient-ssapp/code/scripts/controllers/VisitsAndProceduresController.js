@@ -3,7 +3,7 @@ import NotificationsRepository from "../repositories/VisitsAndProceduresReposito
 const {WebcController} = WebCardinal.controllers;
 import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
 import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
-import Constants from "../utils/Constants.js";
+
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;

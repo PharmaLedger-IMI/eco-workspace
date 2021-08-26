@@ -1,3 +1,6 @@
+webc-modal:not([expanded]){
+    --max-width: 340px;
+}
 .consent-question {
     color: #00345b;
     font-weight: bold;

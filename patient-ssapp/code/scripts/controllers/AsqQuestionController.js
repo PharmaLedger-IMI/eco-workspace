@@ -87,7 +87,7 @@ export default class AsqQuestionController extends WebcController {
                     controller: 'ConfirmationAlertController',
                     disableExpanding: false,
                     disableBackdropClosing: false,
-                    question: 'Are you sure you want to send the question to HCO ? ',
+                    question: 'Are you sure you want to send the question to HCO ?',
                     title: 'Send Question',
                 });
         });

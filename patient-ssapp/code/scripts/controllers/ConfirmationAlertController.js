@@ -13,13 +13,19 @@ export default class ConfirmationAlertController extends WebcController {
 
     _initHandlers() {
         this._attachHandlerSubmit();
+        this._attachHandlerCancel();
     }
 
     _attachHandlerSubmit() {
-        this.onTagEvent('decline:submit', 'click', (model, target, event) => {
+        this.onTagEvent('submit', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
             this.send('confirmed', true);
+        });
+    }
+    _attachHandlerCancel() {
+        this.onTagEvent('cancel', 'click', (model, target, event) => {
+            this.send('closed');
         });
     }
 }

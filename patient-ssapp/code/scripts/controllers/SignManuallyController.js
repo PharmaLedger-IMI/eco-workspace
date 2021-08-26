@@ -104,7 +104,7 @@ export default class SignManuallyController extends WebcController {
                     controller: 'ConfirmationAlertController',
                     disableExpanding: false,
                     disableBackdropClosing: false,
-                    question: 'Are you sure you want to send this file  ? ',
+                    question: 'Are you sure you want to send this file? ',
                     title: 'Send Signed Econsent',
                 });
         });
