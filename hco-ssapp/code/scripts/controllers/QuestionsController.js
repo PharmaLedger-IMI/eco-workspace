@@ -1,9 +1,9 @@
 
-import QuestionsRepository from "../repositories/QuestionsRepository.js";
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
 const Constants = ecoServices.Constants;
+const BaseRepository = ecoServices.BaseRepository;
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -18,7 +18,7 @@ export default class QuestionsController extends WebcController {
     }
 
     _initServices(DSUStorage) {
-        this.QuestionsRepository = QuestionsRepository.getInstance(DSUStorage);
+        this.QuestionsRepository = BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.QUESTIONS);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
     }
 

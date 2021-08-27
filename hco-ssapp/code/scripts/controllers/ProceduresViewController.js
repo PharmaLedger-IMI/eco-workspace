@@ -1,5 +1,5 @@
-import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
-import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
+const ecoServices = require('eco-services');
+const BaseRepository = ecoServices.BaseRepository;
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -18,8 +18,8 @@ export default class ProceduresViewController extends WebcController {
     }
 
     _initServices(DSUStorage) {
-        this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.VisitsAndProceduresRepository =  BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.VISITS);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.TRIAL_PARTICIPANT_REPOSITORY);
     }
 
     async _initProcedures() {

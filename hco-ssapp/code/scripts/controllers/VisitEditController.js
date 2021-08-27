@@ -1,10 +1,10 @@
-import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
-import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
+
 import TrialService from "../services/TrialService.js";
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
 const Constants = ecoServices.Constants;
+const BaseRepository = ecoServices.BaseRepository;
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -42,8 +42,8 @@ export default class VisitEditController extends WebcController {
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
-        this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.VisitsAndProceduresRepository =BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.VISITS);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.TRIAL_PARTICIPANT_REPOSITORY);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
     }
 

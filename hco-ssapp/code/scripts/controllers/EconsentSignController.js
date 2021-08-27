@@ -1,4 +1,4 @@
-import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
+
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
 import SiteService from '../services/SiteService.js';
@@ -13,6 +13,7 @@ const CommunicationService = ecoServices.CommunicationService;
 const DateTimeService = ecoServices.DateTimeService;
 const Constants = ecoServices.Constants;
 const FileDownloader = ecoServices.FileDownloader;
+const BaseRepository = ecoServices.BaseRepository;
 
 let getInitModel = () => {
     return {
@@ -52,7 +53,7 @@ export default class EconsentSignController extends WebcController {
         this.TrialService = new TrialService(DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.TrialParticipantRepository =  BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.TRIAL_PARTICIPANT_REPOSITORY);
         this.SiteService = new SiteService(DSUStorage);
         ;
     }

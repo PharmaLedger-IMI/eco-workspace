@@ -1,9 +1,5 @@
 import SiteService from '../services/SiteService.js';
 import TrialService from '../services/TrialService.js';
-import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
-import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
-import QuestionsRepository from "../repositories/QuestionsRepository.js";
-import BaseRepository from "../repositories/BaseRepository.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -11,6 +7,8 @@ const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
 const SharedStorage = ecoServices.SharedStorage;
 const Constants = ecoServices.Constants;
+const BaseRepository = ecoServices.BaseRepository;
+
 let getInitModel = () => {
     return {
         title: 'HomePage',
@@ -49,12 +47,13 @@ export default class HomeController extends WebcController {
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
+
         this.StorageService = SharedStorage.getInstance(DSUStorage);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
-        this.NotificationsRepository = BaseRepository.getInstance(DSUStorage,'notifications');
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.TRIAL_PARTICIPANT_REPOSITORY);
+        this.NotificationsRepository =  BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.NOTIFICATIONS);
         this.SiteService = new SiteService(DSUStorage);
-        this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
-        this.QuestionsRepository = QuestionsRepository.getInstance(DSUStorage);
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.VISITS);
+        this.QuestionsRepository = BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.QUESTIONS);
     }
 
     _initHandlers() {
