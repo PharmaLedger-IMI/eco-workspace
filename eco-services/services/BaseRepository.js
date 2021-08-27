@@ -4,6 +4,7 @@ const TABLE_NAMES = {
     PATIENT: {
         NOTIFICATIONS: "notifications",
         TRIAL_PARTICIPANT: "trials_participant",
+        ECOSESENT_STATUSES: "econsents_statuses",
         VISITS: "visits",
         QUESTIONS: "questions"
     },

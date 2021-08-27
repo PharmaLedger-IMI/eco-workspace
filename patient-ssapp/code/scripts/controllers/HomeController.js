@@ -1,16 +1,11 @@
 import TrialService from '../services/TrialService.js';
-import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
-import NotificationsRepository from "../repositories/NotificationsRepository.js";
-import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
-import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
-import QuestionsRepository from "../repositories/QuestionsRepository.js";
-
 const {WebcController} = WebCardinal.controllers;
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
 const DateTimeService = ecoServices.DateTimeService;
 const DIDService = ecoServices.DIDService;
+const BaseRepository = ecoServices.BaseRepository;
 
 export default class HomeController extends WebcController {
     constructor(...props) {
@@ -25,13 +20,12 @@ export default class HomeController extends WebcController {
 
     async _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
-        this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.PATIENT_IDENTITY);
-        this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
-        this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
-        this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
-        this.QuestionsRepository = QuestionsRepository.getInstance(DSUStorage);
+        this.NotificationsRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.NOTIFICATIONS, DSUStorage);
+        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
+        this.VisitsAndProceduresRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.VISITS, DSUStorage);
+        this.QuestionsRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.QUESTIONS, DSUStorage);
 
         let auxCommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
     }

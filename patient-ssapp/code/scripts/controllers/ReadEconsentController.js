@@ -1,9 +1,8 @@
 import TrialService from '../services/TrialService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
-import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
-import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
 
 const ecoServices = require('eco-services');
+const BaseRepository = ecoServices.BaseRepository;
 const CommunicationService = ecoServices.CommunicationService;
 const FileDownloader = ecoServices.FileDownloader;
 
@@ -34,8 +33,8 @@ export default class ReadEconsentController extends WebcController {
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.PATIENT_IDENTITY);
-        this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
+        this.TrialParticipantRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
     }
 
     _initConsent() {

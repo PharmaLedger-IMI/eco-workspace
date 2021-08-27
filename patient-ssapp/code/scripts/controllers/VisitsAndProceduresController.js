@@ -1,14 +1,12 @@
-import NotificationsRepository from "../repositories/VisitsAndProceduresRepository.js";
+
 
 const {WebcController} = WebCardinal.controllers;
-import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
-import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
-
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
 const DateTimeService = ecoServices.DateTimeService;
 const Constants = ecoServices.Constants;
+const BaseRepository = ecoServices.BaseRepository;
 
 let getInitModel = () => {
     return {
@@ -47,8 +45,8 @@ export default class VisitsAndProceduresController extends WebcController {
     }
 
     _initServices(DSUStorage) {
-        this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.VISITS, DSUStorage);
+        this.TrialParticipantRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
     }
 

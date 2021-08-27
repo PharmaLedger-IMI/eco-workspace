@@ -1,9 +1,9 @@
 import TrialService from '../services/TrialService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
-import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 
 const ecoServices = require ('eco-services');
 const FileDownloader = ecoServices.FileDownloader;
+const BaseRepository = ecoServices.BaseRepository;
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -25,7 +25,7 @@ export default class EconsentController extends WebcController {
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
-        this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
+        this.EconsentsStatusRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
     }
 
     _initHandlers() {

@@ -1,5 +1,7 @@
 const {WebcController} = WebCardinal.controllers;
-import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
+
+const ecoServices = require('eco-services');
+const BaseRepository = ecoServices.BaseRepository;
 
 export default class SiteController extends WebcController {
     constructor(...props) {
@@ -10,7 +12,7 @@ export default class SiteController extends WebcController {
     }
 
     _initServices(DSUStorage) {
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
     }
 
     _initSite() {
