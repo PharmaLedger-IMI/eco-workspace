@@ -8,6 +8,7 @@ const CommunicationService = ecoServices.CommunicationService;
 const SharedStorage = ecoServices.SharedStorage;
 const Constants = ecoServices.Constants;
 const BaseRepository = ecoServices.BaseRepository;
+const DIDService = ecoServices.DIDService;
 
 let getInitModel = () => {
     return {
@@ -43,17 +44,15 @@ export default class HomeController extends WebcController {
         this._handleMessages();
     }
 
-
-    _initServices(DSUStorage) {
+    async _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
-
         this.StorageService = SharedStorage.getInstance(DSUStorage);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.TRIAL_PARTICIPANT_REPOSITORY);
-        this.NotificationsRepository =  BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.NOTIFICATIONS);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
+        this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.NOTIFICATIONS, DSUStorage);
         this.SiteService = new SiteService(DSUStorage);
-        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.VISITS);
-        this.QuestionsRepository = BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.QUESTIONS);
+
+        let auxCommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
     }
 
     _initHandlers() {

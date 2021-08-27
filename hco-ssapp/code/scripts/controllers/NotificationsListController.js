@@ -1,4 +1,3 @@
-
 const {WebcController} = WebCardinal.controllers;
 const ecoServices = require('eco-services');
 const BaseRepository = ecoServices.BaseRepository;
@@ -25,7 +24,7 @@ export default class NotificationsListController extends WebcController {
     }
 
     _initServices(DSUStorage) {
-        this.NotificationsRepository =  BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.NOTIFICATIONS);
+        this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.NOTIFICATIONS, DSUStorage);
     }
 
     _initNotifications() {

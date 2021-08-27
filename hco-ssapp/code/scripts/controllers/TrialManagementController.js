@@ -1,4 +1,3 @@
-
 import NotificationsService from '../services/NotificationsService.js';
 import TrialService from '../services/TrialService.js';
 
@@ -58,7 +57,7 @@ export default class TrialManagementController extends WebcController {
         this.NotificationsService = new NotificationsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.StorageService = SharedStorage.getInstance(DSUStorage);
-        this.TrialParticipantRepository =  BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.TRIAL_PARTICIPANT_REPOSITORY);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
     }
 
     _initHandlers() {

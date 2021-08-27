@@ -1,26 +1,26 @@
-import SharedStorage from "./SharedStorage.js";
+const getSharedStorage = require('./SharedStorage.js');
 
 const TABLE_NAMES = {
     PATIENT: {
         NOTIFICATIONS: "notifications",
-        TRIAL_PARTICIPANT: "notifications",
-        VISITS: "notifications",
-        TRIALS: "notifications",
+        TRIAL_PARTICIPANT: "trials_participant",
+        VISITS: "visits",
+        QUESTIONS: "questions"
     },
     HCO: {
         NOTIFICATIONS: "notifications",
-        TRIAL_PARTICIPANT_REPOSITORY: "trials_participants",
+        TRIAL_PARTICIPANTS: "trials_participants",
         VISITS: "visits",
-        TRIALS: "notifications",
-        QUESTIONS:"questions"
+        TRIALS: "trials",
+        QUESTIONS: "questions"
     }
 }
 
 class BaseRepository {
 
 
-    constructor(DSUStorage, tableName) {
-        this.StorageService = SharedStorage.getInstance(DSUStorage);
+    constructor(tableName, DSUStorage) {
+        this.StorageService = getSharedStorage.getInstance(DSUStorage);
         this.tableName = tableName;
     }
 
@@ -30,7 +30,10 @@ class BaseRepository {
     createAsync = (key, question) =>
         this.StorageService.insertRecordAsync(this.tableName, key, question);
 
-    findBy = (trialKey, callback) => this.StorageService.getRecord(this.tableName, trialKey, callback);
+    findBy = (key, callback) => this.StorageService.getRecord(this.tableName, key, callback);
+
+    findByAsync = async (key) =>
+        this.StorageService.getRecordAsync(this.tableName, key);
 
     findAll = (callback) => this.StorageService.getAllRecords(this.tableName, callback);
 
@@ -41,6 +44,8 @@ class BaseRepository {
     filterAsync = async (query, sort, limit) =>
         this.StorageService.filterAsync(this.tableName, query, sort, limit);
 
+
+
     update = (key, question, callback) =>
         this.StorageService.updateRecord(this.tableName, key, question, callback);
 
@@ -49,16 +54,23 @@ class BaseRepository {
 
 }
 
-
-const getInstance = (DSUStorage) => {
-    if (typeof window.baseRepository === "undefined" || window.baseRepository.tableName != tableName) {
-        window.baseRepository = new BaseRepository(DSUStorage, tableName);
+const getInstance = (tableName, DSUStorage) => {
+    if (!allTables.includes(tableName)) {
+        throw  new Error(`The table ${tableName} does not exists!`);
     }
-    return window.baseRepository;
+    return new BaseRepository(tableName, DSUStorage);
 }
+
 let toBeReturnedObject = {
     getInstance,
-    TABLE_NAMES
+    identities: TABLE_NAMES
 }
+
+const allTables = [];
+
+Object.keys(TABLE_NAMES).forEach(workspaceKey => {
+    let workspace = TABLE_NAMES[workspaceKey];
+    allTables.push(...Object.values(workspace));
+})
 
 module.exports = toBeReturnedObject;

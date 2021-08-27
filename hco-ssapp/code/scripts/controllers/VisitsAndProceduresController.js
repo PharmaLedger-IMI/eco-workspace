@@ -1,4 +1,3 @@
-
 import TrialService from "../services/TrialService.js";
 
 const ecoServices = require('eco-services');
@@ -23,7 +22,7 @@ export default class VisitsAndProceduresController extends WebcController {
             ...this.history.win.history.state.state,
             visits: []
         });
-        ;
+
         this._initServices(this.DSUStorage);
         this._initHandlers();
         this._initVisits();
@@ -40,8 +39,8 @@ export default class VisitsAndProceduresController extends WebcController {
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
-        this.VisitsAndProceduresRepository =BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.VISITS);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.TRIAL_PARTICIPANT_REPOSITORY);
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS, DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
     }
 

@@ -18,8 +18,8 @@ export default class ProceduresViewController extends WebcController {
     }
 
     _initServices(DSUStorage) {
-        this.VisitsAndProceduresRepository =  BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.VISITS);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.TRIAL_PARTICIPANT_REPOSITORY);
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS, DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
     }
 
     async _initProcedures() {

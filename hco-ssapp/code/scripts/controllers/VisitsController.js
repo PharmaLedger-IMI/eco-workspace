@@ -32,8 +32,8 @@ export default class VisitsController extends WebcController {
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
-        this.VisitsAndProceduresRepository =BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.VISITS);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.TRIAL_PARTICIPANT_REPOSITORY);
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS, DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
     }
 

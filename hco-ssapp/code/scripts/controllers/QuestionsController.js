@@ -1,5 +1,3 @@
-
-
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
 const Constants = ecoServices.Constants;
@@ -18,7 +16,7 @@ export default class QuestionsController extends WebcController {
     }
 
     _initServices(DSUStorage) {
-        this.QuestionsRepository = BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.QUESTIONS);
+        this.QuestionsRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.QUESTIONS, DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
     }
 
