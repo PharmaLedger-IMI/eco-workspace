@@ -107,11 +107,11 @@ class DIDModalHandler {
                 this.ControllerReference.model.didModel.errorMessage = patternErrorMessage;
                 return;
             }
-            this._setDID(this.ControllerReference.model.didModel.did.value, (err, didFile) => {
+            this._setDID(this.ControllerReference.model.didModel.did.value, (err, userDetails) => {
                 if (err) {
                     return console.error('There was an error saving the DID.', err);
                 }
-                this.ControllerReference.model.didModel.confirmedDid = didFile.did;
+                this.ControllerReference.model.didModel.confirmedDid = userDetails.did;
                 this.ControllerReference.model.didModel.did.readOnly = true;
                 this.ControllerReference.model.didModel.title = 'Share your DID';
                 this.ControllerReference.model.didModel.errorMessage = null;
@@ -143,6 +143,15 @@ class DIDModalHandler {
         })
     }
 
+    _saveUserProfile(userProfile, callback) {
+        this.ControllerReference.DSUStorage.setObject('user-details.json', userProfile, (err) => {
+            if (err) {
+                return callback(err, undefined);
+            }
+            callback(undefined, userProfile);
+        })
+    }
+
     _getElementByProps(props) {
         let elem = document.createElement(props.tagName);
         elem.id = props.id;
@@ -156,15 +165,13 @@ class DIDModalHandler {
     }
 
     _setDID(did, callback) {
-        let didFile = {
-            did: did
-        }
-        this.ControllerReference.DSUStorage.setObject('did.json', didFile, (err) => {
+        this._getUserProfile((err, userProfile) => {
             if (err) {
                 return callback(err, undefined);
             }
-            callback(undefined, didFile);
-        })
+            userProfile.did = did;
+            this._saveUserProfile(userProfile, callback);
+        });
     }
 
     getDID(callback) {
@@ -196,22 +203,12 @@ class DIDService {
             if (didPrompt === undefined || didPrompt === false) {
                 return callback(undefined, undefined);
             }
-            this.getObject('did.json', (err, didFile) => {
-                if (err || didFile.did === undefined) {
-                    return this.controllerReference.showModalFromTemplate(
-                        'did-modal',
-                        (event) => callback(undefined, event.detail),
-                        (event) => {
-                        },
-                        {
-                            controller: '../controllers/DIDModalController',
-                            disableExpanding: true,
-                            disableBackdropClosing: true,
-                            disableCancelButton: true,
-                            disableClosing: true,
-                        });
+            this.getObject('user-details.json', (err, userDetails) => {
+                if (err || userDetails.did === undefined) {
+                    let didModalHandler = new DIDModalHandler(this.controllerReference);
+                    return didModalHandler.getDID(callback);
                 }
-                callback(undefined, didFile.did);
+                callback(undefined, userDetails.did);
             });
         });
     }
