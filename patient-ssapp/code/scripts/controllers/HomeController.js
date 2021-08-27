@@ -21,12 +21,9 @@ export default class HomeController extends WebcController {
         this._initTrials();
         this._initTrialParticipant();
         this._handleMessages();
-
-        // TODO: Work in progress:
-        this.CommunicationService = DIDService.getCommunicationServiceInstanceAsync(this);
     }
 
-    _initServices(DSUStorage) {
+    async _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
         this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
@@ -35,6 +32,8 @@ export default class HomeController extends WebcController {
         this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
         this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
         this.QuestionsRepository = QuestionsRepository.getInstance(DSUStorage);
+
+        let auxCommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
     }
 
     _initHandlers() {
