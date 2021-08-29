@@ -206,6 +206,7 @@ export default class TrialParticipantsController extends WebcController {
         tp.trialNumber = this.model.trial.id;
         tp.status = Constants.TRIAL_PARTICIPANT_STATUS.PLANNED;
         tp.enrolledDate = currentDate.toLocaleDateString();
+        tp.trialSSI = this.model.trial.keySSI;
         let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
         trialParticipant.actionNeeded = 'No action required';
         this.model.trialParticipants.push(trialParticipant);
@@ -215,6 +216,7 @@ export default class TrialParticipantsController extends WebcController {
             {tpNumber: '', tpName: tp.name, did: tp.did},
             Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL
         );
+        this._sendMessageToSponsor();
     }
 
     sendMessageToPatient(operation, ssi, tp, shortMessage) {
@@ -263,7 +265,6 @@ export default class TrialParticipantsController extends WebcController {
             }
             if (sites && sites.length > 0) {
                 this.model.site = sites[sites.length - 1];
-                this._sendMessageToSponsor();
             }
         });
     }

@@ -279,11 +279,6 @@ export default class HomeController extends WebcController {
         });
     }
 
-    _attachHandlerPatients() {
-        this.onTagEvent('home:patients', 'click', (model, target, event) => {
-
-        });
-    }
 
     _attachHandlerNotifications() {
         this.onTagEvent('home:notifications', 'click', (model, target, event) => {
@@ -292,6 +287,15 @@ export default class HomeController extends WebcController {
             this.navigateToPageTag('notifications');
         });
     }
+
+    _attachHandlerPatients() {
+        this.onTagEvent('home:patients', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('patients-list');
+        });
+    }
+
 
     _attachHandlerVisits() {
         this.onTagEvent('home:visits', 'click', (model, target, event) => {

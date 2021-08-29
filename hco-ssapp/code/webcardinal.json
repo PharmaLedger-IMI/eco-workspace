@@ -26,6 +26,12 @@
       "tag": "trial-participants"
     },
     {
+      "name": "Patients",
+      "path": "/patients-list",
+      "src": "patients-list.html",
+      "tag": "patients-list"
+    },
+    {
       "name": "Notifications List",
       "path": "/notifications-list",
       "src": "notifications-list.html",
