@@ -1,7 +1,7 @@
 import TrialService from '../services/TrialService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
 
-const ecoServices = require ('eco-services');
+const ecoServices = require('eco-services');
 const FileDownloader = ecoServices.FileDownloader;
 const BaseRepository = ecoServices.BaseRepository;
 
@@ -25,7 +25,7 @@ export default class EconsentController extends WebcController {
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
-        this.EconsentsStatusRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
+        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
     }
 
     _initHandlers() {
@@ -43,6 +43,7 @@ export default class EconsentController extends WebcController {
             if (err) {
                 return console.log(err);
             }
+
             let ecoVersion = this.model.historyData.ecoVersion;
             this.model.econsent = econsent;
             let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
@@ -99,7 +100,11 @@ export default class EconsentController extends WebcController {
         this.onTagClick('econsent:versions', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
-            this.navigateToPageTag('econsent-versions', {trialSSI:this.model.historyData.trialuid, econsentSSI:this.model.historyData.ecoId, tpDid: this.model.historyData.tpDid});
+            this.navigateToPageTag('econsent-versions', {
+                trialSSI: this.model.historyData.trialuid,
+                econsentSSI: this.model.historyData.ecoId,
+                tpDid: this.model.historyData.tpDid
+            });
         });
     }
 

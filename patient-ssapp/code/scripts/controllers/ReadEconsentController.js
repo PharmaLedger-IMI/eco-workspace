@@ -34,7 +34,7 @@ export default class ReadEconsentController extends WebcController {
         this.TrialService = new TrialService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.PATIENT_IDENTITY);
         this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
-        this.TrialParticipantRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
     }
 
     _initConsent() {
@@ -201,7 +201,7 @@ export default class ReadEconsentController extends WebcController {
             }
 
             if (data && data.length > 0) {
-                this.model.tp = data[data.length-1];
+                this.model.tp = data[data.length - 1];
                 let sendObject = {
                     operation: 'update-econsent',
                     ssi: ssi,

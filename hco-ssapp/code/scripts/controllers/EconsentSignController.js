@@ -128,7 +128,7 @@ export default class EconsentSignController extends WebcController {
     }
 
     _getEconsentFilePath(trialSSI, consentSSI, version, fileName) {
-        return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version + '/' + fileName;
+        return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version ;
     }
 
     _getEconsentManualFilePath(ecoID, consentSSI, fileName) {

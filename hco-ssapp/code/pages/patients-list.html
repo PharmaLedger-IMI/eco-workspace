@@ -16,7 +16,20 @@
                     <button class="logout-button" data-tag="logout">Logout</button>
                 </div>
 
+                <div class="search-header">
 
+                    <div class="search-item">
+                        <psk-select view-model="statuses" event-name="filters-changed" event-data="status"></psk-select>
+                    </div>
+                    <div class="search-item">
+                        <psk-select view-model="notifications" event-name="filters-changed" event-data="notification"></psk-select>
+                    </div>
+                    <div class="search-item">
+                        <psk-input id="search-field" view-model="search" event-name="filters-changed" event-data="text"></psk-input>
+                    </div>
+                    <button class="clear-button" data-tag="filters-cleared">Clear filters</button>
+
+                </div>
 
                 <div class="trial-table">
                     <psk-layout columns="8" class="justify-content-center align-items-center table-row">
