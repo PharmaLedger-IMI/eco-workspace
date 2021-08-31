@@ -14,7 +14,7 @@ class DIDModalHandler {
             if (err) {
                 return console.error('User profile missing.', err);
             }
-            this.ControllerReference.model.didModel.did.value = 'did:' + userProfile.username + ':' + userProfile.email;
+            this.ControllerReference.model.didModel.did.value = userProfile.username + ':' + userProfile.email;
         });
     }
 
@@ -201,7 +201,7 @@ class DIDService {
             }
             let didPrompt = envFile.didPrompt;
             if (didPrompt === undefined || didPrompt === false) {
-                return callback(undefined, undefined);
+                return callback(undefined, (envFile.appName || 'mockAppName').replace('-wallet', ''));
             }
             this.getObject('user-details.json', (err, userDetails) => {
                 if (err || userDetails.did === undefined) {
@@ -255,16 +255,16 @@ let getCommunicationServiceInstance = (controllerReference, callback) => {
         let personalIdentity = {};
         if (envFile === undefined) {
             envFile = {
-                did: 'mockDID',
-                workspace: 'mockDomain'
+                workspace: 'mockDomain',
+                appName: 'mockActor'
             }
         }
         personalIdentity.domain = envFile.workspace;
+        personalIdentity.app = (envFile.appName || 'mockAppName').replace('-wallet', '');
 
         localDidService.getDid((err, did) => {
-            if (err) {
-                console.error(err);
-                personalIdentity.did = envFile.did;
+            if (err || did === undefined) {
+                personalIdentity.did = envFile.appName;
             } else {
                 personalIdentity.did = did;
             }

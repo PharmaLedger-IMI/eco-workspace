@@ -8,7 +8,6 @@ const CommunicationService = ecoServices.CommunicationService;
 const SharedStorage = ecoServices.SharedStorage;
 const Constants = ecoServices.Constants;
 const BaseRepository = ecoServices.BaseRepository;
-const DIDService = ecoServices.DIDService;
 
 let getInitModel = () => {
     return {
@@ -41,7 +40,6 @@ export default class HomeController extends WebcController {
         this.setModel(getInitModel());
         this._initServices(this.DSUStorage);
         this._initHandlers();
-        this._handleMessages();
     }
 
     async _initServices(DSUStorage) {
@@ -51,8 +49,6 @@ export default class HomeController extends WebcController {
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
         this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.NOTIFICATIONS, DSUStorage);
         this.SiteService = new SiteService(DSUStorage);
-
-        let auxCommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
     }
 
     _initHandlers() {
@@ -70,7 +66,6 @@ export default class HomeController extends WebcController {
             if (err) {
                 return console.error(err);
             }
-            data = JSON.parse(data);
             switch (data.message.operation) {
                 case 'add-trial': {
 

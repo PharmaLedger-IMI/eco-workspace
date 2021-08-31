@@ -1,6 +1,7 @@
 import { consentTypeEnum, consentTableHeaders } from '../constants/consent.js';
 import ConsentsService from '../services/ConsentsService.js';
-import CommunicationService from '../services/CommunicationService.js';
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
 
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;

@@ -1,13 +1,14 @@
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
 
+const ecoServices = require('eco-services');
 import getSharedStorage from '../services/SharedDBStorageService.js';
 import SitesService from '../services/SitesService.js';
 import TrialsService from '../services/TrialsService.js';
 import { menuOptions } from '../constants/trialDetails.js';
 import { countryListAlpha2 } from '../constants/countries.js';
 import { siteStatusesEnum } from './../constants/site.js';
-import CommunicationService from '../services/CommunicationService.js';
+const CommunicationService = ecoServices.CommunicationService;
 import NewConsentService from '../services/NewConsentService.js';
 import eventBusService from '../services/EventBusService.js';
 import { Topics } from '../constants/topics.js';

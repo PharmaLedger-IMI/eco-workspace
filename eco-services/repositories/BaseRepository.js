@@ -1,6 +1,9 @@
-const getSharedStorage = require('./SharedStorage.js');
+const getSharedStorage = require('../services/SharedStorage.js');
 
 const TABLE_NAMES = {
+    ALL: {
+        DID_IDENTITIES: 'did_identities'
+    },
     PATIENT: {
         NOTIFICATIONS: "notifications",
         TRIAL_PARTICIPANT: "trials_participant",
@@ -19,22 +22,18 @@ const TABLE_NAMES = {
 
 class BaseRepository {
 
-
     constructor(tableName, DSUStorage) {
         this.StorageService = getSharedStorage.getInstance(DSUStorage);
         this.tableName = tableName;
     }
 
-    create = (key, question, callback) =>
-        this.StorageService.insertRecord(this.tableName, key, question, callback);
+    create = (key, value, callback) => this.StorageService.insertRecord(this.tableName, key, value, callback);
 
-    createAsync = (key, question) =>
-        this.StorageService.insertRecordAsync(this.tableName, key, question);
+    createAsync = (key, value) => this.StorageService.insertRecordAsync(this.tableName, key, value);
 
     findBy = (key, callback) => this.StorageService.getRecord(this.tableName, key, callback);
 
-    findByAsync = async (key) =>
-        this.StorageService.getRecordAsync(this.tableName, key);
+    findByAsync = async (key) => this.StorageService.getRecordAsync(this.tableName, key);
 
     findAll = (callback) => this.StorageService.getAllRecords(this.tableName, callback);
 
@@ -42,17 +41,11 @@ class BaseRepository {
 
     filter = (query, sort, limit, callback) => this.StorageService.filter(this.tableName, query, sort, limit, callback);
 
-    filterAsync = async (query, sort, limit) =>
-        this.StorageService.filterAsync(this.tableName, query, sort, limit);
+    filterAsync = async (query, sort, limit) => this.StorageService.filterAsync(this.tableName, query, sort, limit);
 
+    update = (key, value, callback) => this.StorageService.updateRecord(this.tableName, key, value, callback);
 
-
-    update = (key, question, callback) =>
-        this.StorageService.updateRecord(this.tableName, key, question, callback);
-
-    updateAsync = (key, question) =>
-        this.StorageService.updateRecordAsync(this.tableName, key, question);
-
+    updateAsync = (key, value) => this.StorageService.updateRecordAsync(this.tableName, key, value);
 }
 
 const getInstance = (tableName, DSUStorage) => {
