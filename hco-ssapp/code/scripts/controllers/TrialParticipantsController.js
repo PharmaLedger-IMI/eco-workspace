@@ -43,6 +43,7 @@ export default class TrialParticipantsController extends WebcController {
         this._attachHandlerViewTrialParticipantDetails();
         this._attachHandlerViewTrialParticipantStatus();
         this._attachHandlerGoBack();
+        this._attachHandlerEditRecruitmentPeriod();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -54,6 +55,7 @@ export default class TrialParticipantsController extends WebcController {
                 return console.log(err);
             }
             this.model.trial = trial;
+
             let actions = await this._getEconsentActionsMappedByUser(keySSI);
             this.model.trialParticipants = await this._getTrialParticipantsMappedWithActionRequired(actions);
             this._getSite();
@@ -169,14 +171,46 @@ export default class TrialParticipantsController extends WebcController {
                 (event) => {
                     const response = event.detail;
                 }
-            ),
+            ,
                 {
                     controller: 'AddTrialParticipantController',
                     disableExpanding: false,
                     disableBackdropClosing: false,
                     title: 'Add Trial Participant',
-                };
+
+                });
         });
+    }
+
+    _attachHandlerEditRecruitmentPeriod() {
+
+        this.onTagEvent('edit-period', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.showModalFromTemplate(
+                'edit-recruitment-period',
+                (event) => {
+                    const response = event.detail;
+                    debugger;
+                    this.model.trial.recruitmentPeriod = response;
+                    this.model.trial.recruitmentPeriod.toShowDate = new Date(this.model.trial.recruitmentPeriod.startDate).toLocaleDateString() + ' - ' + new Date(this.model.trial.recruitmentPeriod.endDate).toLocaleDateString();
+                    this.TrialService.updateTrialAsync(this.model.trial)
+
+                },
+                (event) => {
+                    const response = event.detail;
+                },
+                {
+                    controller: 'EditRecruitmentPeriodController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false,
+                    title: 'Edit Recruitment Period',
+                    recruitmentPeriod : this.model.trial.recruitmentPeriod
+                }
+            );
+
+        });
+
     }
 
     _attachHandlerViewTrialParticipantStatus() {

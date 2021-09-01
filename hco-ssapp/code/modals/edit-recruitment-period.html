@@ -1,0 +1,19 @@
+<link rel="stylesheet" href="/assets/css/pages/addtp.css">
+
+<h2 slot="header" class="alert-title">Set Trial Recruitment Period</h2>
+
+    <div class="top">
+        <div class="line">
+            <psk-date-input class="tp-input" view-model="@startDate"></psk-date-input>
+        </div>
+        <div class="line">
+            <psk-date-input class="tp-input" view-model="@endDate"></psk-date-input>
+        </div>
+
+    </div>
+
+    <div class="bottom">
+        <button class="tp-button wide-button inverted-colors" slot="footer" data-tag="tp:submit">Done</button>
+        <button class="tp-button wide-button inverted-colors" slot="footer" data-tag="tp:cancel">Cancel</button>
+    </div>
+

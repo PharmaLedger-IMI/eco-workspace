@@ -7,23 +7,24 @@
         </div>
 
         <div class="econsent-actions">
-<!--            <button class="long-button" data-tag="econsent:download">Download-->
+            <!--            <button class="long-button" data-tag="econsent:download">Download-->
 
             </button>
             <div data-if="@showControls">
                 <div class="dispay-flex">
                     <div data-if="@required">
-                            <div>
-                                <button class="long-button"
-                                        data-tag="manual:sign">Manual Sign
-                                </button>
-                                <button class="long-button"
-                                        data-tag="econsent:sign">Sign
-                                </button>
-                            </div>
+                        <div>
                             <button class="long-button"
-                                    data-tag="econsent:decline">Decline
+                                    data-tag="econsent:sign">Sign
                             </button>
+                            <button class="long-button"
+                                    data-tag="manual:sign">Manual Sign
+                            </button>
+
+                        </div>
+                        <button class="long-button"
+                                data-tag="econsent:decline">Decline
+                        </button>
 
                     </div>
                 </div>

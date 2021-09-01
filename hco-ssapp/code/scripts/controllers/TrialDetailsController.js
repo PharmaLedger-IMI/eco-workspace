@@ -47,6 +47,7 @@ export default class TrialDetailsController extends WebcController {
     _initHandlers() {
         // this._attachHandlerAddTrialParticipant();
         // this._attachHandlerNavigateToParticipant();
+        this._attachHandlerEditRecruitmentPeriod();
         this._attachHandlerNavigateToVersion();
         this._attachHandlerBack();
         this.on('openFeedback', (e) => {
@@ -133,5 +134,34 @@ export default class TrialDetailsController extends WebcController {
         }
     }
 
+    _attachHandlerEditRecruitmentPeriod() {
+
+        this.onTagEvent('edit-period', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.showModalFromTemplate(
+                'edit-recruitment-period',
+                (event) => {
+                    const response = event.detail;
+                    this.model.trial.recruitmentPeriod = response;
+                    this.model.trial.recruitmentPeriod.toShowDate = new Date(this.model.trial.recruitmentPeriod.startDate).toLocaleDateString() + ' - ' + new Date(this.model.trial.recruitmentPeriod.endDate).toLocaleDateString();
+                    this.TrialService.updateTrialAsync(this.model.trial)
+
+                },
+                (event) => {
+                    const response = event.detail;
+                },
+                {
+                    controller: 'EditRecruitmentPeriodController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false,
+                    title: 'Edit Recruitment Period',
+                    recruitmentPeriod: this.model.trial.recruitmentPeriod
+                }
+            );
+
+        });
+
+    }
 
 }

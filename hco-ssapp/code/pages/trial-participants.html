@@ -11,13 +11,23 @@
                                  height='47' width='110'></psk-img>
                     </div>
                     <div>
-                        <psk-label class="main-title">{{@trial.id}}  {{@trial.name}} </psk-label>
+                        <psk-label class="main-title">{{@trial.id}} {{@trial.name}}</psk-label>
                     </div>
                     <button class="logout-button" data-tag="logout">Logout</button>
                 </div>
 
                 <div class="subtitle-container">
-                    <psk-label class="subtitle">Recruitment period 20/01/2021-20/08/2021 (dummy text)</psk-label>
+                    <div data-if="@trial.recruitmentPeriod.toShowDate">
+                        <div slot="true">
+                            <psk-label class="subtitle">Recruitment period: {{@trial.recruitmentPeriod.toShowDate}}
+                            </psk-label>
+                        </div>
+                        <div slot="false">
+                            <psk-label class="subtitle">Recruitment period not set yet - Click edit to set it
+                            </psk-label>
+                        </div>
+                    </div>
+                    <button class="link-button" data-tag="edit-period">Edit Period</button>
                     <button class="add-ts" data-tag="add:ts">Add Trial Subject</button>
                 </div>
 
@@ -45,7 +55,7 @@
                         <psk-label class="table-cell">{{@actionNeeded}}</psk-label>
                         <div class="table-cell">
                             <button class="link-button" data-tag="tp:status" data="@id">Status</button>
-                            <psk-label> | </psk-label>
+                            <psk-label> |</psk-label>
                             <button class="link-button" data-tag="tp:details" data="@id">Consents</button>
                         </div>
                     </psk-layout>

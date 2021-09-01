@@ -51,6 +51,17 @@ export default class AsqQuestionController extends WebcController {
 
     _initHandlers() {
         this._attachHandlerSubmit();
+        this._attachHandlerBack();
+    }
+
+
+    _attachHandlerBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
+
+        });
     }
 
 
@@ -128,6 +139,7 @@ export default class AsqQuestionController extends WebcController {
                 };
 
                 this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, sendObject);
+                this.navigateToPageTag('home');
             }
         });
     }
