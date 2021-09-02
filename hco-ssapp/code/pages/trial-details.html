@@ -30,6 +30,13 @@
                     <button class="link-button" data-tag="edit-period">Edit Period</button>
                     <button class="add-ts" data-tag="add:ts">Add Trial Subject</button>
                 </div>
+                <div class="subtitle-container" data-if="@site.name">
+                    <div slot="true">
+                        <psk-label class="subtitle">{{@site.status}}
+                        </psk-label>
+                        <button class="link-button" data-tag="edit-status">Change Status</button>
+                    </div>
+                </div>
 
                 <psk-label class="table-title">Trial Subjects</psk-label>
                 <div class="trial-table">

@@ -107,6 +107,7 @@ export default class HomeController extends WebcController {
                 }
                 case 'site-status-change': {
                     this._refreshSite(data.message);
+                    debugger
                     this._saveNotification(data.message, 'The status of site was changed', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
 
                     break;

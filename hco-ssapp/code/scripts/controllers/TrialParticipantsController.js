@@ -59,8 +59,8 @@ export default class TrialParticipantsController extends WebcController {
             this.model.trial.isInRecruitmentPeriod = true;
             let actions = await this._getEconsentActionsMappedByUser(keySSI);
             this.model.trialParticipants = await this._getTrialParticipantsMappedWithActionRequired(actions);
-            if (this.model.trial.recruitmentPeriod){
-                let endDate = new Date (this.model.trial.recruitmentPeriod.endDate);
+            if (this.model.trial.recruitmentPeriod) {
+                let endDate = new Date(this.model.trial.recruitmentPeriod.endDate);
                 let currentDate = new Date();
                 this.model.trial.isInRecruitmentPeriod = currentDate <= endDate;
             }
@@ -177,7 +177,7 @@ export default class TrialParticipantsController extends WebcController {
                 (event) => {
                     const response = event.detail;
                 }
-            ,
+                ,
                 {
                     controller: 'AddTrialParticipantController',
                     disableExpanding: false,
@@ -211,7 +211,7 @@ export default class TrialParticipantsController extends WebcController {
                     disableExpanding: false,
                     disableBackdropClosing: false,
                     title: 'Edit Recruitment Period',
-                    recruitmentPeriod : this.model.trial.recruitmentPeriod
+                    recruitmentPeriod: this.model.trial.recruitmentPeriod
                 }
             );
 
@@ -298,13 +298,12 @@ export default class TrialParticipantsController extends WebcController {
     _getSite() {
 
         this.SiteService.getSites((err, sites) => {
-
-            //this.model.site = sites?.filter(site=> site.trialKeySSI === this.model.trial.keySSI);
             if (err) {
                 return console.log(err);
             }
             if (sites && sites.length > 0) {
-                this.model.site = sites[sites.length - 1];
+                let filtered = sites?.filter(site => site.trialKeySSI === this.model.trial.keySSI);
+                if (filtered) this.model.site = filtered[0];
             }
         });
     }
