@@ -28,7 +28,12 @@
                         </div>
                     </div>
                     <button class="link-button" data-tag="edit-period">Edit Period</button>
-                    <button class="add-ts" data-tag="add:ts">Add Trial Subject</button>
+                    <div data-if="@trial.isInRecruitmentPeriod">
+                        <div slot="true">
+                            <button class="add-ts" data-tag="add:ts">Add Trial Subject</button>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="trial-table">
@@ -71,7 +76,8 @@
                 </div>
                 <div class="right-text-eu">
                     <strong>
-                        <psk-label class="eu-text">This project has received funding from the European Union’s Horizon
+                        <psk-label class="eu-text">This project has received funding from the European Union’s
+                            Horizon
                             2020 research and innovation programme under <br/>
                             grant agreement No 853992 Copyright <br/>
                             <span>&copy;  PharmaLedger Consortium 2020 –2023</span>

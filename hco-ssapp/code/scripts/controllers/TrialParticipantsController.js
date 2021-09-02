@@ -56,8 +56,14 @@ export default class TrialParticipantsController extends WebcController {
             }
             this.model.trial = trial;
 
+            this.model.trial.isInRecruitmentPeriod = true;
             let actions = await this._getEconsentActionsMappedByUser(keySSI);
             this.model.trialParticipants = await this._getTrialParticipantsMappedWithActionRequired(actions);
+            if (this.model.trial.recruitmentPeriod){
+                let endDate = new Date (this.model.trial.recruitmentPeriod.endDate);
+                let currentDate = new Date();
+                this.model.trial.isInRecruitmentPeriod = currentDate <= endDate;
+            }
             this._getSite();
         });
     }
