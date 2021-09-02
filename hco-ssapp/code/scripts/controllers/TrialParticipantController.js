@@ -1,6 +1,5 @@
 import TrialService from '../services/TrialService.js';
 import SiteService from '../services/SiteService.js';
-import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
 
 
 const {WebcController} = WebCardinal.controllers;
@@ -9,7 +8,7 @@ const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
 const DateTimeService = ecoServices.DateTimeService;
 const Constants = ecoServices.Constants;
-
+const BaseRepository = ecoServices.BaseRepository;
 let getInitModel = () => {
     return {
         econsents: [],
@@ -34,7 +33,7 @@ export default class TrialParticipantController extends WebcController {
         this.TrialService = new TrialService(DSUStorage);
         this.SiteService = new SiteService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
 
     }
 
@@ -115,8 +114,8 @@ export default class TrialParticipantController extends WebcController {
             this.navigateToPageTag('econsent-sign', {
                 trialSSI: this.model.trialSSI,
                 econsentSSI: model.keySSI,
-                isManuallySigned: model.isManuallySigned ,
-                manualKeySSI: model.manualKeySSI ,
+                isManuallySigned: model.isManuallySigned,
+                manualKeySSI: model.manualKeySSI,
                 manualAttachment: model.manualAttachment,
                 trialParticipantNumber: this.model.tp.did,
                 tpUid: this.model.tpUid,
@@ -296,7 +295,7 @@ export default class TrialParticipantController extends WebcController {
                                 econsent.tsWithdrawDate = tpVersion.toShowDate;
                             }
                             if (tpVersion.actionNeeded === Constants.ECO_STATUSES.CONTACT) {
-                                                            if (tpVersion.status === 'Withdrawed') {
+                                if (tpVersion.status === 'Withdrawed') {
                                     econsent.tsWithdrawDate = tpVersion.toShowDate;
                                 } else {
                                     econsent = this._showButton(econsent, 'Contact');

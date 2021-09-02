@@ -37,7 +37,11 @@ class FileDownloader {
     }
 
     _getFileBlob(path, fileName, callback) {
-        let url = `/download${path}/${fileName}`;
+        let url = `/download${path}`;
+        if (!path.includes(fileName)) {
+            url += `/${fileName}`;
+        }
+
         fetch(url)
             .then((response) => {
                 if (response.ok) {
@@ -53,4 +57,5 @@ class FileDownloader {
             });
     }
 }
+
 module.exports = FileDownloader

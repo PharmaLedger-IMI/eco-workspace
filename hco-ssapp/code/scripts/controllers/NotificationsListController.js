@@ -1,7 +1,6 @@
-import NotificationsRepository from "../repositories/NotificationsRepository.js";
-
 const {WebcController} = WebCardinal.controllers;
-
+const ecoServices = require('eco-services');
+const BaseRepository = ecoServices.BaseRepository;
 let getInitModel = () => {
     return {
         notifications: [],
@@ -25,7 +24,7 @@ export default class NotificationsListController extends WebcController {
     }
 
     _initServices(DSUStorage) {
-        this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
+        this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.NOTIFICATIONS, DSUStorage);
     }
 
     _initNotifications() {

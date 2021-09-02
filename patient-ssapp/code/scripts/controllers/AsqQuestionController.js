@@ -1,11 +1,10 @@
 import TrialService from '../services/TrialService.js';
-import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 import EconsentService from "../services/EconsentService.js";
-import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
-import QuestionsRepository from "../repositories/QuestionsRepository.js";
+
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
+const BaseRepository = ecoServices.BaseRepository;
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -31,10 +30,10 @@ export default class AsqQuestionController extends WebcController {
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.PATIENT_IDENTITY);
-        this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
         this.EcosentService = new EconsentService(DSUStorage);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
-        this.QuestionsRepository = QuestionsRepository.getInstance(DSUStorage);
+        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
+        this.QuestionsRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.QUESTIONS, DSUStorage);
     }
 
     _initConsent() {
@@ -52,6 +51,17 @@ export default class AsqQuestionController extends WebcController {
 
     _initHandlers() {
         this._attachHandlerSubmit();
+        this._attachHandlerBack();
+    }
+
+
+    _attachHandlerBack() {
+        this.onTagEvent('back', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.history.back();
+
+        });
     }
 
 
@@ -129,6 +139,7 @@ export default class AsqQuestionController extends WebcController {
                 };
 
                 this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, sendObject);
+                this.navigateToPageTag('home');
             }
         });
     }

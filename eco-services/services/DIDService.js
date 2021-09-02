@@ -14,7 +14,7 @@ class DIDModalHandler {
             if (err) {
                 return console.error('User profile missing.', err);
             }
-            this.ControllerReference.model.didModel.did.value = 'did:' + userProfile.username + ':' + userProfile.email;
+            this.ControllerReference.model.didModel.did.value = userProfile.username + ':' + userProfile.email;
         });
     }
 
@@ -107,11 +107,11 @@ class DIDModalHandler {
                 this.ControllerReference.model.didModel.errorMessage = patternErrorMessage;
                 return;
             }
-            this._setDID(this.ControllerReference.model.didModel.did.value, (err, didFile) => {
+            this._setDID(this.ControllerReference.model.didModel.did.value, (err, userDetails) => {
                 if (err) {
                     return console.error('There was an error saving the DID.', err);
                 }
-                this.ControllerReference.model.didModel.confirmedDid = didFile.did;
+                this.ControllerReference.model.didModel.confirmedDid = userDetails.did;
                 this.ControllerReference.model.didModel.did.readOnly = true;
                 this.ControllerReference.model.didModel.title = 'Share your DID';
                 this.ControllerReference.model.didModel.errorMessage = null;
@@ -143,6 +143,15 @@ class DIDModalHandler {
         })
     }
 
+    _saveUserProfile(userProfile, callback) {
+        this.ControllerReference.DSUStorage.setObject('user-details.json', userProfile, (err) => {
+            if (err) {
+                return callback(err, undefined);
+            }
+            callback(undefined, userProfile);
+        })
+    }
+
     _getElementByProps(props) {
         let elem = document.createElement(props.tagName);
         elem.id = props.id;
@@ -156,15 +165,13 @@ class DIDModalHandler {
     }
 
     _setDID(did, callback) {
-        let didFile = {
-            did: did
-        }
-        this.ControllerReference.DSUStorage.setObject('did.json', didFile, (err) => {
+        this._getUserProfile((err, userProfile) => {
             if (err) {
                 return callback(err, undefined);
             }
-            callback(undefined, didFile);
-        })
+            userProfile.did = did;
+            this._saveUserProfile(userProfile, callback);
+        });
     }
 
     getDID(callback) {
@@ -194,14 +201,14 @@ class DIDService {
             }
             let didPrompt = envFile.didPrompt;
             if (didPrompt === undefined || didPrompt === false) {
-                return callback(undefined, undefined);
+                return callback(undefined, (envFile.appName || 'mockAppName').replace('-wallet', ''));
             }
-            this.getObject('did.json', (err, didFile) => {
-                if (err || didFile.did === undefined) {
+            this.getObject('user-details.json', (err, userDetails) => {
+                if (err || userDetails.did === undefined) {
                     let didModalHandler = new DIDModalHandler(this.controllerReference);
                     return didModalHandler.getDID(callback);
                 }
-                callback(undefined, didFile.did);
+                callback(undefined, userDetails.did);
             });
         });
     }
@@ -248,16 +255,16 @@ let getCommunicationServiceInstance = (controllerReference, callback) => {
         let personalIdentity = {};
         if (envFile === undefined) {
             envFile = {
-                did: 'mockDID',
-                workspace: 'mockDomain'
+                workspace: 'mockDomain',
+                appName: 'mockActor'
             }
         }
         personalIdentity.domain = envFile.workspace;
+        personalIdentity.app = (envFile.appName || 'mockAppName').replace('-wallet', '');
 
         localDidService.getDid((err, did) => {
-            if (err) {
-                console.error(err);
-                personalIdentity.did = envFile.did;
+            if (err || did === undefined) {
+                personalIdentity.did = envFile.appName;
             } else {
                 personalIdentity.did = did;
             }

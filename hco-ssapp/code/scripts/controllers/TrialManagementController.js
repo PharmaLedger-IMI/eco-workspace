@@ -1,8 +1,6 @@
-
 import NotificationsService from '../services/NotificationsService.js';
 import TrialService from '../services/TrialService.js';
-import TrialRepository from '../repositories/TrialRepository.js';
-import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
+
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -10,6 +8,7 @@ const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
 const SharedStorage = ecoServices.SharedStorage;
 const Constants = ecoServices.Constants;
+const BaseRepository = ecoServices.BaseRepository;
 
 let getInitModel = () => {
     return {
@@ -58,8 +57,7 @@ export default class TrialManagementController extends WebcController {
         this.NotificationsService = new NotificationsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.StorageService = SharedStorage.getInstance(DSUStorage);
-        this.TrialRepository = TrialRepository.getInstance(DSUStorage);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
     }
 
     _initHandlers() {

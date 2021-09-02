@@ -1,9 +1,5 @@
 import SiteService from '../services/SiteService.js';
 import TrialService from '../services/TrialService.js';
-import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
-import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
-import QuestionsRepository from "../repositories/QuestionsRepository.js";
-import BaseRepository from "../repositories/BaseRepository.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -11,7 +7,8 @@ const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
 const SharedStorage = ecoServices.SharedStorage;
 const Constants = ecoServices.Constants;
-const DIDService = ecoServices.DIDService;
+const BaseRepository = ecoServices.BaseRepository;
+
 let getInitModel = () => {
     return {
         title: 'HomePage',
@@ -43,20 +40,15 @@ export default class HomeController extends WebcController {
         this.setModel(getInitModel());
         this._initServices(this.DSUStorage);
         this._initHandlers();
-        this._handleMessages();
     }
 
     async _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.StorageService = SharedStorage.getInstance(DSUStorage);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
-        this.NotificationsRepository = BaseRepository.getInstance(DSUStorage,'notifications');
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
+        this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.NOTIFICATIONS, DSUStorage);
         this.SiteService = new SiteService(DSUStorage);
-        this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
-        this.QuestionsRepository = QuestionsRepository.getInstance(DSUStorage);
-
-        let auxCommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
     }
 
     _initHandlers() {
@@ -74,7 +66,6 @@ export default class HomeController extends WebcController {
             if (err) {
                 return console.error(err);
             }
-            data = JSON.parse(data);
             switch (data.message.operation) {
                 case 'add-trial': {
 
@@ -283,11 +274,6 @@ export default class HomeController extends WebcController {
         });
     }
 
-    _attachHandlerPatients() {
-        this.onTagEvent('home:patients', 'click', (model, target, event) => {
-
-        });
-    }
 
     _attachHandlerNotifications() {
         this.onTagEvent('home:notifications', 'click', (model, target, event) => {
@@ -296,6 +282,15 @@ export default class HomeController extends WebcController {
             this.navigateToPageTag('notifications');
         });
     }
+
+    _attachHandlerPatients() {
+        this.onTagEvent('home:patients', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.navigateToPageTag('patients-list');
+        });
+    }
+
 
     _attachHandlerVisits() {
         this.onTagEvent('home:visits', 'click', (model, target, event) => {

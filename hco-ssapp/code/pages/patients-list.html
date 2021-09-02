@@ -1,6 +1,6 @@
 <psk-page title="Home">
     <link rel="stylesheet" href="/assets/css/pages/trial-participants.css">
-    <webc-container controller="TrialParticipantsController">
+    <webc-container controller="PatientsListController">
 
         <div class="main-background">
             <div class="front">
@@ -11,29 +11,30 @@
                                  height='47' width='110'></psk-img>
                     </div>
                     <div>
-                        <psk-label class="main-title">{{@trial.id}} {{@trial.name}}</psk-label>
+                        <psk-label class="main-title">Patients Overview </psk-label>
                     </div>
                     <button class="logout-button" data-tag="logout">Logout</button>
                 </div>
 
-                <div class="subtitle-container">
-                    <div data-if="@trial.recruitmentPeriod.toShowDate">
-                        <div slot="true">
-                            <psk-label class="subtitle">Recruitment period: {{@trial.recruitmentPeriod.toShowDate}}
-                            </psk-label>
-                        </div>
-                        <div slot="false">
-                            <psk-label class="subtitle">Recruitment period not set yet - Click edit to set it
-                            </psk-label>
-                        </div>
+                <div class="search-header">
+
+                    <div class="search-item">
+                        <psk-select view-model="statuses" event-name="filters-changed" event-data="status"></psk-select>
                     </div>
-                    <button class="link-button" data-tag="edit-period">Edit Period</button>
-                    <button class="add-ts" data-tag="add:ts">Add Trial Subject</button>
+                    <div class="search-item">
+                        <psk-select view-model="notifications" event-name="filters-changed" event-data="notification"></psk-select>
+                    </div>
+                    <div class="search-item">
+                        <psk-input id="search-field" view-model="search" event-name="filters-changed" event-data="text"></psk-input>
+                    </div>
+                    <button class="clear-button" data-tag="filters-cleared">Clear filters</button>
+
                 </div>
 
                 <div class="trial-table">
-                    <psk-layout columns="7" class="justify-content-center align-items-center table-row">
+                    <psk-layout columns="8" class="justify-content-center align-items-center table-row">
                         <psk-label class="table-cell"></psk-label>
+                        <psk-label class="table-cell">Trial Number</psk-label>
                         <psk-label class="table-cell">Name</psk-label>
                         <psk-label class="table-cell">Number</psk-label>
                         <psk-label class="table-cell">Birthday</psk-label>
@@ -44,10 +45,11 @@
                     <hr/>
                 </div>
                 <div class="trial-table body" data-for="@trialParticipants">
-                    <psk-layout columns="7"
+                    <psk-layout columns="8"
                                 class="justify-content-center align-items-center table-row">
                         <psk-img class="table-cell no-bottom-margin" src="assets/images/bell.png"
                                  height='30' width='34'></psk-img>
+                        <psk-label class="table-cell">{{@trialNumber}}</psk-label>
                         <psk-label class="table-cell">{{@name}}{{@lastName}}</psk-label>
                         <psk-label class="table-cell">{{@number}}</psk-label>
                         <psk-label class="table-cell">{{@birthdate}}</psk-label>

@@ -17,8 +17,18 @@
                 </div>
 
                 <div class="subtitle-container">
-                    <psk-label class="subtitle">Recruitment period 20/01/2021-20/08/2021 (dummy text)</psk-label>
-                    <!--                    <button class="add-ts" data-tag="add:ts">Add Trial Subject</button>-->
+                    <div data-if="@trial.recruitmentPeriod.toShowDate">
+                        <div slot="true">
+                            <psk-label class="subtitle">Recruitment period: {{@trial.recruitmentPeriod.toShowDate}}
+                            </psk-label>
+                        </div>
+                        <div slot="false">
+                            <psk-label class="subtitle">Recruitment period not set yet - Click edit to set it
+                            </psk-label>
+                        </div>
+                    </div>
+                    <button class="link-button" data-tag="edit-period">Edit Period</button>
+                    <button class="add-ts" data-tag="add:ts">Add Trial Subject</button>
                 </div>
 
                 <psk-label class="table-title">Trial Subjects</psk-label>
