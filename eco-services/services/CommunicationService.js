@@ -75,6 +75,7 @@ class CommunicationService {
                 return callback(err);
             }
             console.log(this.senderIdentity, ` received message: ${msg}`);
+            msg = JSON.parse(msg);
             callback(err, msg);
         });
     }

@@ -1,5 +1,6 @@
 import getSharedStorage from './SharedDBStorageService.js';
-import DSUService from './DSUService.js';
+const ecoServices = require('eco-services');
+const DSUService = ecoServices.DSUService;
 import { trialStatusesEnum } from '../constants/trial.js';
 import { trialStagesEnum } from '../constants/trial.js';
 

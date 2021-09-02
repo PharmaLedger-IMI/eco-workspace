@@ -40,6 +40,7 @@ export default class HomeController extends WebcController {
         this.setModel(getInitModel());
         this._initServices(this.DSUStorage);
         this._initHandlers();
+        this._handleMessages();
     }
 
     async _initServices(DSUStorage) {

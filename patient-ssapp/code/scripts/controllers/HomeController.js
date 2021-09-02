@@ -4,7 +4,7 @@ const {WebcController} = WebCardinal.controllers;
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
 const DateTimeService = ecoServices.DateTimeService;
-const DIDService = ecoServices.DIDService;
+//const DIDService = ecoServices.DIDService;
 const BaseRepository = ecoServices.BaseRepository;
 
 export default class HomeController extends WebcController {
@@ -27,7 +27,7 @@ export default class HomeController extends WebcController {
         this.VisitsAndProceduresRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.VISITS, DSUStorage);
         this.QuestionsRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.QUESTIONS, DSUStorage);
 
-        let auxCommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
+        //let auxCommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
     }
 
     _initHandlers() {

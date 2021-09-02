@@ -1,5 +1,6 @@
 import getSharedStorage from './SharedDBStorageService.js';
-import DSUService from './DSUService.js';
+const ecoServices = require('eco-services');
+const DSUService = ecoServices.DSUService;
 import SitesService from './SitesService.js';
 
 export default class NewConsentService extends DSUService {

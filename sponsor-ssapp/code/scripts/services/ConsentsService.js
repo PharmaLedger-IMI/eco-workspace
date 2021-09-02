@@ -1,5 +1,6 @@
 import getSharedStorage from './SharedDBStorageService.js';
-import DSUService from './DSUService.js';
+const ecoServices = require('eco-services');
+const DSUService = ecoServices.DSUService;
 
 export default class ConsentsService extends DSUService {
   CONSENTS_TABLE = 'consents';
