@@ -7,5 +7,19 @@
   grid-column-gap: 1em;
 }
 
-.visits-table-container .item {
+.visits-form-control {
+  width: 100%;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  margin: 0px 2px;
+  outline: none;
+  padding: 3px;
+  box-sizing: border-box;
+  transition: 0.3s;
+  font-size: 14px;
+}
+
+.visits-form-control:focus {
+  border-color: dodgerBlue;
+  box-shadow: 0 0 8px 0 dodgerBlue;
 }

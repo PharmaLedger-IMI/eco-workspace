@@ -213,143 +213,156 @@
                   </button>
                 </div>
 
-                <div class="mt-3 d-flex flex-row align-items-center">
-                  <div style="width: 100px">Visit</div>
-                  <div class="d-flex flex-row align-items-center mt-2" data-for="@visits">
-                    <div style="width: 100px">
-                      <input class="form-control" style="max-width: 100px" data-view-model="@name" />
+                <div id="container">
+                  <div class="mt-3 d-flex flex-row flex-nowrap align-items-center">
+                    <div style="width: 100px">Visit</div>
+                    <div class="d-flex flex-row flex-nowrap align-items-center mt-2" data-for="@visits">
+                      <div class="d-flex flex-row align-items-center" style="width: 100px">
+                        <input class="visits-form-control" style="max-width: 100px" data-view-model="@name" />
+                      </div>
                     </div>
+                    <div class="ml-auto" style="width: 150px"></div>
                   </div>
-                  <div style="width: 150px"></div>
-                </div>
 
-                <div class="mt-3 d-flex flex-row align-items-center">
-                  <div style="width: 100px">Week</div>
-                  <div class="d-flex flex-row align-items-center mt-2" data-for="@visits">
-                    <div class="d-flex flex-row align-items-center" style="width: 100px" data-for="@weeks">
-                      <input class="form-control" style="max-width: 50px" data-view-model="@week" />
+                  <div class="mt-3 d-flex flex-row flex-nowrap align-items-center">
+                    <div style="width: 100px">Week</div>
+                    <div class="d-flex flex-row flex-nowrap align-items-center mt-2" data-for="@visits">
+                      <div
+                        class="d-flex flex-row flex-nowrap align-items-center"
+                        style="width: 100px"
+                        data-for="@weeks"
+                      >
+                        <input class="visits-form-control" style="max-width: 50px" data-view-model="@week" />
+                      </div>
                     </div>
+                    <div class="ml-auto" style="width: 150px"></div>
                   </div>
-                  <div style="width: 150px"></div>
-                </div>
 
-                <div class="mt-3 d-flex flex-row align-items-center">
-                  <div style="width: 100px">Visit Window</div>
-                  <div class="d-flex flex-row align-items-center mt-2" data-for="@visits">
-                    <div class="d-flex flex-row align-items-center" style="width: 100px" data-for="@visitWindow">
-                      <container data-if="@show">
-                        <container slot="false"> </container>
-                        <container slot="true">
-                          <input class="form-control" style="max-width: 50px" data-view-model="@window" />
-                        </container>
-                      </container>
+                  <div class="mt-3 d-flex flex-row flex-nowrap align-items-center">
+                    <div style="width: 100px">Visit Window</div>
+                    <div class="d-flex flex-row flex-nowrap align-items-center mt-2" data-for="@visits">
+                      <div
+                        class="d-flex flex-row flex-nowrap align-items-center"
+                        style="width: 100px"
+                        data-for="@visitWindow"
+                      >
+                        <input class="visits-form-control" style="max-width: 50px" data-view-model="@window" />
+                      </div>
                     </div>
+                    <div class="ml-auto" style="width: 150px"></div>
                   </div>
-                  <div style="width: 150px"></div>
-                </div>
 
-                <div data-for="@procedures">
-                  <div class="mt-3 d-flex flex-row align-items-center">
-                    <input class="form-control" style="max-width: 100px" data-view-model="@name" />
-                    <div class="" data-for="@visits">
-                      <input
-                        class="form-control"
-                        style="height: 30px; width: 100px; display: inline"
-                        data-view-model="@checkbox"
-                      />
+                  <div data-for="@procedures">
+                    <div class="mt-3 d-flex flex-row flex-nowrap align-items-center">
+                      <input class="visits-form-control" style="max-width: 96px" data-view-model="@name" />
+                      <div class="" data-for="@visits">
+                        <input
+                          class="form-control"
+                          style="height: 26px; width: 96px; display: inline"
+                          data-view-model="@checkbox"
+                        />
+                      </div>
+                      <select
+                        class="form-control ml-auto"
+                        style="width: 150px"
+                        name="@consent.name"
+                        id="@selectId"
+                        data-for="@consent.options"
+                      >
+                        <option value="@value" selected="@selected">{{@label}}</option>
+                      </select>
                     </div>
-                    <select
-                      class="form-control ml-auto"
-                      style="width: 150px"
-                      name="@consent.name"
-                      id="@selectId"
-                      data-for="@consent.options"
-                    >
-                      <option value="@value" selected="@selected">{{@label}}</option>
-                    </select>
                   </div>
                 </div>
               </container>
 
               <container slot="true">
-                <div data-for="@filters">
-                  <div data-if="@selected" class="m-2">
-                    <container slot="false">
-                      <button class="btn btn-bare" data-tag="filter-procedures" data-custom="@name">{{ @name }}</button>
-                    </container>
-                    <container slot="true">
-                      <button class="btn btn-primary" data-tag="filter-procedures" data-custom="@name">
-                        {{ @name }}
-                      </button>
-                    </container>
-                  </div>
-                </div>
-
-                <div class="mt-3 d-flex flex-row align-items-center">
-                  <div class="border-top border-left border-right" style="width: 100px">Visit</div>
-                  <div class="d-flex flex-row align-items-center border-top" data-for="@visits">
-                    <div class="border-right" style="width: 100px">
-                      <div style="max-width: 100px">{{ @name.value }}</div>
-                    </div>
-                  </div>
-                  <div style="width: 150px"></div>
-                </div>
-
-                <div class="d-flex flex-row align-items-center">
-                  <div class="border-left border-right" style="width: 100px">Week</div>
-                  <div class="d-flex flex-row align-items-center" data-for="@visits">
-                    <div class="d-flex flex-row align-items-center border-right" style="width: 100px" data-for="@weeks">
-                      <div style="max-width: 50px">{{ @week.value }}&nbsp;</div>
-                    </div>
-                  </div>
-                  <div style="width: 150px"></div>
-                </div>
-
-                <div class="d-flex flex-row align-items-center">
-                  <div class="border-left border-right" style="width: 100px">Visit Window</div>
-                  <div class="d-flex flex-row align-items-center" data-for="@visits">
-                    <div
-                      class="d-flex flex-row align-items-center border-right"
-                      style="width: 100px"
-                      data-for="@visitWindow"
-                    >
-                      <container data-if="@show">
-                        <container slot="false">&nbsp;</container>
-                        <container slot="true">
-                          <div style="max-width: 50px">{{ @window.value }}&nbsp;</div>
-                        </container>
+                <div data-if="@visitsExist">
+                  <div data-for="@filters">
+                    <div data-if="@selected" class="m-2">
+                      <container slot="false">
+                        <button class="btn btn-bare" data-tag="filter-procedures" data-custom="@name">
+                          {{ @name }}
+                        </button>
+                      </container>
+                      <container slot="true">
+                        <button class="btn btn-primary" data-tag="filter-procedures" data-custom="@name">
+                          {{ @name }}
+                        </button>
                       </container>
                     </div>
                   </div>
-                  <div style="width: 150px"></div>
-                </div>
 
-                <div data-for="@filteredProcedures" class="">
-                  <div class="d-flex flex-row align-items-center border-bottom border-right border-top border-left">
-                    <div class="border-right" style="width: 100px">{{ @name.value }}</div>
-                    <div class="" data-for="@visits">
-                      <input
-                        class="form-control border-right"
-                        style="height: 30px; width: 100px; display: inline"
-                        data-view-model="@checkbox"
-                      />
+                  <div class="mt-3 d-flex flex-row align-items-center">
+                    <div class="" style="width: 100px; text-align: center">Visit</div>
+                    <div class="d-flex flex-row align-items-center" data-for="@visits">
+                      <div class="" style="width: 100px; text-align: center">
+                        <div style="max-width: 100px">{{ @name.value }}</div>
+                      </div>
                     </div>
-                    <select
-                      disabled="true"
-                      class="form-control ml-auto"
-                      style="width: 150px"
-                      name="@consent.name"
-                      id="@selectId"
-                      data-for="@consent.options"
-                    >
-                      <option value="@value" selected="@selected">{{@label}}</option>
-                    </select>
+                    <div style="width: 150px"></div>
+                  </div>
+
+                  <div class="d-flex flex-row align-items-center mt-2">
+                    <div class="" style="width: 100px; text-align: center">Week</div>
+                    <div class="d-flex flex-row align-items-center" data-for="@visits">
+                      <div
+                        class="d-flex flex-row align-items-center justify-content-center"
+                        style="width: 100px"
+                        data-for="@weeks"
+                      >
+                        <div style="max-width: 50px">{{ @week.value }}&nbsp;</div>
+                      </div>
+                    </div>
+                    <div style="width: 150px"></div>
+                  </div>
+
+                  <div class="d-flex flex-row align-items-center mt-2">
+                    <div class="" style="width: 100px; text-align: center">Visit Window</div>
+                    <div class="d-flex flex-row align-items-center" data-for="@visits">
+                      <div
+                        class="d-flex flex-row align-items-center justify-content-center"
+                        style="width: 100px"
+                        data-for="@visitWindow"
+                      >
+                        <container data-if="@show">
+                          <container slot="false">&nbsp;</container>
+                          <container slot="true">
+                            <div style="max-width: 50px">{{ @window.value }}&nbsp;</div>
+                          </container>
+                        </container>
+                      </div>
+                    </div>
+                    <div style="width: 150px"></div>
+                  </div>
+
+                  <div data-for="@filteredProcedures" class="">
+                    <div class="d-flex flex-row align-items-center">
+                      <div class="" style="width: 100px; text-align: center">{{ @name.value }}</div>
+                      <div class="" data-for="@visits">
+                        <input
+                          class="form-control"
+                          style="height: 26px; width: 96px; display: inline"
+                          data-view-model="@checkbox"
+                        />
+                      </div>
+                      <select
+                        disabled="true"
+                        class="form-control ml-auto"
+                        style="width: 150px"
+                        name="@consent.name"
+                        id="@selectId"
+                        data-for="@consent.options"
+                      >
+                        <option value="@value" selected="@selected">{{@label}}</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </container>
             </div>
 
-            <div data-if="@notEditable">
+            <div data-if="@notEditable" class="mt-2">
               <container slot="false">
                 <button class="mt-2 btn btn-primary" data-tag="submitData">Submit</button>
                 <button class="mt-2 btn btn-primary" data-tag="cancel">Cancel</button>

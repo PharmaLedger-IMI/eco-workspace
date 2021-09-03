@@ -1,4 +1,5 @@
-import CommunicationService from '../services/CommunicationService.js';
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
 import NewConsentService from '../services/NewConsentService.js';
 import TrialsService from '../services/TrialsService.js';
 import eventBusService from '../services/EventBusService.js';
@@ -57,8 +58,14 @@ export default class NewVisitsProceduresController extends WebcController {
           ],
           visitWindow: [
             {
+              show: true,
               window: {
-                show: false,
+                label: '',
+                name: 'windowFrom',
+                required: true,
+                placeholder: 'From',
+                value: '',
+                type: 'hidden',
               },
             },
           ],
@@ -98,8 +105,14 @@ export default class NewVisitsProceduresController extends WebcController {
           ],
           visitWindow: [
             {
+              show: true,
               window: {
-                show: false,
+                label: '',
+                name: 'windowFrom',
+                required: true,
+                placeholder: 'From',
+                value: '',
+                type: 'hidden',
               },
             },
           ],
@@ -176,7 +189,7 @@ export default class NewVisitsProceduresController extends WebcController {
             required: true,
             placeholder: 'from',
             value: y ? y.value : null,
-            type: 'number',
+            type: y ? 'number' : 'hidden',
           },
         })),
       };
@@ -261,9 +274,14 @@ export default class NewVisitsProceduresController extends WebcController {
     this.model.addExpression(
       'visitsExist',
       () => {
-        return this.model.visits && Array.isArray(this.model.visits) && this.model.visits.length > 0;
+        return (
+          this.model.consents &&
+          Array.isArray(this.model.consents) &&
+          this.model.consents[0] &&
+          this.model.consents[0].visits
+        );
       },
-      'visits'
+      'consents'
     );
 
     this.on('openFeedback', (e) => {
@@ -361,6 +379,11 @@ export default class NewVisitsProceduresController extends WebcController {
             };
         }),
       }));
+
+      if (newVisits.length > 5) {
+        const container = document.querySelector('#container');
+        const ps = new PerfectScrollbar(container);
+      }
       this.model.visits = newVisits;
       this.model.procedures = newProcedures;
     });
