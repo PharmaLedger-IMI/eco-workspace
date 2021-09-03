@@ -380,10 +380,6 @@ export default class NewVisitsProceduresController extends WebcController {
         }),
       }));
 
-      if (newVisits.length > 5) {
-        const container = document.querySelector('#container');
-        const ps = new PerfectScrollbar(container);
-      }
       this.model.visits = newVisits;
       this.model.procedures = newProcedures;
     });
