@@ -75,7 +75,9 @@ export default class VisitEditController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
             this.navigateToPageTag('procedures-view', {
-                visitId: model.visit.id
+                visitId: model.visit.id,
+                tpUid: this.model.tpUid,
+                visitUuid: model.visit.uuid
             });
         });
     }

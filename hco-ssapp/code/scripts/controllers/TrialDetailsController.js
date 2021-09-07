@@ -1,3 +1,5 @@
+import SiteService from "../services/SiteService.js";
+
 const {WebcController} = WebCardinal.controllers;
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
@@ -35,10 +37,12 @@ export default class TrialDetailsController extends WebcController {
         this._initServices(this.DSUStorage);
         this._initHandlers();
         this._initTrial(this.model.trialSSI);
+        this._getSite();
     }
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
+        this.SiteService = new SiteService(DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
@@ -162,6 +166,19 @@ export default class TrialDetailsController extends WebcController {
 
         });
 
+    }
+
+    _getSite() {
+
+        this.SiteService.getSites((err, sites) => {
+            if (err) {
+                return console.log(err);
+            }
+            if (sites && sites.length > 0) {
+                let filtered = sites?.filter(site => site.trialKeySSI === this.model.trial.keySSI);
+                if (filtered) this.model.site = filtered[0];
+            }
+        });
     }
 
 }

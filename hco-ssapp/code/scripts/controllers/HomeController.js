@@ -49,6 +49,7 @@ export default class HomeController extends WebcController {
         this.StorageService = SharedStorage.getInstance(DSUStorage);
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
         this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.NOTIFICATIONS, DSUStorage);
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS, DSUStorage);
         this.SiteService = new SiteService(DSUStorage);
     }
 
@@ -107,14 +108,13 @@ export default class HomeController extends WebcController {
                 }
                 case 'site-status-change': {
                     this._refreshSite(data.message);
-                    debugger
                     this._saveNotification(data.message, 'The status of site was changed', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
 
                     break;
                 }
                 case 'update-base-procedures': {
                     this._saveNotification(data.message, 'New procedure was added ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
-                    this._updateVisits(data.message.ssi);
+                    this._saveVisit(data.message.ssi);
                     break;
                 }
                 case 'add-site': {
@@ -320,65 +320,60 @@ export default class HomeController extends WebcController {
                 return console.error(err);
             }
             consents.forEach(consent => {
-                let procedures = consent.procedures;
 
-                if (procedures) {
-                    procedures.forEach(item => {
+                let visits = consent.visits;
+                if (visits) {
+                    visits.forEach(item => {
 
-                        if (item.visits && item.visits.length > 0) {
-                            item.visits.forEach(visit => {
-                                let visitToBeAdded = {
-                                    details: demoMessage,
-                                    toRemember: demoMessage,
-                                    procedures: demoMessage,
-                                    name: item.name,
-                                    consentSSI: item.consent.keySSI,
-                                    trialSSI: message,
-                                    period: visit.period,
-                                    unit: visit.unit,
-                                    id: visit.id
-                                };
+                        let visitToBeAdded = {
+                            name: item.name,
+                            procedures: item.procedures,
+                            uuid: item.uuid,
+                            visitWindow: item.visitWindow,
+                            trialSSI: message,
+                            consentsSSI: []
+                        }
 
-                                this.VisitsAndProceduresRepository.create(visitToBeAdded, (err, visitCreated) => {
+                        visitToBeAdded.consentsSSI.push(consent.keySSI);
+                        let weaksFrom = item.weeks?.filter(weak => weak.type === 'weekFrom' || weak.type === 'week');
+                        if (weaksFrom)
+                            visitToBeAdded.weakFrom = weaksFrom[0]?.value;
+                        let weaksTo = item.weeks?.filter(weak => weak.type === 'weekTo');
+                        if (weaksTo)
+                            visitToBeAdded.weakTo = weaksTo[0]?.value;
+
+                        let plus = item.visitWindow?.filter(weak => weak.type === 'windowFrom');
+                        if (plus)
+                            visitToBeAdded.plus = plus[0]?.value;
+                        let minus = item.visitWindow?.filter(weak => weak.type === 'windowTo');
+                        if (plus)
+                            visitToBeAdded.minus = minus[0]?.value;
+                        debugger;
+                        this.VisitsAndProceduresRepository.findBy(visitToBeAdded.uuid, (err, existingVisit) => {
+                            if (err || !existingVisit) {
+
+                                this.VisitsAndProceduresRepository.create(visitToBeAdded.uuid, visitToBeAdded, (err, visitCreated) => {
                                     if (err) {
                                         return console.error(err);
                                     }
                                 })
-                            })
-                        }
+                            } else if (existingVisit) {
+                                visitToBeAdded.consentsSSI.push(existingVisit.consentsSSI);
+                                visitToBeAdded.procedures.push(existingVisit.procedures);
+
+                                this.VisitsAndProceduresRepository.update(visitToBeAdded.uuid, visitToBeAdded, (err, visitCreated) => {
+                                    if (err) {
+                                        return console.error(err);
+                                    }
+                                })
+                            }
+                        })
 
                     })
                 }
 
             })
         })
-    }
-
-    _updateVisits(trialSSI) {
-
-        //Here it will be updated and sync  but at this moment there is no solution to identify  and sync the visits and procedures
-        this.VisitsAndProceduresRepository.filter(`trialSSI == ${trialSSI}`, 'asc', 30, (err, data) => {
-            if (err) {
-                return console.error(err);
-            }
-            if (data && data.length > 0) {
-                let nrDeleted = 0;
-                data.forEach(visit => {
-                    this.VisitsAndProceduresRepository.delete(visit.pk, (err, msg) => {
-                        if (err) {
-                            return console.error(err);
-                        }
-                        nrDeleted++;
-                        if (nrDeleted == data.length) {
-                            this._saveVisit(trialSSI);
-                        }
-                    });
-                })
-
-            } else {
-                this._saveVisit(trialSSI);
-            }
-        });
     }
 
     _saveQuestion(message) {
@@ -414,4 +409,6 @@ export default class HomeController extends WebcController {
 
         });
     }
+
+
 }

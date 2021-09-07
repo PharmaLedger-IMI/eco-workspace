@@ -22,12 +22,14 @@
                             <psk-label class="subtitle">Recruitment period: {{@trial.recruitmentPeriod.toShowDate}}
                             </psk-label>
                         </div>
-                        <div slot="false">
-                            <psk-label class="subtitle">Recruitment period not set yet - Click edit to set it
+                    <div slot="false">
+                            <psk-label class="subtitle">Recruitment period not set yet
                             </psk-label>
                         </div>
                     </div>
-                    <button class="link-button" data-tag="edit-period">Edit Period</button>
+
+
+
                     <div data-if="@trial.isInRecruitmentPeriod">
                         <div slot="true">
                             <button class="add-ts" data-tag="add:ts">Add Trial Subject</button>
