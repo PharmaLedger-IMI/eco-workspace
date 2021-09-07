@@ -155,7 +155,17 @@ export default class NewVisitsProceduresController extends WebcController {
 
   async loadModel(consents) {
     const visits = consents[0].visits;
-    const procedures = _.flatten(_.flatten(consents.map((x) => x.visits.map((y) => y.procedures))));
+    let procedures = [];
+    consents.forEach((x) => {
+      if (x.visits && x.visits.length > 0) {
+        x.visits.forEach((y) => {
+          if (y.procedures && y.procedures.length > 0) {
+            procedures.push(y.procedures);
+          }
+        });
+      }
+    });
+    procedures = _.flatten(procedures);
 
     visits.sort((a, b) => a.id - b.id);
 
