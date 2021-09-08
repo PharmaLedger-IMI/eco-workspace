@@ -17,13 +17,16 @@
                 </div>
 
                 <div class="general-table">
-                    <psk-layout columns="6" template-columns="15% 15% 15% 15% 15% 25%"
+                    <psk-layout columns="9" template-columns="10% 10% 10% 10% 10% 10% 10% 10% 20%"
                                 class="justify-content-center align-items-center table-row">
                         <psk-label class="table-cell-title">Visits</psk-label>
+                        <psk-label class="table-cell-title">From (weak no)</psk-label>
+                        <psk-label class="table-cell-title">To (weak no)</psk-label>
                         <!--                        <psk-label class="table-cell-title">Procedures</psk-label>-->
-                        <psk-label class="table-cell-title">Predefined Period</psk-label>
+                        <psk-label class="table-cell-title">Plus (days)</psk-label>
                         <!--                        <psk-label class="table-cell-title">Consent Reference</psk-label>-->
-                        <psk-label class="table-cell-title">Proposed Date</psk-label>
+                        <psk-label class="table-cell-title">Minus (days)</psk-label>
+                        <psk-label class="table-cell-title">Proposed date</psk-label>
                         <psk-label class="table-cell-title">Ts Acceptance</psk-label>
                         <psk-label class="table-cell-title">Planned Date</psk-label>
                         <psk-label class="table-cell-title">Actions</psk-label>
@@ -32,11 +35,15 @@
                 </div>
 
                 <div class="general-table body" data-for="@visits">
-                    <psk-layout columns="6" template-columns="15% 15% 15% 15% 15% 25%"
+                    <psk-layout columns="9" template-columns="10% 10% 10% 10% 10% 10% 10% 10% 20%"
                                 class="justify-content-center align-items-center table-row">
-                        <psk-label class="table-cell">#1 Screening</psk-label>
+                        <psk-label class="table-cell">{{@name}}</psk-label>
+                        <psk-label class="table-cell">{{@weakFrom}}</psk-label>
+                        <psk-label class="table-cell">{{@weakTo}}</psk-label>
+                        <psk-label class="table-cell">{{@plus}}</psk-label>
+                        <psk-label class="table-cell">{{@minus}}</psk-label>
                         <!--                        <psk-label class="table-cell">{{@name}}</psk-label>-->
-                        <psk-label class="table-cell">{{@period}} {{@unit}}</psk-label>
+<!--                        <psk-label class="table-cell">{{@period}} {{@unit}}</psk-label>-->
                         <!--                        <button class="link-button" data-tag="viewConsent" data="@id">{{@econsent.name}}</button>-->
 
                         <div data-if="@date">
@@ -85,6 +92,7 @@
                             <button class="link-button view-adjust-margin" data="@id"
                                     data-tag="visit:edit">View
                             </button>
+
                             <div data-if="@confirmed">-->
                                 <button slot="false" class="link-button view-adjust-margin" data="@id"
                                         data-tag="visit:confirm">Confirm Date

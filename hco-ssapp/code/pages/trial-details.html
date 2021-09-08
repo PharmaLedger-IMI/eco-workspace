@@ -27,14 +27,27 @@
                             </psk-label>
                         </div>
                     </div>
-                    <button class="link-button" data-tag="edit-period">Edit Period</button>
-                    <button class="add-ts" data-tag="add:ts">Add Trial Subject</button>
+
+
+                </div>
+                <div class="subtitle-container">
+
+                    <div class="button-container">
+                        <button class="main-button" data-tag="trial-status">Change Status</button>
+                    </div>
+                    <div class="button-container">
+                        <button class="main-button" data-tag="edit-period">Edit Period</button>
+                    </div>
+                    <div class="button-container">
+                        <button class="main-button" data-tag="add:ts">Add Trial Subject</button>
+                    </div>
+
                 </div>
                 <div class="subtitle-container" data-if="@site.name">
                     <div slot="true">
                         <psk-label class="subtitle">{{@site.status}}
                         </psk-label>
-                        <button class="link-button" data-tag="edit-status">Change Status</button>
+                        <button class="add-ts" data-tag="edit-status">Change Status</button>
                     </div>
                 </div>
 

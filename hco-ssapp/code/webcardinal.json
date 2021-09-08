@@ -56,6 +56,12 @@
       "tag": "visits"
     },
     {
+      "name": "Visits Details Procedures List",
+      "path": "/visits-details-procedures",
+      "src": "visits-details-procedures.html",
+      "tag": "visits-details-procedures"
+    },
+    {
       "name": "Create trial",
       "tag": "create-trial",
       "indexed": false
