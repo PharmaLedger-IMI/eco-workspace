@@ -1,10 +1,12 @@
 import TrialService from '../services/TrialService.js';
-import FileDownloader from '../utils/FileDownloader.js';
-import CommunicationService from '../services/CommunicationService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
-import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 import EconsentService from "../services/EconsentService.js";
-import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
+
+
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
+const FileDownloader = ecoServices.FileDownloader;
+const BaseRepository = ecoServices.BaseRepository;
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -34,9 +36,9 @@ export default class SignManuallyController extends WebcController {
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.PATIENT_IDENTITY);
-        this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
+        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
         this.EcosentService = new EconsentService(DSUStorage);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.TrialParticipantRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
     }
 
     _initConsent() {
@@ -102,7 +104,7 @@ export default class SignManuallyController extends WebcController {
                     controller: 'ConfirmationAlertController',
                     disableExpanding: false,
                     disableBackdropClosing: false,
-                    question: 'Are you sure you want to send this file  ? ',
+                    question: 'Are you sure you want to send this file? ',
                     title: 'Send Signed Econsent',
                 });
         });

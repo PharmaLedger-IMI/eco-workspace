@@ -1,9 +1,9 @@
-import VisitsAndProceduresRepository from "../repositories/VisitsAndProceduresRepository.js";
-import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
-
-import CommunicationService from "../services/CommunicationService.js";
-import Constants from "../utils/Constants.js";
 import TrialService from "../services/TrialService.js";
+
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
+const Constants = ecoServices.Constants;
+const BaseRepository = ecoServices.BaseRepository;
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -41,8 +41,8 @@ export default class VisitEditController extends WebcController {
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
-        this.VisitsAndProceduresRepository = VisitsAndProceduresRepository.getInstance(DSUStorage);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS, DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
     }
 
@@ -75,7 +75,9 @@ export default class VisitEditController extends WebcController {
             event.preventDefault();
             event.stopImmediatePropagation();
             this.navigateToPageTag('procedures-view', {
-                visitId: model.visit.id
+                visitId: model.visit.id,
+                tpUid: this.model.tpUid,
+                visitUuid: model.visit.uuid
             });
         });
     }

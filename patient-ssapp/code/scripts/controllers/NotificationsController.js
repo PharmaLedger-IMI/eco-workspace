@@ -1,5 +1,7 @@
-import Constants from "../utils/Constants.js";
-import NotificationsRepository from "../repositories/NotificationsRepository.js";
+
+const ecoServices = require('eco-services');
+const Constants = ecoServices.Constants;
+const BaseRepository = ecoServices.BaseRepository;
 
 const { WebcController } = WebCardinal.controllers;
 
@@ -13,7 +15,7 @@ export default class NotificationsController extends WebcController {
   }
 
   _initServices(DSUStorage) {
-    this.NotificationsRepository = NotificationsRepository.getInstance(DSUStorage);
+    this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.NOTIFICATIONS, DSUStorage);
   }
 
   _initNotifications() {

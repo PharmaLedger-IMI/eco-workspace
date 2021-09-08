@@ -54,7 +54,7 @@ const TRIAL_PARTICIPANT_STATUS = {
     SCREENED: 'Screened',
     PLANNED: 'Planned'
 }
-export default {
+module.exports = {
     MESSAGES,
     ECO_STATUSES,
     TRIAL_PARTICIPANT_STATUS,

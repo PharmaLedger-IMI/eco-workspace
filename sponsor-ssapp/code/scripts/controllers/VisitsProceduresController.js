@@ -1,4 +1,5 @@
-import CommunicationService from '../services/CommunicationService.js';
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
 import NewConsentService from '../services/NewConsentService.js';
 import TrialsService from '../services/TrialsService.js';
 import eventBusService from '../services/EventBusService.js';
@@ -21,12 +22,107 @@ export default class VisitsProceduresController extends WebcController {
     this.model = {
       consents: [],
       procedures: [],
-      visits: [],
+      visits: [
+        {
+          id: 0,
+          uuid: uuidv4(),
+          name: {
+            label: 'Visit',
+            name: 'visit',
+            required: true,
+            placeholder: 'Visit...',
+            value: '',
+            type: 'text',
+          },
+          weeks: [
+            {
+              week: {
+                label: '',
+                name: 'weekFrom',
+                required: true,
+                placeholder: 'from',
+                value: '',
+                type: 'number',
+              },
+            },
+            {
+              week: {
+                label: '',
+                name: 'weekTo',
+                required: true,
+                placeholder: 'to',
+                value: '',
+                type: 'number',
+              },
+            },
+          ],
+          visitWindow: [
+            {
+              show: true,
+              window: {
+                label: '',
+                name: 'windowFrom',
+                required: true,
+                placeholder: 'From',
+                value: '',
+                type: 'hidden',
+              },
+            },
+          ],
+        },
+        {
+          id: 1,
+          uuid: uuidv4(),
+          name: {
+            label: 'Visit',
+            name: 'visit',
+            required: true,
+            placeholder: 'Visit...',
+            value: '',
+            type: 'text',
+          },
+          weeks: [
+            {
+              week: {
+                label: '',
+                name: 'weekFrom',
+                required: true,
+                placeholder: 'from',
+                value: '',
+                type: 'number',
+              },
+            },
+            {
+              week: {
+                label: '',
+                name: 'weekTo',
+                required: true,
+                placeholder: 'to',
+                value: '',
+                type: 'number',
+              },
+            },
+          ],
+          visitWindow: [
+            {
+              show: true,
+              window: {
+                label: '',
+                name: 'windowFrom',
+                required: true,
+                placeholder: 'From',
+                value: '',
+                type: 'hidden',
+              },
+            },
+          ],
+        },
+      ],
       dataLoaded: false,
       trial: null,
       notEditable: true,
       filters: [],
-      filteredVisits: [],
+      filteredProcedures: [],
     };
 
     this.attachEvents();
@@ -46,32 +142,37 @@ export default class VisitsProceduresController extends WebcController {
   }
 
   async getConsents() {
-    this.model.consents = await this.consentsService.getTrialConsents(this.keySSI);
+    const consents = await this.consentsService.getTrialConsents(this.keySSI);
+    this.model.consents = JSON.parse(JSON.stringify(consents));
     this.model.filters = this.model.consents.map((x) => ({ name: x.name, selected: true }));
 
-    const visits = [];
-    if (this.model.consents && this.model.consents.length > 0) {
-      this.model.consents.forEach((x) => {
-        if (x.visits && x.visits.length > 0) {
-          x.visits.forEach((y) => visits.push(y));
-        }
-      });
+    if (consents.length > 0 && consents[0].visits && consents[0].visits.length > 0) {
+      await this.loadModel(consents);
     }
-
-    await this.loadModel(visits);
 
     return;
   }
 
-  async loadModel(visits) {
+  async loadModel(consents) {
+    const visits = consents[0].visits;
+    let procedures = [];
+    consents.forEach((x) => {
+      if (x.visits && x.visits.length > 0) {
+        x.visits.forEach((y) => {
+          if (y.procedures && y.procedures.length > 0) {
+            procedures.push(y.procedures);
+          }
+        });
+      }
+    });
+    procedures = _.flatten(procedures);
+
     visits.sort((a, b) => a.id - b.id);
 
-    this.model.visits = visits.map((x) => {
+    const resultVisits = visits.map((x) => {
       return {
         id: x.id,
         uuid: x.uuid,
-        inputId: 'input_' + x.id,
-        selectId: 'select_' + x.id,
         name: {
           label: 'Visit',
           name: 'visit',
@@ -80,63 +181,87 @@ export default class VisitsProceduresController extends WebcController {
           value: x.name,
           type: 'text',
         },
-        consent: {
-          label: 'Select a consent',
-          placeholder: 'Please select an option',
-          required: false,
-          options: this.model.consents.map((y) => ({
-            label: y.name,
-            value: y.keySSI,
-            selected: x.consent.keySSI === y.keySSI ? 'selected' : null,
-          })),
-        },
-        procedures: x.procedures.map((y) => ({
-          id: x.id + ':' + y.id,
-          uuid: y.uuid,
-          checkbox: {
-            type: 'checkbox',
-            placeholder: 'enabled',
-            label: y.id,
-            checked: y.checked,
-          },
-          name: {
-            label: 'Procedure',
-            name: 'procedure',
+        weeks: x.weeks.map((y) => ({
+          week: {
+            label: '',
+            name: y.type,
             required: true,
-            placeholder: 'Procedure...',
-            value: y.name,
-            type: 'text',
-          },
-          period: {
-            label: 'Period',
-            name: 'period',
-            required: true,
-            placeholder: 'Period...',
-            value: y.period,
+            placeholder: 'from',
+            value: y.value,
             type: 'number',
           },
-          timeUnit: {
-            id: 'unit_' + x.id + '_' + y.id,
-            label: 'Select a time unit',
-            placeholder: 'Please select an option',
+        })),
+        visitWindow: x.visitWindow.map((y) => ({
+          show: !!y,
+          window: {
+            label: '',
+            name: y ? y.type : null,
             required: true,
-            options: [
-              { label: 'Day', value: 'Day', selected: y.unit === 'Day' ? 'selected' : null },
-              { label: 'Week', value: 'Week', selected: y.unit === 'Week' ? 'selected' : null },
-              { label: 'Month', value: 'Month', selected: y.unit === 'Month' ? 'selected' : null },
-            ],
+            placeholder: 'from',
+            value: y ? y.value : null,
+            type: y ? 'number' : 'hidden',
           },
         })),
       };
     });
 
-    if (this.model.visits && this.model.visits.length > 0) {
-      const procedures = JSON.parse(JSON.stringify(this.model.visits[0].procedures));
-      this.model.procedures = procedures.map((y, idx) => ({
-        id: idx,
-      }));
+    const resultProcedures = [];
+    for (const procedure of procedures) {
+      let exists = resultProcedures.find((x) => (x ? x.uuid === procedure.uuid : false));
+      if (exists) {
+        const visit = resultVisits.find((x) => x.uuid === procedure.visitUuid);
+        exists.visits[visit.id] = {
+          visitUuid: procedure.visitUuid,
+          checkbox: {
+            type: 'checkbox',
+            placeholder: 'enabled',
+            label: '',
+            checked: procedure.checked,
+          },
+        };
+      } else {
+        const visit = resultVisits.find((x) => x.uuid === procedure.visitUuid);
+        const tempVisits = new Array(resultVisits.length);
+        tempVisits[visit.id] = {
+          visitUuid: procedure.visitUuid,
+          checkbox: {
+            type: 'checkbox',
+            placeholder: 'enabled',
+            label: '',
+            checked: procedure.checked,
+          },
+        };
+        resultProcedures[procedure.id] = {
+          id: procedure.id,
+          uuid: procedure.uuid,
+          name: {
+            label: 'Procedure',
+            name: 'procedure',
+            required: true,
+            placeholder: 'Procedure...',
+            value: procedure.name,
+            type: 'text',
+          },
+          visits: tempVisits,
+          selectId: 'select_' + procedure.id,
+          consent: {
+            label: 'Select a consent',
+            placeholder: 'Please select an option',
+            required: false,
+            options: this.model.consents.map((x) => ({
+              label: x.name,
+              value: x.keySSI,
+              selected: procedure.consent.keySSI === x.keySSI ? 'selected' : null,
+            })),
+          },
+        };
+      }
     }
+
+    this.model.visits = resultVisits;
+    this.model.procedures = resultProcedures;
     this.filter();
+
     return;
   }
 
@@ -147,20 +272,35 @@ export default class VisitsProceduresController extends WebcController {
   }
 
   filter() {
-    this.model.filteredVisits = this.model.visits.filter((x) =>
+    this.model.filteredProcedures = this.model.procedures.filter((x) =>
       x.consent.options.reduce((acc, y) => {
         return this.model.filters.find((z) => z.name === y.label).selected && y.selected === 'selected' ? true : acc;
       }, false)
     );
+    console.log(JSON.parse(JSON.stringify(this.model.filteredProcedures)));
   }
 
   attachEvents() {
     this.model.addExpression(
       'visitsExist',
       () => {
-        return this.model.visits && Array.isArray(this.model.visits) && this.model.visits.length > 0;
+        return (
+          this.model.consents &&
+          Array.isArray(this.model.consents) &&
+          this.model.consents[0] &&
+          this.model.consents[0].visits
+        );
       },
-      'visits'
+      'consents'
+    );
+
+    this.model.addExpression(
+      'noConsents',
+      () => {
+        console.log('NO consents:', this.model.consents);
+        return !(this.model.consents && Array.isArray(this.model.consents) && this.model.consents.length > 0);
+      },
+      'consents'
     );
 
     this.on('openFeedback', (e) => {
@@ -176,26 +316,24 @@ export default class VisitsProceduresController extends WebcController {
       this.model.notEditable = !this.model.notEditable;
     });
 
-    this.onTagClick('filter-visits', async (model, target, event) => {
+    this.onTagClick('filter-procedures', async (model, target, event) => {
       const data = target.getAttribute('data-custom');
       const selectedFilter = this.model.filters.find((x) => x.name === data);
       selectedFilter.selected = !selectedFilter.selected;
-
-      if (this.model.visits && Array.isArray(this.model.visits) && this.model.visits.length > 0) {
+      if (this.model.procedures && Array.isArray(this.model.procedures) && this.model.procedures.length > 0) {
         this.filter();
       }
     });
 
     this.onTagEvent('addVisit', 'click', () => {
       const visits = JSON.parse(JSON.stringify(this.model.visits));
+      const procedures = JSON.parse(JSON.stringify(this.model.procedures));
 
       const newVisits = [
         ...visits,
         {
           id: visits.length,
           uuid: uuidv4(),
-          inputId: 'input_' + visits.length,
-          selectId: 'select_' + visits.length,
           name: {
             label: 'Visit',
             name: 'visit',
@@ -204,6 +342,100 @@ export default class VisitsProceduresController extends WebcController {
             value: '',
             type: 'text',
           },
+          weeks: [
+            {
+              week: {
+                label: '',
+                name: 'week',
+                required: true,
+                placeholder: 'week',
+                value: '',
+                type: 'number',
+              },
+            },
+          ],
+          visitWindow: [
+            {
+              show: true,
+              window: {
+                label: '',
+                name: 'windowFrom',
+                required: true,
+                placeholder: 'From',
+                value: '',
+                type: 'number',
+              },
+            },
+            {
+              show: true,
+              window: {
+                label: '',
+                name: 'windowTo',
+                required: true,
+                placeholder: 'To',
+                value: '',
+                type: 'number',
+              },
+            },
+          ],
+        },
+      ];
+
+      const newProcedures = procedures.map((x) => ({
+        ...x,
+        visits: newVisits.map((y, idx) => {
+          if (x.visits[idx]) {
+            return x.visits[idx];
+          } else
+            return {
+              visitUuid: y.uuid,
+              checkbox: {
+                type: 'checkbox',
+                placeholder: 'enabled',
+                label: x.name.value,
+                checked: true,
+              },
+            };
+        }),
+      }));
+
+      this.model.visits = newVisits;
+      this.model.procedures = newProcedures;
+    });
+
+    this.onTagEvent('removeVisit', 'click', () => {
+      if (this.model.visits.length <= 2) return;
+      const visits = JSON.parse(JSON.stringify(this.model.visits));
+      this.model.visits = this.model.visits.slice(0, -1);
+      this.model.procedures = this.model.procedures.map((x) => ({ ...x, visits: x.visits.slice(0, -1) }));
+    });
+
+    this.onTagEvent('addProcedure', 'click', () => {
+      const procedures = JSON.parse(JSON.stringify(this.model.procedures));
+      const visits = JSON.parse(JSON.stringify(this.model.visits));
+      const newProcedures = [
+        ...procedures,
+        {
+          id: procedures.length,
+          uuid: uuidv4(),
+          name: {
+            label: 'Procedure',
+            name: 'procedure',
+            required: true,
+            placeholder: 'Procedure...',
+            value: '',
+            type: 'text',
+          },
+          visits: visits.map((x) => ({
+            visitUuid: x.uuid,
+            checkbox: {
+              type: 'checkbox',
+              placeholder: 'enabled',
+              label: x.name.value,
+              checked: true,
+            },
+          })),
+          selectId: 'select_' + procedures.length,
           consent: {
             label: 'Select a consent',
             placeholder: 'Please select an option',
@@ -213,195 +445,58 @@ export default class VisitsProceduresController extends WebcController {
               value: x.keySSI,
             })),
           },
-          procedures:
-            this.model.procedures.length > 0
-              ? this.model.procedures.map((y) => ({
-                  id: visits.length + ':' + y.id,
-                  uuid: uuidv4(),
-                  name: {
-                    label: 'Procedure',
-                    name: 'procedure',
-                    required: true,
-                    placeholder: 'Procedure...',
-                    value: '',
-                    type: 'text',
-                  },
-                  checkbox: {
-                    type: 'checkbox',
-                    placeholder: 'enabled',
-                    label: y.id,
-                    checked: true,
-                  },
-                  period: {
-                    label: 'Period',
-                    name: 'period',
-                    required: true,
-                    placeholder: 'Period...',
-                    value: '',
-                    type: 'number',
-                  },
-                  timeUnit: {
-                    id: 'unit_' + visits.length + '_' + y.id,
-                    label: 'Select a time unit',
-                    placeholder: 'Please select an option',
-                    required: true,
-                    options: [
-                      { label: 'Day', value: 'Day' },
-                      { label: 'Week', value: 'Week' },
-                      { label: 'Month', value: 'Month' },
-                    ],
-                  },
-                }))
-              : [],
         },
       ];
-
-      // this.model.setChainValue('visits', newVisits);
-      this.model.visits = newVisits;
-    });
-
-    this.onTagEvent('removeVisit', 'click', () => {
-      if (this.model.visits.length === 0) return;
-      // const visits = JSON.parse(JSON.stringify(this.model.visits));
-      // this.model.setChainValue('visits', visits.slice(0, -1));
-
-      this.model.visits = this.model.visits.slice(0, -1);
-    });
-
-    this.onTagEvent('addProcedure', 'click', () => {
-      const procedures = JSON.parse(JSON.stringify(this.model.procedures));
-      this.model.setChainValue('procedures', [
-        ...procedures,
-        {
-          id: procedures.length,
-        },
-      ]);
-      // this.model.procedures = [...this.model.procedures, { id: this.model.procedures.length }];
-      const newVisits = this.model.visits.map((x) => ({
-        ...x,
-        procedures: this.model.procedures.map((y) => ({
-          id: x.id + ':' + y.id,
-          uuid: !!x.procedures[parseInt(y.id)] ? x.procedures[parseInt(y.id)].uuid : uuidv4(),
-          name: {
-            label: 'Procedure',
-            name: 'procedure',
-            required: true,
-            placeholder: 'Procedure...',
-            value: !!x.procedures[parseInt(y.id)] ? x.procedures[parseInt(y.id)].name.value : '',
-            type: 'text',
-          },
-          checkbox: {
-            type: 'checkbox',
-            placeholder: 'enabled',
-            label: y.id,
-            checked: true,
-          },
-          period: {
-            label: 'Period',
-            name: 'period',
-            required: true,
-            placeholder: 'Period...',
-            value: !!x.procedures[parseInt(y.id)] ? x.procedures[parseInt(y.id)].period.value : '',
-            type: 'number',
-          },
-          timeUnit: {
-            id: 'unit_' + x.id + '_' + y.id,
-            label: 'Select a time unit',
-            placeholder: 'Please select an option',
-            required: true,
-            options: [
-              {
-                label: 'Day',
-                value: 'Day',
-                selected: !!this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id)
-                  ? this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id).value === 'Day'
-                    ? 'selected'
-                    : null
-                  : null,
-              },
-              {
-                label: 'Week',
-                value: 'Week',
-                selected: !!this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id)
-                  ? this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id).value === 'Week'
-                    ? 'selected'
-                    : null
-                  : null,
-              },
-              {
-                label: 'Month',
-                value: 'Month',
-                selected: !!this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id)
-                  ? this.element.querySelector('#' + 'unit_' + x.id + '_' + y.id).value === 'Month'
-                    ? 'selected'
-                    : null
-                  : null,
-              },
-            ],
-          },
-        })),
-      }));
-      // this.model.setChainValue('procedures', newProcedures);
-      this.model.visits = newVisits;
+      this.model.procedures = newProcedures;
     });
 
     this.onTagEvent('removeProcedure', 'click', () => {
       if (this.model.procedures.length === 0) return;
-      // const procedures = JSON.parse(JSON.stringify(this.model.procedures));
-      // this.model.setChainValue('procedures', procedures.slice(0, -1));
       this.model.procedures = this.model.procedures.slice(0, -1);
-      // this.model.procedures.splice(0, -1);
-      const newVisits = this.model.visits.map((x) => ({
-        ...x,
-        procedures: x.procedures.slice(0, -1),
-      }));
-      // this.model.setChainValue('procedures', newProcedures);
-      this.model.visits = newVisits;
     });
 
     this.onTagEvent('submitData', 'click', async () => {
       let error = null;
       const result = this.model.visits.map((x, idx) => {
-        if (x.name.value === '' || !x.procedures || x.procedures.length === 0) {
-          // this.showFeedbackToast('Error', 'All procedures must have a name and at least one visit', 'toast');
-          error = true;
-          // return;
-        }
-        const targetElement = this.element.querySelector('#' + x.selectId);
+        if (x.name.value === '') error = true;
+        if (idx > 1 && !x.visitWindow.every((y) => y.window.value !== '')) error = true;
+        if (idx > 1 && !x.weeks.every((y) => y.week.value !== '')) error = true;
+
         return {
-          id: idx,
+          id: x.id,
           uuid: x.uuid,
           name: x.name.value,
-          consent: {
-            keySSI: targetElement.value,
-            id: this.model.consents.find((x) => x.keySSI === targetElement.value).id,
-            name: targetElement.options[targetElement.selectedIndex].text,
-          },
-          procedures: x.procedures.map((y, visitIdx) => {
-            const targetElementUnit = this.element.querySelector('#' + y.timeUnit.id);
-            if (!y.period.value && y.checkbox.checked) {
-              error = true;
-            }
+          weeks: x.weeks.map((y) => ({ type: y.week.name, value: y.week.value })),
+          visitWindow: x.visitWindow.map((y) => {
+            if (y.show) return { type: y.window.name, value: y.window.value };
+            else return null;
+          }),
+          procedures: this.model.procedures.map((y) => {
+            const targetElement = this.element.querySelector('#' + y.selectId);
+            if (y.name.value === '') error = true;
             return {
-              id: visitIdx,
-              uuid: y.uuid,
+              consent: {
+                keySSI: targetElement.value,
+                id: this.model.consents.find((z) => z.keySSI === targetElement.value).id,
+                name: targetElement.options[targetElement.selectedIndex].text,
+              },
               name: y.name.value,
-              checked: y.checkbox.checked,
-              period: y.period.value,
-              unit: targetElementUnit.value,
+              checked: y.visits[idx].checkbox.checked,
+              visitUuid: x.uuid,
+              uuid: y.uuid,
+              id: y.id,
             };
           }),
         };
       });
 
       if (error) {
-        this.showFeedbackToast('Error', 'All procedures must have a name and at least one visit', 'toast');
+        this.showFeedbackToast('Error', 'Please make sure all fields are filled-in', 'toast');
         return;
       }
 
       await this.consentsService.updateBaseConsentVisits(result, this.keySSI);
       await this.getConsents();
-
       this.sendMessageToHco('update-base-procedures', this.keySSI, 'Update trial consents');
       this.model.notEditable = !this.model.notEditable;
       return;

@@ -1,8 +1,9 @@
 import TrialService from '../services/TrialService.js';
-import DateTimeService from "../services/DateTimeService.js";
-import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
 
 
+const ecoServices = require('eco-services');
+const DateTimeService = ecoServices.DateTimeService;
+const BaseRepository = ecoServices.BaseRepository;
 const {WebcController} = WebCardinal.controllers;
 let getInitModel = () => {
     return {
@@ -27,8 +28,7 @@ export default class EconsentVersionsController extends WebcController {
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
-        this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
-
+        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
     }
 
     _initHandlers() {

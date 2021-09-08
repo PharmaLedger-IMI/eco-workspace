@@ -1,10 +1,13 @@
 const {WebcController} = WebCardinal.controllers;
 import SiteService from '../services/SiteService.js';
-import Constants from '../utils/Constants.js';
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
-import CommunicationService from '../services/CommunicationService.js';
-import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
+
+
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
+const Constants = ecoServices.Constants;
+const BaseRepository = ecoServices.BaseRepository;
 
 let getInitModel = () => {
     return {
@@ -30,7 +33,7 @@ export default class TrialParticipantsController extends WebcController {
         this.TrialService = new TrialService(DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
         this.SiteService = new SiteService(DSUStorage);
     }
 
@@ -40,6 +43,7 @@ export default class TrialParticipantsController extends WebcController {
         this._attachHandlerViewTrialParticipantDetails();
         this._attachHandlerViewTrialParticipantStatus();
         this._attachHandlerGoBack();
+        this._attachHandlerEditRecruitmentPeriod();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
@@ -51,8 +55,15 @@ export default class TrialParticipantsController extends WebcController {
                 return console.log(err);
             }
             this.model.trial = trial;
+
+            this.model.trial.isInRecruitmentPeriod = true;
             let actions = await this._getEconsentActionsMappedByUser(keySSI);
             this.model.trialParticipants = await this._getTrialParticipantsMappedWithActionRequired(actions);
+            if (this.model.trial.recruitmentPeriod) {
+                let endDate = new Date(this.model.trial.recruitmentPeriod.endDate);
+                let currentDate = new Date();
+                this.model.trial.isInRecruitmentPeriod = currentDate <= endDate;
+            }
             this._getSite();
         });
     }
@@ -166,14 +177,46 @@ export default class TrialParticipantsController extends WebcController {
                 (event) => {
                     const response = event.detail;
                 }
-            ),
+                ,
                 {
                     controller: 'AddTrialParticipantController',
                     disableExpanding: false,
                     disableBackdropClosing: false,
                     title: 'Add Trial Participant',
-                };
+
+                });
         });
+    }
+
+    _attachHandlerEditRecruitmentPeriod() {
+
+        this.onTagEvent('edit-period', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.showModalFromTemplate(
+                'edit-recruitment-period',
+                (event) => {
+                    const response = event.detail;
+                    debugger;
+                    this.model.trial.recruitmentPeriod = response;
+                    this.model.trial.recruitmentPeriod.toShowDate = new Date(this.model.trial.recruitmentPeriod.startDate).toLocaleDateString() + ' - ' + new Date(this.model.trial.recruitmentPeriod.endDate).toLocaleDateString();
+                    this.TrialService.updateTrialAsync(this.model.trial)
+
+                },
+                (event) => {
+                    const response = event.detail;
+                },
+                {
+                    controller: 'EditRecruitmentPeriodController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false,
+                    title: 'Edit Recruitment Period',
+                    recruitmentPeriod: this.model.trial.recruitmentPeriod
+                }
+            );
+
+        });
+
     }
 
     _attachHandlerViewTrialParticipantStatus() {
@@ -203,6 +246,7 @@ export default class TrialParticipantsController extends WebcController {
         tp.trialNumber = this.model.trial.id;
         tp.status = Constants.TRIAL_PARTICIPANT_STATUS.PLANNED;
         tp.enrolledDate = currentDate.toLocaleDateString();
+        tp.trialSSI = this.model.trial.keySSI;
         let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
         trialParticipant.actionNeeded = 'No action required';
         this.model.trialParticipants.push(trialParticipant);
@@ -212,6 +256,7 @@ export default class TrialParticipantsController extends WebcController {
             {tpNumber: '', tpName: tp.name, did: tp.did},
             Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL
         );
+        this._sendMessageToSponsor();
     }
 
     sendMessageToPatient(operation, ssi, tp, shortMessage) {
@@ -253,14 +298,12 @@ export default class TrialParticipantsController extends WebcController {
     _getSite() {
 
         this.SiteService.getSites((err, sites) => {
-
-            //this.model.site = sites?.filter(site=> site.trialKeySSI === this.model.trial.keySSI);
             if (err) {
                 return console.log(err);
             }
             if (sites && sites.length > 0) {
-                this.model.site = sites[sites.length - 1];
-                this._sendMessageToSponsor();
+                let filtered = sites?.filter(site => site.trialKeySSI === this.model.trial.keySSI);
+                if (filtered) this.model.site = filtered[0];
             }
         });
     }

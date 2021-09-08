@@ -1,6 +1,7 @@
+const ecoServices = require('eco-services');
 import TrialsService from '../services/TrialsService.js';
 import { trialStatusesEnum, trialTableHeaders, trialStagesEnum } from '../constants/trial.js';
-import CommunicationService from '../services/CommunicationService.js';
+const CommunicationService = ecoServices.CommunicationService;
 import ParticipantsService from '../services/ParticipantsService.js';
 import SitesService from '../services/SitesService.js';
 
@@ -78,41 +79,8 @@ export default class ListTrialsController extends WebcController {
     this.participantsService = new ParticipantsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
-    this.CommunicationService.listenForMessages(async (err, data) => {
-      if (err) {
-        return console.error(err);
-      }
-      data = JSON.parse(data);
-      console.log('DATA MEESAGE:', data);
-      switch (data.message.operation) {
-        case 'sign-econsent':
-        case 'update-econsent': {
-          await this.participantsService.updateParticipant(
-            {
-              participantId: data.message.useCaseSpecifics.tpNumber,
-              action: data.message.useCaseSpecifics.action,
-              trialSSI: data.message.useCaseSpecifics.trialSSI,
-              consentSSI: data.message.ssi,
-              version: data.message.useCaseSpecifics.version,
-              type: data.sender === 'hcoIdentity' ? senderType.HCP : senderType.Patient,
-              operationDate: data.message.useCaseSpecifics.operationDate || null,
-            },
-            data.message.useCaseSpecifics.trialSSI
-          );
-          eventBusService.emitEventListeners(Topics.RefreshParticipants + data.message.useCaseSpecifics.trialSSI, data);
-          break;
-        }
-        case 'update-site-status': {
-          if (data.message.stageInfo.siteSSI && data.message.stageInfo.status && data.message.ssi) {
-            await this.sitesService.updateSiteStage(
-              data.message.ssi,
-              data.message.stageInfo.siteSSI,
-              data.message.stageInfo.status
-            );
-          }
-        }
-      }
-    });
+    this.listenForMessages();
+
     this.feedbackEmitter = null;
 
     this.model = {
@@ -131,6 +99,43 @@ export default class ListTrialsController extends WebcController {
     this.attachEvents();
 
     this.init();
+  }
+
+  listenForMessages() {
+    this.CommunicationService.listenForMessages(async (err, data) => {
+      if (err) {
+        return console.error(err);
+      }
+      console.log('DATA MEESAGE:', data);
+      switch (data.message.operation) {
+        case 'sign-econsent':
+        case 'update-econsent': {
+          await this.participantsService.updateParticipant(
+              {
+                participantId: data.message.useCaseSpecifics.tpNumber,
+                action: data.message.useCaseSpecifics.action,
+                trialSSI: data.message.useCaseSpecifics.trialSSI,
+                consentSSI: data.message.ssi,
+                version: data.message.useCaseSpecifics.version,
+                type: data.sender === 'hcoIdentity' ? senderType.HCP : senderType.Patient,
+                operationDate: data.message.useCaseSpecifics.operationDate || null,
+              },
+              data.message.useCaseSpecifics.trialSSI
+          );
+          eventBusService.emitEventListeners(Topics.RefreshParticipants + data.message.useCaseSpecifics.trialSSI, data);
+          break;
+        }
+        case 'update-site-status': {
+          if (data.message.stageInfo.siteSSI && data.message.stageInfo.status && data.message.ssi) {
+            await this.sitesService.updateSiteStage(
+                data.message.ssi,
+                data.message.stageInfo.siteSSI,
+                data.message.stageInfo.status
+            );
+          }
+        }
+      }
+    });
   }
 
   async init() {

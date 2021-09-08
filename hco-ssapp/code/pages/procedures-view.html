@@ -16,46 +16,46 @@
                     <button class="logout-button" data-tag="logout">Logout</button>
                 </div>
 
-                <div class="general-table body">
-                    <psk-layout columns="2" template-columns="15% 85%" data="@keySSI" data-tag="go-to-visit"
+
+                <psk-layout columns="2" template-columns="15% 85%" data="@keySSI" data-tag="go-to-visit"
+                            class="justify-content-center align-items-center table-row">
+                    <div>
+                        <psk-img class="left-image" height='40' width='40'
+                                 src="assets/images/calendar.png"></psk-img>
+                    </div>
+                    <div class="layout-content green-row">
+                        <div class="display-flex-row">
+                            {{@toShowDate}}
+                        </div>
+                    </div>
+                    <hr class="layout-hr">
+                </psk-layout>
+
+                <div class="general-table">
+                    <psk-layout columns="2" template-columns="60% 40%"
                                 class="justify-content-center align-items-center table-row">
-                        <div>
-                            <psk-img class="left-image" height='40' width='40'
-                                     src="assets/images/calendar.png"></psk-img>
-                        </div>
-                        <div class="layout-content green-row">
-                            <div class="display-flex-row">
-                                {{@toShowDate}}
-                            </div>
-                        </div>
-                        <hr class="layout-hr">
+                        <psk-label class="table-cell-title">Procedures</psk-label>
+                        <psk-label class="table-cell-title">Status</psk-label>
+
                     </psk-layout>
-
-                    <div class="trial-table">
-                        <psk-layout columns="3" class="justify-content-center align-items-center table-row">
-                            <psk-label class="table-cell">Procedure</psk-label>
-                            <psk-label class="table-cell">Status</psk-label>
-                            <psk-label class="table-cell">Actions</psk-label>
-                        </psk-layout>
-                        <hr/>
-                    </div>
-                    <div class="trial-table body" data-for="@procedures">
-                        <psk-layout columns="3" class="justify-content-center align-items-center table-row">
-                            <div>
-                                <psk-label class="table-cell">{{@name}}</psk-label>
-                            </div>
-
-                            <div>
-                                <psk-label class="table-cell">{{@tsAcceptance}}</psk-label>
-                            </div>
-                            <div>
-                                <button data-if="@tsAcceptance" class="link-button" data="@id" data-tag="procedures:view">Complete</button>
-                            </div>
-                        </psk-layout>
-                    </div>
-
-
+                    <hr/>
                 </div>
+
+                <div class="general-table body" data-for="@procedures">
+                    <psk-layout columns="2" template-columns="60% 40%"
+                                class="justify-content-center align-items-center table-row">
+                        <psk-label class="table-cell">{{@name}}</psk-label>
+                        <div data-if="@status">
+                            <button slot="false" class="link-button view-adjust-margin" data="@id"
+                                    data-tag="procedure:confirm">Complete
+                            </button>
+                            <div slot="true">
+                                <psk-label class="table-cell">{{@status}}</psk-label>
+                            </div>
+                        </div>
+                    </psk-layout>
+                </div>
+
 
                 <button class="back-button" data-tag="back">Back</button>
             </div>

@@ -514,3 +514,151 @@
     Put back write user credentials in wallet
     Put back write user credentials in wallet
     Put back write user credentials in wallet
+    #Fix for leaflet ssapp webcardinal migration
+    [Freeze]
+    new freeze version
+    Fix navigation from menu and ssapp components (issue #269)
+    fixed createMarketplace swarm
+    #312 add error message for service worker registration fail
+    Merge pull request #2 from daniel-visoiu/master
+    
+    Added "Test Contract Method" functionality for testing contract methods.
+    #312 add error message for service worker registration fail
+    #312 add error message for service worker registration fail
+    #312 add error message for service worker registration fail
+    #312 add error message for service worker registration fail
+    #Fix for leaflet ssapp webcardinal migration
+    [Freeze]
+    new freeze version
+    Fix navigation from menu and ssapp components (issue #269)
+    fixed createMarketplace swarm
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    Merge pull request #2 from daniel-visoiu/master
+    
+    Added "Test Contract Method" functionality for testing contract methods.
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    #Fix for leaflet ssapp webcardinal migration
+    [Freeze]
+    new freeze version
+    Fix navigation from menu and ssapp components (issue #269)
+    fixed createMarketplace swarm
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    Merge pull request #2 from daniel-visoiu/master
+    
+    Added "Test Contract Method" functionality for testing contract methods.
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    #Fix for leaflet ssapp webcardinal migration
+    [Freeze]
+    new freeze version
+    Fix navigation from menu and ssapp components (issue #269)
+    fixed createMarketplace swarm
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    Merge pull request #2 from daniel-visoiu/master
+    
+    Added "Test Contract Method" functionality for testing contract methods.
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    #Fix for leaflet ssapp webcardinal migration
+    [Freeze]
+    new freeze version
+    Fix navigation from menu and ssapp components (issue #269)
+    fixed createMarketplace swarm
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    Merge pull request #2 from daniel-visoiu/master
+    
+    Added "Test Contract Method" functionality for testing contract methods.
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    #Fix for leaflet ssapp webcardinal migration
+    [Freeze]
+    new freeze version
+    Fix navigation from menu and ssapp components (issue #269)
+    fixed createMarketplace swarm
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    Merge pull request #2 from daniel-visoiu/master
+    
+    Added "Test Contract Method" functionality for testing contract methods.
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    #Fix for leaflet ssapp webcardinal migration
+    [Freeze]
+    new freeze version
+    Fix navigation from menu and ssapp components (issue #269)
+    fixed createMarketplace swarm
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    Merge pull request #2 from daniel-visoiu/master
+    
+    Added "Test Contract Method" functionality for testing contract methods.
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    #Fix for leaflet ssapp webcardinal migration
+    #Fix for leaflet ssapp webcardinal migration
+    [Freeze]
+    Add default enclave db and queue + tests
+    Fix navigation from menu and ssapp components (issue #269)
+    fixed createMarketplace swarm
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    Merge pull request #2 from daniel-visoiu/master
+    
+    Added "Test Contract Method" functionality for testing contract methods.
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    #Fix for leaflet ssapp webcardinal migration
+    [Freeze]
+    added default config for vault domain
+    Fix navigation from menu and ssapp components (issue #269)
+    fixed createMarketplace swarm
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    Merge pull request #2 from daniel-visoiu/master
+    
+    Added "Test Contract Method" functionality for testing contract methods.
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    #Fix for leaflet ssapp webcardinal migration
+    [Freeze]
+    #207 and #327 Buffering mechanism and configurable webhooks with tests
+    Fix navigation from menu and ssapp components (issue #269)
+    fixed createMarketplace swarm
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    Merge pull request #2 from daniel-visoiu/master
+    
+    Added "Test Contract Method" functionality for testing contract methods.
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    #Fix for leaflet ssapp webcardinal migration
+    #Fix for leaflet ssapp webcardinal migration
+    [Freeze]
+    #207 and #327 Buffering mechanism and configurable webhooks with tests
+    #Fix for leaflet ssapp webcardinal migration
+    [Freeze]
+    #207 and #327 Buffering mechanism and configurable webhooks with tests
+    Fix navigation from menu and ssapp components (issue #269)
+    fixed createMarketplace swarm
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    Merge pull request #2 from daniel-visoiu/master
+    
+    Added "Test Contract Method" functionality for testing contract methods.
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)

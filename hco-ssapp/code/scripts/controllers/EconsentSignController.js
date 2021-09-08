@@ -1,16 +1,18 @@
-import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
-import CommunicationService from '../services/CommunicationService.js';
-import DateTimeService from '../services/DateTimeService.js';
-import FileDownloader from '../utils/FileDownloader.js';
-import Constants from '../utils/Constants.js';
 import SiteService from '../services/SiteService.js';
 import PatientEcosentService from "../services/PatientEcosentService.js";
 
 const {WebcController} = WebCardinal.controllers;
 
 const TEXT_MIME_TYPE = 'text/';
+
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
+const DateTimeService = ecoServices.DateTimeService;
+const Constants = ecoServices.Constants;
+const FileDownloader = ecoServices.FileDownloader;
+const BaseRepository = ecoServices.BaseRepository;
 
 let getInitModel = () => {
     return {
@@ -49,9 +51,8 @@ export default class EconsentSignController extends WebcController {
         this.TrialService = new TrialService(DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
         this.SiteService = new SiteService(DSUStorage);
-        ;
     }
 
     _initHandlers() {
@@ -127,7 +128,7 @@ export default class EconsentSignController extends WebcController {
     }
 
     _getEconsentFilePath(trialSSI, consentSSI, version, fileName) {
-        return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version + '/' + fileName;
+        return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version ;
     }
 
     _getEconsentManualFilePath(ecoID, consentSSI, fileName) {

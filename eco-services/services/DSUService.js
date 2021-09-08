@@ -1,4 +1,4 @@
-export default class DSUService {
+class DSUService {
 
     PATH = "/";
 
@@ -140,3 +140,5 @@ export default class DSUService {
         })
     }
 }
+
+module.exports = DSUService;

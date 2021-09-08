@@ -1,9 +1,10 @@
 import TrialService from '../services/TrialService.js';
-import FileDownloader from '../utils/FileDownloader.js';
-import CommunicationService from '../services/CommunicationService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
-import EconsentsStatusRepository from "../repositories/EconsentsStatusRepository.js";
-import TrialParticipantRepository from "../repositories/TrialParticipantRepository.js";
+
+const ecoServices = require('eco-services');
+const BaseRepository = ecoServices.BaseRepository;
+const CommunicationService = ecoServices.CommunicationService;
+const FileDownloader = ecoServices.FileDownloader;
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -32,8 +33,8 @@ export default class ReadEconsentController extends WebcController {
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.PATIENT_IDENTITY);
-        this.EconsentsStatusRepository = EconsentsStatusRepository.getInstance(DSUStorage);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
     }
 
     _initConsent() {
@@ -102,7 +103,7 @@ export default class ReadEconsentController extends WebcController {
                     controller: 'ConfirmationAlertController',
                     disableExpanding: false,
                     disableBackdropClosing: false,
-                    question: 'Are you sure you want to sign this ecosent ? ',
+                    question: 'Are you sure you want to sign this ecosent? ',
                     title: 'Sign Econsent',
                 });
         });
@@ -200,7 +201,7 @@ export default class ReadEconsentController extends WebcController {
             }
 
             if (data && data.length > 0) {
-                this.model.tp = data[data.length-1];
+                this.model.tp = data[data.length - 1];
                 let sendObject = {
                     operation: 'update-econsent',
                     ssi: ssi,

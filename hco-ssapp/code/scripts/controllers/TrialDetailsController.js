@@ -1,11 +1,14 @@
+import SiteService from "../services/SiteService.js";
+
 const {WebcController} = WebCardinal.controllers;
-import Constants from '../utils/Constants.js';
-import DateTimeService from '../services/DateTimeService.js';
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
-import CommunicationService from '../services/CommunicationService.js';
-import TrialParticipantRepository from '../repositories/TrialParticipantRepository.js';
 
+const ecoServices = require('eco-services');
+const CommunicationService = ecoServices.CommunicationService;
+const DateTimeService = ecoServices.DateTimeService;
+const Constants = ecoServices.Constants;
+const BaseRepository = ecoServices.BaseRepository;
 let getInitModel = () => {
     return {
         trial: {},
@@ -34,18 +37,21 @@ export default class TrialDetailsController extends WebcController {
         this._initServices(this.DSUStorage);
         this._initHandlers();
         this._initTrial(this.model.trialSSI);
+        this._getSite();
     }
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
+        this.SiteService = new SiteService(DSUStorage);
         this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
-        this.TrialParticipantRepository = TrialParticipantRepository.getInstance(DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
     }
 
     _initHandlers() {
         // this._attachHandlerAddTrialParticipant();
         // this._attachHandlerNavigateToParticipant();
+        this._attachHandlerEditRecruitmentPeriod();
         this._attachHandlerNavigateToVersion();
         this._attachHandlerBack();
         this.on('openFeedback', (e) => {
@@ -68,7 +74,7 @@ export default class TrialDetailsController extends WebcController {
             this.model.subjects.screened = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.SCREENED).length;
             this.model.subjects.withdrew = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW).length;
             this.model.subjects.declined = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.DECLINED).length;
-            this.model.subjects.percentage = ((this.model.subjects.enrolled * 100) /  this.model.subjects.planned).toFixed(2) + '%' ;
+            this.model.subjects.percentage = ((this.model.subjects.enrolled * 100) / this.model.subjects.planned).toFixed(2) + '%';
 
             this.TrialService.getEconsents(trial.uid, (err, econsents) => {
                 if (err) {
@@ -132,5 +138,47 @@ export default class TrialDetailsController extends WebcController {
         }
     }
 
+    _attachHandlerEditRecruitmentPeriod() {
+
+        this.onTagEvent('edit-period', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.showModalFromTemplate(
+                'edit-recruitment-period',
+                (event) => {
+                    const response = event.detail;
+                    this.model.trial.recruitmentPeriod = response;
+                    this.model.trial.recruitmentPeriod.toShowDate = new Date(this.model.trial.recruitmentPeriod.startDate).toLocaleDateString() + ' - ' + new Date(this.model.trial.recruitmentPeriod.endDate).toLocaleDateString();
+                    this.TrialService.updateTrialAsync(this.model.trial)
+
+                },
+                (event) => {
+                    const response = event.detail;
+                },
+                {
+                    controller: 'EditRecruitmentPeriodController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false,
+                    title: 'Edit Recruitment Period',
+                    recruitmentPeriod: this.model.trial.recruitmentPeriod
+                }
+            );
+
+        });
+
+    }
+
+    _getSite() {
+
+        this.SiteService.getSites((err, sites) => {
+            if (err) {
+                return console.log(err);
+            }
+            if (sites && sites.length > 0) {
+                let filtered = sites?.filter(site => site.trialKeySSI === this.model.trial.keySSI);
+                if (filtered) this.model.site = filtered[0];
+            }
+        });
+    }
 
 }

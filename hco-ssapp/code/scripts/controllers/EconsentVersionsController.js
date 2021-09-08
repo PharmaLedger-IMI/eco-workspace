@@ -1,8 +1,8 @@
 const {WebcController} = WebCardinal.controllers;
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
-
-import DateTimeService from '../services/DateTimeService.js';
+const ecoServices = require('eco-services');
+const DateTimeService = ecoServices.DateTimeService;
 
 let getInitModel = () => {
     return {

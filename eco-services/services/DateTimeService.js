@@ -14,7 +14,7 @@ const getCurrentDateAsISOString = () => {
     return getCurrentDate().toISOString();
 }
 
-export default {
+module.exports = {
     convertStringToLocaleDate,
     convertStringToLocaleDateTimeString,
     getCurrentDate,

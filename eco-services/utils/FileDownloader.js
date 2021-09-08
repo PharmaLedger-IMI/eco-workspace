@@ -1,4 +1,4 @@
-export default class FileDownloader {
+class FileDownloader {
 
     constructor(path, fileName) {
         this.path = path;
@@ -37,7 +37,11 @@ export default class FileDownloader {
     }
 
     _getFileBlob(path, fileName, callback) {
-        let url = `/download${path}/${fileName}`;
+        let url = `/download${path}`;
+        if (!path.includes(fileName)) {
+            url += `/${fileName}`;
+        }
+
         fetch(url)
             .then((response) => {
                 if (response.ok) {
@@ -53,3 +57,5 @@ export default class FileDownloader {
             });
     }
 }
+
+module.exports = FileDownloader
