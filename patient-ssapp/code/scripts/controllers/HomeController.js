@@ -53,7 +53,6 @@ export default class HomeController extends WebcController {
             if (err) {
                 return console.error(err);
             }
-            data = JSON.parse(data);
             switch (data.message.operation) {
                 case 'refresh-trial': {
 

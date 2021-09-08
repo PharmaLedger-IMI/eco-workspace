@@ -53,35 +53,7 @@ export default class VisitsAndProceduresController extends WebcController {
             let visits = await this.VisitsAndProceduresRepository.findAllAsync();
 
             this.model.visits = visits.filter(vis => vis.trialSSI === this.model.trialSSI);
-            // let proceduresMappedByVisits = {}
-            // visits.forEach((visit) => {
-            //     if (proceduresMappedByVisits[visit.id] === undefined) {
-            //         proceduresMappedByVisits[visit.id] = [];
-            //     }
-            //     proceduresMappedByVisits[visit.id].push(visit);
-            // });
-            // let newVisits = [];
-            //
-            // Object.keys(proceduresMappedByVisits).forEach((key) => {
-            //
-            //     let visit = {
-            //         ...proceduresMappedByVisits[key][0],
-            //         procedures: proceduresMappedByVisits[key],
-            //
-            //         econsent: econsents[0]
-            //     }
-            //
-            //     newVisits.push(visit)
-            // })
-            // this.model.visits = newVisits;
 
-            // END TODO
-            // this.model.visits = visits.map(visit => {
-            //     return {
-            //         ...visit,
-            //         econsent: econsents[0]
-            //     }
-            // });
             if (this.model.visits && this.model.visits.length > 0) {
                 this.model.tp = await this.TrialParticipantRepository.findByAsync(this.model.tpUid);
                 if (!this.model.tp.visits || this.model.tp.visits.length < 1) {
@@ -120,6 +92,7 @@ export default class VisitsAndProceduresController extends WebcController {
 
         let objIndex = this.model.tp.visits.findIndex((obj => obj.uuid == visit.uuid));
         this.model.tp.visits[objIndex] = visit;
+        this.model.visits = this.model.tp.visits;
         await this.TrialParticipantRepository.updateAsync(this.model.tp.uid, this.model.tp);
         this.sendMessageToPatient(visit, operation);
     }
@@ -262,7 +235,7 @@ export default class VisitsAndProceduresController extends WebcController {
                         let visitIndex = this.model.tp.visits.findIndex(v => v.pk === model.pk);
                         this.model.tp.visits[visitIndex].confirmed = true;
                         this._updateTrialParticipantRepository(this.model.tp.uid, this.model.tp);
-                        // this._updateVisit(model);
+                        this.model.visits = this.model.tp.visits;
                         this.sendMessageToSponsor(model);
                     }
                 },
