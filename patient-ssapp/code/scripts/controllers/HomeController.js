@@ -208,7 +208,7 @@ export default class HomeController extends WebcController {
 
 
     _saveVisit(visitToBeAdded) {
-        this.VisitsAndProceduresRepository.createAsync(visitToBeAdded, (err, visitCreated) => {
+        this.VisitsAndProceduresRepository.createAsync(visitToBeAdded.uid, visitToBeAdded, (err, visitCreated) => {
             if (err) {
                 return console.error(err);
             }
