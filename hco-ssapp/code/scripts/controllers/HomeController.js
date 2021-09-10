@@ -392,10 +392,13 @@ export default class HomeController extends WebcController {
             if (err) {
                 console.log(err);
             }
+            debugger;
             let tp = tps[0];
-            let objIndex = tp?.visits?.findIndex((obj => obj.id == message.useCaseSpecifics.visit.id));
+            let objIndex = tp?.visits?.findIndex((obj => obj.uuid == message.useCaseSpecifics.visit.id));
+            debugger;
             tp.visits[objIndex].accepted = message.useCaseSpecifics.visit.accepted;
             tp.visits[objIndex].declined = message.useCaseSpecifics.visit.declined;
+
             this.TrialParticipantRepository.update(tp.uid, tp, (err, data) => {
                 if (err) {
                     console.log(err);

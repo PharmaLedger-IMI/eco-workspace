@@ -215,6 +215,7 @@ export default class VisitsAndProceduresController extends WebcController {
                     consentSSI: visit.consentSSI,
                     date: visit.date,
                     unit: visit.unit,
+                    uid: visit.uuid,
                     id: visit.id
                 },
             },
