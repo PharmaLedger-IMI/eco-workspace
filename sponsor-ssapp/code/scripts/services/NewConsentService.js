@@ -194,7 +194,6 @@ export default class NewConsentService extends DSUService {
 
   async updateBaseConsentVisits(visits, trialKeySSI) {
     const consents = await this.getTrialConsents(trialKeySSI);
-    debugger;
     for (const consent of consents) {
       const tempVisits = visits.map((x) => ({
         ...x,

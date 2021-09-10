@@ -195,11 +195,9 @@ export default class ReadEconsentController extends WebcController {
         currentDate.setDate(currentDate.getDate());
 
         this.TrialParticipantRepository.findAll((err, data) => {
-
             if (err) {
                 return console.log(err);
             }
-
             if (data && data.length > 0) {
                 this.model.tp = data[data.length - 1];
                 let sendObject = {
@@ -219,8 +217,8 @@ export default class ReadEconsentController extends WebcController {
                     },
                     shortDescription: shortMessage,
                 };
-                this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, sendObject);
-                this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, sendObject);
+                this.CommunicationService.sendMessage(this.model.tp.sponsorIdentity, sendObject);
+                this.CommunicationService.sendMessage(this.model.tp.hcoIdentity, sendObject);
             }
         });
     }

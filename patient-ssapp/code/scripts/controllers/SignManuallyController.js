@@ -162,8 +162,8 @@ export default class SignManuallyController extends WebcController {
                     },
                     shortDescription: shortMessage,
                 };
-                this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, sendObject);
-                this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, sendObject);
+                this.CommunicationService.sendMessage(this.model.tp.sponsorIdentity, sendObject);
+                this.CommunicationService.sendMessage(this.model.tp.hcoIdentity, sendObject);
             }
         });
     }

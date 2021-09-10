@@ -209,8 +209,7 @@ export default class VisitsAndProceduresController extends WebcController {
     }
 
     sendMessageToHCO(visit, message) {
-        debugger;
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, {
+        this.CommunicationService.sendMessage(this.model.tp.hcoIdentity, {
             operation: Constants.MESSAGES.HCO.COMMUNICATION.TYPE.VISIT_RESPONSE,
             ssi: visit.trialSSI,
             useCaseSpecifics: {

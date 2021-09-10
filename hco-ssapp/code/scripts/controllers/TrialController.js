@@ -1,7 +1,8 @@
+import SiteService from "../services/SiteService";
+
 const {WebcController} = WebCardinal.controllers;
 
 import TrialService from '../services/TrialService.js';
-import TrialParticipantsService from '../services/TrialParticipantsService.js';
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
@@ -26,11 +27,12 @@ export default class TrialController extends WebcController {
         this._initServices(this.DSUStorage);
         this._initHandlers();
         this._initTrial(this.model.trialSSI);
+        this._getSite();
     }
 
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
-        this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
+        this.SiteService = new SiteService(DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.TABLE_NAMES.HCO.TRIAL_PARTICIPANTS);
     }
@@ -49,12 +51,7 @@ export default class TrialController extends WebcController {
                 return console.log(err);
             }
             this.model.trial = trial;
-            // this.model.trialParticipants1 = await this.TrialParticipantRepository.filterAsync(`trialNumber == ${this.model.trial.id}`, 'asc', 30);
-            // this.model.trialParticipants2 = await this.TrialParticipantRepository.filterAsync([`__version >= 0`,`trialNumber == ${this.model.trial.id}`],'asc', 30);
             this.model.trialParticipants = (await this.TrialParticipantRepository.findAllAsync()).filter(tp => tp.trialNumber === this.model.trial.id);
-
-
-
         });
     }
 
@@ -98,24 +95,36 @@ export default class TrialController extends WebcController {
     async createTpDsu(tp) {
         tp.trialNumber = this.model.trial.id;
         tp.status = 'screened';
+        tp.sponsorIdentity = this.model.site.sponsorIdentity;
         let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
         this.model.trialParticipants.push(trialParticipant);
         this.sendMessageToPatient(
             'add-to-trial',
-
             this.model.trialSSI,
             trialParticipant,
             Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL
         );
     }
 
+    _getSite() {
+        this.SiteService.getSites((err, sites) => {
+            if (err) {
+                return console.log(err);
+            }
+            if (sites && sites.length > 0) {
+                this.model.site = sites[sites.length - 1];
+            }
+        });
+    }
+
     sendMessageToPatient(operation, ssi, trialParticipant, shortMessage) {
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
+        this.CommunicationService.sendMessage(trialParticipant.did, {
             operation: operation,
             ssi: ssi,
             useCaseSpecifics: {
                 tpName: trialParticipant.name,
-                did: trialParticipant.did
+                did: trialParticipant.did,
+                sponsorIdentity: trialParticipant.sponsorIdentity
             },
             shortDescription: shortMessage,
         });

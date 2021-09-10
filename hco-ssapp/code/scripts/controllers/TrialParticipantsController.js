@@ -27,6 +27,7 @@ export default class TrialParticipantsController extends WebcController {
         this._initServices(this.DSUStorage);
         this._initHandlers();
         this._initTrial(this.model.trialSSI);
+        this._getSite();
     }
 
     _initServices(DSUStorage) {
@@ -64,7 +65,6 @@ export default class TrialParticipantsController extends WebcController {
                 let currentDate = new Date();
                 this.model.trial.isInRecruitmentPeriod = currentDate <= endDate;
             }
-            this._getSite();
         });
     }
 
@@ -183,7 +183,6 @@ export default class TrialParticipantsController extends WebcController {
                     disableExpanding: false,
                     disableBackdropClosing: false,
                     title: 'Add Trial Participant',
-
                 });
         });
     }
@@ -197,7 +196,6 @@ export default class TrialParticipantsController extends WebcController {
                 'edit-recruitment-period',
                 (event) => {
                     const response = event.detail;
-                    debugger;
                     this.model.trial.recruitmentPeriod = response;
                     this.model.trial.recruitmentPeriod.toShowDate = new Date(this.model.trial.recruitmentPeriod.startDate).toLocaleDateString() + ' - ' + new Date(this.model.trial.recruitmentPeriod.endDate).toLocaleDateString();
                     this.TrialService.updateTrialAsync(this.model.trial)
@@ -260,15 +258,14 @@ export default class TrialParticipantsController extends WebcController {
     }
 
     sendMessageToPatient(operation, ssi, tp, shortMessage) {
-
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
+        this.CommunicationService.sendMessage(tp.did, {
             operation: operation,
             ssi: ssi,
             useCaseSpecifics: {
                 tpNumber: tp.tpNumber,
                 tpName: tp.tpName,
                 tpDid: tp.did,
-
+                sponsorIdentity: this.model.site.sponsorIdentity,
                 site: {
                     name: this.model.site?.name,
                     number: this.model.site?.id,
@@ -296,20 +293,21 @@ export default class TrialParticipantsController extends WebcController {
     }
 
     _getSite() {
-
         this.SiteService.getSites((err, sites) => {
             if (err) {
                 return console.log(err);
             }
             if (sites && sites.length > 0) {
-                let filtered = sites?.filter(site => site.trialKeySSI === this.model.trial.keySSI);
-                if (filtered) this.model.site = filtered[0];
+                this.model.site = sites[0];
+                // To be fixed (@Raluca & @Cosmin)
+                //let filtered = sites?.filter(site => site.trialKeySSI === this.model.trial.keySSI);
+                //if (filtered) this.model.site = filtered[0];
             }
         });
     }
 
     _sendMessageToSponsor() {
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, {
+        this.CommunicationService.sendMessage(this.model.site.sponsorIdentity, {
             operation: 'update-site-status',
             ssi: this.model.trialSSI,
             stageInfo: {

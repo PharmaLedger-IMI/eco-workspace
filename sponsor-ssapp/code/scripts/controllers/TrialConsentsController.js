@@ -1,5 +1,6 @@
 import { consentTypeEnum, consentTableHeaders } from '../constants/consent.js';
 import ConsentsService from '../services/ConsentsService.js';
+import SitesService from "../services/SitesService.js";
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
 
@@ -43,6 +44,7 @@ export default class TrialConsentsController extends WebcController {
 
     this.keySSI = keySSI;
     this.consentsService = new ConsentsService(this.DSUStorage);
+    this.sitesService = new SitesService(this.DSUStorage);
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
     this.feedbackEmitter = null;
 
@@ -138,9 +140,16 @@ export default class TrialConsentsController extends WebcController {
           const response = event.detail;
           await this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
+          let operation = 'add-consent';
+          let shortMessage = 'New trial';
           if (this.consents.length === 1) {
-            this.sendMessageToHco('add-trial', this.keySSI, 'First consent');
-          } else this.sendMessageToHco('add-consent', this.keySSI, 'New trial');
+            operation = 'add-trial';
+            shortMessage = 'First consent';
+          }
+          const sites = await this.sitesService.getSites(this.keySSI);
+          sites.forEach(site => {
+            this.sendMessageToHco(operation, this.keySSI, shortMessage, site.did);
+          })
         },
         (event) => {
           const error = event.detail || null;
@@ -162,11 +171,14 @@ export default class TrialConsentsController extends WebcController {
     this.on('update-consent', async (event) => {
       this.showModalFromTemplate(
         'add-new-consent',
-        (event) => {
+        async (event) => {
           const response = event.detail;
           this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          this.sendMessageToHco('add-econsent-version', this.keySSI, 'New trial');
+          const sites = await this.sitesService.getSites(this.keySSI);
+          sites.forEach(site => {
+            this.sendMessageToHco('add-econsent-version', this.keySSI, 'New trial', site.did);
+          })
         },
         (event) => {
           const error = event.detail || null;
@@ -209,8 +221,8 @@ export default class TrialConsentsController extends WebcController {
     });
   }
 
-  sendMessageToHco(operation, ssi, shortMessage) {
-    this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, {
+  sendMessageToHco(operation, ssi, shortMessage, did) {
+    this.CommunicationService.sendMessage(did, {
       operation: operation,
       ssi: ssi,
       shortDescription: shortMessage,

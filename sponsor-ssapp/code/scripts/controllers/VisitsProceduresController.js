@@ -3,6 +3,7 @@ const CommunicationService = ecoServices.CommunicationService;
 import NewConsentService from '../services/NewConsentService.js';
 import TrialsService from '../services/TrialsService.js';
 import eventBusService from '../services/EventBusService.js';
+import SitesService from '../services/SitesService.js';
 import { Topics } from '../constants/topics.js';
 
 // eslint-disable-next-line no-undef
@@ -17,6 +18,7 @@ export default class VisitsProceduresController extends WebcController {
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
     this.consentsService = new NewConsentService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
+    this.sitesService = new SitesService(this.DSUStorage);
     this.feedbackEmitter = null;
 
     this.model = {
@@ -497,7 +499,10 @@ export default class VisitsProceduresController extends WebcController {
 
       await this.consentsService.updateBaseConsentVisits(result, this.keySSI);
       await this.getConsents();
-      this.sendMessageToHco('update-base-procedures', this.keySSI, 'Update trial consents');
+      const sites = await this.sitesService.getSites(this.keySSI);
+      sites.forEach(site => {
+        this.sendMessageToHco('update-base-procedures', this.keySSI, 'Update trial consents', site.did);
+      });
       this.model.notEditable = !this.model.notEditable;
       return;
       //TODO: Save to corresponding consents
@@ -505,8 +510,8 @@ export default class VisitsProceduresController extends WebcController {
     });
   }
 
-  sendMessageToHco(operation, ssi, shortMessage) {
-    this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, {
+  sendMessageToHco(operation, ssi, shortMessage, did) {
+    this.CommunicationService.sendMessage(did, {
       operation: operation,
       ssi: ssi,
       shortDescription: shortMessage,

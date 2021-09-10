@@ -106,7 +106,7 @@ export default class VisitEditController extends WebcController {
     }
 
     sendMessageToPatient(visit, operation) {
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
+        this.CommunicationService.sendMessage(this.model.tp.did, {
             operation: operation,
             ssi: visit.trialSSI,
             useCaseSpecifics: {

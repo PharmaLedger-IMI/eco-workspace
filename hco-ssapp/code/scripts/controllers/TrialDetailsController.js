@@ -148,17 +148,6 @@ export default class TrialDetailsController extends WebcController {
         });
     }
 
-    sendMessageToPatient(operation, ssi, trialParticipantNumber, shortMessage) {
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
-            operation: operation,
-            ssi: ssi,
-            useCaseSpecifics: {
-                tpNumber: trialParticipantNumber,
-            },
-            shortDescription: shortMessage,
-        });
-    }
-
     _showFeedbackToast(title, message, alertType = 'toast') {
         if (typeof this.feedbackEmitter === 'function') {
             this.feedbackEmitter(message, title, alertType);
@@ -166,7 +155,6 @@ export default class TrialDetailsController extends WebcController {
     }
 
     _attachHandlerEditRecruitmentPeriod() {
-
         this.onTagEvent('edit-period', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
@@ -196,7 +184,6 @@ export default class TrialDetailsController extends WebcController {
     }
 
     _getSite() {
-
         this.SiteService.getSites((err, sites) => {
             if (err) {
                 return console.log(err);
@@ -210,13 +197,10 @@ export default class TrialDetailsController extends WebcController {
     }
 
     _updateSite() {
-
         this.SiteService.updateEntity(this.model.site, (err, site) => {
             if (err) {
                 return console.log(err);
             }
-
-
         });
     }
 }

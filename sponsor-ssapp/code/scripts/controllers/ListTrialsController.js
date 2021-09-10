@@ -1,7 +1,7 @@
 const ecoServices = require('eco-services');
 import TrialsService from '../services/TrialsService.js';
 import { trialStatusesEnum, trialTableHeaders, trialStagesEnum } from '../constants/trial.js';
-const CommunicationService = ecoServices.CommunicationService;
+const DIDService = ecoServices.DIDService;
 import ParticipantsService from '../services/ParticipantsService.js';
 import SitesService from '../services/SitesService.js';
 
@@ -78,8 +78,14 @@ export default class ListTrialsController extends WebcController {
     this.trialsService = new TrialsService(this.DSUStorage);
     this.participantsService = new ParticipantsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
-    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
-    this.listenForMessages();
+    DIDService.getCommunicationServiceInstance(this, (err, CommunicationService) => {
+      if (err) {
+        return console.log(err);
+      }
+      this.CommunicationService = CommunicationService;
+      this.listenForMessages();
+    });
+
 
     this.feedbackEmitter = null;
 
@@ -240,10 +246,14 @@ export default class ListTrialsController extends WebcController {
 
     this.on('delete-trial', async (event) => {
       try {
+        const trial = await this.trialsService.getTrialFromDB(event.data);
+        const sites = await this.sitesService.getSites(trial.keySSI);
         await this.trialsService.deleteTrial(event.data);
         this.showFeedbackToast('Result', 'Trial deleted successfully', 'toast');
         this.getTrials();
-        this.sendMessageToHco('delete-trial', event.data, 'the trial was removed ');
+        sites.forEach(site => {
+          this.sendMessageToHco('delete-trial', event.data, 'the trial was removed ', site.did);
+        })
       } catch (error) {
         this.showFeedbackToast('Result', 'ERROR: The was an error, trial cannot be deleted right now', 'toast');
       }
@@ -279,8 +289,8 @@ export default class ListTrialsController extends WebcController {
     });
   }
 
-  sendMessageToHco(operation, ssi, shortMessage) {
-    this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, {
+  sendMessageToHco(operation, ssi, shortMessage, did) {
+    this.CommunicationService.sendMessage(did, {
       operation: operation,
       ssi: ssi,
       shortDescription: shortMessage,
