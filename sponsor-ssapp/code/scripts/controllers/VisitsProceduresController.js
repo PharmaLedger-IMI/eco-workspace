@@ -22,102 +22,7 @@ export default class VisitsProceduresController extends WebcController {
     this.model = {
       consents: [],
       procedures: [],
-      visits: [
-        {
-          id: 0,
-          uuid: uuidv4(),
-          name: {
-            label: 'Visit',
-            name: 'visit',
-            required: true,
-            placeholder: 'Visit...',
-            value: '',
-            type: 'text',
-          },
-          weeks: [
-            {
-              week: {
-                label: '',
-                name: 'weekFrom',
-                required: true,
-                placeholder: 'from',
-                value: '',
-                type: 'number',
-              },
-            },
-            {
-              week: {
-                label: '',
-                name: 'weekTo',
-                required: true,
-                placeholder: 'to',
-                value: '',
-                type: 'number',
-              },
-            },
-          ],
-          visitWindow: [
-            {
-              show: true,
-              window: {
-                label: '',
-                name: 'windowFrom',
-                required: true,
-                placeholder: 'From',
-                value: '',
-                type: 'hidden',
-              },
-            },
-          ],
-        },
-        {
-          id: 1,
-          uuid: uuidv4(),
-          name: {
-            label: 'Visit',
-            name: 'visit',
-            required: true,
-            placeholder: 'Visit...',
-            value: '',
-            type: 'text',
-          },
-          weeks: [
-            {
-              week: {
-                label: '',
-                name: 'weekFrom',
-                required: true,
-                placeholder: 'from',
-                value: '',
-                type: 'number',
-              },
-            },
-            {
-              week: {
-                label: '',
-                name: 'weekTo',
-                required: true,
-                placeholder: 'to',
-                value: '',
-                type: 'number',
-              },
-            },
-          ],
-          visitWindow: [
-            {
-              show: true,
-              window: {
-                label: '',
-                name: 'windowFrom',
-                required: true,
-                placeholder: 'From',
-                value: '',
-                type: 'hidden',
-              },
-            },
-          ],
-        },
-      ],
+      visits: [],
       dataLoaded: false,
       trial: null,
       notEditable: true,
@@ -169,10 +74,20 @@ export default class VisitsProceduresController extends WebcController {
 
     visits.sort((a, b) => a.id - b.id);
 
-    const resultVisits = visits.map((x) => {
+    console.log(visits);
+
+    const randomizationIdx = visits.findIndex((x) => x.isRandomizationVisit === true);
+    const resultVisits = visits.map((x, idx) => {
       return {
         id: x.id,
         uuid: x.uuid,
+        checkbox: {
+          type: 'checkbox',
+          placeholder: 'enabled',
+          label: '',
+          checked: x.isRandomizationVisit,
+          disabled: !(randomizationIdx > -1 && x.isRandomizationVisit),
+        },
         name: {
           label: 'Visit',
           name: 'visit',
@@ -189,17 +104,19 @@ export default class VisitsProceduresController extends WebcController {
             placeholder: 'from',
             value: y.value,
             type: 'number',
+            disabled: randomizationIdx > -1 ? randomizationIdx === idx : false,
           },
         })),
         visitWindow: x.visitWindow.map((y) => ({
-          show: !!y,
+          show: randomizationIdx > -1 ? randomizationIdx <= idx : true,
           window: {
             label: '',
-            name: y ? y.type : null,
+            name: randomizationIdx > -1 ? (randomizationIdx <= idx ? y.type : null) : y.type,
             required: true,
             placeholder: 'from',
-            value: y ? y.value : null,
-            type: y ? 'number' : 'hidden',
+            value: randomizationIdx > -1 ? (randomizationIdx <= idx ? y.value : null) : y.value,
+            type: randomizationIdx > -1 ? (randomizationIdx <= idx ? 'number' : 'hidden') : 'number',
+            disabled: randomizationIdx > -1 ? randomizationIdx === idx : false,
           },
         })),
       };
@@ -307,6 +224,84 @@ export default class VisitsProceduresController extends WebcController {
       this.feedbackEmitter = e.detail;
     });
 
+    this.onTagEvent('randomizationOnChange', 'click', (model, target, event) => {
+      if (this.model.visits && this.model.visits.length > 0) {
+        let visits = JSON.parse(JSON.stringify(this.model.visits));
+        const isSelected = visits.map((x) => x.checkbox && x.checkbox.checked).every((x) => x === false);
+        const idxSelected = visits.findIndex((x) => x.id === model.id);
+        if (isSelected) {
+          visits = visits.map((x, idx) => ({
+            ...x,
+            checkbox: {
+              ...x.checkbox,
+              checked: idx === idxSelected,
+              disabled: idx === idxSelected ? false : true,
+            },
+            weeks:
+              idx < idxSelected
+                ? [
+                    ...x.weeks,
+                    {
+                      week: {
+                        label: '',
+                        name: 'weekTo',
+                        required: true,
+                        placeholder: 'to',
+                        value: '',
+                        type: 'number',
+                      },
+                    },
+                  ]
+                : idx === idxSelected
+                ? [{ ...x.weeks[0], week: { ...x.weeks[0].week, value: 0, disabled: true } }]
+                : x.weeks,
+            visitWindow:
+              idx < idxSelected
+                ? x.visitWindow.map((y) => ({ ...y, window: { ...y.window, type: 'hidden' } }))
+                : idx === idxSelected
+                ? [{ show: true, window: { ...x.visitWindow[0].window, value: 0, disabled: true } }]
+                : x.visitWindow,
+          }));
+          this.model.visits = visits;
+        } else {
+          visits = visits.map((x, idx) => ({
+            ...x,
+            checkbox: {
+              ...x.checkbox,
+              checked: false,
+              disabled: false,
+            },
+            weeks:
+              idx < idxSelected
+                ? [{ ...x.weeks[0] }]
+                : idx === idxSelected
+                ? [{ ...x.weeks[0], week: { ...x.weeks[0].week, value: '', disabled: false } }]
+                : x.weeks,
+            visitWindow:
+              idx < idxSelected
+                ? x.visitWindow.map((y) => ({ ...y, window: { ...y.window, type: 'number' } }))
+                : idx === idxSelected
+                ? [
+                    { ...x.visitWindow[0], window: { ...x.visitWindow[0].window, value: '', disabled: false } },
+                    {
+                      show: true,
+                      window: {
+                        label: '',
+                        name: 'windowTo',
+                        required: true,
+                        placeholder: 'To',
+                        value: '',
+                        type: 'number',
+                      },
+                    },
+                  ]
+                : x.visitWindow,
+          }));
+          this.model.visits = visits;
+        }
+      }
+    });
+
     this.onTagEvent('edit', 'click', () => {
       this.model.notEditable = !this.model.notEditable;
     });
@@ -329,11 +324,20 @@ export default class VisitsProceduresController extends WebcController {
       const visits = JSON.parse(JSON.stringify(this.model.visits));
       const procedures = JSON.parse(JSON.stringify(this.model.procedures));
 
+      const randomizationVisit = visits.find((x) => x.checkbox && x.checkbox.checked === true);
+
       const newVisits = [
         ...visits,
         {
           id: visits.length,
           uuid: uuidv4(),
+          checkbox: {
+            type: 'checkbox',
+            placeholder: 'enabled',
+            label: '',
+            checked: false,
+            disabled: !!randomizationVisit,
+          },
           name: {
             label: 'Visit',
             name: 'visit',
@@ -346,9 +350,9 @@ export default class VisitsProceduresController extends WebcController {
             {
               week: {
                 label: '',
-                name: 'week',
+                name: 'weekFrom',
                 required: true,
-                placeholder: 'week',
+                placeholder: 'from',
                 value: '',
                 type: 'number',
               },
@@ -404,9 +408,25 @@ export default class VisitsProceduresController extends WebcController {
     });
 
     this.onTagEvent('removeVisit', 'click', () => {
-      if (this.model.visits.length <= 2) return;
-      const visits = JSON.parse(JSON.stringify(this.model.visits));
-      this.model.visits = this.model.visits.slice(0, -1);
+      if (this.model.visits.length <= 0) return;
+      let visits = JSON.parse(JSON.stringify(this.model.visits));
+      const isRandomizationVisit = visits[visits.length - 1].checkbox.checked;
+      if (isRandomizationVisit) {
+        visits = visits.slice(0, -1);
+        visits = visits.map((x, idx) => ({
+          ...x,
+          checkbox: {
+            ...x.checkbox,
+            disabled: false,
+          },
+          weeks: [{ ...x.weeks[0] }],
+          visitWindow: x.visitWindow.map((y) => ({ ...y, window: { ...y.window, type: 'number' } })),
+        }));
+        this.model.visits = visits;
+      } else {
+        this.model.visits = this.model.visits.slice(0, -1);
+      }
+
       this.model.procedures = this.model.procedures.map((x) => ({ ...x, visits: x.visits.slice(0, -1) }));
     });
 
@@ -457,18 +477,24 @@ export default class VisitsProceduresController extends WebcController {
 
     this.onTagEvent('submitData', 'click', async () => {
       let error = null;
+      const randomizationIdx = this.model.visits.findIndex((x) => x.checkbox.checked === true);
+      if (randomizationIdx < 0) {
+        this.showFeedbackToast('Error', 'Please make sure you define the randomization visit', 'toast');
+        return;
+      }
       const result = this.model.visits.map((x, idx) => {
         if (x.name.value === '') error = true;
-        if (idx > 1 && !x.visitWindow.every((y) => y.window.value !== '')) error = true;
-        if (idx > 1 && !x.weeks.every((y) => y.week.value !== '')) error = true;
+        if (idx >= randomizationIdx && !x.visitWindow.every((y) => y.window.value !== '')) error = true;
+        if (!x.weeks.every((y) => y.week.value !== '')) error = true;
 
         return {
           id: x.id,
+          isRandomizationVisit: x.checkbox.checked,
           uuid: x.uuid,
           name: x.name.value,
           weeks: x.weeks.map((y) => ({ type: y.week.name, value: y.week.value })),
           visitWindow: x.visitWindow.map((y) => {
-            if (y.show) return { type: y.window.name, value: y.window.value };
+            if (y.window.type === 'number') return { type: y.window.name, value: y.window.value };
             else return null;
           }),
           procedures: this.model.procedures.map((y) => {
