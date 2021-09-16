@@ -131,26 +131,4 @@ export default class ProceduresViewController extends WebcController {
         });
     }
 
-
-    sendMessageToSponsor(visit) {
-        const currentDate = new Date();
-        let sendObject = {
-            operation: Constants.MESSAGES.HCO.COMMUNICATION.TYPE.VISIT_CONFIRMED,
-            ssi: this.model.econsentSSI,
-            useCaseSpecifics: {
-                trialSSI: visit.trialSSI,
-                tpNumber: this.model.tp.number,
-                tpDid: this.model.tp.did,
-
-                visit: {
-                    id: visit.id,
-                    date: DateTimeService.getCurrentDateAsISOString(),
-                    toShowDate: currentDate.toLocaleDateString(),
-                },
-            },
-            shortDescription: Constants.MESSAGES.HCO.COMMUNICATION.SPONSOR.VISIT_CONFIRMED,
-        };
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, sendObject);
-    }
-
 }

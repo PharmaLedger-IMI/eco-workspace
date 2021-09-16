@@ -61,7 +61,7 @@ export default class VisitsAndProceduresController extends WebcController {
 
         if (this.model.visits && this.model.visits.length > 0) {
             let tps = await this.TrialParticipantRepository.findAllAsync();
-            this.model.tp = tps[0];
+            this.model.tp = tps[tps.length-1];
         }
     }
 
@@ -209,7 +209,7 @@ export default class VisitsAndProceduresController extends WebcController {
     }
 
     sendMessageToHCO(visit, message) {
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, {
+        this.CommunicationService.sendMessage(this.model.tp.hcoIdentity, {
             operation: Constants.MESSAGES.HCO.COMMUNICATION.TYPE.VISIT_RESPONSE,
             ssi: visit.trialSSI,
             useCaseSpecifics: {
@@ -226,7 +226,7 @@ export default class VisitsAndProceduresController extends WebcController {
                     unit: visit.unit,
                     accepted: visit.accepted,
                     declined: visit.declined,
-                    id: visit.id
+                    id: visit.uid
                 },
             },
             shortDescription: message,

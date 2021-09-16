@@ -201,7 +201,7 @@ export default class TrialDetailsController extends WebcController {
         (event) => {
           const response = event.detail;
           this.getSites();
-          this.sendMessageToHco('add-site', response.keySSI, 'Site added');
+          this.sendMessageToHco('add-site', response.keySSI, 'Site added', response.did);
           this.showFeedbackToast('Result', 'Site added successfully', 'toast');
           eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
         },
@@ -229,12 +229,11 @@ export default class TrialDetailsController extends WebcController {
           const response = event.detail;
           await this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          // if (this.model.consents.length === 1) {
-          if (this.model.sites && this.model.sites.length > 0) {
-            this.sendMessageToHco('add-trial-consent', null, 'Trial consent');
-          }
+          this.model.sites
+              .forEach(country =>
+                country.sites.forEach(site => this.sendMessageToHco('add-trial-consent', null, 'Trial consent', site.did))
+              )
           eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
-          // } else this.sendMessageToHco('add-consent', this.model.trial.keySSI, 'New trial');
         },
         (event) => {
           const error = event.detail || null;
@@ -311,7 +310,7 @@ export default class TrialDetailsController extends WebcController {
           const response = event.detail;
           this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          this.sendMessageToHco('add-econsent-version', selectedSite.keySSI, 'New trial');
+          this.sendMessageToHco('add-econsent-version', selectedSite.keySSI, 'New trial', selectedSite.did);
           eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
         },
         (event) => {
@@ -435,14 +434,17 @@ export default class TrialDetailsController extends WebcController {
 
   async changeSiteStatus(status, id) {
     const updated = await this.sitesService.changeSiteStatus(status, id, this.model.trial.keySSI);
-    // this.sendMessageToHco('site-status-change', updated.keySSI, 'Status was updated');
-    this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, {
-      operation: 'site-status-change',
-      data: {
-        site: updated.keySSI,
-        status: status,
-      },
-      shortDescription: 'Status was updated',
+
+    const sites = await this.sitesService.getSites(this.model.trial.keySSI);
+    sites.forEach(site => {
+      this.CommunicationService.sendMessage(site.did, {
+        operation: 'site-status-change',
+        data: {
+          site: updated.keySSI,
+          status: status,
+        },
+        shortDescription: 'Status was updated',
+      });
     });
   }
 
@@ -459,7 +461,7 @@ export default class TrialDetailsController extends WebcController {
     }
   }
 
-  sendMessageToHco(operation, ssi, shortMessage, did = CommunicationService.identities.ECO.HCO_IDENTITY) {
+  sendMessageToHco(operation, ssi, shortMessage, did) {
     console.log({
       operation: operation,
       data: ssi,

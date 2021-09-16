@@ -48,20 +48,24 @@ class CommunicationService {
      * Represents the message that you want to send to @destinationIdentity
      */
     sendMessage(destinationIdentity, message) {
-        this._validateIdentity(destinationIdentity);
-        this.didDocument.setDomain(destinationIdentity.domain);
+        let destinationDID = destinationIdentity.did;
+        let destinationDomain = destinationIdentity.domain;
+        if (destinationDomain === undefined) {
+            destinationDomain = this.senderIdentity.domain;
+            destinationDID = destinationIdentity;
+        }
+        this.didDocument.setDomain(destinationDomain);
         let toSentObject = {
             ...this.senderIdentity,
             message: message
         }
-        const recipientIdentity = this._getIdentityConsideringDemoMode(destinationIdentity.did);
+        const recipientIdentity = this.DEFAULT_FORMAT_IDENTIFIER + ':' + this.DEMO_METHOD_NAME + ':' + destinationDID;
         this.didDocument.sendMessage(JSON.stringify(toSentObject), recipientIdentity, (err) => {
             if (err) {
-                if (err.debug_message === 'Failed to send message'
-                    && destinationIdentity.domain !== this.senderIdentity.domain) {
+                if (err.debug_message === 'Failed to send message' && destinationDomain !== this.senderIdentity.domain) {
                     return console.log(destinationIdentity, ' was not initialized.');
                 }
-                throw err;
+                return console.error(err);
             }
             console.log(this.senderIdentity, ' sent a message to ', destinationIdentity);
         });

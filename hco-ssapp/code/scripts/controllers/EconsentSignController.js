@@ -104,8 +104,6 @@ export default class EconsentSignController extends WebcController {
     }
 
     sendMessageToSponsor(operation, shortMessage) {
-
-
         const currentDate = new Date();
         let sendObject = {
             operation: operation,
@@ -124,7 +122,7 @@ export default class EconsentSignController extends WebcController {
             },
             shortDescription: shortMessage,
         };
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, sendObject);
+        this.CommunicationService.sendMessage(this.model.site.sponsorIdentity, sendObject);
     }
 
     _getEconsentFilePath(trialSSI, consentSSI, version, fileName) {
@@ -144,7 +142,6 @@ export default class EconsentSignController extends WebcController {
                 date: currentDate.toISOString(),
                 toShowDate: currentDate.toLocaleDateString(),
             };
-
             this._updateEconsentWithDetails();
             this.sendMessageToSponsor('sign-econsent', Constants.MESSAGES.HCO.COMMUNICATION.SPONSOR.SIGN_ECONSENT);
             this.navigateToPageTag('home');

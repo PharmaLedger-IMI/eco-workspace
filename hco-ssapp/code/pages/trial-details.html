@@ -27,13 +27,23 @@
                             </psk-label>
                         </div>
                     </div>
-
-
+                </div>
+                <div class="subtitle-container">
+                    <div data-if="@site.status">
+                        <div slot="true">
+                            <psk-label class="subtitle">Site status: {{@site.status}}
+                            </psk-label>
+                        </div>
+                    </div>
                 </div>
                 <div class="subtitle-container">
 
-                    <div class="button-container">
-                        <button class="main-button" data-tag="trial-status">Change Status</button>
+                    <div data-if="@site.status">
+                        <div slot="true">
+                            <div class="button-container">
+                                <button class="main-button" data-tag="change-status">Change Status</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="button-container">
                         <button class="main-button" data-tag="edit-period">Edit Period</button>
@@ -43,13 +53,7 @@
                     </div>
 
                 </div>
-                <div class="subtitle-container" data-if="@site.name">
-                    <div slot="true">
-                        <psk-label class="subtitle">{{@site.status}}
-                        </psk-label>
-                        <button class="add-ts" data-tag="edit-status">Change Status</button>
-                    </div>
-                </div>
+
 
                 <psk-label class="table-title">Trial Subjects</psk-label>
                 <div class="trial-table">

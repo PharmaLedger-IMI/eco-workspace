@@ -1,4 +1,5 @@
 import TrialService from "../services/TrialService.js";
+import SiteService from "../services/SiteService.js";
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
@@ -25,6 +26,7 @@ export default class VisitsAndProceduresController extends WebcController {
 
         this._initServices(this.DSUStorage);
         this._initHandlers();
+        this._initSite();
         this._initVisits();
     }
 
@@ -43,6 +45,7 @@ export default class VisitsAndProceduresController extends WebcController {
         this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS, DSUStorage);
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
+        this.SiteService = new SiteService(DSUStorage);
     }
 
     async _initVisits() {
@@ -194,11 +197,10 @@ export default class VisitsAndProceduresController extends WebcController {
             }
             this._updateVisitRepository(v.pk, auxV)
         })
-
     }
 
     sendMessageToPatient(visit, operation) {
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
+        this.CommunicationService.sendMessage(this.model.tp.did, {
             operation: operation,
             ssi: visit.trialSSI,
             useCaseSpecifics: {
@@ -215,6 +217,7 @@ export default class VisitsAndProceduresController extends WebcController {
                     consentSSI: visit.consentSSI,
                     date: visit.date,
                     unit: visit.unit,
+                    uid: visit.uuid,
                     id: visit.id
                 },
             },
@@ -263,6 +266,12 @@ export default class VisitsAndProceduresController extends WebcController {
         });
     }
 
+    async _initSite() {
+        let sites = await this.SiteService.getSitesAsync();
+        if (sites && sites.length > 0) {
+            this.model.site = sites[sites.length - 1];
+        }
+    }
 
     _attachHandlerProcedures() {
         this.onTagEvent('visit:view', 'click', (model, target, event) => {
@@ -293,7 +302,7 @@ export default class VisitsAndProceduresController extends WebcController {
             },
             shortDescription: Constants.MESSAGES.HCO.COMMUNICATION.SPONSOR.VISIT_CONFIRMED,
         };
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, sendObject);
+        this.CommunicationService.sendMessage(this.model.site.sponsorIdentity, sendObject);
     }
 
 }

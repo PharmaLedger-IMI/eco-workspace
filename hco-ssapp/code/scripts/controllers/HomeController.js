@@ -4,7 +4,7 @@ import TrialService from '../services/TrialService.js';
 const {WebcController} = WebCardinal.controllers;
 
 const ecoServices = require('eco-services');
-const CommunicationService = ecoServices.CommunicationService;
+const DIDService = ecoServices.DIDService;
 const SharedStorage = ecoServices.SharedStorage;
 const Constants = ecoServices.Constants;
 const BaseRepository = ecoServices.BaseRepository;
@@ -40,17 +40,17 @@ export default class HomeController extends WebcController {
         this.setModel(getInitModel());
         this._initServices(this.DSUStorage);
         this._initHandlers();
-        this._handleMessages();
     }
 
     async _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.StorageService = SharedStorage.getInstance(DSUStorage);
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
         this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.NOTIFICATIONS, DSUStorage);
         this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS, DSUStorage);
         this.SiteService = new SiteService(DSUStorage);
+        this.CommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
+        this._handleMessages();
     }
 
     _initHandlers() {
@@ -61,6 +61,18 @@ export default class HomeController extends WebcController {
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
         });
+    }
+
+    _reMountTrialAndSendRefreshMessageToAllParticipants() {
+        this.TrialService.mountTrial(data.message.ssi, () => {});
+        this.TrialParticipantRepository.findAll((err, tps) => {
+            if (err) {
+                return console.log(err);
+            }
+            tps.forEach(tp => {
+                this.sendMessageToPatient(tp.did, 'refresh-trial', data.message.ssi, Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.REFRESH_TRIAL);
+            })
+        })
     }
 
     _handleMessages() {
@@ -83,20 +95,12 @@ export default class HomeController extends WebcController {
                 }
                 case 'add-econsent-version': {
                     this._saveNotification(data.message, 'New ecosent version was added', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
-                    this.TrialService.mountTrial(data.message.ssi, () => {
-                    });
-                    this.sendMessageToPatient('refresh-trial', data.message.ssi,
-                        Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.REFRESH_TRIAL);
+                    this._reMountTrialAndSendRefreshMessageToAllParticipants();
                     break;
                 }
                 case 'add-consent': {
                     this._saveNotification(data.message, 'New ecosent  was added', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
-                    this.TrialService.unmountTrial(data.message.ssi, (err, response) => {
-                        this.TrialService.mountTrial(data.message.ssi, (err, response) => {
-                        })
-                    })
-                    this.sendMessageToPatient('refresh-trial', data.message.ssi,
-                        Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.REFRESH_TRIAL);
+                    this._reMountTrialAndSendRefreshMessageToAllParticipants();
                     break;
                 }
                 case 'delete-trial': {
@@ -120,18 +124,24 @@ export default class HomeController extends WebcController {
                 case 'add-site': {
 
                     this._saveNotification(data.message, 'Your site was added to the trial ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
-
                     this.SiteService.mountSite(data.message.ssi, (err, site) => {
-
                         if (err) {
                             return console.log(err);
                         }
-                        this.TrialService.mountTrial(site.trialKeySSI, (err, trial) => {
+                        site.sponsorIdentity = {
+                            did: data.did,
+                            domain: data.domain
+                        }
+                        this.SiteService.updateSite(site, (err, data) => {
                             if (err) {
                                 return console.log(err);
                             }
-
-                        });
+                            this.TrialService.mountTrial(site.trialKeySSI, (err, trial) => {
+                                if (err) {
+                                    return console.log(err);
+                                }
+                            });
+                        })
                     });
 
                     break;
@@ -260,8 +270,8 @@ export default class HomeController extends WebcController {
         });
     }
 
-    sendMessageToPatient(operation, ssi, shortMessage) {
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
+    sendMessageToPatient(did, operation, ssi, shortMessage) {
+        this.CommunicationService.sendMessage(did, {
             operation: operation,
             ssi: ssi,
             shortDescription: shortMessage,
@@ -348,7 +358,6 @@ export default class HomeController extends WebcController {
                         let minus = item.visitWindow?.filter(weak => weak.type === 'windowTo');
                         if (plus)
                             visitToBeAdded.minus = minus[0]?.value;
-                        debugger;
                         this.VisitsAndProceduresRepository.findBy(visitToBeAdded.uuid, (err, existingVisit) => {
                             if (err || !existingVisit) {
 
@@ -392,10 +401,13 @@ export default class HomeController extends WebcController {
             if (err) {
                 console.log(err);
             }
+            debugger;
             let tp = tps[0];
-            let objIndex = tp?.visits?.findIndex((obj => obj.id == message.useCaseSpecifics.visit.id));
+            let objIndex = tp?.visits?.findIndex((obj => obj.uuid == message.useCaseSpecifics.visit.id));
+            debugger;
             tp.visits[objIndex].accepted = message.useCaseSpecifics.visit.accepted;
             tp.visits[objIndex].declined = message.useCaseSpecifics.visit.declined;
+
             this.TrialParticipantRepository.update(tp.uid, tp, (err, data) => {
                 if (err) {
                     console.log(err);

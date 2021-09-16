@@ -1,14 +1,5 @@
-import NotificationsService from '../services/NotificationsService.js';
 import TrialService from '../services/TrialService.js';
-
-
 const {WebcController} = WebCardinal.controllers;
-
-const ecoServices = require('eco-services');
-const CommunicationService = ecoServices.CommunicationService;
-const SharedStorage = ecoServices.SharedStorage;
-const Constants = ecoServices.Constants;
-const BaseRepository = ecoServices.BaseRepository;
 
 let getInitModel = () => {
     return {
@@ -44,20 +35,8 @@ export default class TrialManagementController extends WebcController {
         this._initTrial();
     }
 
-    addMessageToNotificationDsu(message) {
-        this.NotificationsService.saveNotification(message.message, (err, notification) => {
-            if (err) {
-                return console.log(err);
-            }
-        });
-    }
-
     _initServices(DSUStorage) {
         this.TrialService = new TrialService(DSUStorage);
-        this.NotificationsService = new NotificationsService(DSUStorage);
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
-        this.StorageService = SharedStorage.getInstance(DSUStorage);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
     }
 
     _initHandlers() {
@@ -70,21 +49,11 @@ export default class TrialManagementController extends WebcController {
     }
 
     _initTrial() {
-
         this.TrialService.getTrials((err, data) => {
             if (err) {
                 return console.error(err);
             }
             this.model.trials = data;
-        });
-    }
-
-
-    sendMessageToPatient(operation, ssi, shortMessage) {
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
-            operation: operation,
-            ssi: ssi,
-            shortDescription: shortMessage,
         });
     }
 

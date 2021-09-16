@@ -121,8 +121,7 @@ export default class VisitDetailsController extends WebcController {
     }
 
     sendMessageToPatient(visit) {
-
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
+        this.CommunicationService.sendMessage(this.model.tp.did, {
             operation: Constants.MESSAGES.HCO.COMMUNICATION.TYPE.SCHEDULE_VISIT,
             ssi: visit.trialSSI,
             useCaseSpecifics: {
@@ -140,7 +139,7 @@ export default class VisitDetailsController extends WebcController {
                     id: visit.id
                 },
             },
-            shortDescription: Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.SCHEDULE_VISIT ,
+            shortDescription: Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.SCHEDULE_VISIT
         });
     }
 
