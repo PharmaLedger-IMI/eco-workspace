@@ -68,7 +68,7 @@ export default class TrialController extends WebcController {
                     let importantVersion = econsent.versions.sort((a, b) => new Date(b.versionDate) - new Date(a.versionDate))[0]
                     let status = statusesMappedByConsent[econsent.uid];
 
-                    if (status.actions.length > 0) {
+                    if (status && status.actions && status.actions.length > 0) {
                         lastAction = status.actions[status.actions.length - 1].name;
                     }
                     lastAction = lastAction.split('-')

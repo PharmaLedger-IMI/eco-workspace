@@ -138,7 +138,7 @@ export default class AsqQuestionController extends WebcController {
                     shortDescription: shortMessage,
                 };
 
-                this.CommunicationService.sendMessage(CommunicationService.identities.ECO.HCO_IDENTITY, sendObject);
+                this.CommunicationService.sendMessage(this.model.tp.hcoIdentity, sendObject);
                 this.navigateToPageTag('home');
             }
         });

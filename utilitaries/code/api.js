@@ -1,5 +1,11 @@
 const securityContext = require('opendsu').loadApi('sc');
 
+function seedToSreadSSI(seedSSI, callback) {
+    const keySSISpace = require('opendsu').loadAPI('keyssi');
+    let parsedSeedSSI = keySSISpace.parse(seedSSI);
+    callback(undefined, parsedSeedSSI.derive().getIdentifier());
+}
+
 function createSSIAndMount(path, callback) {
     const opendsu = require('opendsu');
     const resolver = opendsu.loadAPI('resolver');
@@ -97,6 +103,7 @@ function listFolders(path, callback) {
 }
 
 module.exports = {
+    seedToSreadSSI,
     createSSIAndMount,
     mount,
     listDSUs,

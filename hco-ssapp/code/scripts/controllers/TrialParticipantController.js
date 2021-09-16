@@ -213,7 +213,6 @@ export default class TrialParticipantController extends WebcController {
                 signDate: wantedAction.toShowDate
             }
         }
-
         this.CommunicationService.sendMessage(CommunicationService.identities.IOT.PROFESSIONAL_IDENTITY, {
             operation: 'add-trial-subject',
             useCaseSpecifics: messageForIot
@@ -245,8 +244,7 @@ export default class TrialParticipantController extends WebcController {
     }
 
     _sendMessageToPatient(ssi, tp, shortMessage) {
-
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
+        this.CommunicationService.sendMessage(tp.did, {
             operation: 'update-tpNumber',
             ssi: ssi,
             useCaseSpecifics: {
@@ -326,12 +324,10 @@ export default class TrialParticipantController extends WebcController {
     }
 
     _getSite() {
-
         this.SiteService.getSites((err, sites) => {
             if (err) {
                 return console.log(err);
             }
-
             // this.model.site = sites?.filter(site=> site.trialKeySSI === this.model.trial.keySSI);
             if (sites && sites.length > 0) {
                 this.model.site = sites[sites.length - 1];
@@ -341,7 +337,7 @@ export default class TrialParticipantController extends WebcController {
     }
 
     _sendMessageToSponsor() {
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.SPONSOR_IDENTITY, {
+        this.CommunicationService.sendMessage(this.model.site.sponsorIdentity, {
             operation: 'update-site-status',
             ssi: this.model.trialSSI,
             stageInfo: {

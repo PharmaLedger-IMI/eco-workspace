@@ -120,6 +120,10 @@ class DSUService {
         return this.asyncMyFunction(this.unmountEntity, [...arguments])
     }
 
+    makeSSIReadOnly(keySSI, callback) {
+        this.DSUStorage.call('seedToSreadSSI', keySSI, callback);
+    }
+
     _getDsuStoragePath(keySSI, path = this.PATH) {
         return path + '/' + keySSI + '/data.json';
     }

@@ -53,6 +53,7 @@ export default class TrialDetailsController extends WebcController {
         // this._attachHandlerNavigateToParticipant();
         this._attachHandlerEditRecruitmentPeriod();
         this._attachHandlerNavigateToVersion();
+        this._attachHandlerChangeStatus();
         this._attachHandlerBack();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
@@ -107,6 +108,32 @@ export default class TrialDetailsController extends WebcController {
         });
     }
 
+    _attachHandlerChangeStatus() {
+        this.onTagEvent('change-status', 'click', (model, target, event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            this.showModalFromTemplate(
+                'confirmation-alert',
+                (event) => {
+                    const response = event.detail;
+                    if (response) {
+                        this.model.site.status = this.model.status === 'On Hold' ? 'Active' : 'On Hold';
+                        this._updateSite ();
+                    }
+                },
+                (event) => {
+                    const response = event.detail;
+                },
+                {
+                    controller: 'ConfirmationAlertController',
+                    disableExpanding: false,
+                    disableBackdropClosing: false,
+                    question: 'Are you sure you want to change status ? The current status is  ' + this.model.site.status + 'The status will be changed in ' + this.model.status === 'On Hold' ? 'Active' : 'On Hold',
+                    title: 'Confirm visit',
+                });
+        });
+    }
+
     _attachHandlerNavigateToVersion() {
         this.onTagEvent('navigate-to-version', 'click', (model, target, event) => {
             event.preventDefault();
@@ -121,17 +148,6 @@ export default class TrialDetailsController extends WebcController {
         });
     }
 
-    sendMessageToPatient(operation, ssi, trialParticipantNumber, shortMessage) {
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
-            operation: operation,
-            ssi: ssi,
-            useCaseSpecifics: {
-                tpNumber: trialParticipantNumber,
-            },
-            shortDescription: shortMessage,
-        });
-    }
-
     _showFeedbackToast(title, message, alertType = 'toast') {
         if (typeof this.feedbackEmitter === 'function') {
             this.feedbackEmitter(message, title, alertType);
@@ -139,7 +155,6 @@ export default class TrialDetailsController extends WebcController {
     }
 
     _attachHandlerEditRecruitmentPeriod() {
-
         this.onTagEvent('edit-period', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
@@ -169,11 +184,11 @@ export default class TrialDetailsController extends WebcController {
     }
 
     _getSite() {
-
         this.SiteService.getSites((err, sites) => {
             if (err) {
                 return console.log(err);
             }
+            debugger;
             if (sites && sites.length > 0) {
                 let filtered = sites?.filter(site => site.trialKeySSI === this.model.trial.keySSI);
                 if (filtered) this.model.site = filtered[0];
@@ -181,4 +196,11 @@ export default class TrialDetailsController extends WebcController {
         });
     }
 
+    _updateSite() {
+        this.SiteService.updateEntity(this.model.site, (err, site) => {
+            if (err) {
+                return console.log(err);
+            }
+        });
+    }
 }

@@ -52,29 +52,31 @@ export default class QuestionsController extends WebcController {
                     controller: 'AnswerQuestionController',
                     disableExpanding: false,
                     disableBackdropClosing: false,
-
                     title: model.question,
                 });
         });
     }
 
-
     _updateQuestion(response) {
         this.QuestionsRepository.update(response.pk, response, (err, data) => {
             if (err) {
-                console.log(err);
+                return console.log(err);
             }
-            this._sendMessageToPatient(data);
+            this.TrialParticipantRepository.findAll((err, tps) => {
+                if (err) {
+                    return console.log(err);
+                }
+                tps.forEach(tp => {
+                    this._sendMessageToPatient(tp.did, data);
+                })
+            })
         })
     }
 
-    _sendMessageToPatient(question) {
-
-        this.CommunicationService.sendMessage(CommunicationService.identities.ECO.PATIENT_IDENTITY, {
+    _sendMessageToPatient(did, question) {
+        this.CommunicationService.sendMessage(did, {
             operation: 'question-response',
-
             useCaseSpecifics: {
-
                 question: {
                     ...question
                 },

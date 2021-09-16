@@ -65,7 +65,6 @@ export default class SitesService extends DSUService {
   }
 
   async updateSiteStage(trialKeySSI, siteKeySSI, stage) {
-    // debugger;
     console.log(trialKeySSI, siteKeySSI, stage);
     const site = await this.getSite(siteKeySSI);
 
