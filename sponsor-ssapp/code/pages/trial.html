@@ -1,7 +1,7 @@
 <webc-container controller="TrialController">
   <link rel="stylesheet" href="assets/css/trials.css" />
   <div class="trial-header"><h1 class="trial-title">Trial</h1></div>
-  <div class="d-flex flex-row align-items-center" style="font-size: 18px !important">
+  <div class="d-flex flex-row align-items-center ml-5" style="font-size: 18px !important">
     <psk-link page="trials"> Trials</psk-link>
     <span> / </span>
     <div style="display: inline-block">
@@ -52,6 +52,28 @@
     <!-- *************** Visits & Procedures ******************** -->
     <psk-tab title="Visits & Procedures">
       <webc-container controller="VisitsProceduresController">
+        <div data-if="@dataLoaded" class="row align-items-center justify-content-center mb-2">
+          <label class="col-md-2">{{ @country.label}}:</label>
+          <select
+            class="form-control col-md-2"
+            style="width: 150px"
+            name="@country.name"
+            data-for="@country.options"
+            data-tag="country-selected"
+          >
+            <option value="@value">{{@label}}</option>
+          </select>
+          <label class="col-md-2">{{ @site.label}}:</label>
+          <select
+            data-tag="site-selected"
+            class="form-control col-md-2"
+            style="width: 150px"
+            name="@site.name"
+            data-for="@site.options"
+          >
+            <option value="@value">{{@label}}</option>
+          </select>
+        </div>
         <div data-if="@dataLoaded">
           <div data-if="@notEditable">
             <container slot="false">

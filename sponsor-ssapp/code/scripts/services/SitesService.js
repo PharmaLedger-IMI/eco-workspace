@@ -98,6 +98,7 @@ export default class SitesService extends DSUService {
     const existingConsent = site.consents.find((x) => x.id === data.id);
     if (existingConsent) {
       existingConsent.versions = data.versions;
+      existingConsent.visits = data.visits || [];
     } else {
       site.consents = [...site.consents, data];
     }

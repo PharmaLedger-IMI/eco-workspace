@@ -36,7 +36,62 @@ export default class NewConsentService extends DSUService {
   // TODO: use tablename + ssi for separate table for each trial consent this.CONSENTS_TABLE + '_' + trialKeySSI;
 
   // TODO: fix select components
-  async createConsent(data, trialKeySSI, siteKeySSI = null) {
+  // async createConsent(data, trialKeySSI, siteKeySSI = null) {
+  //   const consent = await this.saveEntityAsync(data);
+  //   const attachmentKeySSI = await this.uploadFile(
+  //     '/consents/' + consent.uid + '/consent/' + data.versions[0].version,
+  //     data.versions[0].file
+  //   );
+  //   consent.versions[0].attachmentKeySSI = attachmentKeySSI;
+  //   consent.versions[0].attachment = data.versions[0].file.name;
+  //   const updatedConsent = await this.updateEntityAsync(consent);
+  //   await this.addConsentToDB(
+  //     {
+  //       id: data.id,
+  //       keySSI: consent.uid,
+  //       name: data.name,
+  //       type: data.type,
+  //       uid: consent.uid,
+  //       versions: [
+  //         {
+  //           version: data.versions[0].version,
+  //           versionDate: data.versions[0].versionDate,
+  //           attachment: data.versions[0].file.name,
+  //         },
+  //       ],
+  //     },
+  //     trialKeySSI
+  //   );
+
+  //   await this.mountConsent(trialKeySSI, consent.uid, false);
+
+  //   if (siteKeySSI) {
+  //     await this.addConsentToDB(
+  //       {
+  //         id: data.id,
+  //         keySSI: consent.uid,
+  //         name: data.name,
+  //         type: data.type,
+  //         uid: consent.uid,
+  //         versions: [
+  //           {
+  //             version: data.versions[0].version,
+  //             versionDate: data.versions[0].versionDate,
+  //             attachment: data.versions[0].file.name,
+  //           },
+  //         ],
+  //       },
+  //       siteKeySSI
+  //     );
+
+  //     await this.mountConsent(siteKeySSI, consent.uid, true);
+  //   }
+
+  //   // TODO: make all ids keySSIs so unique
+  //   return consent;
+  // }
+
+  async createConsent(data, trialKeySSI, site = null) {
     const consent = await this.saveEntityAsync(data);
     const attachmentKeySSI = await this.uploadFile(
       '/consents/' + consent.uid + '/consent/' + data.versions[0].version,
@@ -45,27 +100,8 @@ export default class NewConsentService extends DSUService {
     consent.versions[0].attachmentKeySSI = attachmentKeySSI;
     consent.versions[0].attachment = data.versions[0].file.name;
     const updatedConsent = await this.updateEntityAsync(consent);
-    await this.addConsentToDB(
-      {
-        id: data.id,
-        keySSI: consent.uid,
-        name: data.name,
-        type: data.type,
-        uid: consent.uid,
-        versions: [
-          {
-            version: data.versions[0].version,
-            versionDate: data.versions[0].versionDate,
-            attachment: data.versions[0].file.name,
-          },
-        ],
-      },
-      trialKeySSI
-    );
 
-    await this.mountConsent(trialKeySSI, consent.uid, false);
-
-    if (siteKeySSI) {
+    if (site) {
       await this.addConsentToDB(
         {
           id: data.id,
@@ -81,10 +117,11 @@ export default class NewConsentService extends DSUService {
             },
           ],
         },
-        siteKeySSI
+        site.keySSI
       );
 
-      await this.mountConsent(siteKeySSI, consent.uid, true);
+      await this.mountConsent(site.keySSI, consent.uid, true);
+      await this.siteService.updateSiteConsents(updatedConsent, site.id, trialKeySSI);
     }
 
     // TODO: make all ids keySSIs so unique
@@ -192,8 +229,10 @@ export default class NewConsentService extends DSUService {
     return updatedRecord;
   }
 
-  async updateBaseConsentVisits(visits, trialKeySSI) {
-    const consents = await this.getTrialConsents(trialKeySSI);
+  async updateBaseConsentVisits(visits, trialKeySSI, siteKeySSI) {
+    // const consents = await this.getTrialConsents(trialKeySSI);
+    const site = await this.siteService.getSite(siteKeySSI);
+    const consents = site.consents;
     for (const consent of consents) {
       const tempVisits = visits.map((x) => ({
         ...x,
@@ -202,7 +241,8 @@ export default class NewConsentService extends DSUService {
 
       consent.visits = tempVisits;
       const updatedConsent = await this.updateEntityAsync(consent);
-      await this.updateConsentToDB(consent, trialKeySSI);
+      await this.updateConsentToDB(updatedConsent, site.keySSI);
+      await this.siteService.updateSiteConsents(updatedConsent, site.id, trialKeySSI);
     }
 
     return;

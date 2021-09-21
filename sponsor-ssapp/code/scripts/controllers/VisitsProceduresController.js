@@ -5,6 +5,7 @@ import TrialsService from '../services/TrialsService.js';
 import eventBusService from '../services/EventBusService.js';
 import SitesService from '../services/SitesService.js';
 import { Topics } from '../constants/topics.js';
+import { countryListAlpha2 } from '../constants/countries.js';
 
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
@@ -30,6 +31,8 @@ export default class VisitsProceduresController extends WebcController {
       notEditable: true,
       filters: [],
       filteredProcedures: [],
+      selectedCountryIdx: 0,
+      selectedSiteIdx: 0,
     };
 
     this.attachEvents();
@@ -43,13 +46,72 @@ export default class VisitsProceduresController extends WebcController {
   }
 
   async init() {
+    await this.getSites();
     await this.getConsents();
     this.model.trial = await this.trialsService.getTrial(this.keySSI);
     this.model.dataLoaded = true;
   }
 
+  async getSites() {
+    const sites = await this.sitesService.getSites(this.keySSI);
+    const countries = sites
+      .map((x) => x.country)
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .sort((a, b) => {
+        return a.toUpperCase() < b.toUpperCase() ? -1 : a.toUpperCase() > b.toUpperCase() ? 1 : 0;
+      });
+
+    const result = countries.map((x) => {
+      return {
+        country: countryListAlpha2[x],
+        sites:
+          sites && sites.length > 0
+            ? sites
+                .filter((y) => y.country === x)
+                .sort((a, b) =>
+                  a.id.toUpperCase() < b.id.toUpperCase() ? -1 : a.id.toUpperCase() > b.id.toUpperCase() ? 1 : 0
+                )
+            : false,
+      };
+    });
+
+    result.sort((a, b) => {
+      return a.country.toUpperCase() < b.country.toUpperCase()
+        ? -1
+        : a.country.toUpperCase() > b.country.toUpperCase()
+        ? 1
+        : 0;
+    });
+    this.model.countries = result;
+
+    this.model.country = {
+      label: 'Select a country',
+      placeholder: 'Please select an option',
+      required: false,
+      options: this.model.countries.map((x, idx) => ({
+        label: x.country,
+        value: idx,
+      })),
+    };
+
+    this.model.site = {
+      label: 'Select a site',
+      placeholder: 'Please select an option',
+      required: false,
+      options: this.model.countries[0].sites.map((x, idx) => ({
+        label: x.name,
+        value: idx,
+      })),
+    };
+
+    console.log(JSON.parse(JSON.stringify(this.model.countries)));
+    this.getConsents();
+    return;
+  }
+
   async getConsents() {
-    const consents = await this.consentsService.getTrialConsents(this.keySSI);
+    // const consents = await this.consentsService.getTrialConsents(this.keySSI);
+    const consents = this.model.countries[this.model.selectedCountryIdx].sites[this.model.selectedSiteIdx].consents;
     this.model.consents = JSON.parse(JSON.stringify(consents));
     this.model.filters = this.model.consents.map((x) => ({ name: x.name, selected: true }));
 
@@ -308,6 +370,30 @@ export default class VisitsProceduresController extends WebcController {
       this.model.notEditable = !this.model.notEditable;
     });
 
+    this.onTagClick('country-selected', async (model, target, event) => {
+      this.model.selectedCountryIdx = target.options.selectedIndex;
+      this.model.selectedSiteIdx = 0;
+
+      this.model.site = {
+        label: 'Select a site',
+        placeholder: 'Please select an option',
+        required: false,
+        options: this.model.countries[this.model.selectedCountryIdx].sites.map((x, idx) => ({
+          label: x.name,
+          value: idx,
+        })),
+      };
+
+      this.model.notEditable = true;
+      this.getConsents();
+    });
+
+    this.onTagClick('site-selected', async (model, target, event) => {
+      this.model.selectedSiteIdx = target.options.selectedIndex;
+      this.model.notEditable = true;
+      this.getConsents();
+    });
+
     this.onTagEvent('cancel', 'click', async () => {
       await this.getConsents();
       this.model.notEditable = !this.model.notEditable;
@@ -523,12 +609,19 @@ export default class VisitsProceduresController extends WebcController {
         return;
       }
 
-      await this.consentsService.updateBaseConsentVisits(result, this.keySSI);
+      await this.consentsService.updateBaseConsentVisits(
+        result,
+        this.keySSI,
+        this.model.countries[this.model.selectedCountryIdx].sites[this.model.selectedSiteIdx].keySSI
+      );
+      await this.getSites();
       await this.getConsents();
-      const sites = await this.sitesService.getSites(this.keySSI);
-      sites.forEach(site => {
-        this.sendMessageToHco('update-base-procedures', this.keySSI, 'Update trial consents', site.did);
-      });
+      this.sendMessageToHco(
+        'update-base-procedures',
+        this.keySSI,
+        'Update trial consents',
+        this.model.countries[this.model.selectedCountryIdx].sites[this.model.selectedSiteIdx].did
+      );
       this.model.notEditable = !this.model.notEditable;
       return;
       //TODO: Save to corresponding consents

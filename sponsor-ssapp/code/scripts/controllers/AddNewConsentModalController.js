@@ -171,7 +171,7 @@ export default class AddNewConsentModalController extends WebcController {
               },
             ],
           };
-          const result = await this.consentsService.createConsent(consent, this.keySSI);
+          const result = await this.consentsService.createConsent(consent, this.keySSI, this.site);
           this.model.submitButtonDisabled = false;
           this.send('confirmed', result);
         } else {

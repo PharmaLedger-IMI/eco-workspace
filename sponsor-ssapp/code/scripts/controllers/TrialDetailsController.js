@@ -222,17 +222,22 @@ export default class TrialDetailsController extends WebcController {
       );
     });
 
-    this.onTagClick('add-trial-consent', async (event) => {
+    this.onTagClick('add-trial-consent', async (model, target, event) => {
+      const data = target.getAttribute('data-custom');
+
+      const selectedSite = JSON.parse(JSON.stringify(this.model.menu))
+        .find((x) => x.name === menuOptions.Consents)
+        .data.site.find((x) => x.selected === true)
+        .sites.find((x) => x.selected === true);
+
       this.showModalFromTemplate(
         'add-new-consent',
         async (event) => {
           const response = event.detail;
           await this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          this.model.sites
-              .forEach(country =>
-                country.sites.forEach(site => this.sendMessageToHco('add-trial-consent', null, 'Trial consent', site.did))
-              )
+          this.sendMessageToHco('add-site-consent', null, 'Trial consent', selectedSite.did);
+
           eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
         },
         (event) => {
@@ -248,6 +253,7 @@ export default class TrialDetailsController extends WebcController {
           disableBackdropClosing: false,
           isUpdate: false,
           existingIds: this.model.consents.map((x) => x.id) || [],
+          site: selectedSite,
         }
       );
     });
@@ -412,7 +418,7 @@ export default class TrialDetailsController extends WebcController {
                 .sort((a, b) =>
                   a.id.toUpperCase() < b.id.toUpperCase() ? -1 : a.id.toUpperCase() > b.id.toUpperCase() ? 1 : 0
                 )
-                .map((z) => ({ ...z, selected: false, consents: this.getSiteConsents(z.consents) }))
+                .map((z) => ({ ...z, selected: false, consents: z.consents }))
             : false,
         selected: previousSelectedState[countryListAlpha2[x]] || false,
       };
@@ -436,7 +442,7 @@ export default class TrialDetailsController extends WebcController {
     const updated = await this.sitesService.changeSiteStatus(status, id, this.model.trial.keySSI);
 
     const sites = await this.sitesService.getSites(this.model.trial.keySSI);
-    sites.forEach(site => {
+    sites.forEach((site) => {
       this.CommunicationService.sendMessage(site.did, {
         operation: 'site-status-change',
         data: {
@@ -448,12 +454,12 @@ export default class TrialDetailsController extends WebcController {
     });
   }
 
-  getSiteConsents(consents) {
-    const result = JSON.parse(JSON.stringify(this.model.consents)).map((x) => {
-      return consents.find((y) => y.id === x.id) || x;
-    });
-    return JSON.parse(JSON.stringify(result.map((x) => ({ ...x, selected: false }))));
-  }
+  // getSiteConsents(consents) {
+  //   const result = JSON.parse(JSON.stringify(this.model.consents)).map((x) => {
+  //     return consents.find((y) => y.id === x.id) || x;
+  //   });
+  //   return JSON.parse(JSON.stringify(result.map((x) => ({ ...x, selected: false }))));
+  // }
 
   showFeedbackToast(title, message, alertType) {
     if (typeof this.feedbackEmitter === 'function') {
