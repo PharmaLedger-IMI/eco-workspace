@@ -98,7 +98,6 @@ export default class TrialsController extends ContainerController {
       };
 
       this.TrialService.saveTrial(trialObject, (err, updTrial) => {
-        debugger;
         if (err) {
           console.log(err);
           return;
@@ -114,7 +113,6 @@ export default class TrialsController extends ContainerController {
 
   _attachHandlerChooseEconsent() {
     this.on('trial:addEconsent', (event) => {
-      debugger;
       if (event.data) this.file = event.data;
     });
   }

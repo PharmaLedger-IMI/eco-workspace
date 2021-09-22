@@ -5,6 +5,7 @@ import { siteStagesEnum, siteStatusesEnum } from '../constants/site.js';
 
 export default class SitesService extends DSUService {
   SITES_TABLE = 'sites';
+  SITES_PATH = '/sites';
 
   constructor(DSUStorage) {
     super(DSUStorage, '/sites');
@@ -32,16 +33,24 @@ export default class SitesService extends DSUService {
   async createSite(data, trialKeySSI) {
     const site = await this.saveEntityAsync({
       ...data,
-      stage: siteStagesEnum.Created,
-      status: siteStatusesEnum.Active,
+      statusKeySSI: status.uid,
       created: new Date().toISOString(),
       trialKeySSI,
     });
+
+    const status = await this.saveEntityAsync(
+      {
+        stage: siteStagesEnum.Created,
+        status: siteStatusesEnum.Active,
+      },
+      this.getStatusPath(site.uid)
+    );
 
     await this.addSiteToDB(
       {
         ...data,
         keySSI: site.uid,
+        statusKeySSI: status.uid,
         stage: siteStagesEnum.Created,
         status: siteStatusesEnum.Active,
         created: new Date().toISOString(),
@@ -58,24 +67,22 @@ export default class SitesService extends DSUService {
       status,
     });
 
-    const siteDSU = await this.getEntityAsync(site.keySSI);
-    const updatedSiteDSU = await this.updateEntityAsync({ ...siteDSU, status });
+    const statusDSU = await this.getEntityAsync(site.statusKeySSI, this.getStatusPath(site.keySSI));
+    const updatedStatusDSU = await this.updateEntityAsync({ ...statusDSU, status }, this.getStatusPath(site.keySSI));
 
     return updatedSite;
   }
 
   async updateSiteStage(trialKeySSI, siteKeySSI, stage) {
-    console.log(trialKeySSI, siteKeySSI, stage);
-    const site = await this.getSite(siteKeySSI);
-
-    const updatedSiteDSU = await this.updateEntityAsync({ ...site, stage });
-
-    const siteDB = await this.getSiteFromDB(site.id, trialKeySSI);
-
-    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), siteDB.id, {
-      ...siteDB,
+    const siteDSU = await this.getSite(siteKeySSI);
+    const site = await this.getSiteFromDB(siteDSU.id, trialKeySSI);
+    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.id, {
+      ...site,
       stage,
     });
+
+    const statusDSU = await this.getEntityAsync(site.statusKeySSI, this.getStatusPath(site.keySSI));
+    const updatedStatusDSU = await this.updateEntityAsync({ ...statusDSU, stage }, this.getStatusPath(site.keySSI));
 
     return updatedSite;
   }
@@ -87,8 +94,8 @@ export default class SitesService extends DSUService {
       stage,
     });
 
-    const siteDSU = await this.getEntityAsync(site.keySSI);
-    const updatedSiteDSU = await this.updateEntityAsync({ ...siteDSU, stage });
+    const statusDSU = await this.getEntityAsync(site.statusKeySSI, this.getStatusPath(site.keySSI));
+    const updatedStatusDSU = await this.updateEntityAsync({ ...statusDSU, stage }, this.getStatusPath(site.keySSI));
 
     return updatedSite;
   }
@@ -118,6 +125,8 @@ export default class SitesService extends DSUService {
       ...selectedSite,
       deleted: true,
     });
+
+    return;
   }
 
   async addSiteToDB(data, trialKeySSI) {
@@ -127,5 +136,9 @@ export default class SitesService extends DSUService {
 
   getTableName(trialKeySSI) {
     return this.SITES_TABLE + '_' + trialKeySSI;
+  }
+
+  getStatusPath(siteKeySSI) {
+    return this.SITES_PATH + '/' + siteKeySSI + '/' + 'status';
   }
 }

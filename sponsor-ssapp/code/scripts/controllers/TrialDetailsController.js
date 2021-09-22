@@ -9,7 +9,7 @@ import { menuOptions } from '../constants/trialDetails.js';
 import { countryListAlpha2 } from '../constants/countries.js';
 import { siteStatusesEnum } from './../constants/site.js';
 const CommunicationService = ecoServices.CommunicationService;
-import NewConsentService from '../services/NewConsentService.js';
+import ConsentService from '../services/ConsentService.js';
 import eventBusService from '../services/EventBusService.js';
 import { Topics } from '../constants/topics.js';
 
@@ -21,7 +21,7 @@ export default class TrialDetailsController extends WebcController {
     this.sitesService = new SitesService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
-    this.newConsentService = new NewConsentService(this.DSUStorage);
+    this.consentService = new ConsentService(this.DSUStorage);
 
     let { id, keySSI } = this.history.location.state;
 
@@ -391,7 +391,7 @@ export default class TrialDetailsController extends WebcController {
 
   async getConsents() {
     await this.getSites();
-    const consents = await this.newConsentService.getTrialConsents(this.model.trial.keySSI);
+    const consents = await this.consentService.getTrialConsents(this.model.trial.keySSI);
     this.model.consents = JSON.parse(JSON.stringify(consents));
 
     if (!this.model.trial) {

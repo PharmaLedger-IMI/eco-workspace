@@ -1,6 +1,6 @@
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
-import NewConsentService from '../services/NewConsentService.js';
+import ConsentService from '../services/ConsentService.js';
 import TrialsService from '../services/TrialsService.js';
 import eventBusService from '../services/EventBusService.js';
 import SitesService from '../services/SitesService.js';
@@ -17,7 +17,7 @@ export default class VisitsProceduresController extends WebcController {
 
     this.keySSI = keySSI;
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
-    this.consentsService = new NewConsentService(this.DSUStorage);
+    this.consentsService = new ConsentService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
     this.feedbackEmitter = null;
@@ -40,6 +40,7 @@ export default class VisitsProceduresController extends WebcController {
     this.init();
 
     eventBusService.addEventListener(Topics.RefreshTrialConsents, async () => {
+      await this.getSites();
       await this.getConsents();
       this.model.filters = this.model.consents.map((x) => ({ name: x.name, selected: true }));
     });
@@ -54,58 +55,61 @@ export default class VisitsProceduresController extends WebcController {
 
   async getSites() {
     const sites = await this.sitesService.getSites(this.keySSI);
-    const countries = sites
-      .map((x) => x.country)
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .sort((a, b) => {
-        return a.toUpperCase() < b.toUpperCase() ? -1 : a.toUpperCase() > b.toUpperCase() ? 1 : 0;
+    if (sites && sites.length > 0) {
+      const countries = sites
+        .map((x) => x.country)
+        .filter((value, index, self) => self.indexOf(value) === index)
+        .sort((a, b) => {
+          return a.toUpperCase() < b.toUpperCase() ? -1 : a.toUpperCase() > b.toUpperCase() ? 1 : 0;
+        });
+
+      const result = countries.map((x) => {
+        return {
+          country: countryListAlpha2[x],
+          sites:
+            sites && sites.length > 0
+              ? sites
+                  .filter((y) => y.country === x)
+                  .sort((a, b) =>
+                    a.id.toUpperCase() < b.id.toUpperCase() ? -1 : a.id.toUpperCase() > b.id.toUpperCase() ? 1 : 0
+                  )
+              : false,
+        };
       });
 
-    const result = countries.map((x) => {
-      return {
-        country: countryListAlpha2[x],
-        sites:
-          sites && sites.length > 0
-            ? sites
-                .filter((y) => y.country === x)
-                .sort((a, b) =>
-                  a.id.toUpperCase() < b.id.toUpperCase() ? -1 : a.id.toUpperCase() > b.id.toUpperCase() ? 1 : 0
-                )
-            : false,
+      result.sort((a, b) => {
+        return a.country.toUpperCase() < b.country.toUpperCase()
+          ? -1
+          : a.country.toUpperCase() > b.country.toUpperCase()
+          ? 1
+          : 0;
+      });
+      this.model.countries = result;
+
+      this.model.country = {
+        label: 'Select a country',
+        placeholder: 'Please select an option',
+        required: false,
+        options: this.model.countries.map((x, idx) => ({
+          label: x.country,
+          value: idx,
+        })),
       };
-    });
 
-    result.sort((a, b) => {
-      return a.country.toUpperCase() < b.country.toUpperCase()
-        ? -1
-        : a.country.toUpperCase() > b.country.toUpperCase()
-        ? 1
-        : 0;
-    });
-    this.model.countries = result;
+      this.model.site = {
+        label: 'Select a site',
+        placeholder: 'Please select an option',
+        required: false,
+        options: this.model.countries[0].sites.map((x, idx) => ({
+          label: x.name,
+          value: idx,
+        })),
+      };
 
-    this.model.country = {
-      label: 'Select a country',
-      placeholder: 'Please select an option',
-      required: false,
-      options: this.model.countries.map((x, idx) => ({
-        label: x.country,
-        value: idx,
-      })),
-    };
-
-    this.model.site = {
-      label: 'Select a site',
-      placeholder: 'Please select an option',
-      required: false,
-      options: this.model.countries[0].sites.map((x, idx) => ({
-        label: x.name,
-        value: idx,
-      })),
-    };
-
-    console.log(JSON.parse(JSON.stringify(this.model.countries)));
-    this.getConsents();
+      console.log(JSON.parse(JSON.stringify(this.model.countries)));
+      this.getConsents();
+      return;
+    }
     return;
   }
 

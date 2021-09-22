@@ -3,7 +3,7 @@ const ecoServices = require('eco-services');
 const DSUService = ecoServices.DSUService;
 import SitesService from './SitesService.js';
 
-export default class NewConsentService extends DSUService {
+export default class ConsentService extends DSUService {
   CONSENTS_TABLE = 'consents';
   SITES_PATH = '/sites';
   TRIALS_PATH = '/trials';

@@ -1,5 +1,5 @@
 import { consentTypeEnum } from '../constants/consent.js';
-import NewConsentService from '../services/NewConsentService.js';
+import ConsentService from '../services/ConsentService.js';
 
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
@@ -63,7 +63,7 @@ export default class AddNewConsentModalController extends WebcController {
 
     this.keySSI = keySSI;
 
-    this.consentsService = new NewConsentService(this.DSUStorage);
+    this.consentsService = new ConsentService(this.DSUStorage);
 
     if (this.isUpdate) {
       this.setModel({
