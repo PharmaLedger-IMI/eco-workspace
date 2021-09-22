@@ -9,10 +9,9 @@ export default class ConsentService extends DSUService {
   TRIALS_PATH = '/trials';
 
   constructor(DSUStorage) {
-    super(DSUStorage, '/consents');
+    super('/consents');
     this.storageService = getSharedStorage(DSUStorage);
     this.siteService = new SitesService(DSUStorage);
-    this.DSUStorage = DSUStorage;
   }
 
   async getTrialConsents(trialKeySSI) {

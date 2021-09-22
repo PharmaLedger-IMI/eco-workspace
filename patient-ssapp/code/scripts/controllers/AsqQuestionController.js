@@ -21,19 +21,19 @@ export default class AsqQuestionController extends WebcController {
         this.setModel({});
         this.model.econsent = {};
         this.model.question = this.question;
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this.model.historyData = this.history.win.history.state.state;
         this._initConsent();
         this._initHandlers();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
+    _initServices() {
+        this.TrialService = new TrialService();
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.PATIENT_IDENTITY);
-        this.EcosentService = new EconsentService(DSUStorage);
-        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
-        this.QuestionsRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.QUESTIONS, DSUStorage);
+        this.EcosentService = new EconsentService();
+        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT);
+        this.QuestionsRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.QUESTIONS);
     }
 
     _initConsent() {

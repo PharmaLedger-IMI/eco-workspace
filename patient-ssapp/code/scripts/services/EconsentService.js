@@ -5,8 +5,8 @@ export default class EconsentService extends DSUService {
 
     ECONSENT_PATH = "/econsents";
 
-    constructor(DSUStorage) {
-        super(DSUStorage, '/econsents');
+    constructor() {
+        super('/econsents');
     }
 
     getEconsentsStatuses = (callback) => this.getEntities(callback);

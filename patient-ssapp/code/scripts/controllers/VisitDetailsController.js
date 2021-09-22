@@ -22,7 +22,7 @@ export default class VisitDetailsController extends WebcController {
 
         });
         ;
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
         this._initVisit();
     }
@@ -33,9 +33,9 @@ export default class VisitDetailsController extends WebcController {
         this._attachHandlerSetDate();
     }
 
-    _initServices(DSUStorage) {
-        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.VISITS, DSUStorage);
-        this.TrialParticipantRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
+    _initServices() {
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.VISITS);
+        this.TrialParticipantRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
     }
 

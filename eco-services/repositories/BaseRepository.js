@@ -22,8 +22,8 @@ const TABLE_NAMES = {
 
 class BaseRepository {
 
-    constructor(tableName, DSUStorage) {
-        this.StorageService = getSharedStorage.getInstance(DSUStorage);
+    constructor(tableName) {
+        this.StorageService = getSharedStorage.getInstance();
         this.tableName = tableName;
     }
 

@@ -3,8 +3,8 @@ const DSUService = ecoServices.DSUService;
 
 export default class SiteService extends DSUService {
 
-    constructor(DSUStorage) {
-        super(DSUStorage, '/site');
+    constructor() {
+        super('/site');
     }
 
     getSites = (callback) => this.getEntities(callback);

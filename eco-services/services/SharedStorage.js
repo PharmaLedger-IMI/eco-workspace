@@ -1,10 +1,11 @@
 const opendsu = require("opendsu");
 const keySSISpace = opendsu.loadApi('keyssi')
+const storage = opendsu.loadApi('storage')
 
 class SharedStorage {
 
-    constructor(DSUStorage) {
-        this.DSUStorage = DSUStorage;
+    constructor() {
+        this.DSUStorage = storage.getDSUStorage();
         this.getSharedSSI((err, sharedSSI) => {
             if (err || !sharedSSI) {
                 return console.error('Database initialization failed.');
@@ -124,9 +125,9 @@ class SharedStorage {
     }
 }
 
-const getInstance = (DSUStorage) => {
+const getInstance = () => {
     if (typeof window.sharedStorageInstance === "undefined") {
-        window.sharedStorageInstance = new SharedStorage(DSUStorage)
+        window.sharedStorageInstance = new SharedStorage()
     }
     return window.sharedStorageInstance;
 }

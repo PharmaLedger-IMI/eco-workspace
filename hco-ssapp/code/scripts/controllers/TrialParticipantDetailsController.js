@@ -24,16 +24,16 @@ export default class TrialParticipantDetailsController extends WebcController {
             consentsSigned: [],
             userActionsToShow: []
         });
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
         this._initTrialParticipant(this.model.trialSSI);
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
+    _initServices() {
+        this.TrialService = new TrialService();
+        this.TrialParticipantService = new TrialParticipantsService();
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
     }
 
     _initHandlers() {

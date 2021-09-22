@@ -40,19 +40,19 @@ export default class EconsentSignController extends WebcController {
             this.model.controlsShouldBeVisible = true;
         }
 
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
         this._initSite();
         this._initTrialParticipant();
         this._initConsent();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
+    _initServices() {
+        this.TrialService = new TrialService();
+        this.TrialParticipantService = new TrialParticipantsService();
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
-        this.SiteService = new SiteService(DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
+        this.SiteService = new SiteService();
     }
 
     _initHandlers() {
@@ -84,7 +84,7 @@ export default class EconsentSignController extends WebcController {
 
             if (this.model.isManuallySigned) {
 
-                this.PatientEcosentService = new PatientEcosentService(this.DSUStorage, this.model.econsent.id);
+                this.PatientEcosentService = new PatientEcosentService(this.model.econsent.id);
                 this.PatientEcosentService.mountEcosent(this.model.manualKeySSI, (err, data) => {
                     if (err) {
                         return console.log(err);

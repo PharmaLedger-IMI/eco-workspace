@@ -8,8 +8,7 @@ export default class SitesService extends DSUService {
   SITES_PATH = '/sites';
 
   constructor(DSUStorage) {
-    super(DSUStorage, '/sites');
-    this.DSUStorage = DSUStorage;
+    super('/sites');
     this.storageService = getSharedStorage(DSUStorage);
   }
 

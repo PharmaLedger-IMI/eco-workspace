@@ -27,18 +27,18 @@ export default class SignManuallyController extends WebcController {
         this.model.econsent = {};
         this.model.attachment = this.attachment;
         // this.model.status = { attachment: this.attachment };
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this.model.historyData = this.history.win.history.state.state;
         this._initConsent();
         this._initHandlers();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
+    _initServices() {
+        this.TrialService = new TrialService();
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.PATIENT_IDENTITY);
-        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
-        this.EcosentService = new EconsentService(DSUStorage);
-        this.TrialParticipantRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
+        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES);
+        this.EcosentService = new EconsentService();
+        this.TrialParticipantRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT);
     }
 
     _initConsent() {

@@ -22,14 +22,14 @@ export default class TrialController extends WebcController {
         this.model.keyssi = receivedObject.trialSSI;
         this.model.tpNumber = receivedObject.tpNumber;
         this.model.tpDid = receivedObject.tpDid;
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initTrial();
         this._initHandlers();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.EconsentsStatusRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
+    _initServices() {
+        this.TrialService = new TrialService();
+        this.EconsentsStatusRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES);
     }
 
     _initHandlers() {

@@ -38,17 +38,17 @@ export default class HomeController extends WebcController {
         super(...props);
 
         this.setModel(getInitModel());
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
     }
 
-    async _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.StorageService = SharedStorage.getInstance(DSUStorage);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
-        this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.NOTIFICATIONS, DSUStorage);
-        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS, DSUStorage);
-        this.SiteService = new SiteService(DSUStorage);
+    async _initServices() {
+        this.TrialService = new TrialService();
+        this.StorageService = SharedStorage.getInstance();
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
+        this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.NOTIFICATIONS);
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS);
+        this.SiteService = new SiteService();
         this.CommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
         this._handleMessages();
     }
@@ -401,10 +401,8 @@ export default class HomeController extends WebcController {
             if (err) {
                 console.log(err);
             }
-            debugger;
             let tp = tps[0];
             let objIndex = tp?.visits?.findIndex((obj => obj.uuid == message.useCaseSpecifics.visit.id));
-            debugger;
             tp.visits[objIndex].accepted = message.useCaseSpecifics.visit.accepted;
             tp.visits[objIndex].declined = message.useCaseSpecifics.visit.declined;
 

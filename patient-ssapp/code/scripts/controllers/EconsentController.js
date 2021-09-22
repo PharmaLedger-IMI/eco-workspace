@@ -11,7 +11,7 @@ export default class EconsentController extends WebcController {
     constructor(...props) {
         super(...props);
         this.setModel({});
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
         this.model.econsent = {};
         this.model.historyData = this.history.win.history.state.state;
@@ -23,9 +23,9 @@ export default class EconsentController extends WebcController {
         this._initEconsent();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
+    _initServices() {
+        this.TrialService = new TrialService();
+        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES);
     }
 
     _initHandlers() {

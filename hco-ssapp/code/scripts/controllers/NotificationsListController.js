@@ -13,7 +13,7 @@ export default class NotificationsListController extends WebcController {
         super(...props);
         this.setModel(getInitModel());
         this.model.notificationType = this.history.win.history.state.state.notType;
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initNotifications();
         this._initHandlers();
     }
@@ -23,8 +23,8 @@ export default class NotificationsListController extends WebcController {
         this._attachHandlerTrialParticipants();
     }
 
-    _initServices(DSUStorage) {
-        this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.NOTIFICATIONS, DSUStorage);
+    _initServices() {
+        this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.NOTIFICATIONS);
     }
 
     _initNotifications() {

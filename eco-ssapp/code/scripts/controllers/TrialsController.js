@@ -78,7 +78,7 @@ export default class TrialsController extends ContainerController {
     //     //bind
     //     this.setModel(data);
     // });
-    this.EconsentService = new EconsentService(this.DSUStorage);
+    this.EconsentService = new EconsentService();
 
     this.on('openFeedback', (evt) => {
       this.feedbackEmitter = evt.detail;

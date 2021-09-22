@@ -30,13 +30,13 @@ export default class TrialManagementController extends WebcController {
         super(...props);
 
         this.setModel(getInitModel());
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
         this._initTrial();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
+    _initServices() {
+        this.TrialService = new TrialService();
     }
 
     _initHandlers() {

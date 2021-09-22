@@ -3,8 +3,8 @@ const DSUService = ecoServices.DSUService;
 
 export default class PatientEcosentService extends DSUService {
 
-    constructor(DSUStorage, ecoID) {
-        super(DSUStorage, '/econsents/'+ecoID);
+    constructor(ecoID) {
+        super('/econsents/'+ecoID);
     }
 
     getEconsentsAsync = (trialSSI) => this.getEntitiesAsync(this._getEconsentsPath(trialSSI));
