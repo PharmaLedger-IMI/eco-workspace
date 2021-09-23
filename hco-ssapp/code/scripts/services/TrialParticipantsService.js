@@ -3,8 +3,8 @@ const DSUService = ecoServices.DSUService;
 
 export default class TrialParticipantsService extends DSUService {
 
-    constructor(DSUStorage) {
-        super(DSUStorage, '/tps');
+    constructor() {
+        super('/tps');
     }
 
     getTrialParticipants = (trialSSI, callback) => this.getEntities(this._getTrialParticipantsPath(trialSSI), callback)

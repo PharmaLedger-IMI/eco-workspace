@@ -15,7 +15,7 @@ export default class ReadEconsentController extends WebcController {
         super(...props);
         this.setModel({});
         this.model.econsent = {};
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this.model.historyData = this.history.win.history.state.state;
         this.model.required = {};
         this.model.declined = {};
@@ -30,11 +30,11 @@ export default class ReadEconsentController extends WebcController {
         this._initHandlers();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
+    _initServices() {
+        this.TrialService = new TrialService();
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.PATIENT_IDENTITY);
-        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
+        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT);
     }
 
     _initConsent() {

@@ -4,8 +4,8 @@ const DSUService = ecoServices.DSUService;
 
 export default class NotificationsService extends DSUService {
 
-    constructor(DSUStorage) {
-        super(DSUStorage, '/notifications');
+    constructor() {
+        super('/notifications');
     }
 
     getNotifications = (callback) => this.getEntities(callback);

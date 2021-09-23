@@ -34,18 +34,18 @@ export default class TrialDetailsController extends WebcController {
             econsents: [],
             econsentsSize: 0
         });
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
         this._initTrial(this.model.trialSSI);
         this._getSite();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.SiteService = new SiteService(DSUStorage);
-        this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
+    _initServices() {
+        this.TrialService = new TrialService();
+        this.SiteService = new SiteService();
+        this.TrialParticipantService = new TrialParticipantsService();
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
     }
 
     _initHandlers() {
@@ -188,7 +188,6 @@ export default class TrialDetailsController extends WebcController {
             if (err) {
                 return console.log(err);
             }
-            debugger;
             if (sites && sites.length > 0) {
                 let filtered = sites?.filter(site => site.trialKeySSI === this.model.trial.keySSI);
                 if (filtered) this.model.site = filtered[0];

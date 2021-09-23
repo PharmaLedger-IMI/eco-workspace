@@ -23,7 +23,7 @@ export default class ProceduresViewController extends WebcController {
             ...this.history.win.history.state.state,
         });
 
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
         this._initProcedures();
     }
@@ -34,10 +34,10 @@ export default class ProceduresViewController extends WebcController {
         this._attachHandlerConfirm();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS, DSUStorage);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
+    _initServices() {
+        this.TrialService = new TrialService();
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
     }
 

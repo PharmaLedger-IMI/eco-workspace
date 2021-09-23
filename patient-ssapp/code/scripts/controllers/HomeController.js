@@ -11,19 +11,19 @@ export default class HomeController extends WebcController {
     constructor(...props) {
         super(...props);
         this.setModel({});
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
         this._initTrials();
         this._initTrialParticipant();
     }
 
-    async _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
-        this.NotificationsRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.NOTIFICATIONS, DSUStorage);
-        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
-        this.VisitsAndProceduresRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.VISITS, DSUStorage);
-        this.QuestionsRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.QUESTIONS, DSUStorage);
+    async _initServices() {
+        this.TrialService = new TrialService();
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT);
+        this.NotificationsRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.NOTIFICATIONS);
+        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES);
+        this.VisitsAndProceduresRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.VISITS);
+        this.QuestionsRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.QUESTIONS);
 
         this.CommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
         this._handleMessages();

@@ -21,14 +21,14 @@ export default class EconsentVersionsController extends WebcController {
         this.model.trialSSI = receivedObject.trialSSI;
         this.model.econsentSSI = receivedObject.econsentSSI;
         this.model.tpDid = receivedObject.tpDid;
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
         this._initTrialAndConsent();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
+    _initServices() {
+        this.TrialService = new TrialService();
+        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES);
     }
 
     _initHandlers() {

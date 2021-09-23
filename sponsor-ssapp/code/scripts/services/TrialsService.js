@@ -8,8 +8,7 @@ export default class TrialsService extends DSUService {
   TRIALS_TABLE = 'trials';
 
   constructor(DSUStorage) {
-    super(DSUStorage, '/trials');
-    this.DSUStorage = DSUStorage;
+    super('/trials');
     this.storageService = getSharedStorage(DSUStorage);
   }
 
