@@ -109,18 +109,40 @@ export default class VisitsProceduresController extends WebcController {
       console.log(JSON.parse(JSON.stringify(this.model.countries)));
       this.getConsents();
       return;
+    } else {
+      this.model.countries = [];
+      this.model.country = {
+        label: 'Select a country',
+        placeholder: 'Please select an option',
+        required: false,
+        options: [],
+      };
+
+      this.model.site = {
+        label: 'Select a site',
+        placeholder: 'Please select an option',
+        required: false,
+        options: [],
+      };
+      return;
     }
-    return;
   }
 
   async getConsents() {
     // const consents = await this.consentsService.getTrialConsents(this.keySSI);
-    const consents = this.model.countries[this.model.selectedCountryIdx].sites[this.model.selectedSiteIdx].consents;
-    this.model.consents = JSON.parse(JSON.stringify(consents));
-    this.model.filters = this.model.consents.map((x) => ({ name: x.name, selected: true }));
+    if (
+      this.model.countries &&
+      this.model.countries.length > 0 &&
+      this.model.countries[this.model.selectedCountryIdx].sites &&
+      this.model.countries[this.model.selectedCountryIdx].sites.length > 0
+    ) {
+      const consents = this.model.countries[this.model.selectedCountryIdx].sites[this.model.selectedSiteIdx].consents;
+      this.model.consents = JSON.parse(JSON.stringify(consents));
+      this.model.filters = this.model.consents.map((x) => ({ name: x.name, selected: true }));
 
-    if (consents.length > 0 && consents[0].visits && consents[0].visits.length > 0) {
-      await this.loadModel(consents);
+      if (consents.length > 0 && consents[0].visits && consents[0].visits.length > 0) {
+        await this.loadModel(consents);
+      }
     }
 
     return;
@@ -375,27 +397,31 @@ export default class VisitsProceduresController extends WebcController {
     });
 
     this.onTagClick('country-selected', async (model, target, event) => {
-      this.model.selectedCountryIdx = target.options.selectedIndex;
-      this.model.selectedSiteIdx = 0;
+      if (this.model.country.option.length > 0) {
+        this.model.selectedCountryIdx = target.options.selectedIndex;
+        this.model.selectedSiteIdx = 0;
 
-      this.model.site = {
-        label: 'Select a site',
-        placeholder: 'Please select an option',
-        required: false,
-        options: this.model.countries[this.model.selectedCountryIdx].sites.map((x, idx) => ({
-          label: x.name,
-          value: idx,
-        })),
-      };
+        this.model.site = {
+          label: 'Select a site',
+          placeholder: 'Please select an option',
+          required: false,
+          options: this.model.countries[this.model.selectedCountryIdx].sites.map((x, idx) => ({
+            label: x.name,
+            value: idx,
+          })),
+        };
 
-      this.model.notEditable = true;
-      this.getConsents();
+        this.model.notEditable = true;
+        this.getConsents();
+      }
     });
 
     this.onTagClick('site-selected', async (model, target, event) => {
-      this.model.selectedSiteIdx = target.options.selectedIndex;
-      this.model.notEditable = true;
-      this.getConsents();
+      if (this.model.site.options.length > 0) {
+        this.model.selectedSiteIdx = target.options.selectedIndex;
+        this.model.notEditable = true;
+        this.getConsents();
+      }
     });
 
     this.onTagEvent('cancel', 'click', async () => {

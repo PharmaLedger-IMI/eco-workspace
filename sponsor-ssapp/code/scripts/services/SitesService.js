@@ -35,7 +35,7 @@ export default class SitesService extends DSUService {
         stage: siteStagesEnum.Created,
         status: siteStatusesEnum.Active,
       },
-      this.getStatusPath(site.uid)
+      "/statuses"
     );
 
     const site = await this.saveEntityAsync({
@@ -44,6 +44,9 @@ export default class SitesService extends DSUService {
       created: new Date().toISOString(),
       trialKeySSI,
     });
+
+    await this.unmountEntityAsync(status.uid, "/statuses");
+    await this.mountEntityAsync(status.uid, this.getStatusPath(site.uid));
 
     await this.addSiteToDB(
       {
