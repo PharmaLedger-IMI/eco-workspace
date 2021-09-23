@@ -31,13 +31,6 @@ export default class SitesService extends DSUService {
   }
 
   async createSite(data, trialKeySSI) {
-    const site = await this.saveEntityAsync({
-      ...data,
-      statusKeySSI: status.uid,
-      created: new Date().toISOString(),
-      trialKeySSI,
-    });
-
     const status = await this.saveEntityAsync(
       {
         stage: siteStagesEnum.Created,
@@ -45,6 +38,13 @@ export default class SitesService extends DSUService {
       },
       this.getStatusPath(site.uid)
     );
+
+    const site = await this.saveEntityAsync({
+      ...data,
+      statusKeySSI: status.uid,
+      created: new Date().toISOString(),
+      trialKeySSI,
+    });
 
     await this.addSiteToDB(
       {
