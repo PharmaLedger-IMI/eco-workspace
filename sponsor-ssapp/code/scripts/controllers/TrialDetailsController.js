@@ -391,8 +391,9 @@ export default class TrialDetailsController extends WebcController {
 
   async getConsents() {
     await this.getSites();
-    const consents = await this.consentService.getTrialConsents(this.model.trial.keySSI);
-    this.model.consents = JSON.parse(JSON.stringify(consents));
+    // const consents = await this.consentService.getTrialConsents(this.model.trial.keySSI);
+    const consents = [];
+    this.model.consents = [];
 
     if (!this.model.trial) {
       await this.getTrial();

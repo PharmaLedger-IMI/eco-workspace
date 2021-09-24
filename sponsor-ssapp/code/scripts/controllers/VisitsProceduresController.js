@@ -129,7 +129,6 @@ export default class VisitsProceduresController extends WebcController {
   }
 
   async getConsents() {
-    // const consents = await this.consentsService.getTrialConsents(this.keySSI);
     if (
       this.model.countries &&
       this.model.countries.length > 0 &&
