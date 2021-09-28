@@ -1,5 +1,6 @@
 import SiteService from '../services/SiteService.js';
 import TrialService from '../services/TrialService.js';
+import HCOService from '../services/HCOService.js';
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -43,6 +44,9 @@ export default class HomeController extends WebcController {
     }
 
     async _initServices() {
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+
         this.TrialService = new TrialService();
         this.StorageService = SharedStorage.getInstance();
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
@@ -82,14 +86,11 @@ export default class HomeController extends WebcController {
             }
             switch (data.message.operation) {
                 case 'add-trial': {
-
                     this._saveNotification(data.message, 'New trial was added', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
-
                     this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                         if (err) {
                             return console.log(err);
                         }
-
                     });
                     break;
                 }
@@ -113,7 +114,6 @@ export default class HomeController extends WebcController {
                 case 'site-status-change': {
                     this._refreshSite(data.message);
                     this._saveNotification(data.message, 'The status of site was changed', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
-
                     break;
                 }
                 case 'update-base-procedures': {
@@ -122,8 +122,11 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case 'add-site': {
-
                     this._saveNotification(data.message, 'Your site was added to the trial ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
+                    this.HCOService.mountSite(data.message.ssi, (err, site) => {
+                        //debugger
+                    })
+
                     this.SiteService.mountSite(data.message.ssi, (err, site) => {
                         if (err) {
                             return console.log(err);
@@ -143,7 +146,6 @@ export default class HomeController extends WebcController {
                             });
                         })
                     });
-
                     break;
                 }
 
@@ -153,15 +155,11 @@ export default class HomeController extends WebcController {
                 }
 
                 case Constants.MESSAGES.HCO.COMMUNICATION.TYPE.VISIT_RESPONSE: {
-
                     this._updateVisit(data.message);
                     break;
                 }
-
                 case 'add-trial-consent': {
-
                     this._saveNotification(data.message, 'New consent was added to trial  ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
-
 
                     // this.SiteService.mountSite(data.message.ssi, (err,site)){
                     //     if (err) {
@@ -177,12 +175,17 @@ export default class HomeController extends WebcController {
 
                     break;
                 }
+                case 'add-site-consent': {
+                    this.HCOService.getOrCreate((err, data) => {
+                        //debugger
+                    });
+                    break;
+                }
             }
         });
     }
 
     _refreshSite(message) {
-
         this.SiteService.mountSite(message.data.site, (err, site) => {
             if (err) {
                 return console.log(err);

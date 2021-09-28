@@ -13,13 +13,12 @@ class DSUService {
     letDSUStorageInit = () => {
         if (typeof this.initializationPromise === 'undefined') {
             this.initializationPromise = new Promise((resolve) => {
-                if (this.DSUStorage !== undefined && this.DSUStorage.directAccessEnabled === false) {
-                    this.DSUStorage.enableDirectAccess(() => {
-                        resolve();
-                    })
-                } else {
-                    resolve();
+                if (this.DSUStorage === undefined || this.DSUStorage.directAccessEnabled === true) {
+                    return resolve();
                 }
+                this.DSUStorage.enableDirectAccess(() => {
+                    resolve();
+                })
             });
         }
         return this.initializationPromise;
@@ -35,28 +34,31 @@ class DSUService {
                 }
                 let entities = [];
                 let getServiceDsu = (dsuItem) => {
-                    resolver.loadDSU(dsuItem.identifier,
-                        //{skipCache: true},
-                        (err, dsu) => {
+                    let objectName = this.PATH.substring(1);
+                    let itemPathSplit = dsuItem.path.split('/')
+                    if (itemPathSplit.length > 1) {
+                        objectName = itemPathSplit[0];
+                    }
+                    resolver.loadDSU(dsuItem.identifier, (err, dsu) => {
+                        if (err) {
+                            return callback(err);
+                        }
+                        dsu.readFile('/data.json', (err, content) => {
                             if (err) {
-                                return callback(err);
+                                entities.slice(0);
+                                return callback(err, undefined);
                             }
-                            dsu.readFile('/data.json', (err, content) => {
-                                if (err) {
-                                    entities.slice(0);
-                                    return callback(err, undefined);
-                                }
-                                let entity = JSON.parse(content.toString());
-                                entities.push(entity);
+                            let entity = JSON.parse(content.toString());
+                            entity.objectName = objectName;
+                            entities.push(entity);
 
-                                if (dsuList.length === 0) {
-                                    return callback(undefined, entities);
-                                }
-                                getServiceDsu(dsuList.shift());
-                            });
+                            if (dsuList.length === 0) {
+                                return callback(undefined, entities);
+                            }
+                            getServiceDsu(dsuList.shift());
                         });
+                    });
                 };
-
                 if (dsuList.length === 0) {
                     return callback(undefined, []);
                 }
@@ -72,19 +74,17 @@ class DSUService {
     getEntity(uid, path, callback) {
         [path, callback] = this.swapParamsIfPathIsMissing(path, callback);
         const resolver = opendsu.loadAPI('resolver');
-        resolver.loadDSU(uid,
-            //{skipCache: true},
-            (err, dsu) => {
+        resolver.loadDSU(uid, (err, dsu) => {
+            if (err) {
+                return callback(err);
+            }
+            dsu.readFile('/data.json', (err, data) => {
                 if (err) {
-                    return callback(err);
+                    return callback(err, undefined);
                 }
-                dsu.readFile('/data.json', (err, data) => {
-                    if (err) {
-                        return callback(err, undefined);
-                    }
-                    callback(undefined, JSON.parse(data.toString()));
-                });
+                callback(undefined, JSON.parse(data.toString()));
             });
+        });
     }
 
     async getEntityAsync(uid, path) {
@@ -98,6 +98,7 @@ class DSUService {
         const securityContext = opendsu.loadAPI('sc');
         const templateSSI = keySSISpace.createTemplateSeedSSI('default');
         // TODO: Change to createDSUx
+        entity.volatile = undefined;
         resolver.createDSU(templateSSI, (err, dsuInstance) => {
             if (err) {
                 return callback(err);
@@ -122,6 +123,7 @@ class DSUService {
     updateEntity(entity, path, callback) {
         [path, callback] = this.swapParamsIfPathIsMissing(path, callback);
         const resolver = opendsu.loadAPI('resolver');
+        entity.volatile = undefined;
         resolver.loadDSU(entity.uid,
             //{skipCache: true},
             (err, dsu) => {
