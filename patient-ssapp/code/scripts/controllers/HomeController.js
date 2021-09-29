@@ -1,8 +1,10 @@
 import TrialService from '../services/TrialService.js';
+
 const {WebcController} = WebCardinal.controllers;
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
+const Constants = ecoServices.Constants;
 const DateTimeService = ecoServices.DateTimeService;
 const DIDService = ecoServices.DIDService;
 const BaseRepository = ecoServices.BaseRepository;
@@ -20,10 +22,10 @@ export default class HomeController extends WebcController {
     async _initServices() {
         this.TrialService = new TrialService();
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT);
-        this.NotificationsRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.NOTIFICATIONS);
+        this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.NOTIFICATIONS);
         this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES);
-        this.VisitsAndProceduresRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.VISITS);
-        this.QuestionsRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.QUESTIONS);
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.VISITS);
+        this.QuestionsRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.QUESTIONS);
 
         this.CommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
         this._handleMessages();
@@ -53,7 +55,7 @@ export default class HomeController extends WebcController {
                 return console.error(err);
             }
             switch (data.message.operation) {
-                case 'refresh-trial': {
+                case  Constants.MESSAGES.PATIENT.REFRESH_TRIAL: {
                     this.TrialService.reMountTrial(data.message.ssi, (err, trial) => {
                         this.TrialService.getEconsents(trial.keySSI, (err, consents) => {
                             if (err) {
@@ -64,7 +66,7 @@ export default class HomeController extends WebcController {
                     });
                     break;
                 }
-                case 'add-to-trial' : {
+                case Constants.MESSAGES.PATIENT.ADD_TO_TRIAL : {
                     this.saveNotification(data);
                     let hcoIdentity = {
                         did: data.did,
@@ -74,20 +76,20 @@ export default class HomeController extends WebcController {
                     this.mountTrial(data);
                     break;
                 }
-                case 'schedule-visit' : {
+                case Constants.MESSAGES.PATIENT.SCHEDULE_VISIT : {
                     this.saveNotification(data);
                     this._saveVisit(data.message.useCaseSpecifics.visit);
                 }
-                case 'update-visit' : {
+                case Constants.MESSAGES.PATIENT.UPDATE_VISIT : {
                     this.saveNotification(data);
                     this._updateVisit(data.message.useCaseSpecifics.visit);
                 }
-                case 'update-tpNumber': {
+                case Constants.MESSAGES.PATIENT.UPDATE_TP_NUMBER: {
                     this.saveNotification(data);
                     this._updateTrialParticipant(data.message.useCaseSpecifics);
                     break;
                 }
-                case 'question-response': {
+                case Constants.MESSAGES.PATIENT.QUESTION_RESPONSE: {
                     this.saveNotification(data);
                     this._updateQuestion(data.message.useCaseSpecifics);
                 }

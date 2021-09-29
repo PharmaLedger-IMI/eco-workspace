@@ -1,5 +1,6 @@
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
+const  Constats = ecoServices.Constants;
 import ConsentService from '../services/ConsentService.js';
 import TrialsService from '../services/TrialsService.js';
 import eventBusService from '../services/EventBusService.js';
@@ -646,7 +647,7 @@ export default class VisitsProceduresController extends WebcController {
       await this.getSites();
       await this.getConsents();
       this.sendMessageToHco(
-        'update-base-procedures',
+        Constants.MESSAGES.HCO.UPDATE_BASE_PROCEDURES,
         this.keySSI,
         'Update trial consents',
         this.model.countries[this.model.selectedCountryIdx].sites[this.model.selectedSiteIdx].did

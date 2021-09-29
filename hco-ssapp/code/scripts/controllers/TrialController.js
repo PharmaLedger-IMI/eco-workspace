@@ -99,7 +99,7 @@ export default class TrialController extends WebcController {
         let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
         this.model.trialParticipants.push(trialParticipant);
         this.sendMessageToPatient(
-            'add-to-trial',
+            Constants.MESSAGES.PATIENT.ADD_TO_TRIAL,
             this.model.trialSSI,
             trialParticipant,
             Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL

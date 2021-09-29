@@ -75,7 +75,7 @@ export default class QuestionsController extends WebcController {
 
     _sendMessageToPatient(did, question) {
         this.CommunicationService.sendMessage(did, {
-            operation: 'question-response',
+            operation: Constants.MESSAGES.PATIENT.QUESTION_RESPONSE,
             useCaseSpecifics: {
                 question: {
                     ...question

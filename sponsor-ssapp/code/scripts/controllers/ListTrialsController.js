@@ -2,6 +2,7 @@ const ecoServices = require('eco-services');
 import TrialsService from '../services/TrialsService.js';
 import { trialStatusesEnum, trialTableHeaders, trialStagesEnum } from '../constants/trial.js';
 const DIDService = ecoServices.DIDService;
+const Constants = ecoServices.Constants;
 import ParticipantsService from '../services/ParticipantsService.js';
 import SitesService from '../services/SitesService.js';
 
@@ -114,8 +115,8 @@ export default class ListTrialsController extends WebcController {
       }
       console.log('DATA MEESAGE:', data);
       switch (data.message.operation) {
-        case 'sign-econsent':
-        case 'update-econsent': {
+        case Constants.MESSAGES.SPONSOR.SIGN_ECOSENT:
+        case Constants.MESSAGES.SPONSOR.UPDATE_ECOSENT: {
           await this.participantsService.updateParticipant(
               {
                 participantId: data.message.useCaseSpecifics.tpNumber,

@@ -3,6 +3,7 @@ import ConsentsService from '../services/ConsentsService.js';
 import SitesService from "../services/SitesService.js";
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
+const Constants = ecoServices.Constants;
 
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
@@ -140,10 +141,10 @@ export default class TrialConsentsController extends WebcController {
           const response = event.detail;
           await this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          let operation = 'add-consent';
+          let operation = Constants.MESSAGES.HCO.ADD_CONSENT;
           let shortMessage = 'New trial';
           if (this.consents.length === 1) {
-            operation = 'add-trial';
+            operation = Constants.MESSAGES.HCO.ADD_TRIAL;
             shortMessage = 'First consent';
           }
           const sites = await this.sitesService.getSites(this.keySSI);
@@ -177,7 +178,7 @@ export default class TrialConsentsController extends WebcController {
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
           const sites = await this.sitesService.getSites(this.keySSI);
           sites.forEach(site => {
-            this.sendMessageToHco('add-econsent-version', this.keySSI, 'New trial', site.did);
+            this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_CONSENT_VERSION, this.keySSI, 'New trial', site.did);
           })
         },
         (event) => {
