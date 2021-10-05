@@ -44,6 +44,8 @@ export default class HomeController extends WebcController {
     }
 
     async _initServices() {
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
         this.TrialService = new TrialService();
         this.StorageService = SharedStorage.getInstance();
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
@@ -124,8 +126,15 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case Constants.MESSAGES.HCO.ADD_SITE: {
-
                     this._saveNotification(data.message, 'Your site was added to the trial ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
+
+                    this.HCOService.mountSite(data.message.ssi, (err, site) => {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        console.log('mounted site', site);
+                    })
+
                     this.SiteService.mountSite(data.message.ssi, (err, site) => {
                         if (err) {
                             return console.log(err);
@@ -179,8 +188,11 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case 'add-site-consent': {
-                    this.HCOService.getOrCreate((err, data) => {
-                        //debugger
+                    this.HCOService.cloneIFCs((err, data) => {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        console.log('ICFS', data);
                     });
                     break;
                 }

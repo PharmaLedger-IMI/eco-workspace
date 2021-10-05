@@ -59,6 +59,61 @@ export default class HCOService extends DSUService {
         this.mountSubEntity(siteSSI, 'site', callback);
     }
 
+    mountIFC = (ifcSSI, callback) => {
+        this.mountSubEntity(ifcSSI, 'ifc', callback);
+    }
+
+    cloneIFCs = (callback) => {
+        if (this.ssi == null) {
+            return callback(this.PATH + ' was not initialized yet.');
+        }
+        this.getEntities(this.PATH + '/' + this.ssi + '/site', (err, sites) => {
+            if (err) {
+                return callback(err);
+            }
+            if (sites.length === 0) {
+                return callback(undefined, []);
+            }
+            let clonedICFS = [];
+            let site = sites[0];
+            let siteConsents = site.consents;
+            let icfsPath = this.PATH + '/' + this.ssi + '/icfs';
+            let icfsDSUService = new DSUService(icfsPath);
+            icfsDSUService.getEntities((err, existingICFS) => {
+                if (err) {
+                    return callback(err);
+                }
+                let getServiceDsu = (consent) => {
+                    if (consent === undefined && siteConsents.length === 0) {
+                        return callback(undefined, []);
+                    }
+                    let consentExist = existingICFS.find(ifc => ifc.genesisSSI === consent.uid);
+                    if (consentExist !== undefined) {
+                        return getServiceDsu(siteConsents.pop());
+                    }
+                    consent = {
+                        ...consent,
+                        genesisSSI: consent.uid
+                    }
+                    this.cloneDSU(consent.genesisSSI, icfsPath + '/', (err, cloneDetails) => {
+                        if (err) {
+                            return getServiceDsu(siteConsents.pop());
+                        }
+                        clonedICFS.push(cloneDetails);
+                        if (siteConsents.length === 0) {
+                            return callback(undefined, clonedICFS);
+                        }
+                        getServiceDsu(siteConsents.pop());
+                    })
+                };
+                if (siteConsents.length === 0) {
+                    return callback(undefined, []);
+                }
+                getServiceDsu(siteConsents.pop());
+            });
+        });
+    }
+
     mountSubEntity = (subEntitySSI, subEntityName, callback) => {
         if (this.ssi != null) {
             return this.mountEntity(subEntitySSI, this._getSubPath(subEntityName), callback);
