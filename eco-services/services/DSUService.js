@@ -91,14 +91,11 @@ class DSUService {
         return this.asyncMyFunction(this.getEntity, [...arguments])
     }
 
-    saveEntity(entity, path, callback) {
+    createDSUAndMount(path, callback) {
         [path, callback] = this.swapParamsIfPathIsMissing(path, callback);
         const resolver = opendsu.loadAPI('resolver');
         const keySSISpace = opendsu.loadAPI('keyssi');
-        const securityContext = opendsu.loadAPI('sc');
         const templateSSI = keySSISpace.createTemplateSeedSSI('default');
-        // TODO: Change to createDSUx
-        entity.volatile = undefined;
         resolver.createDSU(templateSSI, (err, dsuInstance) => {
             if (err) {
                 return callback(err);
@@ -109,10 +106,20 @@ class DSUService {
                 }
                 this.letDSUStorageInit().then(() => {
                     this.DSUStorage.mount(path + '/' + keySSI, keySSI, (err) => {
-                        this.updateEntity(this._getEntityWithIdentifiers(entity, keySSI), path, callback);
+                        callback(err, keySSI);
                     });
                 });
             });
+        });
+    }
+
+    saveEntity(entity, path, callback) {
+        [path, callback] = this.swapParamsIfPathIsMissing(path, callback);
+        this.createDSUAndMount(path, (err, keySSI) => {
+            if (err) {
+                return callback(err);
+            }
+            this.updateEntity(this._getEntityWithIdentifiers(entity, keySSI), path, callback);
         });
     }
 
@@ -208,6 +215,77 @@ class DSUService {
                 resolve(data);
             })
         })
+    }
+
+    cloneDSU = (fromDSUSSI, toDSUPath, callback) => {
+        this.createDSUAndMount(toDSUPath, (err, keySSI) => {
+            if (err) {
+                return callback(err);
+            }
+            this.copyDSU(fromDSUSSI, keySSI, (err, copiedFiles) => {
+                if (err) {
+                    return callback(err);
+                }
+                let cloneDetails = {
+                    ssi: keySSI,
+                    copiedFiles: copiedFiles
+                }
+                callback(undefined, cloneDetails);
+            });
+        })
+    }
+
+    copyDSU = (fromDSUSSI, toDSUSSI, callback) => {
+        const resolver = opendsu.loadAPI('resolver');
+        resolver.loadDSU(fromDSUSSI, {skipCache: true}, (err, fromDSU) => {
+            if (err) {
+                return callback(err);
+            }
+            resolver.loadDSU(toDSUSSI, {skipCache: true}, (err, toDSU) => {
+                if (err) {
+                    return callback(err);
+                }
+                fromDSU.listFiles('/', (err, files) => {
+                    if (err) {
+                        return callback(err);
+                    }
+                    let copiedFiles = [];
+                    let copyFileToDSU = (file) => {
+                        fromDSU.readFile(file, (err, data) => {
+                            if (err) {
+                                return copyFileToDSU(files.pop());
+                            }
+                            if (file === "data.json") {
+                                data = JSON.parse(data.toString());
+                                data.genesisSSI = fromDSUSSI;
+                                data = JSON.stringify(data);
+                            }
+                            toDSU.writeFile(file, data, (err, newCreatedFile) => {
+                                if (err) {
+                                    return copyFileToDSU(files.pop());
+                                }
+                                copiedFiles.push(file);
+                                copyFileToDSU(files.pop());
+                            })
+                        })
+                        if (files.length === 0) {
+                            return callback(undefined, copiedFiles)
+                        }
+                    }
+                    if (files.length === 0) {
+                        return callback(undefined, copiedFiles)
+                    }
+                    copyFileToDSU(files.pop());
+                });
+            });
+        });
+    }
+
+    normalizePath = (path) => {
+        if (!path.endsWith('/')) {
+            path += '/';
+        }
+        return path;
     }
 }
 

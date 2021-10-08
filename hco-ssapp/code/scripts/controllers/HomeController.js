@@ -46,7 +46,6 @@ export default class HomeController extends WebcController {
     async _initServices() {
         this.HCOService = new HCOService();
         this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
-
         this.TrialService = new TrialService();
         this.StorageService = SharedStorage.getInstance();
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
@@ -68,13 +67,14 @@ export default class HomeController extends WebcController {
     }
 
     _reMountTrialAndSendRefreshMessageToAllParticipants() {
-        this.TrialService.mountTrial(data.message.ssi, () => {});
+        this.TrialService.mountTrial(data.message.ssi, () => {
+        });
         this.TrialParticipantRepository.findAll((err, tps) => {
             if (err) {
                 return console.log(err);
             }
             tps.forEach(tp => {
-                this.sendMessageToPatient(tp.did, 'refresh-trial', data.message.ssi, Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.REFRESH_TRIAL);
+                this.sendMessageToPatient(tp.did, Constants.MESSAGES.PATIENT.REFRESH_TRIAL, data.message.ssi, Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.REFRESH_TRIAL);
             })
         })
     }
@@ -85,46 +85,54 @@ export default class HomeController extends WebcController {
                 return console.error(err);
             }
             switch (data.message.operation) {
-                case 'add-trial': {
+                case Constants.MESSAGES.HCO.ADD_TRIAL: {
+
                     this._saveNotification(data.message, 'New trial was added', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
+
                     this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
                         if (err) {
                             return console.log(err);
                         }
+
                     });
                     break;
                 }
-                case 'add-econsent-version': {
+                case Constants.MESSAGES.HCO.ADD_CONSENT_VERSION: {
                     this._saveNotification(data.message, 'New ecosent version was added', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
                     this._reMountTrialAndSendRefreshMessageToAllParticipants();
                     break;
                 }
-                case 'add-consent': {
+                case Constants.MESSAGES.HCO.ADD_CONSENT: {
                     this._saveNotification(data.message, 'New ecosent  was added', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
                     this._reMountTrialAndSendRefreshMessageToAllParticipants();
                     break;
                 }
-                case 'delete-trial': {
+                case Constants.MESSAGES.HCO.DELETE_TRIAL: {
                     break;
                 }
-                case 'update-econsent': {
+                case Constants.MESSAGES.HCO.UPDATE_ECOSENT: {
                     this._updateEconsentWithDetails(data.message);
                     break;
                 }
-                case 'site-status-change': {
+                case Constants.MESSAGES.HCO.SITE_STATUS_CHANGED: {
                     this._refreshSite(data.message);
                     this._saveNotification(data.message, 'The status of site was changed', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
+
                     break;
                 }
-                case 'update-base-procedures': {
+                case Constants.MESSAGES.HCO.UPDATE_BASE_PROCEDURES: {
                     this._saveNotification(data.message, 'New procedure was added ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
                     this._saveVisit(data.message.ssi);
                     break;
                 }
-                case 'add-site': {
+                case Constants.MESSAGES.HCO.ADD_SITE: {
                     this._saveNotification(data.message, 'Your site was added to the trial ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
+
                     this.HCOService.mountSite(data.message.ssi, (err, site) => {
-                        //debugger
+                        if (err) {
+                            return console.log(err);
+                        }
+                        console.log('mounted site', site);
                     })
 
                     this.SiteService.mountSite(data.message.ssi, (err, site) => {
@@ -146,6 +154,7 @@ export default class HomeController extends WebcController {
                             });
                         })
                     });
+
                     break;
                 }
 
@@ -158,8 +167,11 @@ export default class HomeController extends WebcController {
                     this._updateVisit(data.message);
                     break;
                 }
-                case 'add-trial-consent': {
+
+                case Constants.MESSAGES.HCO.ADD_TRIAl_CONSENT: {
+
                     this._saveNotification(data.message, 'New consent was added to trial  ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
+
 
                     // this.SiteService.mountSite(data.message.ssi, (err,site)){
                     //     if (err) {
@@ -176,8 +188,11 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case 'add-site-consent': {
-                    this.HCOService.getOrCreate((err, data) => {
-                        //debugger
+                    this.HCOService.cloneIFCs((err, data) => {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        console.log('ICFS', data);
                     });
                     break;
                 }
@@ -186,6 +201,7 @@ export default class HomeController extends WebcController {
     }
 
     _refreshSite(message) {
+
         this.SiteService.mountSite(message.data.site, (err, site) => {
             if (err) {
                 return console.log(err);

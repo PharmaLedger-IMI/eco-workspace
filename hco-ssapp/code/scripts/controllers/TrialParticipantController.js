@@ -212,7 +212,7 @@ export default class TrialParticipantController extends WebcController {
             }
         }
         this.CommunicationService.sendMessage(CommunicationService.identities.IOT.PROFESSIONAL_IDENTITY, {
-            operation: 'add-trial-subject',
+            operation: Constants.MESSAGES.PATIENT.ADD_TRIAL_SUBJECT,
             useCaseSpecifics: messageForIot
         });
 
@@ -243,7 +243,7 @@ export default class TrialParticipantController extends WebcController {
 
     _sendMessageToPatient(ssi, tp, shortMessage) {
         this.CommunicationService.sendMessage(tp.did, {
-            operation: 'update-tpNumber',
+            operation: Constants.MESSAGES.PATIENT.UPDATE_TP_NUMBER,
             ssi: ssi,
             useCaseSpecifics: {
                 tpNumber: tp.number,

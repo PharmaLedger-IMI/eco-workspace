@@ -1,5 +1,6 @@
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
+const Constats = ecoServices.Constants;
 import ConsentService from '../services/ConsentService.js';
 import TrialsService from '../services/TrialsService.js';
 import eventBusService from '../services/EventBusService.js';

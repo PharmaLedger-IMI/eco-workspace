@@ -2,6 +2,7 @@
 const { WebcController } = WebCardinal.controllers;
 
 const ecoServices = require('eco-services');
+const Constants = ecoServices.Constants;
 import getSharedStorage from '../services/SharedDBStorageService.js';
 import SitesService from '../services/SitesService.js';
 import TrialsService from '../services/TrialsService.js';
@@ -201,7 +202,7 @@ export default class TrialDetailsController extends WebcController {
         (event) => {
           const response = event.detail;
           this.getSites();
-          this.sendMessageToHco('add-site', response.keySSI, 'Site added', response.did);
+          this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_SITE, response.keySSI, 'Site added', response.did);
           this.showFeedbackToast('Result', 'Site added successfully', 'toast');
           eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
         },

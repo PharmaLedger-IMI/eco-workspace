@@ -5,6 +5,7 @@ const ecoServices = require('eco-services');
 const BaseRepository = ecoServices.BaseRepository;
 const CommunicationService = ecoServices.CommunicationService;
 const FileDownloader = ecoServices.FileDownloader;
+const Constants = ecoServices.Constants;
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -201,7 +202,7 @@ export default class ReadEconsentController extends WebcController {
             if (data && data.length > 0) {
                 this.model.tp = data[data.length - 1];
                 let sendObject = {
-                    operation: 'update-econsent',
+                    operation: Constants.MESSAGES.HCO.UPDATE_ECOSENT,
                     ssi: ssi,
                     useCaseSpecifics: {
                         trialSSI: this.model.historyData.trialuid,

@@ -143,7 +143,7 @@ export default class EconsentSignController extends WebcController {
                 toShowDate: currentDate.toLocaleDateString(),
             };
             this._updateEconsentWithDetails();
-            this.sendMessageToSponsor('sign-econsent', Constants.MESSAGES.HCO.COMMUNICATION.SPONSOR.SIGN_ECONSENT);
+            this.sendMessageToSponsor(Constants.MESSAGES.SPONSOR.SIGN_ECOSENT, Constants.MESSAGES.HCO.COMMUNICATION.SPONSOR.SIGN_ECONSENT);
             this.navigateToPageTag('home');
         });
     }

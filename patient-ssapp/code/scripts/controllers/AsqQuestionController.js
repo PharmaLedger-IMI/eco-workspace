@@ -4,6 +4,7 @@ import EconsentService from "../services/EconsentService.js";
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
+const Constants = ecoServices.Constants;
 const BaseRepository = ecoServices.BaseRepository;
 
 const {WebcController} = WebCardinal.controllers;
@@ -105,7 +106,7 @@ export default class AsqQuestionController extends WebcController {
 
     async _saveQuestion(questionToBeAdded) {
         let quest = await this.QuestionsRepository.createAsync(questionToBeAdded);
-        this.sendMessageToHCO('ask-question', '', 'Patient asked a new question ', quest);
+        this.sendMessageToHCO(Constants.MESSAGES.HCO.ASQ_QUESTION, '', 'Patient asked a new question ', quest);
     }
 
     sendMessageToHCO(action, ssi, shortMessage, question) {
