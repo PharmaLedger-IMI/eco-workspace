@@ -6,7 +6,7 @@ import eventBusService from '../services/EventBusService.js';
 import SitesService from '../services/SitesService.js';
 import { Topics } from '../constants/topics.js';
 import { countryListAlpha2 } from '../constants/countries.js';
-
+import VisitsService from '../services/VisitsService.js';
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
 
@@ -20,6 +20,7 @@ export default class VisitsProceduresController extends WebcController {
     this.consentsService = new ConsentService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
+    this.visitsService = new VisitsService(this.DSUStorage);
     this.feedbackEmitter = null;
 
     this.model = {
@@ -40,130 +41,41 @@ export default class VisitsProceduresController extends WebcController {
     this.init();
 
     eventBusService.addEventListener(Topics.RefreshTrialConsents, async () => {
-      await this.getSites();
       await this.getConsents();
-      this.model.filters = this.model.consents.map((x) => ({ name: x.name, selected: true }));
     });
   }
 
   async init() {
-    await this.getSites();
     await this.getConsents();
     this.model.trial = await this.trialsService.getTrial(this.keySSI);
     this.model.dataLoaded = true;
   }
 
-  async getSites() {
-    const sites = await this.sitesService.getSites(this.keySSI);
-    if (sites && sites.length > 0) {
-      const countries = sites
-        .map((x) => x.country)
-        .filter((value, index, self) => self.indexOf(value) === index)
-        .sort((a, b) => {
-          return a.toUpperCase() < b.toUpperCase() ? -1 : a.toUpperCase() > b.toUpperCase() ? 1 : 0;
-        });
-
-      const result = countries.map((x) => {
-        return {
-          country: countryListAlpha2[x],
-          sites:
-            sites && sites.length > 0
-              ? sites
-                  .filter((y) => y.country === x)
-                  .sort((a, b) =>
-                    a.id.toUpperCase() < b.id.toUpperCase() ? -1 : a.id.toUpperCase() > b.id.toUpperCase() ? 1 : 0
-                  )
-              : false,
-        };
-      });
-
-      result.sort((a, b) => {
-        return a.country.toUpperCase() < b.country.toUpperCase()
-          ? -1
-          : a.country.toUpperCase() > b.country.toUpperCase()
-          ? 1
-          : 0;
-      });
-      this.model.countries = result;
-
-      this.model.country = {
-        label: 'Select a country',
-        placeholder: 'Please select an option',
-        required: false,
-        options: this.model.countries.map((x, idx) => ({
-          label: x.country,
-          value: idx,
-        })),
-      };
-
-      this.model.site = {
-        label: 'Select a site',
-        placeholder: 'Please select an option',
-        required: false,
-        options: this.model.countries[0].sites.map((x, idx) => ({
-          label: x.name,
-          value: idx,
-        })),
-      };
-
-      console.log(JSON.parse(JSON.stringify(this.model.countries)));
-      this.getConsents();
-      return;
-    } else {
-      this.model.countries = [];
-      this.model.country = {
-        label: 'Select a country',
-        placeholder: 'Please select an option',
-        required: false,
-        options: [],
-      };
-
-      this.model.site = {
-        label: 'Select a site',
-        placeholder: 'Please select an option',
-        required: false,
-        options: [],
-      };
-      return;
-    }
-  }
-
   async getConsents() {
-    if (
-      this.model.countries &&
-      this.model.countries.length > 0 &&
-      this.model.countries[this.model.selectedCountryIdx].sites &&
-      this.model.countries[this.model.selectedCountryIdx].sites.length > 0
-    ) {
-      const consents = this.model.countries[this.model.selectedCountryIdx].sites[this.model.selectedSiteIdx].consents;
-      this.model.consents = JSON.parse(JSON.stringify(consents));
-      this.model.filters = this.model.consents.map((x) => ({ name: x.name, selected: true }));
+    const visits = await this.visitsService.getTrialVisits(this.keySSI);
+    console.log(visits);
+    this.model.consents = visits.consents.map((x) => ({
+      name: x,
+    }));
+    this.model.filters = this.model.consents.map((x) => ({ name: x.name, selected: true }));
 
-      if (consents.length > 0 && consents[0].visits && consents[0].visits.length > 0) {
-        await this.loadModel(consents);
-      }
+    if (visits.visits && visits.visits.length > 0) {
+      await this.loadModel(visits.visits);
     }
 
     return;
   }
 
-  async loadModel(consents) {
-    const visits = consents[0].visits;
+  async loadModel(visits) {
     let procedures = [];
-    consents.forEach((x) => {
-      if (x.visits && x.visits.length > 0) {
-        x.visits.forEach((y) => {
-          if (y.procedures && y.procedures.length > 0) {
-            procedures.push(y.procedures);
-          }
-        });
+    visits.forEach((y) => {
+      if (y.procedures && y.procedures.length > 0) {
+        procedures.push(y.procedures);
       }
     });
     procedures = _.flatten(procedures);
 
     visits.sort((a, b) => a.id - b.id);
-
-    console.log(visits);
 
     const randomizationIdx = visits.findIndex((x) => x.isRandomizationVisit === true);
     const resultVisits = visits.map((x, idx) => {
@@ -256,8 +168,8 @@ export default class VisitsProceduresController extends WebcController {
             required: false,
             options: this.model.consents.map((x) => ({
               label: x.name,
-              value: x.keySSI,
-              selected: procedure.consent.keySSI === x.keySSI ? 'selected' : null,
+              value: x.name,
+              selected: procedure.consent.name === x.name ? 'selected' : null,
             })),
           },
         };
@@ -283,19 +195,13 @@ export default class VisitsProceduresController extends WebcController {
         return this.model.filters.find((z) => z.name === y.label).selected && y.selected === 'selected' ? true : acc;
       }, false)
     );
-    console.log(JSON.parse(JSON.stringify(this.model.filteredProcedures)));
   }
 
   attachEvents() {
     this.model.addExpression(
       'visitsExist',
       () => {
-        return (
-          this.model.consents &&
-          Array.isArray(this.model.consents) &&
-          this.model.consents[0] &&
-          this.model.consents[0].visits
-        );
+        return this.model.consents && Array.isArray(this.model.consents) && this.model.consents.length > 0;
       },
       'consents'
     );
@@ -303,7 +209,6 @@ export default class VisitsProceduresController extends WebcController {
     this.model.addExpression(
       'noConsents',
       () => {
-        console.log('NO consents:', this.model.consents);
         return !(this.model.consents && Array.isArray(this.model.consents) && this.model.consents.length > 0);
       },
       'consents'
@@ -393,34 +298,6 @@ export default class VisitsProceduresController extends WebcController {
 
     this.onTagEvent('edit', 'click', () => {
       this.model.notEditable = !this.model.notEditable;
-    });
-
-    this.onTagClick('country-selected', async (model, target, event) => {
-      if (this.model.country.option.length > 0) {
-        this.model.selectedCountryIdx = target.options.selectedIndex;
-        this.model.selectedSiteIdx = 0;
-
-        this.model.site = {
-          label: 'Select a site',
-          placeholder: 'Please select an option',
-          required: false,
-          options: this.model.countries[this.model.selectedCountryIdx].sites.map((x, idx) => ({
-            label: x.name,
-            value: idx,
-          })),
-        };
-
-        this.model.notEditable = true;
-        this.getConsents();
-      }
-    });
-
-    this.onTagClick('site-selected', async (model, target, event) => {
-      if (this.model.site.options.length > 0) {
-        this.model.selectedSiteIdx = target.options.selectedIndex;
-        this.model.notEditable = true;
-        this.getConsents();
-      }
     });
 
     this.onTagEvent('cancel', 'click', async () => {
@@ -579,7 +456,7 @@ export default class VisitsProceduresController extends WebcController {
             required: false,
             options: this.model.consents.map((x) => ({
               label: x.name,
-              value: x.keySSI,
+              value: x.name,
             })),
           },
         },
@@ -619,9 +496,8 @@ export default class VisitsProceduresController extends WebcController {
             if (y.name.value === '') error = true;
             return {
               consent: {
-                keySSI: targetElement.value,
-                id: this.model.consents.find((z) => z.keySSI === targetElement.value).id,
-                name: targetElement.options[targetElement.selectedIndex].text,
+                // name: targetElement.options[targetElement.selectedIndex].text,
+                name: targetElement.value,
               },
               name: y.name.value,
               checked: y.visits[idx].checkbox.checked,
@@ -638,19 +514,12 @@ export default class VisitsProceduresController extends WebcController {
         return;
       }
 
-      await this.consentsService.updateBaseConsentVisits(
-        result,
-        this.keySSI,
-        this.model.countries[this.model.selectedCountryIdx].sites[this.model.selectedSiteIdx].keySSI
-      );
-      await this.getSites();
+      await this.visitsService.updateTrialVisits(this.keySSI, { visits: result });
       await this.getConsents();
-      this.sendMessageToHco(
-        'update-base-procedures',
-        this.keySSI,
-        'Update trial consents',
-        this.model.countries[this.model.selectedCountryIdx].sites[this.model.selectedSiteIdx].did
-      );
+      const sites = await this.sitesService.getSites(this.keySSI);
+      for (const site of sites) {
+        this.sendMessageToHco('update-base-procedures', this.keySSI, 'Update trial consents', site.did);
+      }
       this.model.notEditable = !this.model.notEditable;
       return;
       //TODO: Save to corresponding consents
@@ -659,6 +528,11 @@ export default class VisitsProceduresController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage, did) {
+    console.log({
+      operation: operation,
+      ssi: ssi,
+      shortDescription: shortMessage,
+    });
     this.CommunicationService.sendMessage(did, {
       operation: operation,
       ssi: ssi,

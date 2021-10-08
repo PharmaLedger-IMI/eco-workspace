@@ -2,6 +2,7 @@ import getSharedStorage from './SharedDBStorageService.js';
 const ecoServices = require('eco-services');
 const DSUService = ecoServices.DSUService;
 import SitesService from './SitesService.js';
+import VisitsService from './VisitsService.js';
 
 export default class ConsentService extends DSUService {
   CONSENTS_TABLE = 'consents';
@@ -12,6 +13,7 @@ export default class ConsentService extends DSUService {
     super('/consents');
     this.storageService = getSharedStorage(DSUStorage);
     this.siteService = new SitesService(DSUStorage);
+    this.visitsService = new VisitsService(DSUStorage);
     this.DSUStorage = DSUStorage;
   }
 
@@ -57,12 +59,16 @@ export default class ConsentService extends DSUService {
         site.keySSI
       );
       await this.siteService.updateSiteConsents(updatedConsent, site.id, trialKeySSI);
+      const visits = await this.visitsService.getTrialVisits(trialKeySSI);
+      if (visits.consents.indexOf(data.name) === -1) {
+        visits.consents.push(data.name);
+        await this.visitsService.updateTrialVisits(trialKeySSI, visits);
+      }
       return consent;
     }
   }
 
   async updateConsent(data, trialKeySSI, site, consent) {
-    debugger;
     const selectedSiteConsent = site.consents.find((x) => x.id === consent.id);
     const path = this.getConsentPath(site.keySSI);
     const consentDSU = await this.getEntityAsync(selectedSiteConsent.uid, path);

@@ -203,7 +203,6 @@ export default class AddNewConsentModalController extends WebcController {
             file: this.file[0],
           };
 
-          // console.log(JSON.stringify(this.site, null, 2), JSON.stringify(this.isUpdate, null, 2));
           const result = await this.consentsService.updateConsent(version, this.keySSI, this.site, this.isUpdate);
           this.model.submitButtonDisabled = false;
           this.send('confirmed', result);

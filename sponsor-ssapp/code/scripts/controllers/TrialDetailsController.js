@@ -236,7 +236,7 @@ export default class TrialDetailsController extends WebcController {
           const response = event.detail;
           await this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          this.sendMessageToHco('add-site-consent', null, 'Trial consent', selectedSite.did);
+          this.sendMessageToHco('add-site-consent', response.keySSI, 'Trial consent', selectedSite.did);
 
           eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
         },
@@ -316,7 +316,7 @@ export default class TrialDetailsController extends WebcController {
           const response = event.detail;
           this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          this.sendMessageToHco('add-econsent-version', selectedSite.keySSI, 'New trial', selectedSite.did);
+          this.sendMessageToHco('add-econsent-version', response.keySSI, 'New consent version', selectedSite.did);
           eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
         },
         (event) => {
@@ -442,16 +442,21 @@ export default class TrialDetailsController extends WebcController {
   async changeSiteStatus(status, id) {
     const updated = await this.sitesService.changeSiteStatus(status, id, this.model.trial.keySSI);
 
-    const sites = await this.sitesService.getSites(this.model.trial.keySSI);
-    sites.forEach((site) => {
-      this.CommunicationService.sendMessage(site.did, {
-        operation: 'site-status-change',
-        data: {
-          site: updated.keySSI,
-          status: status,
-        },
-        shortDescription: 'Status was updated',
-      });
+    console.log({
+      operation: 'site-status-change',
+      data: {
+        site: updated.keySSI,
+        status: status,
+      },
+      shortDescription: 'Status was updated',
+    });
+    this.CommunicationService.sendMessage(updated.did, {
+      operation: 'site-status-change',
+      data: {
+        site: updated.keySSI,
+        status: status,
+      },
+      shortDescription: 'Status was updated',
     });
   }
 

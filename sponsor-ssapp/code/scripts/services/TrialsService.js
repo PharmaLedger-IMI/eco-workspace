@@ -3,6 +3,7 @@ const ecoServices = require('eco-services');
 const DSUService = ecoServices.DSUService;
 import { trialStatusesEnum } from '../constants/trial.js';
 import { trialStagesEnum } from '../constants/trial.js';
+import VisitsService from './VisitsService.js';
 
 export default class TrialsService extends DSUService {
   TRIALS_TABLE = 'trials';
@@ -10,6 +11,7 @@ export default class TrialsService extends DSUService {
   constructor(DSUStorage) {
     super('/trials');
     this.storageService = getSharedStorage(DSUStorage);
+    this.visitsService = new VisitsService(DSUStorage);
   }
 
   async getTrials() {
@@ -18,12 +20,6 @@ export default class TrialsService extends DSUService {
       return result.filter((x) => !x.deleted);
     } else return [];
   }
-
-  /**
-   *
-   * @param {*} keySSI
-   * @returns
-   */
 
   async getTrial(keySSI) {
     const result = await this.getEntityAsync(keySSI);
@@ -41,6 +37,7 @@ export default class TrialsService extends DSUService {
       status: trialStatusesEnum.Active,
       created: new Date().toISOString(),
     });
+    const visits = this.visitsService.createTrialVisits(trial.uid, {});
     await this.addTrialToDB({
       id: trial.id,
       keySSI: trial.uid,
@@ -50,6 +47,7 @@ export default class TrialsService extends DSUService {
       did: trial.did,
       stage: trial.stage,
       created: trial.created,
+      visitsKeySSI: visits.uid,
     });
     return trial;
   }

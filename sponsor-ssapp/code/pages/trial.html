@@ -52,28 +52,6 @@
     <!-- *************** Visits & Procedures ******************** -->
     <psk-tab title="Visits & Procedures">
       <webc-container controller="VisitsProceduresController">
-        <div data-if="@dataLoaded" class="row align-items-center justify-content-center mb-2">
-          <label class="col-md-2">{{ @country.label}}:</label>
-          <select
-            class="form-control col-md-2"
-            style="width: 150px"
-            name="@country.name"
-            data-for="@country.options"
-            data-tag="country-selected"
-          >
-            <option value="@value">{{@label}}</option>
-          </select>
-          <label class="col-md-2">{{ @site.label}}:</label>
-          <select
-            data-tag="site-selected"
-            class="form-control col-md-2"
-            style="width: 150px"
-            name="@site.name"
-            data-for="@site.options"
-          >
-            <option value="@value">{{@label}}</option>
-          </select>
-        </div>
         <div data-if="@dataLoaded">
           <div data-if="@notEditable">
             <container slot="false">
@@ -164,8 +142,8 @@
 
             <container slot="true">
               <div data-if="@visitsExist">
-                <div data-for="@filters">
-                  <div data-if="@selected" class="m-2">
+                <div data-for="@filters" class="m-2 d-flex flex-row">
+                  <div data-if="@selected" class="m-2 d-flex flex-row">
                     <container slot="false">
                       <button class="btn btn-bare" data-tag="filter-procedures" data-custom="@name">{{ @name }}</button>
                     </container>

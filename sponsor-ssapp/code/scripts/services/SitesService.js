@@ -2,7 +2,7 @@ import getSharedStorage from './SharedDBStorageService.js';
 const ecoServices = require('eco-services');
 const DSUService = ecoServices.DSUService;
 import { siteStagesEnum, siteStatusesEnum } from '../constants/site.js';
-
+import VisitsService from './VisitsService.js';
 export default class SitesService extends DSUService {
   SITES_TABLE = 'sites';
   SITES_PATH = '/sites';
@@ -10,6 +10,7 @@ export default class SitesService extends DSUService {
   constructor(DSUStorage) {
     super('/sites');
     this.storageService = getSharedStorage(DSUStorage);
+    this.visitsService = new VisitsService(DSUStorage);
   }
 
   async getSites(trialKeySSI) {
@@ -30,29 +31,34 @@ export default class SitesService extends DSUService {
   }
 
   async createSite(data, trialKeySSI) {
+    const visits = await this.visitsService.getTrialVisits(trialKeySSI);
+
     const status = await this.saveEntityAsync(
       {
         stage: siteStagesEnum.Created,
         status: siteStatusesEnum.Active,
       },
-      "/statuses"
+      '/statuses'
     );
 
     const site = await this.saveEntityAsync({
       ...data,
       statusKeySSI: status.uid,
+      visitsKeySSI: visits.keySSI,
       created: new Date().toISOString(),
       trialKeySSI,
     });
 
-    await this.unmountEntityAsync(status.uid, "/statuses");
+    await this.unmountEntityAsync(status.uid, '/statuses');
     await this.mountEntityAsync(status.uid, this.getStatusPath(site.uid));
+    await this.mountEntityAsync(visits.keySSI, this.getVisitsPath(site.uid));
 
     await this.addSiteToDB(
       {
         ...data,
         keySSI: site.uid,
         statusKeySSI: status.uid,
+        visitsKeySSI: visits.keySSI,
         stage: siteStagesEnum.Created,
         status: siteStatusesEnum.Active,
         created: new Date().toISOString(),
@@ -142,5 +148,9 @@ export default class SitesService extends DSUService {
 
   getStatusPath(siteKeySSI) {
     return this.SITES_PATH + '/' + siteKeySSI + '/' + 'status';
+  }
+
+  getVisitsPath(siteKeySSI) {
+    return this.SITES_PATH + '/' + siteKeySSI + '/' + 'visits';
   }
 }

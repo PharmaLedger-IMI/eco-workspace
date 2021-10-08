@@ -139,13 +139,28 @@ export default class ConsentsService extends DSUService {
 
   //TODO: do it in DSUService
   uploadFile(path, file) {
+    function getFileContentAsBuffer(file, callback) {
+      let fileReader = new FileReader();
+      fileReader.onload = function (evt) {
+        let arrayBuffer = fileReader.result;
+        callback(undefined, arrayBuffer);
+      };
+
+      fileReader.readAsArrayBuffer(file);
+    }
+
     return new Promise((resolve, reject) => {
-      this.DSUStorage.uploadFile(path, file, undefined, (err, keySSI) => {
+      getFileContentAsBuffer(file, (err, arrayBuffer) => {
         if (err) {
-          reject(new Error(err));
-          return;
+          reject('Could not get file as a Buffer');
         }
-        resolve(keySSI);
+        this.DSUStorage.writeFile(path, $$.Buffer.from(arrayBuffer), undefined, (err, keySSI) => {
+          if (err) {
+            reject(new Error(err));
+            return;
+          }
+          resolve();
+        });
       });
     });
   }
