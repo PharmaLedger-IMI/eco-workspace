@@ -1,4 +1,5 @@
 import TrialService from '../services/TrialService.js';
+import TrialConsentService from '../services/TrialConsentService.js';
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -28,6 +29,9 @@ export default class HomeController extends WebcController {
         this.QuestionsRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.QUESTIONS);
 
         this.CommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
+        this.TrialConsentService = new TrialConsentService();
+        this.model.trialConsent = await this.TrialConsentService.getOrCreateAsync();
+
         this._handleMessages();
     }
 
@@ -57,12 +61,7 @@ export default class HomeController extends WebcController {
             switch (data.message.operation) {
                 case  Constants.MESSAGES.PATIENT.REFRESH_TRIAL: {
                     this.TrialService.reMountTrial(data.message.ssi, (err, trial) => {
-                        this.TrialService.getEconsents(trial.keySSI, (err, consents) => {
-                            if (err) {
-                                return console.log(err);
-                            }
-                            this._saveConsentsStatuses(consents, this.model.tp?.did);
-                        });
+                        this._saveConsentsStatuses(this.model.trialConsent.volatile.ifc.consents, this.model.tp?.did);
                     });
                     break;
                 }
@@ -92,6 +91,12 @@ export default class HomeController extends WebcController {
                 case Constants.MESSAGES.PATIENT.QUESTION_RESPONSE: {
                     this.saveNotification(data);
                     this._updateQuestion(data.message.useCaseSpecifics);
+                }
+                case Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_PATIENT: {
+                    this.TrialConsentService.mountIFC(data.message.ssi, (err, data) => {
+                    })
+                    // this.saveNotification(data);
+                    // this._updateQuestion(data.message.useCaseSpecifics);
                 }
             }
         });
@@ -204,13 +209,8 @@ export default class HomeController extends WebcController {
 
         let trial = await this.TrialService.mountTrialAsync(data.message.ssi);
         this.model.trials?.push(trial);
-        this.TrialService.getEconsents(data.message.ssi, (err, consents) => {
-            if (err) {
-                return console.log(err);
-            }
-            this._saveConsentsStatuses(consents, data.message.useCaseSpecifics.did);
-        });
 
+        this._saveConsentsStatuses(this.model.trialConsent.volatile.ifc.consents, data.message.useCaseSpecifics.did);
     }
 
 

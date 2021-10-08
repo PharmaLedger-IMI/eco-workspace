@@ -1,5 +1,6 @@
 import TrialService from '../services/TrialService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
+import TrialConsentService from "../services/TrialConsentService.js";
 
 const ecoServices = require('eco-services');
 const FileDownloader = ecoServices.FileDownloader;
@@ -20,12 +21,20 @@ export default class EconsentController extends WebcController {
             actions: [],
             latest: 'N/A'
         };
-        this._initEconsent();
     }
 
-    _initServices() {
+    async _initServices() {
         this.TrialService = new TrialService();
         this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES);
+
+        this.TrialConsentService = new TrialConsentService();
+        this.TrialConsentService.getOrCreate((err, trialConsent) => {
+            if (err) {
+                return console.log(err);
+            }
+            this.model.trialConsent = trialConsent;
+            this._initEconsent();
+        });
     }
 
     _initHandlers() {
@@ -39,39 +48,37 @@ export default class EconsentController extends WebcController {
     }
 
     _initEconsent() {
-        this.TrialService.getEconsent(this.model.historyData.trialuid, this.model.historyData.ecoId, (err, econsent) => {
+        let econsent = this.model.trialConsent.volatile.ifc.consents.find(c => c.uid === this.model.historyData.ecoId)
+        if (econsent === undefined) {
+            return console.log("Econsent does not exist.");
+        }
+        let ecoVersion = this.model.historyData.ecoVersion;
+        this.model.econsent = econsent;
+        let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
+        let econsentFilePath = this.getEconsentFilePath(econsent, currentVersion);
+        this.fileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
+        this.model.econsent.versionDate = new Date(currentVersion.versionDate).toLocaleDateString('sw');
+        this.model.econsent.version = currentVersion.version;
+        this._downloadFile();
+
+        this.EconsentsStatusRepository.findAll((err, data) => {
             if (err) {
-                return console.log(err);
+                return console.error(err);
             }
-
-            let ecoVersion = this.model.historyData.ecoVersion;
-            this.model.econsent = econsent;
-            let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
-            let econsentFilePath = this.getEconsentFilePath(this.model.historyData.trialuid, this.model.historyData.ecoId, ecoVersion, currentVersion.attachment);
-            this.fileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
-            this.model.econsent.versionDate = new Date(currentVersion.versionDate).toLocaleDateString('sw');
-            this.model.econsent.version = currentVersion.version;
-            this._downloadFile();
-
-            this.EconsentsStatusRepository.findAll((err, data) => {
-                if (err) {
-                    return console.error(err);
-                }
-                let status = data.find((element) => element.foreignConsentId === this.model.historyData.ecoId);
-                if (status === undefined) {
-                    return console.log(`Status not found for econsendId ${this.model.historyData.ecoId}`);
-                }
-                status.actions = status.actions.map((action, index) => {
-                    return {
-                        ...action,
-                        index: index + 1,
-                    };
-                });
-                this.model.status = status;
-                this.model.status.latest = status.actions.length > 0 ? status.actions[status.actions.length - 1].name : 'N/A';
-                this.model.signed = ConsentStatusMapper.isSigned(this.model.status.actions);
-                this.model.declined = ConsentStatusMapper.isDeclined(this.model.status.actions);
+            let status = data.find((element) => element.foreignConsentId === this.model.historyData.ecoId);
+            if (status === undefined) {
+                return console.log(`Status not found for econsendId ${this.model.historyData.ecoId}`);
+            }
+            status.actions = status.actions.map((action, index) => {
+                return {
+                    ...action,
+                    index: index + 1,
+                };
             });
+            this.model.status = status;
+            this.model.status.latest = status.actions.length > 0 ? status.actions[status.actions.length - 1].name : 'N/A';
+            this.model.signed = ConsentStatusMapper.isSigned(this.model.status.actions);
+            this.model.declined = ConsentStatusMapper.isDeclined(this.model.status.actions);
         });
     }
 
@@ -144,8 +151,10 @@ export default class EconsentController extends WebcController {
         });
     }
 
-    getEconsentFilePath(trialSSI, consentSSI, version, fileName) {
-        return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version;
+    getEconsentFilePath(econsent, currentVersion) {
+        return this.TrialConsentService.PATH  + '/' + this.model.trialConsent.uid + '/ifc/'
+            + this.model.trialConsent.volatile.ifc.uid + '/consent/' + econsent.uid + '/versions/'
+            + currentVersion.version + '/' + currentVersion.attachment;
     }
 
     _downloadFile = () => {

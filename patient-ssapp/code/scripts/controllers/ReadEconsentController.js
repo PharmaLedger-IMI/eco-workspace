@@ -1,5 +1,6 @@
 import TrialService from '../services/TrialService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
+import TrialConsentService from "../services/TrialConsentService.js";
 
 const ecoServices = require('eco-services');
 const BaseRepository = ecoServices.BaseRepository;
@@ -27,42 +28,45 @@ export default class ReadEconsentController extends WebcController {
             currentPage: 1,
             pagesNo: 0
         }
-        this._initConsent();
         this._initHandlers();
     }
 
-    _initServices() {
+    async _initServices() {
         this.TrialService = new TrialService();
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.PATIENT_IDENTITY);
         this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES);
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT);
-    }
-
-    _initConsent() {
-        this.TrialService.getEconsent(this.model.historyData.trialuid, this.model.historyData.ecoId, (err, econsent) => {
+        this.TrialConsentService = new TrialConsentService();
+        this.TrialConsentService.getOrCreate((err, trialConsent) => {
             if (err) {
                 return console.log(err);
             }
-            let ecoVersion = this.model.historyData.ecoVersion;
-            this.model.econsent = econsent;
-            let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
-            let econsentFilePath = this.getEconsentFilePath(this.model.historyData.trialuid, this.model.historyData.ecoId, ecoVersion, currentVersion.attachment);
-            this.FileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
-            this._downloadFile();
-            this.EconsentsStatusRepository.findAll((err, data) => {
-                if (err) {
-                    return console.error(err);
-                }
-                let relevantStatuses = data.filter((element) => element.foreignConsentId === this.model.historyData.ecoId);
-                let currentStatus = relevantStatuses.length > 0 ? relevantStatuses[relevantStatuses.length - 1] : {actions: []}
+            this.model.trialConsent = trialConsent;
+            this._initConsent();
+        });
+    }
 
-                this.model.status = currentStatus;
-                this.model.signed = ConsentStatusMapper.isSigned(this.model.status.actions);
-                this.model.declined = ConsentStatusMapper.isDeclined(this.model.status.actions);
-                this.model.required = ConsentStatusMapper.isRequired(this.model.status.actions);
-                this.model.withdraw = ConsentStatusMapper.isWithdraw(this.model.status.actions);
-                this.model.withdrawIntention = ConsentStatusMapper.isWithdrawIntention(this.model.status.actions);
-            });
+    _initConsent() {
+        let econsent = this.model.trialConsent.volatile.ifc.consents.find(c => c.uid === this.model.historyData.ecoId)
+        let ecoVersion = this.model.historyData.ecoVersion;
+        this.model.econsent = econsent;
+        let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
+        let econsentFilePath = this.getEconsentFilePath(econsent, currentVersion);
+        this.FileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
+        this._downloadFile();
+        this.EconsentsStatusRepository.findAll((err, data) => {
+            if (err) {
+                return console.error(err);
+            }
+            let relevantStatuses = data.filter((element) => element.foreignConsentId === this.model.historyData.ecoId);
+            let currentStatus = relevantStatuses.length > 0 ? relevantStatuses[relevantStatuses.length - 1] : {actions: []}
+
+            this.model.status = currentStatus;
+            this.model.signed = ConsentStatusMapper.isSigned(this.model.status.actions);
+            this.model.declined = ConsentStatusMapper.isDeclined(this.model.status.actions);
+            this.model.required = ConsentStatusMapper.isRequired(this.model.status.actions);
+            this.model.withdraw = ConsentStatusMapper.isWithdraw(this.model.status.actions);
+            this.model.withdrawIntention = ConsentStatusMapper.isWithdrawIntention(this.model.status.actions);
         });
     }
 
@@ -80,8 +84,10 @@ export default class ReadEconsentController extends WebcController {
         this.responseCallback(undefined, response);
     }
 
-    getEconsentFilePath(trialSSI, consentSSI, version, fileName) {
-        return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version + '/' + fileName;
+    getEconsentFilePath(econsent, currentVersion) {
+        return this.TrialConsentService.PATH  + '/' + this.model.trialConsent.uid + '/ifc/'
+            + this.model.trialConsent.volatile.ifc.uid + '/consent/' + econsent.uid + '/versions/'
+            + currentVersion.version + '/' + currentVersion.attachment;
     }
 
     _attachHandlerSign() {
@@ -256,7 +262,6 @@ export default class ReadEconsentController extends WebcController {
             if (myDiv.id === 'canvas-wrapper'
                 && myDiv.offsetHeight + myDiv.scrollTop >= myDiv.scrollHeight - 1) {
                 this.model.showControls = true;
-
             }
         }, {capture: true});
     }

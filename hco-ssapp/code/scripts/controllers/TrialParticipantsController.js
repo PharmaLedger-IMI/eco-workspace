@@ -1,8 +1,9 @@
+import HCOService from '../services/HCOService.js';
+
 const {WebcController} = WebCardinal.controllers;
 import SiteService from '../services/SiteService.js';
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
-
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
@@ -30,12 +31,14 @@ export default class TrialParticipantsController extends WebcController {
         this._getSite();
     }
 
-    _initServices() {
+    async _initServices() {
+        this.HCOService = new HCOService();
         this.TrialService = new TrialService();
         this.TrialParticipantService = new TrialParticipantsService();
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
         this.SiteService = new SiteService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
     }
 
     _initHandlers() {
@@ -249,8 +252,14 @@ export default class TrialParticipantsController extends WebcController {
         trialParticipant.actionNeeded = 'No action required';
         this.model.trialParticipants.push(trialParticipant);
         this.sendMessageToPatient(
-            'add-to-trial',
+            Constants.MESSAGES.HCO.ADD_PATIENT_TO_TRIAL,
             this.model.trialSSI,
+            {tpNumber: '', tpName: tp.name, did: tp.did},
+            Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL
+        );
+        this.sendMessageToPatient(
+            Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_PATIENT,
+            this.model.hcoDSU.volatile.site.uid,
             {tpNumber: '', tpName: tp.name, did: tp.did},
             Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL
         );

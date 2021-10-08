@@ -11,6 +11,10 @@ const MESSAGES = {
         ADD_SITE : 'add-site',
         ASQ_QUESTION: 'ask-question',
         ADD_TRIAl_CONSENT : 'add-trial-consent',
+        ADD_PATIENT_TO_TRIAL: 'add-to-trial',
+        // NEW MESSAGES
+        SEND_HCO_DSU_TO_PATIENT: 'send-hco-dsu-to-patient',
+
         COMMUNICATION: {
             SPONSOR: {
                 SIGN_ECONSENT: 'HCO signed econsent',
