@@ -85,18 +85,7 @@ export default class HomeController extends WebcController {
                 return console.error(err);
             }
             switch (data.message.operation) {
-                case Constants.MESSAGES.HCO.ADD_TRIAL: {
 
-                    this._saveNotification(data.message, 'New trial was added', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
-
-                    this.TrialService.mountTrial(data.message.ssi, (err, trial) => {
-                        if (err) {
-                            return console.log(err);
-                        }
-
-                    });
-                    break;
-                }
                 case Constants.MESSAGES.HCO.ADD_CONSENT_VERSION: {
                     this._saveNotification(data.message, 'New ecosent version was added', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
                     this._reMountTrialAndSendRefreshMessageToAllParticipants();
@@ -105,13 +94,6 @@ export default class HomeController extends WebcController {
                 case Constants.MESSAGES.HCO.ADD_CONSENT: {
                     this._saveNotification(data.message, 'New ecosent  was added', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
                     this._reMountTrialAndSendRefreshMessageToAllParticipants();
-                    break;
-                }
-                case Constants.MESSAGES.HCO.DELETE_TRIAL: {
-                    break;
-                }
-                case Constants.MESSAGES.HCO.UPDATE_ECOSENT: {
-                    this._updateEconsentWithDetails(data.message);
                     break;
                 }
                 case Constants.MESSAGES.HCO.SITE_STATUS_CHANGED: {

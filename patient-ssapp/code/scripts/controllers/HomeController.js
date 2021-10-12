@@ -31,7 +31,6 @@ export default class HomeController extends WebcController {
         this.CommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
         this.TrialConsentService = new TrialConsentService();
         this.model.trialConsent = await this.TrialConsentService.getOrCreateAsync();
-
         this._handleMessages();
     }
 
@@ -66,13 +65,8 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case Constants.MESSAGES.PATIENT.ADD_TO_TRIAL : {
-                    this.saveNotification(data);
-                    let hcoIdentity = {
-                        did: data.did,
-                        domain: data.domain
-                    }
-                    this._saveTrialParticipantInfo(hcoIdentity, data.message.useCaseSpecifics);
-                    this.mountTrial(data);
+
+                    this._handleAddTrial(data);
                     break;
                 }
                 case Constants.MESSAGES.PATIENT.SCHEDULE_VISIT : {
@@ -146,17 +140,15 @@ export default class HomeController extends WebcController {
     }
 
     async _saveConsentsStatuses(consents, did) {
-        for (const consent of consents) {
-            let i = consents.indexOf(consent);
-            consent.actions = [];
-            if (consent.type === 'Mandatory') {
+        if (consents) {
+            for (const consent of consents) {
+                let i = consents.indexOf(consent);
+                consent.actions = [];
                 consent.actions.push({name: 'required'});
+                consent.foreignConsentId = consent.keySSI;
+                consent.tpDid = did;
+                let eco = await this.EconsentsStatusRepository.createAsync(consent);
             }
-            consent.foreignConsentId = consent.keySSI;
-
-            consent.tpDid = did;
-            let eco = await this.EconsentsStatusRepository.createAsync(consent);
-
         }
     }
 
@@ -209,8 +201,6 @@ export default class HomeController extends WebcController {
 
         let trial = await this.TrialService.mountTrialAsync(data.message.ssi);
         this.model.trials?.push(trial);
-
-        this._saveConsentsStatuses(this.model.trialConsent.volatile.ifc.consents, data.message.useCaseSpecifics.did);
     }
 
 
@@ -242,6 +232,16 @@ export default class HomeController extends WebcController {
         })
     }
 
+    async _handleAddTrial(data){
+        this.saveNotification(data);
+        let hcoIdentity = {
+            did: data.did,
+            domain: data.domain
+        }
+        await this._saveTrialParticipantInfo(hcoIdentity, data.message.useCaseSpecifics);
+        await this.mountTrial(data);
+        await this._saveConsentsStatuses(this.model.trialConsent.volatile?.ifc?.consents, data.message.useCaseSpecifics.did);
+    }
     _updateQuestion(data) {
         if (data.question) {
             this.QuestionsRepository.update(data.question.pk, data.question, (err, created) => {

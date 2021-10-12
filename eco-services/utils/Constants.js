@@ -3,7 +3,7 @@ const MESSAGES = {
     HCO: {
         ADD_TRIAL : 'add-trial',
         ADD_CONSENT_VERSION: 'add-econsent-version',
-        ADD_CONSENT : 'add-consent',
+        ADD_CONSENT : 'add-site-consent',
         DELETE_TRIAL : 'delete-trial',
         UPDATE_ECOSENT : 'update-econsent',
         SITE_STATUS_CHANGED: 'site-status-change',

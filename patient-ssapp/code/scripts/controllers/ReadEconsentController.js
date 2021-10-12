@@ -60,7 +60,6 @@ export default class ReadEconsentController extends WebcController {
             }
             let relevantStatuses = data.filter((element) => element.foreignConsentId === this.model.historyData.ecoId);
             let currentStatus = relevantStatuses.length > 0 ? relevantStatuses[relevantStatuses.length - 1] : {actions: []}
-
             this.model.status = currentStatus;
             this.model.signed = ConsentStatusMapper.isSigned(this.model.status.actions);
             this.model.declined = ConsentStatusMapper.isDeclined(this.model.status.actions);

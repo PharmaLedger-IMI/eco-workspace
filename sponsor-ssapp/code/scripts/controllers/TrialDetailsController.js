@@ -237,7 +237,7 @@ export default class TrialDetailsController extends WebcController {
           const response = event.detail;
           await this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          this.sendMessageToHco('add-site-consent', response.keySSI, 'Trial consent', selectedSite.did);
+          this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_CONSENT, response.keySSI, 'Trial consent', selectedSite.did);
 
           eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
         },
