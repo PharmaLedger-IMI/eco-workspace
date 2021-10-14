@@ -65,8 +65,7 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case Constants.MESSAGES.PATIENT.ADD_TO_TRIAL : {
-
-                    this._handleAddTrial(data);
+                    this._handleAddToTrial(data);
                     break;
                 }
                 case Constants.MESSAGES.PATIENT.SCHEDULE_VISIT : {
@@ -87,7 +86,12 @@ export default class HomeController extends WebcController {
                     this._updateQuestion(data.message.useCaseSpecifics);
                 }
                 case Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_PATIENT: {
-                    this.TrialConsentService.mountIFC(data.message.ssi, (err, data) => {
+                    this.TrialConsentService.mountIFC(data.message.ssi, (err, trialConsent) => {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        this.model.trialConsent = trialConsent;
+                        this._handleAddToTrial(data);
                     })
                     // this.saveNotification(data);
                     // this._updateQuestion(data.message.useCaseSpecifics);
@@ -197,9 +201,8 @@ export default class HomeController extends WebcController {
         });
     }
 
-    async mountTrial(data) {
-
-        let trial = await this.TrialService.mountTrialAsync(data.message.ssi);
+    async mountTrial(trialSSI) {
+        let trial = await this.TrialService.mountTrialAsync(trialSSI);
         this.model.trials?.push(trial);
     }
 
@@ -232,16 +235,17 @@ export default class HomeController extends WebcController {
         })
     }
 
-    async _handleAddTrial(data){
+    async _handleAddToTrial(data){
         this.saveNotification(data);
         let hcoIdentity = {
             did: data.did,
             domain: data.domain
         }
         await this._saveTrialParticipantInfo(hcoIdentity, data.message.useCaseSpecifics);
-        await this.mountTrial(data);
+        await this.mountTrial(data.message.useCaseSpecifics.trialSSI);
         await this._saveConsentsStatuses(this.model.trialConsent.volatile?.ifc?.consents, data.message.useCaseSpecifics.did);
     }
+
     _updateQuestion(data) {
         if (data.question) {
             this.QuestionsRepository.update(data.question.pk, data.question, (err, created) => {

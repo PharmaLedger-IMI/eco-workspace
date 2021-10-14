@@ -124,7 +124,8 @@ export default class TrialController extends WebcController {
             useCaseSpecifics: {
                 tpName: trialParticipant.name,
                 did: trialParticipant.did,
-                sponsorIdentity: trialParticipant.sponsorIdentity
+                sponsorIdentity: trialParticipant.sponsorIdentity,
+                trialSSI: ssi
             },
             shortDescription: shortMessage,
         });
