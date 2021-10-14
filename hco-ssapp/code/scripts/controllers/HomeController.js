@@ -66,7 +66,7 @@ export default class HomeController extends WebcController {
         });
     }
 
-    _reMountTrialAndSendRefreshMessageToAllParticipants() {
+    _reMountTrialAndSendRefreshMessageToAllParticipants(data) {
         this.TrialService.mountTrial(data.message.ssi, () => {
         });
         this.TrialParticipantRepository.findAll((err, tps) => {
@@ -93,7 +93,7 @@ export default class HomeController extends WebcController {
                 }
                 case Constants.MESSAGES.HCO.ADD_CONSENT: {
                     this._saveNotification(data.message, 'New ecosent  was added', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
-                    this._reMountTrialAndSendRefreshMessageToAllParticipants();
+                    this._reMountTrialAndSendRefreshMessageToAllParticipants(data);
                     break;
                 }
                 case Constants.MESSAGES.HCO.SITE_STATUS_CHANGED: {
