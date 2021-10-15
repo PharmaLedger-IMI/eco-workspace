@@ -251,22 +251,22 @@ export default class TrialParticipantsController extends WebcController {
         let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
         trialParticipant.actionNeeded = 'No action required';
         this.model.trialParticipants.push(trialParticipant);
-        this.sendMessageToPatient(
-            Constants.MESSAGES.HCO.ADD_PATIENT_TO_TRIAL,
-            this.model.trialSSI,
-            {tpNumber: '', tpName: tp.name, did: tp.did},
-            Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL
-        );
+
         this.sendMessageToPatient(
             Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_PATIENT,
             this.model.hcoDSU.volatile.site.uid,
-            {tpNumber: '', tpName: tp.name, did: tp.did},
+            {
+                tpNumber: '',
+                tpName: tp.name,
+                did: tp.did
+            },
+            this.model.trialSSI,
             Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL
         );
         this._sendMessageToSponsor();
     }
 
-    sendMessageToPatient(operation, ssi, tp, shortMessage) {
+    sendMessageToPatient(operation, ssi, tp, trialSSI, shortMessage) {
         this.CommunicationService.sendMessage(tp.did, {
             operation: operation,
             ssi: ssi,
@@ -274,6 +274,7 @@ export default class TrialParticipantsController extends WebcController {
                 tpNumber: tp.tpNumber,
                 tpName: tp.tpName,
                 tpDid: tp.did,
+                trialSSI: trialSSI,
                 sponsorIdentity: this.model.site.sponsorIdentity,
                 site: {
                     name: this.model.site?.name,
