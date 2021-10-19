@@ -67,14 +67,18 @@ export default class HomeController extends WebcController {
     }
 
     _reMountTrialAndSendRefreshMessageToAllParticipants(data) {
-        this.TrialService.mountTrial(data.message.ssi, () => {
+        this.HCOService.cloneIFCs((err, icfs) => {
+            if (err) {
+                return console.log(err);
+            }
+            console.log('ICFS', icfs);
         });
         this.TrialParticipantRepository.findAll((err, tps) => {
             if (err) {
                 return console.log(err);
             }
             tps.forEach(tp => {
-                this.sendMessageToPatient(tp.did, Constants.MESSAGES.PATIENT.REFRESH_TRIAL, data.message.ssi, Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.REFRESH_TRIAL);
+                this.sendMessageToPatient(tp, Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_PATIENT, data.message.ssi, Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.REFRESH_TRIAL);
             })
         })
     }
@@ -84,11 +88,15 @@ export default class HomeController extends WebcController {
             if (err) {
                 return console.error(err);
             }
+            let senderIdentity = {
+                did: data.did,
+                domain: data.domain
+            }
             switch (data.message.operation) {
 
                 case Constants.MESSAGES.HCO.ADD_CONSENT_VERSION: {
                     this._saveNotification(data.message, 'New ecosent version was added', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
-                    this._reMountTrialAndSendRefreshMessageToAllParticipants();
+                    this._reMountTrialAndSendRefreshMessageToAllParticipants(data);
                     break;
                 }
                 case Constants.MESSAGES.HCO.ADD_CONSENT: {
@@ -109,12 +117,13 @@ export default class HomeController extends WebcController {
                 }
                 case Constants.MESSAGES.HCO.ADD_SITE: {
                     this._saveNotification(data.message, 'Your site was added to the trial ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
-
+                    debugger
                     this.HCOService.mountSite(data.message.ssi, (err, site) => {
                         if (err) {
                             return console.log(err);
                         }
-                        console.log('mounted site', site);
+                        console.log('Mounted site', site);
+                        this.sendMessageToSponsor(senderIdentity, Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_SPONSOR, this.HCOService.ssi, null);
                     })
 
                     this.SiteService.mountSite(data.message.ssi, (err, site) => {
@@ -167,15 +176,6 @@ export default class HomeController extends WebcController {
                     //     });
                     // }
 
-                    break;
-                }
-                case 'add-site-consent': {
-                    this.HCOService.cloneIFCs((err, data) => {
-                        if (err) {
-                            return console.log(err);
-                        }
-                        console.log('ICFS', data);
-                    });
                     break;
                 }
             }
@@ -271,8 +271,22 @@ export default class HomeController extends WebcController {
         });
     }
 
-    sendMessageToPatient(did, operation, ssi, shortMessage) {
-        this.CommunicationService.sendMessage(did, {
+    sendMessageToPatient(trialParticipant, operation, ssi, shortMessage) {
+        this.CommunicationService.sendMessage(trialParticipant.did, {
+            operation: operation,
+            ssi: ssi,
+            useCaseSpecifics: {
+                tpName: trialParticipant.name,
+                did: trialParticipant.did,
+                sponsorIdentity: trialParticipant.sponsorIdentity,
+                trialSSI: ssi
+            },
+            shortDescription: shortMessage,
+        });
+    }
+
+    sendMessageToSponsor(sponsorIdentity, operation, ssi, shortMessage) {
+        this.CommunicationService.sendMessage(sponsorIdentity, {
             operation: operation,
             ssi: ssi,
             shortDescription: shortMessage,

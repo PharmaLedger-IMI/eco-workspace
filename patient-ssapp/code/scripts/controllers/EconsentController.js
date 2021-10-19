@@ -154,7 +154,7 @@ export default class EconsentController extends WebcController {
     getEconsentFilePath(econsent, currentVersion) {
         return this.TrialConsentService.PATH  + '/' + this.model.trialConsent.uid + '/ifc/'
             + this.model.trialConsent.volatile.ifc.uid + '/consent/' + econsent.uid + '/versions/'
-            + currentVersion.version + '/' + currentVersion.attachment;
+            + currentVersion.version;
     }
 
     _downloadFile = () => {

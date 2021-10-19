@@ -42,30 +42,26 @@ export default class SignManuallyController extends WebcController {
     }
 
     _initConsent() {
-        this.TrialService.getEconsent(this.model.historyData.trialuid, this.model.historyData.ecoId, (err, econsent) => {
+        let econsent = this.model.trialConsent.volatile.ifc.consents.find(c => c.uid === this.model.historyData.ecoId)
+        let ecoVersion = this.model.historyData.ecoVersion;
+        this.model.econsent = econsent;
+        let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
+        let econsentFilePath = this.getEconsentFilePath(econsent, currentVersion);;
+        this.FileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
+        this._downloadFile();
+        this.EconsentsStatusRepository.findAll((err, data) => {
             if (err) {
-                return console.log(err);
+                return console.error(err);
             }
-            let ecoVersion = this.model.historyData.ecoVersion;
-            this.model.econsent = econsent;
-            let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
-            let econsentFilePath = this.getEconsentFilePath(this.model.historyData.trialuid, this.model.historyData.ecoId, ecoVersion, currentVersion.attachment);
-            this.FileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
-            this._downloadFile();
-            this.EconsentsStatusRepository.findAll((err, data) => {
-                if (err) {
-                    return console.error(err);
-                }
-                let relevantStatuses = data.filter((element) => element.foreignConsentId === this.model.historyData.ecoId);
-                let currentStatus = relevantStatuses.length > 0 ? relevantStatuses[relevantStatuses.length - 1] : {actions: []}
+            let relevantStatuses = data.filter((element) => element.foreignConsentId === this.model.historyData.ecoId);
+            let currentStatus = relevantStatuses.length > 0 ? relevantStatuses[relevantStatuses.length - 1] : {actions: []}
 
-                this.model.status = currentStatus;
-                this.model.signed = ConsentStatusMapper.isSigned(this.model.status.actions);
-                this.model.declined = ConsentStatusMapper.isDeclined(this.model.status.actions);
-                this.model.required = ConsentStatusMapper.isRequired(this.model.status.actions);
-                this.model.withdraw = ConsentStatusMapper.isWithdraw(this.model.status.actions);
-                this.model.withdrawIntention = ConsentStatusMapper.isWithdrawIntention(this.model.status.actions);
-            });
+            this.model.status = currentStatus;
+            this.model.signed = ConsentStatusMapper.isSigned(this.model.status.actions);
+            this.model.declined = ConsentStatusMapper.isDeclined(this.model.status.actions);
+            this.model.required = ConsentStatusMapper.isRequired(this.model.status.actions);
+            this.model.withdraw = ConsentStatusMapper.isWithdraw(this.model.status.actions);
+            this.model.withdrawIntention = ConsentStatusMapper.isWithdrawIntention(this.model.status.actions);
         });
     }
 
@@ -80,8 +76,10 @@ export default class SignManuallyController extends WebcController {
         this.responseCallback(undefined, response);
     }
 
-    getEconsentFilePath(trialSSI, consentSSI, fileName) {
-        return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + fileName;
+    getEconsentFilePath(econsent, currentVersion) {
+        return this.TrialConsentService.PATH  + '/' + this.model.trialConsent.uid + '/ifc/'
+            + this.model.trialConsent.volatile.ifc.uid + '/consent/' + econsent.uid + '/versions/'
+            + currentVersion.version;
     }
 
     _attachHandlerSign() {
