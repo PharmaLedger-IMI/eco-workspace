@@ -48,7 +48,7 @@ export default class EconsentController extends WebcController {
     }
 
     _initEconsent() {
-        let econsent = this.model.trialConsent.volatile.ifc.consents.find(c => c.uid === this.model.historyData.ecoId)
+        let econsent = this.model.trialConsent.volatile.ifc.find(c => c.uid === this.model.historyData.ecoId)
         if (econsent === undefined) {
             return console.log("Econsent does not exist.");
         }

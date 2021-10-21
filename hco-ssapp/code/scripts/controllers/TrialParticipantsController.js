@@ -249,6 +249,7 @@ export default class TrialParticipantsController extends WebcController {
         tp.enrolledDate = currentDate.toLocaleDateString();
         tp.trialSSI = this.model.trial.keySSI;
         let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
+        await this.HCOService.addTrialParticipantAsync(tp);
         trialParticipant.actionNeeded = 'No action required';
         this.model.trialParticipants.push(trialParticipant);
 

@@ -45,7 +45,10 @@ export default class TrialConsentService extends DSUService {
             }
             entity.volatile = {};
             subEntities.forEach((item) => {
-                entity.volatile[item.objectName] = item;
+                if (entity.volatile[item.objectName] === undefined) {
+                    entity.volatile[item.objectName] = [];
+                }
+                entity.volatile[item.objectName].push(item);
             })
             callback(undefined, entity);
         })

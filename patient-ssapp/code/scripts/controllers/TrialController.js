@@ -67,7 +67,10 @@ export default class TrialController extends WebcController {
                 statusesMappedByConsent[status.foreignConsentId] = status;
             })
 
-            let consents = this.model.trialConsent.volatile.ifc.consents;
+            let consents = this.model.trialConsent.volatile?.ifc;
+            if (consents === undefined) {
+                consents = [];
+            }
             this.model.econsents = consents?.map(econsent => {
                 let importantVersion = econsent.versions.sort((a, b) => new Date(b.versionDate) - new Date(a.versionDate))[0]
                 let status = statusesMappedByConsent[econsent.uid];

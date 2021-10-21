@@ -57,10 +57,11 @@ export default class HomeController extends WebcController {
             if (err) {
                 return console.error(err);
             }
+
             switch (data.message.operation) {
                 case  Constants.MESSAGES.PATIENT.REFRESH_TRIAL: {
                     this.TrialService.reMountTrial(data.message.ssi, (err, trial) => {
-                        this._saveConsentsStatuses(this.model.trialConsent.volatile.ifc.consents, this.model.tp?.did);
+                        this._saveConsentsStatuses(this.model.trialConsent.volatile.ifc, this.model.tp?.did);
                     });
                     break;
                 }
@@ -87,24 +88,25 @@ export default class HomeController extends WebcController {
                     this._updateQuestion(data.message.useCaseSpecifics);
                 }
                 case Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_PATIENT: {
-                    this.TrialConsentService.mountIFC(data.message.ssi, (err, trialConsent) => {
-                        if (err) {
-                            return console.log(err);
-                        }
-                        this.model.trialConsent = trialConsent;
-                        let trialExists = this.model.trials.findIndex(t => t.uid == data.message.useCaseSpecifics.trialSSI) >= 0;
-                        if (!trialExists) {
-                            this._handleAddToTrial(data);
-                        }
-                        this._saveConsentsStatuses(this.model.trialConsent.volatile?.ifc?.consents, data.message.useCaseSpecifics.did);
-                    })
-                    // this.saveNotification(data);
-                    // this._updateQuestion(data.message.useCaseSpecifics);
+                    this._handleAddToTrial(data);
+                    this._mountIFCAndSaveConsentStatuses(data);
+                }
+                case Constants.MESSAGES.HCO.SEND_REFRESH_CONSENTS_TO_PATIENT: {
+                    this._mountIFCAndSaveConsentStatuses(data);
                 }
             }
         });
     }
 
+    _mountIFCAndSaveConsentStatuses(data) {
+        this.TrialConsentService.mountIFC(data.message.ssi, (err, trialConsent) => {
+            if (err) {
+                return console.log(err);
+            }
+            this.model.trialConsent = trialConsent;
+            this._saveConsentsStatuses(this.model.trialConsent.volatile?.ifc, data.message.useCaseSpecifics.did);
+        })
+    }
 
     _attachHandlerTrialClick() {
         this.onTagEvent('home:trial', 'click', (trial, target, event) => {
@@ -138,26 +140,24 @@ export default class HomeController extends WebcController {
     }
 
     _attachHandlerVisits() {
-
         this.onTagClick('home:visits', (event) => {
             this.navigateToPageTag('visits-procedures', {
                 tpDid: this.model.tp.did,
                 tpUid: this.model.tp.uid
             });
-            ;
         });
     }
 
     async _saveConsentsStatuses(consents, did) {
-        if (consents) {
-            for (const consent of consents) {
-                let i = consents.indexOf(consent);
-                consent.actions = [];
-                consent.actions.push({name: 'required'});
-                consent.foreignConsentId = consent.keySSI;
-                consent.tpDid = did;
-                let eco = await this.EconsentsStatusRepository.createAsync(consent);
-            }
+        if (consents === undefined) {
+            consents = [];
+        }
+        for (const consent of consents) {
+            consent.actions = [];
+            consent.actions.push({name: 'required'});
+            consent.foreignConsentId = consent.keySSI;
+            consent.tpDid = did;
+            await this.EconsentsStatusRepository.createAsync(consent);
         }
     }
 
@@ -185,12 +185,9 @@ export default class HomeController extends WebcController {
     }
 
     async _updateTrialParticipant(data) {
-
         this.model.tp.number = data.number;
         await this.TrialParticipantRepository.updateAsync(this.model.tp.uid, this.model.tp);
-
     }
-
 
     async saveNotification(message) {
         let notification = {
@@ -199,11 +196,7 @@ export default class HomeController extends WebcController {
             viewed: false,
             startDate: DateTimeService.convertStringToLocaleDate(),
         }
-        let not = await this.NotificationsRepository.createAsync(notification, (err, data) => {
-            if (err) {
-                return console.error(err);
-            }
-        });
+        await this.NotificationsRepository.createAsync(notification, () => {});
     }
 
     async mountTrial(trialSSI) {
@@ -218,12 +211,7 @@ export default class HomeController extends WebcController {
                 return console.error(err);
             }
             this.model.tp.hasNewVisits = true;
-            this.TrialParticipantRepository.update(this.model.tp.uid, this.model.tp, (err, data) => {
-                if (err) {
-                    console.log(err);
-                }
-            })
-
+            this.TrialParticipantRepository.update(this.model.tp.uid, this.model.tp, () => {})
         })
     }
 
@@ -232,11 +220,7 @@ export default class HomeController extends WebcController {
             if (err || visits.length === 0) {
                 return;
             }
-            this.VisitsAndProceduresRepository.update(visits[0].pk, visitToBeUpdated, (err, updatedVisit) => {
-                if (err) {
-                    return err;
-                }
-            })
+            this.VisitsAndProceduresRepository.update(visits[0].pk, visitToBeUpdated, () => {})
         })
     }
 
@@ -252,11 +236,7 @@ export default class HomeController extends WebcController {
 
     _updateQuestion(data) {
         if (data.question) {
-            this.QuestionsRepository.update(data.question.pk, data.question, (err, created) => {
-                if (err) {
-                    console.log(err);
-                }
-            })
+            this.QuestionsRepository.update(data.question.pk, data.question, () => {})
         }
     }
 }

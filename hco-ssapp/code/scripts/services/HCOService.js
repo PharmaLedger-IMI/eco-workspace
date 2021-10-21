@@ -45,7 +45,10 @@ export default class HCOService extends DSUService {
             }
             entity.volatile = {};
             subEntities.forEach((item) => {
-                entity.volatile[item.objectName] = item;
+                if (entity.volatile[item.objectName] === undefined) {
+                    entity.volatile[item.objectName] = [];
+                }
+                entity.volatile[item.objectName].push(item);
             })
             callback(undefined, entity);
         })
@@ -53,6 +56,10 @@ export default class HCOService extends DSUService {
 
     getOrCreateAsync = async () => {
         return this.asyncMyFunction(this.getOrCreate, [])
+    }
+
+    mountTrial = (trialSSI, callback) => {
+        this.mountSubEntity(trialSSI, 'trial', callback);
     }
 
     mountSite = (siteSSI, callback) => {
@@ -112,6 +119,34 @@ export default class HCOService extends DSUService {
                 getServiceDsu(siteConsents.pop());
             });
         });
+    }
+
+    addTrialParticipant = (tp, callback) => {
+        let anonymousTP = this.anonymizeParticipant(tp);
+        let tpSubPath = this._getSubPath('tps');
+        if (this.ssi !== null) {
+            return this.getEntity(this.ssi, (err, entity) => {
+                if (err) {
+                    return callback(err);
+                }
+                this.saveEntity(anonymousTP, tpSubPath, (err, entity) => callback(err, entity));
+            })
+        }
+        this.saveEntity(anonymousTP, tpSubPath, (err, entity) => callback(err, entity));
+    }
+
+    addTrialParticipantAsync = async (tp) => {
+        return this.asyncMyFunction(this.addTrialParticipant, [tp])
+    }
+
+    anonymizeParticipant = (tp) => {
+        return {
+            ...tp,
+            birthdate: '-',
+            enrolledDate: '-',
+            did: '-',
+            name: '-',
+        };
     }
 
     mountSubEntity = (subEntitySSI, subEntityName, callback) => {

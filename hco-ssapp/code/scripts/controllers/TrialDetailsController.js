@@ -1,4 +1,5 @@
 import SiteService from "../services/SiteService.js";
+import HCOService from "../services/HCOService.js";
 
 const {WebcController} = WebCardinal.controllers;
 import TrialService from '../services/TrialService.js';
@@ -36,16 +37,18 @@ export default class TrialDetailsController extends WebcController {
         });
         this._initServices();
         this._initHandlers();
-        this._initTrial(this.model.trialSSI);
         this._getSite();
     }
 
-    _initServices() {
-        this.TrialService = new TrialService();
+    async _initServices() {
         this.SiteService = new SiteService();
         this.TrialParticipantService = new TrialParticipantsService();
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
+
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        this._initTrial(this.model.trialSSI);
     }
 
     _initHandlers() {
@@ -60,43 +63,37 @@ export default class TrialDetailsController extends WebcController {
         });
     }
 
-    _initTrial(keySSI) {
-        this.TrialService.getTrial(keySSI, async (err, trial) => {
+    async _initTrial(keySSI) {
+        this.model.trial = this.model.hcoDSU.volatile.trial.find(t => t.uid === this.model.trialSSI);
+        if (this.model.trial === undefined) {
+            this.model.trial = {};
+        }
+        this.model.trialParticipants = (await this.TrialParticipantRepository.findAllAsync()).filter(tp => tp.trialNumber === this.model.trial.id);
+        this.model.subjects.planned = this.model.trialParticipants.length;
+        this.model.subjects.enrolled = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED).length;
+        this.model.subjects.screened = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.SCREENED).length;
+        this.model.subjects.withdrew = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW).length;
+        this.model.subjects.declined = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.DECLINED).length;
+        this.model.subjects.percentage = ((this.model.subjects.enrolled * 100) / this.model.subjects.planned).toFixed(2) + '%';
+
+        this.TrialService.getEconsents(this.model.trial.uid, (err, econsents) => {
             if (err) {
                 return console.log(err);
             }
-            this.model.trial = trial;
-
-            // this.model.trialParticipants1 = await this.TrialParticipantRepository.filterAsync(`trialNumber == ${this.model.trial.id}`, 'asc', 30);
-            // this.model.trialParticipants2 = await this.TrialParticipantRepository.filterAsync([`__version >= 0`,`trialNumber == ${this.model.trial.id}`],'asc', 30);
-            this.model.trialParticipants = (await this.TrialParticipantRepository.findAllAsync()).filter(tp => tp.trialNumber === this.model.trial.id);
-            this.model.subjects.planned = this.model.trialParticipants.length;
-            this.model.subjects.enrolled = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.ENROLLED).length;
-            this.model.subjects.screened = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.SCREENED).length;
-            this.model.subjects.withdrew = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW).length;
-            this.model.subjects.declined = this.model.trialParticipants.filter(tp => tp.status === Constants.TRIAL_PARTICIPANT_STATUS.DECLINED).length;
-            this.model.subjects.percentage = ((this.model.subjects.enrolled * 100) / this.model.subjects.planned).toFixed(2) + '%';
-
-            this.TrialService.getEconsents(trial.uid, (err, econsents) => {
-                if (err) {
-                    return console.log(err);
+            this.model.econsents = econsents.map(econsent => {
+                return {
+                    ...econsent,
+                    versions: econsent.versions.map(v => {
+                        return {
+                            ...v,
+                            econsentSSI: econsent.uid,
+                            versionDateAsString: DateTimeService.convertStringToLocaleDate(v.versionDate)
+                        }
+                    })
                 }
-                this.model.econsents = econsents.map(econsent => {
-                    return {
-                        ...econsent,
-                        versions: econsent.versions.map(v => {
-                            return {
-                                ...v,
-                                econsentSSI: econsent.uid,
-                                versionDateAsString: DateTimeService.convertStringToLocaleDate(v.versionDate)
-                            }
-                        })
-                    }
-                });
-                this.model.econsentsSize = econsents.length;
-            })
-
-        });
+            });
+            this.model.econsentsSize = econsents.length;
+        })
     }
 
 

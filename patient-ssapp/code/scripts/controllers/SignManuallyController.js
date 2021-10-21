@@ -42,7 +42,7 @@ export default class SignManuallyController extends WebcController {
     }
 
     _initConsent() {
-        let econsent = this.model.trialConsent.volatile.ifc.consents.find(c => c.uid === this.model.historyData.ecoId)
+        let econsent = this.model.trialConsent.volatile.ifc.find(c => c.uid === this.model.historyData.ecoId)
         let ecoVersion = this.model.historyData.ecoVersion;
         this.model.econsent = econsent;
         let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);

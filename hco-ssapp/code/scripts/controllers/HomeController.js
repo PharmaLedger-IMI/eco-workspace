@@ -44,8 +44,6 @@ export default class HomeController extends WebcController {
     }
 
     async _initServices() {
-        this.HCOService = new HCOService();
-        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
         this.TrialService = new TrialService();
         this.StorageService = SharedStorage.getInstance();
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
@@ -53,6 +51,8 @@ export default class HomeController extends WebcController {
         this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS);
         this.SiteService = new SiteService();
         this.CommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
         this._handleMessages();
     }
 
@@ -67,19 +67,13 @@ export default class HomeController extends WebcController {
     }
 
     _reMountTrialAndSendRefreshMessageToAllParticipants(data) {
-        this.HCOService.cloneIFCs((err, icfs) => {
-            if (err) {
-                return console.log(err);
-            }
-            console.log('ICFS', icfs);
-        });
+        this.HCOService.cloneIFCs(() => {});
         this.TrialParticipantRepository.findAll((err, tps) => {
             if (err) {
                 return console.log(err);
             }
-            tps.forEach(tp => {
-                this.sendMessageToPatient(tp, Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_PATIENT, data.message.ssi, Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.REFRESH_TRIAL);
-            })
+            tps.forEach(tp => this.sendMessageToPatient(tp,
+                Constants.MESSAGES.HCO.SEND_REFRESH_CONSENTS_TO_PATIENT, data.message.ssi, null))
         })
     }
 
@@ -93,7 +87,6 @@ export default class HomeController extends WebcController {
                 domain: data.domain
             }
             switch (data.message.operation) {
-
                 case Constants.MESSAGES.HCO.ADD_CONSENT_VERSION: {
                     this._saveNotification(data.message, 'New ecosent version was added', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
                     this._reMountTrialAndSendRefreshMessageToAllParticipants(data);
@@ -117,73 +110,47 @@ export default class HomeController extends WebcController {
                 }
                 case Constants.MESSAGES.HCO.ADD_SITE: {
                     this._saveNotification(data.message, 'Your site was added to the trial ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
-                    debugger
                     this.HCOService.mountSite(data.message.ssi, (err, site) => {
                         if (err) {
                             return console.log(err);
                         }
-                        console.log('Mounted site', site);
-                        this.sendMessageToSponsor(senderIdentity, Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_SPONSOR, this.HCOService.ssi, null);
-                    })
-
-                    this.SiteService.mountSite(data.message.ssi, (err, site) => {
-                        if (err) {
-                            return console.log(err);
-                        }
-                        site.sponsorIdentity = {
-                            did: data.did,
-                            domain: data.domain
-                        }
-                        this.SiteService.updateSite(site, (err, data) => {
+                        site.sponsorIdentity = senderIdentity;
+                        this.HCOService.updateEntity(site, (err, updatedSite) => {
                             if (err) {
                                 return console.log(err);
                             }
-                            this.TrialService.mountTrial(site.trialKeySSI, (err, trial) => {
+                            this.HCOService.mountTrial(site.trialKeySSI, (err, trial) => {
                                 if (err) {
                                     return console.log(err);
                                 }
+                                this._updateHcoDSU();
+                                this.sendMessageToSponsor(senderIdentity, Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_SPONSOR, this.HCOService.ssi, null);
                             });
-                        })
+                        });
                     });
-
                     break;
                 }
-
                 case 'ask-question': {
                     this._saveQuestion(data.message);
                     break;
                 }
-
                 case Constants.MESSAGES.HCO.COMMUNICATION.TYPE.VISIT_RESPONSE: {
                     this._updateVisit(data.message);
                     break;
                 }
-
                 case Constants.MESSAGES.HCO.ADD_TRIAl_CONSENT: {
-
                     this._saveNotification(data.message, 'New consent was added to trial  ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
-
-
-                    // this.SiteService.mountSite(data.message.ssi, (err,site)){
-                    //     if (err) {
-                    //         return console.log(err);
-                    //     }
-                    //     this.TrialService.mountTrial(site.keySSI, (err, trial) => {
-                    //         if (err) {
-                    //             return console.log(err);
-                    //         }
-                    //
-                    //     });
-                    // }
-
                     break;
                 }
             }
         });
     }
 
-    _refreshSite(message) {
+    async _updateHcoDSU() {
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+    }
 
+    _refreshSite(message) {
         this.SiteService.mountSite(message.data.site, (err, site) => {
             if (err) {
                 return console.log(err);

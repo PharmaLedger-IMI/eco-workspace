@@ -44,10 +44,12 @@ export default class ReadEconsentController extends WebcController {
             this.model.trialConsent = trialConsent;
             this._initConsent();
         });
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
     }
 
     _initConsent() {
-        let econsent = this.model.trialConsent.volatile.ifc.consents.find(c => c.uid === this.model.historyData.ecoId)
+        let econsent = this.model.trialConsent.volatile.ifc.find(c => c.uid === this.model.historyData.ecoId)
         let ecoVersion = this.model.historyData.ecoVersion;
         this.model.econsent = econsent;
         let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
@@ -93,6 +95,7 @@ export default class ReadEconsentController extends WebcController {
         this.onTagEvent('econsent:sign', 'click', (model, target, event) => {
             event.preventDefault();
             event.stopImmediatePropagation();
+
             this.showModalFromTemplate(
                 'confirmation-alert',
                 (event) => {

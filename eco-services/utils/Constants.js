@@ -15,6 +15,8 @@ const MESSAGES = {
         // NEW MESSAGES
         SEND_HCO_DSU_TO_PATIENT: 'send-hco-dsu-to-patient',
         SEND_HCO_DSU_TO_SPONSOR: 'send-hco-dsu-to-sponsor',
+        SEND_REFRESH_CONSENTS_TO_PATIENT: 'send-refresh-consents',
+
 
         COMMUNICATION: {
             SPONSOR: {
