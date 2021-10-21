@@ -38,4 +38,8 @@ export default class TrialService extends DSUService {
     updateEconsent = (trialSSI, data, callback) => this.updateEntity(data, this._getEconsentsPath(trialSSI), callback);
 
     _getEconsentsPath = (keySSI) => this.PATH + '/' + keySSI + '/consent';
+
+    getVisits = (trialSSI, callback) => this.getEntities(this._getVisitsPath(trialSSI), callback);
+
+    _getVisitsPath = (keySSI) => this.PATH + '/' + keySSI + '/visits';
 }
