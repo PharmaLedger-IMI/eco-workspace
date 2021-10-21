@@ -14,6 +14,7 @@ const MESSAGES = {
         ADD_PATIENT_TO_TRIAL: 'add-to-trial',
         // NEW MESSAGES
         SEND_HCO_DSU_TO_PATIENT: 'send-hco-dsu-to-patient',
+        SEND_HCO_DSU_TO_SPONSOR: 'send-hco-dsu-to-sponsor',
 
         COMMUNICATION: {
             SPONSOR: {

@@ -66,6 +66,7 @@ export default class HomeController extends WebcController {
                 }
                 case Constants.MESSAGES.PATIENT.ADD_TO_TRIAL : {
                     this._handleAddToTrial(data);
+                    this._saveConsentsStatuses(this.model.trialConsent.volatile?.ifc?.consents, data.message.useCaseSpecifics.did);
                     break;
                 }
                 case Constants.MESSAGES.PATIENT.SCHEDULE_VISIT : {
@@ -91,7 +92,11 @@ export default class HomeController extends WebcController {
                             return console.log(err);
                         }
                         this.model.trialConsent = trialConsent;
-                        this._handleAddToTrial(data);
+                        let trialExists = this.model.trials.findIndex(t => t.uid == data.message.useCaseSpecifics.trialSSI) >= 0;
+                        if (!trialExists) {
+                            this._handleAddToTrial(data);
+                        }
+                        this._saveConsentsStatuses(this.model.trialConsent.volatile?.ifc?.consents, data.message.useCaseSpecifics.did);
                     })
                     // this.saveNotification(data);
                     // this._updateQuestion(data.message.useCaseSpecifics);
@@ -243,7 +248,6 @@ export default class HomeController extends WebcController {
         }
         await this._saveTrialParticipantInfo(hcoIdentity, data.message.useCaseSpecifics);
         await this.mountTrial(data.message.useCaseSpecifics.trialSSI);
-        await this._saveConsentsStatuses(this.model.trialConsent.volatile?.ifc?.consents, data.message.useCaseSpecifics.did);
     }
 
     _updateQuestion(data) {
