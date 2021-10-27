@@ -44,8 +44,6 @@ export default class ReadEconsentController extends WebcController {
             this.model.trialConsent = trialConsent;
             this._initConsent();
         });
-        this.HCOService = new HCOService();
-        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
     }
 
     _initConsent() {
@@ -87,8 +85,7 @@ export default class ReadEconsentController extends WebcController {
 
     getEconsentFilePath(econsent, currentVersion) {
         return this.TrialConsentService.PATH  + '/' + this.model.trialConsent.uid + '/ifc/'
-            + this.model.trialConsent.volatile.ifc.uid + '/consent/' + econsent.uid + '/versions/'
-            + currentVersion.version;
+            + econsent.uid + '/versions/' + currentVersion.version;
     }
 
     _attachHandlerSign() {

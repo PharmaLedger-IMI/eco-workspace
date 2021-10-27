@@ -57,7 +57,10 @@ export default class HomeController extends WebcController {
             if (err) {
                 return console.error(err);
             }
-
+            let hcoIdentity = {
+                did: data.did,
+                domain: data.domain
+            }
             switch (data.message.operation) {
                 case  Constants.MESSAGES.PATIENT.REFRESH_TRIAL: {
                     this.TrialService.reMountTrial(data.message.ssi, (err, trial) => {
@@ -73,10 +76,12 @@ export default class HomeController extends WebcController {
                 case Constants.MESSAGES.PATIENT.SCHEDULE_VISIT : {
                     this.saveNotification(data);
                     this._saveVisit(data.message.useCaseSpecifics.visit);
+                    break;
                 }
                 case Constants.MESSAGES.PATIENT.UPDATE_VISIT : {
                     this.saveNotification(data);
                     this._updateVisit(data.message.useCaseSpecifics.visit);
+                    break;
                 }
                 case Constants.MESSAGES.PATIENT.UPDATE_TP_NUMBER: {
                     this.saveNotification(data);
@@ -85,23 +90,50 @@ export default class HomeController extends WebcController {
                 }
                 case Constants.MESSAGES.PATIENT.QUESTION_RESPONSE: {
                     this.saveNotification(data);
-                    this._updateQuestion(data.message.useCaseSpecifics);
+                    this._updateQuestion(data.message.useCaseSpecifics)
+                    break;
                 }
                 case Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_PATIENT: {
                     this._handleAddToTrial(data);
-                    this._mountIFCAndSaveConsentStatuses(data);
+                    this._mountHCODSUAndSaveConsentStatuses(data, (err, data) => {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        this._sendTrialConsentToHCO(hcoIdentity);
+                    });
+                    break;
                 }
                 case Constants.MESSAGES.HCO.SEND_REFRESH_CONSENTS_TO_PATIENT: {
-                    this._mountIFCAndSaveConsentStatuses(data);
+                    this._mountICFAndSaveConsentStatuses(data, () => {});
+                    break;
                 }
             }
         });
     }
 
-    _mountIFCAndSaveConsentStatuses(data) {
+    _sendTrialConsentToHCO(hcoIdentity) {
+        let sendObject = {
+            operation: Constants.MESSAGES.PATIENT.SEND_TRIAL_CONSENT_DSU_TO_HCO,
+            ssi: this.TrialConsentService.ssi,
+            shortDescription: null,
+        };
+        this.CommunicationService.sendMessage(hcoIdentity, sendObject);
+    }
+
+    _mountHCODSUAndSaveConsentStatuses(data, callback) {
+        this.TrialConsentService.mountHCODSU(data.message.ssi, (err, trialConsent) => {
+            if (err) {
+                return callback(err);
+            }
+            this.model.trialConsent = trialConsent;
+            callback(err, trialConsent);
+        })
+    }
+
+    _mountICFAndSaveConsentStatuses(data, callback) {
         this.TrialConsentService.mountIFC(data.message.ssi, (err, trialConsent) => {
             if (err) {
-                return console.log(err);
+                return callback(err);
             }
             this.model.trialConsent = trialConsent;
             this._saveConsentsStatuses(this.model.trialConsent.volatile?.ifc, data.message.useCaseSpecifics.did);

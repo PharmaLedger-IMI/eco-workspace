@@ -1,3 +1,5 @@
+import HCOService from "../services/HCOService.js";
+
 const {WebcController} = WebCardinal.controllers;
 import SiteService from '../services/SiteService.js';
 import TrialService from '../services/TrialService.js';
@@ -47,15 +49,17 @@ export default class PatientsListController extends WebcController {
         });
         this._initServices();
         this._initHandlers();
-        this._getTrialParticipants();
         this._initFilterOptions();
     }
 
-    _initServices() {
+    async _initServices() {
         this.TrialService = new TrialService();
         this.TrialParticipantService = new TrialParticipantsService();
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
         this.SiteService = new SiteService();
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        this._getTrialParticipants();
     }
 
     _initFilterOptions() {

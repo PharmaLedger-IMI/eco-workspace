@@ -1,5 +1,6 @@
 import TrialService from '../services/TrialService.js';
 import SiteService from '../services/SiteService.js';
+import HCOService from "../services/HCOService.js";
 
 
 const {WebcController} = WebCardinal.controllers;
@@ -24,15 +25,16 @@ export default class TrialParticipantController extends WebcController {
         });
         this._initServices();
         this._initHandlers();
-        this._initConsents(this.model.trialSSI);
-
     }
 
-    _initServices() {
+    async _initServices() {
         this.TrialService = new TrialService();
         this.SiteService = new SiteService();
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        this._initConsents(this.model.trialSSI);
     }
 
     _initHandlers() {
@@ -48,18 +50,13 @@ export default class TrialParticipantController extends WebcController {
     }
 
     _initConsents(keySSI) {
-        this.TrialService.getEconsents(keySSI, (err, data) => {
-            if (err) {
-                return console.log(err);
-            }
-            this.model.econsents = data.map((consent) => {
-                return {
-                    ...consent,
-                    versionDateAsString: DateTimeService.convertStringToLocaleDate(consent.versionDate)
-                };
-            });
-            this._initTrialParticipant();
-        });
+        this.model.econsents = this.model.hcoDSU.volatile.icfs.map(consent => {
+            return {
+                ...consent,
+                versionDateAsString: DateTimeService.convertStringToLocaleDate(consent.versions[0].versionDate)
+            };
+        })
+        this._initTrialParticipant();
     }
 
     _initTrialParticipant() {
@@ -69,7 +66,6 @@ export default class TrialParticipantController extends WebcController {
             }
             this.model.tp = data;
             this._computeEconsentsWithActions();
-
         })
     }
 

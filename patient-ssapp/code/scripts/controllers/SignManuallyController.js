@@ -78,8 +78,7 @@ export default class SignManuallyController extends WebcController {
 
     getEconsentFilePath(econsent, currentVersion) {
         return this.TrialConsentService.PATH  + '/' + this.model.trialConsent.uid + '/ifc/'
-            + this.model.trialConsent.volatile.ifc.uid + '/consent/' + econsent.uid + '/versions/'
-            + currentVersion.version;
+            + econsent.uid + '/versions/' + currentVersion.version;
     }
 
     _attachHandlerSign() {
@@ -207,8 +206,9 @@ export default class SignManuallyController extends WebcController {
             let fileName = this.file[0].name;
             this._finishActionSave(eco.KeySSI, fileName);
 
-
         });
+
+        // mountStatus
 
         if (this.model.status === undefined || this.model.status.uid === undefined) {
             //TODO implement when status is not set => optional consents

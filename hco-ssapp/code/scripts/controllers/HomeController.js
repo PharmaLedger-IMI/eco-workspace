@@ -142,6 +142,15 @@ export default class HomeController extends WebcController {
                     this._saveNotification(data.message, 'New consent was added to trial  ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
                     break;
                 }
+                case Constants.MESSAGES.HCO.UPDATE_ECOSENT: {
+                    let consent = this.model.hcoDSU.volatile.icfs.find(ifc => ifc.uid === data.message.ssi)
+                    break;
+                }
+                case Constants.MESSAGES.PATIENT.SEND_TRIAL_CONSENT_DSU_TO_HCO: {
+                    this.HCOService.mountTC(data.message.ssi, (err, data) => {
+                    })
+                    break;
+                }
             }
         });
     }

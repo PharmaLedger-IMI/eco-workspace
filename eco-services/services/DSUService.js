@@ -258,6 +258,9 @@ class DSUService {
                             if (file === "data.json") {
                                 data = JSON.parse(data.toString());
                                 data.genesisSSI = fromDSUSSI;
+                                data.uid = toDSUSSI;
+                                data.KeySSI = toDSUSSI;
+                                data.keySSI = toDSUSSI;
                                 data = JSON.stringify(data);
                             }
                             toDSU.writeFile(file, data, (err, newCreatedFile) => {

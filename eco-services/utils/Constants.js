@@ -17,7 +17,6 @@ const MESSAGES = {
         SEND_HCO_DSU_TO_SPONSOR: 'send-hco-dsu-to-sponsor',
         SEND_REFRESH_CONSENTS_TO_PATIENT: 'send-refresh-consents',
 
-
         COMMUNICATION: {
             SPONSOR: {
                 SIGN_ECONSENT: 'HCO signed econsent',
@@ -60,7 +59,9 @@ const MESSAGES = {
         QUESTION_RESPONSE: 'question-response',
         UPDATE_VISIT: 'update-visit',
         VISIT_RESPONSE: 'visit-response',
-        VISIT_CONFIRMED: 'visit-confirmed'
+        VISIT_CONFIRMED: 'visit-confirmed',
+
+        SEND_TRIAL_CONSENT_DSU_TO_HCO: 'send-trial-consent-to-hco',
     },
 
     SPONSOR :{

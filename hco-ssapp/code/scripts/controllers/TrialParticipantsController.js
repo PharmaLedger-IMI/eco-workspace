@@ -27,8 +27,6 @@ export default class TrialParticipantsController extends WebcController {
         });
         this._initServices();
         this._initHandlers();
-        this._initTrial(this.model.trialSSI);
-        this._getSite();
     }
 
     async _initServices() {
@@ -39,6 +37,7 @@ export default class TrialParticipantsController extends WebcController {
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
         this.SiteService = new SiteService();
         this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        this._initTrial(this.model.trialSSI);
     }
 
     _initHandlers() {
@@ -53,22 +52,16 @@ export default class TrialParticipantsController extends WebcController {
         });
     }
 
-    _initTrial(keySSI) {
-        this.TrialService.getTrial(keySSI, async (err, trial) => {
-            if (err) {
-                return console.log(err);
-            }
-            this.model.trial = trial;
-
-            this.model.trial.isInRecruitmentPeriod = true;
-            let actions = await this._getEconsentActionsMappedByUser(keySSI);
-            this.model.trialParticipants = await this._getTrialParticipantsMappedWithActionRequired(actions);
-            if (this.model.trial.recruitmentPeriod) {
-                let endDate = new Date(this.model.trial.recruitmentPeriod.endDate);
-                let currentDate = new Date();
-                this.model.trial.isInRecruitmentPeriod = currentDate <= endDate;
-            }
-        });
+    async _initTrial(keySSI) {
+        this.model.trial = this.model.hcoDSU.volatile?.trial[0];
+        this.model.trial.isInRecruitmentPeriod = true;
+        let actions = await this._getEconsentActionsMappedByUser(keySSI);
+        this.model.trialParticipants = await this._getTrialParticipantsMappedWithActionRequired(actions);
+        if (this.model.trial.recruitmentPeriod) {
+            let endDate = new Date(this.model.trial.recruitmentPeriod.endDate);
+            let currentDate = new Date();
+            this.model.trial.isInRecruitmentPeriod = currentDate <= endDate;
+        }
     }
 
     async _getTrialParticipantsMappedWithActionRequired(actions) {
@@ -255,7 +248,6 @@ export default class TrialParticipantsController extends WebcController {
 
         this.sendMessageToPatient(
             Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_PATIENT,
-            this.model.hcoDSU.volatile.site.uid,
             {
                 tpNumber: '',
                 tpName: tp.name,
@@ -267,22 +259,23 @@ export default class TrialParticipantsController extends WebcController {
         this._sendMessageToSponsor();
     }
 
-    sendMessageToPatient(operation, ssi, tp, trialSSI, shortMessage) {
+    sendMessageToPatient(operation, tp, trialSSI, shortMessage) {
+        let site = this.model.hcoDSU.volatile?.site[0];
         this.CommunicationService.sendMessage(tp.did, {
             operation: operation,
-            ssi: ssi,
+            ssi: site.uid,
             useCaseSpecifics: {
                 tpNumber: tp.tpNumber,
                 tpName: tp.tpName,
                 tpDid: tp.did,
                 trialSSI: trialSSI,
-                sponsorIdentity: this.model.site.sponsorIdentity,
+                sponsorIdentity: site.sponsorIdentity,
                 site: {
-                    name: this.model.site?.name,
-                    number: this.model.site?.id,
-                    country: this.model.site?.country,
-                    status: this.model.site?.status,
-                    keySSI: this.model.site?.keySSI,
+                    name: site?.name,
+                    number: site?.id,
+                    country: site?.country,
+                    status: site?.status,
+                    keySSI: site?.keySSI,
                 },
             },
             shortDescription: shortMessage,
@@ -303,26 +296,12 @@ export default class TrialParticipantsController extends WebcController {
         });
     }
 
-    _getSite() {
-        this.SiteService.getSites((err, sites) => {
-            if (err) {
-                return console.log(err);
-            }
-            if (sites && sites.length > 0) {
-                this.model.site = sites[0];
-                // To be fixed (@Raluca & @Cosmin)
-                //let filtered = sites?.filter(site => site.trialKeySSI === this.model.trial.keySSI);
-                //if (filtered) this.model.site = filtered[0];
-            }
-        });
-    }
-
     _sendMessageToSponsor() {
-        this.CommunicationService.sendMessage(this.model.site.sponsorIdentity, {
+        this.CommunicationService.sendMessage(this.model.hcoDSU.volatile?.site[0].sponsorIdentity, {
             operation: 'update-site-status',
             ssi: this.model.trialSSI,
             stageInfo: {
-                siteSSI: this.model.site.KeySSI,
+                siteSSI: this.model.hcoDSU.volatile?.site[0].KeySSI,
                 status: this.model.trial.stage
             },
             shortDescription: 'The stage of the site changed',

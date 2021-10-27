@@ -70,6 +70,10 @@ export default class HCOService extends DSUService {
         this.mountSubEntity(ifcSSI, 'ifc', callback);
     }
 
+    mountTC = (tcSSI, callback) => {
+        this.mountSubEntity(tcSSI, 'tc', callback);
+    }
+
     cloneIFCs = (callback) => {
         if (this.ssi == null) {
             return callback(this.PATH + ' was not initialized yet.');
