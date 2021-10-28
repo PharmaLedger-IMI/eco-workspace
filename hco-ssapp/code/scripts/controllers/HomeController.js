@@ -67,7 +67,9 @@ export default class HomeController extends WebcController {
     }
 
     _reMountTrialAndSendRefreshMessageToAllParticipants(data) {
-        this.HCOService.cloneIFCs(() => {});
+        this.HCOService.cloneIFCs(async () => {
+            this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        });
         this.TrialParticipantRepository.findAll((err, tps) => {
             if (err) {
                 return console.log(err);
@@ -143,7 +145,7 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case Constants.MESSAGES.HCO.UPDATE_ECOSENT: {
-                    let consent = this.model.hcoDSU.volatile.icfs.find(ifc => ifc.uid === data.message.ssi)
+                    this._updateEconsentWithDetails(data.message);
                     break;
                 }
                 case Constants.MESSAGES.PATIENT.SEND_TRIAL_CONSENT_DSU_TO_HCO: {
@@ -168,82 +170,78 @@ export default class HomeController extends WebcController {
     }
 
     _updateEconsentWithDetails(message) {
-        this.TrialService.getEconsent(message.useCaseSpecifics.trialSSI, message.ssi, (err, econsent) => {
+        let econsent = this.model.hcoDSU.volatile.icfs.find(ifc => ifc.genesisSSI === message.ssi)
+        if (econsent === undefined) {
+            return console.error('Cannot find econsent.');
+        }
+        let currentVersionIndex = econsent.versions.findIndex(eco => eco.version === message.useCaseSpecifics.version)
+        if (currentVersionIndex === -1) {
+            return console.log(`Version ${message.useCaseSpecifics.version} of the econsent ${message.ssi} does not exist.`)
+        }
+        let currentVersion = econsent.versions[currentVersionIndex]
+        if (currentVersion.actions === undefined) {
+            currentVersion.actions = [];
+        }
+
+        let actionNeeded = 'No action required';
+        let status = Constants.TRIAL_PARTICIPANT_STATUS.SCREENED;
+        let tpSigned = false;
+        switch (message.useCaseSpecifics.action.name) {
+            case 'withdraw': {
+                actionNeeded = 'TP Withdrawed';
+                status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
+                this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' withdraw', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
+                break;
+            }
+            case 'withdraw-intention': {
+                actionNeeded = 'Reconsent required';
+                this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' withdraw', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
+                status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
+                break;
+            }
+            case 'Declined': {
+                actionNeeded = 'TP Declined';
+                this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' declined', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
+                status = Constants.TRIAL_PARTICIPANT_STATUS.DECLINED;
+                break;
+            }
+            case 'sign': {
+                tpSigned = true;
+                this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' signed', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
+                actionNeeded = 'Acknowledgement required';
+                status = Constants.TRIAL_PARTICIPANT_STATUS.SCREENED;
+                break;
+            }
+        }
+
+        currentVersion.actions.push({
+            ...message.useCaseSpecifics.action,
+            tpDid: message.useCaseSpecifics.tpDid,
+            status: status,
+            type: 'tp',
+            actionNeeded: actionNeeded
+        });
+
+        let tp = this.model.hcoDSU.volatile.tps.find(tp => tp.did === message.useCaseSpecifics.tpDid)
+        if (tp === undefined) {
+            return console.error('Cannot find tp.');
+        }
+        tp.actionNeeded = actionNeeded;
+        tp.tpSigned = tpSigned;
+        tp.status = status;
+        this.HCOService.updateEntity(tp, {}, async (err, response) => {
             if (err) {
                 return console.log(err);
             }
-            let currentVersionIndex = econsent.versions.findIndex(eco => eco.version === message.useCaseSpecifics.version)
-            if (currentVersionIndex === -1) {
-                return console.log(`Version ${message.useCaseSpecifics.version} of the econsent ${message.ssi} does not exist.`)
+        });
+
+        econsent.uid = econsent.keySSI;
+        econsent.versions[currentVersionIndex] = currentVersion;
+        this.HCOService.updateEntity(econsent, {}, async (err, response) => {
+            if (err) {
+                return console.log(err);
             }
-            let currentVersion = econsent.versions[currentVersionIndex]
-            if (currentVersion.actions === undefined) {
-                currentVersion.actions = [];
-            }
-
-            let actionNeeded = 'No action required';
-            let status = Constants.TRIAL_PARTICIPANT_STATUS.SCREENED;
-            let tpSigned = false;
-            switch (message.useCaseSpecifics.action.name) {
-                case 'withdraw': {
-                    actionNeeded = 'TP Withdrawed';
-                    status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
-                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' withdraw', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
-                    break;
-                }
-                case 'withdraw-intention': {
-                    actionNeeded = 'Reconsent required';
-                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' withdraw', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
-                    status = Constants.TRIAL_PARTICIPANT_STATUS.WITHDRAW;
-                    break;
-                }
-                case 'Declined': {
-                    actionNeeded = 'TP Declined';
-                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' declined', 'view trial participants', Constants.NOTIFICATIONS_TYPE.WITHDRAWS);
-                    status = Constants.TRIAL_PARTICIPANT_STATUS.DECLINED;
-                    break;
-                }
-                case 'sign': {
-                    tpSigned = true;
-                    this._saveNotification(message, 'Trial participant ' + message.useCaseSpecifics.tpDid + ' signed', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
-                    actionNeeded = 'Acknowledgement required';
-                    status = Constants.TRIAL_PARTICIPANT_STATUS.SCREENED;
-                    break;
-                }
-            }
-
-            currentVersion.actions.push({
-                ...message.useCaseSpecifics.action,
-                tpDid: message.useCaseSpecifics.tpDid,
-                status: status,
-                type: 'tp',
-                actionNeeded: actionNeeded
-            });
-
-            this.TrialParticipantRepository.filter(`did == ${message.useCaseSpecifics.tpDid}`, 'ascending', 30, (err, tps) => {
-                if (tps && tps.length > 0) {
-                    let tp = tps[0];
-                    tp.actionNeeded = actionNeeded;
-                    tp.tpSigned = tpSigned;
-                    tp.status = status;
-
-                    this.TrialParticipantRepository.update(tp.uid, tp, (err, trialParticipant) => {
-                        if (err) {
-                            return console.log(err);
-                        }
-
-                        console.log(trialParticipant);
-                    });
-                }
-            });
-
-            econsent.uid = econsent.keySSI;
-            econsent.versions[currentVersionIndex] = currentVersion;
-            this.TrialService.updateEconsent(message.useCaseSpecifics.trialSSI, econsent, (err, response) => {
-                if (err) {
-                    return console.log(err);
-                }
-            });
+            this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
         });
     }
 

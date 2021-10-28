@@ -148,7 +148,6 @@ export default class HCOService extends DSUService {
             ...tp,
             birthdate: '-',
             enrolledDate: '-',
-            did: '-',
             name: '-',
         };
     }

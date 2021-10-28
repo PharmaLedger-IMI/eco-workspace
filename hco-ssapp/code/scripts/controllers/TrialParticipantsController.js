@@ -65,7 +65,7 @@ export default class TrialParticipantsController extends WebcController {
     }
 
     async _getTrialParticipantsMappedWithActionRequired(actions) {
-        let trialsR = (await this.TrialParticipantRepository.findAllAsync());
+        let trialsR = this.model.hcoDSU.volatile.tps;
         return trialsR
             .filter(tp => tp.trialNumber === this.model.trial.id)
             .map(tp => {

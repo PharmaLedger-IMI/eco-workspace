@@ -1,6 +1,8 @@
-const {WebcController} = WebCardinal.controllers;
+import HCOService from "../services/HCOService.js";
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
+
+const {WebcController} = WebCardinal.controllers;
 
 
 const ecoServices = require('eco-services');
@@ -26,14 +28,16 @@ export default class TrialParticipantDetailsController extends WebcController {
         });
         this._initServices();
         this._initHandlers();
-        this._initTrialParticipant(this.model.trialSSI);
     }
 
-    _initServices() {
+    async _initServices() {
         this.TrialService = new TrialService();
         this.TrialParticipantService = new TrialParticipantsService();
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        this._initTrialParticipant(this.model.trialSSI);
     }
 
     _initHandlers() {
@@ -44,8 +48,12 @@ export default class TrialParticipantDetailsController extends WebcController {
     }
 
     async _initTrialParticipant(keySSI) {
-
-        this.model.trialParticipant = await this.TrialParticipantRepository.findByAsync(this.model.tpUid);
+        let trialParticipant = this.model.hcoDSU.volatile.tps.find(tp => tp.uid === this.model.tpUid);
+        let nonObfuscatedTps = await this.TrialParticipantRepository.filterAsync(`did == ${trialParticipant.did}`);
+        if (nonObfuscatedTps.length > 0) {
+            trialParticipant.name = nonObfuscatedTps[0].name;
+        }
+        this.model.trialParticipant = trialParticipant;
 
         let userActions = await this._getUserActionsFromEconsents(keySSI, this.model.trialParticipant.did);
         userActions = userActions.filter(ua => ua.action.type === 'tp');
@@ -90,7 +98,7 @@ export default class TrialParticipantDetailsController extends WebcController {
     async _getUserActionsFromEconsents(keySSI, tpDid) {
         // TODO: re-check this logic.
         let userActions = [];
-        (await this.TrialService.getEconsentsAsync(keySSI))
+        this.model.hcoDSU.volatile.icfs
             .forEach(econsent => {
                 if (econsent.versions === undefined) {
                     return userActions;
