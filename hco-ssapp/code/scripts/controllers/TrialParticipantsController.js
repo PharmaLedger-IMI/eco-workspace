@@ -65,19 +65,28 @@ export default class TrialParticipantsController extends WebcController {
     }
 
     async _getTrialParticipantsMappedWithActionRequired(actions) {
+        let nonObfuscatedTps = await this.TrialParticipantRepository.findAllAsync();
+        let tpsMappedByDID = {};
+        (await this.TrialParticipantRepository.findAllAsync()).forEach(tp => tpsMappedByDID[tp.did] = tp)
         let trialsR = this.model.hcoDSU.volatile.tps;
         return trialsR
             .filter(tp => tp.trialNumber === this.model.trial.id)
             .map(tp => {
+                let nonObfuscatedTp = tpsMappedByDID[tp.did];
+                tp.name = nonObfuscatedTp.name;
+                tp.birthdate = nonObfuscatedTp.birthdate;
+                tp.enrolledDate = nonObfuscatedTp.enrolledDate;
+
                 let tpActions = actions[tp.did];
+                let actionNeeded = 'No action required';
                 if (tpActions === undefined || tpActions.length === 0) {
                     return {
                         ...tp,
-                        actionNeeded: 'No action required'
+                        actionNeeded: actionNeeded
                     }
                 }
                 let lastAction = tpActions[tpActions.length - 1];
-                let actionNeeded = 'No action required';
+
                 switch (lastAction.action.name) {
                     case 'withdraw': {
                         actionNeeded = 'TP Withdrawed';

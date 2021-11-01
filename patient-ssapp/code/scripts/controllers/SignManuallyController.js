@@ -1,7 +1,7 @@
 import TrialService from '../services/TrialService.js';
 import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
 import EconsentService from "../services/EconsentService.js";
-
+import TrialConsentService from "../services/TrialConsentService.js";
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
@@ -26,11 +26,9 @@ export default class SignManuallyController extends WebcController {
         this.setModel({});
         this.model.econsent = {};
         this.model.attachment = this.attachment;
-        // this.model.status = { attachment: this.attachment };
-        this._initServices();
+
         this.model.historyData = this.history.win.history.state.state;
-        this._initConsent();
-        this._initHandlers();
+        this._initServices();
     }
 
     _initServices() {
@@ -39,6 +37,15 @@ export default class SignManuallyController extends WebcController {
         this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES);
         this.EcosentService = new EconsentService();
         this.TrialParticipantRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT);
+        this.TrialConsentService = new TrialConsentService();
+        this.TrialConsentService.getOrCreate((err, trialConsent) => {
+            if (err) {
+                return console.log(err);
+            }
+            this.model.trialConsent = trialConsent;
+            this._initConsent();
+            this._initHandlers();
+        });
     }
 
     _initConsent() {
@@ -198,17 +205,15 @@ export default class SignManuallyController extends WebcController {
     async _saveStatus(operation) {
         await this.EconsentsStatusRepository.updateAsync(this.model.status.uid, this.model.status);
         let eco = await this.EcosentService.saveEconsentAsync(this.model.econsent, '/econsents/' + this.model.econsent.id);
-
-        this.EcosentService.saveEconsentFile(this.file, this.model.econsent, (err, data) => {
-            if (err){
-                console.log(err);
+        let finalPath = this.TrialConsentService.PATH + '/' + this.TrialConsentService.ssi + '/ifc/'
+            + this.model.econsent.uid + '/versions/' + this.model.historyData.ecoVersion + '/signed_manually';
+        this.TrialConsentService.saveEconsentFile(this.file, finalPath, (err, data) => {
+            if (err) {
+                return console.log(err);
             }
             let fileName = this.file[0].name;
             this._finishActionSave(eco.KeySSI, fileName);
-
         });
-
-        // mountStatus
 
         if (this.model.status === undefined || this.model.status.uid === undefined) {
             //TODO implement when status is not set => optional consents

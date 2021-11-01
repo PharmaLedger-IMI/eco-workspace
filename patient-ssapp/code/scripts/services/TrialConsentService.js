@@ -78,6 +78,18 @@ export default class TrialConsentService extends DSUService {
         })
     }
 
+    saveEconsentFile = (file, path, callback) => {
+        this.letDSUStorageInit().then(() => {
+            this.DSUStorage.uploadFile(path, file, undefined, (err, keySSI) => {
+                    if (err) {
+                        return callback(err, undefined);
+                    }
+                    callback(err, keySSI);
+                }
+            );
+        });
+    }
+
     _getSubPath = (subItem) => {
         return this.PATH + '/' + this.ssi + '/' + subItem;
     }
