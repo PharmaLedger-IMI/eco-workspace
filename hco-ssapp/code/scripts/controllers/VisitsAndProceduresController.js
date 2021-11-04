@@ -1,5 +1,6 @@
 import TrialService from "../services/TrialService.js";
 import SiteService from "../services/SiteService.js";
+import HCOService from "../services/HCOService.js";
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
@@ -26,9 +27,6 @@ export default class VisitsAndProceduresController extends WebcController {
         });
 
         this._initServices();
-        this._initHandlers();
-        this._initSite();
-        this._initVisits();
     }
 
     _initHandlers() {
@@ -41,33 +39,23 @@ export default class VisitsAndProceduresController extends WebcController {
         this._attachHandlerProcedures();
     }
 
-    _initServices() {
+    async _initServices() {
         this.TrialService = new TrialService();
         this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS);
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.SiteService = new SiteService();
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        this._initHandlers();
+        this._initSite();
+        this._initVisits();
     }
 
     async _initVisits() {
-
-        this.SiteService.getSites((err, sites) => {
-            if (err) {
-                return console.error(err);
-            }
-            let site = sites[0];
-            this.SiteService.getVisits(site.keySSI, (err, visits) => {
-                if (err) {
-                    return console.error(err);
-                }
-                if (visits) {
-                    this.model.visits = visits[0]?.visits.visits;
-                    this._extractDataVisit();
-                    this._matchTpVisits();
-                }
-            });
-        });
-
+        this.model.visits = this.model.hcoDSU.volatile.visit[0].visits.visits
+        this._extractDataVisit();
+        this._matchTpVisits();
     }
 
     _extractDataVisit() {

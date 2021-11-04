@@ -190,7 +190,7 @@ class DIDService {
     getDid(callback) {
         this.getObject('environment.json', (err, envFile) => {
             if (err) {
-                return callback(err);
+                return console.error('Environment json missing.', err);
             }
             let didPrompt = envFile.didPrompt;
             if (didPrompt === undefined || didPrompt === false) {

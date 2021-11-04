@@ -125,8 +125,13 @@ export default class HomeController extends WebcController {
                                 if (err) {
                                     return console.log(err);
                                 }
-                                this._updateHcoDSU();
-                                this.sendMessageToSponsor(senderIdentity, Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_SPONSOR, this.HCOService.ssi, null);
+                                this.HCOService.mountVisit(site.visitsKeySSI, (err, visit) => {
+                                    if (err) {
+                                        return console.log(err);
+                                    }
+                                    this._updateHcoDSU();
+                                    this.sendMessageToSponsor(senderIdentity, Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_SPONSOR, this.HCOService.ssi, null);
+                                })
                             });
                         });
                     });
@@ -312,65 +317,58 @@ export default class HomeController extends WebcController {
         });
     }
 
-    _saveVisit(message) {
-        let demoMessage = 'General details and description of the trial in case it provided by the Sponsor/Site regarding specific particularities of the Trial or general message for Trial Subject';
-        this.TrialService.getEconsents(message, (err, consents) => {
-            if (err) {
-                return console.error(err);
-            }
-            consents.forEach(consent => {
+    async _saveVisit(message) {
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        this.model.hcoDSU.volatile.visit.forEach(visit => {
+            // TODO: Refactor this structure in sponsor ssapp
+            if (visit.visits && visit.visits.visits) {
+                visit.visits.visits.forEach(item => {
 
-                let visits = consent.visits;
-                if (visits) {
-                    visits.forEach(item => {
+                    let visitToBeAdded = {
+                        name: item.name,
+                        procedures: item.procedures,
+                        uuid: item.uuid,
+                        visitWindow: item.visitWindow,
+                        trialSSI: message,
+                        consentsSSI: []
+                    }
 
-                        let visitToBeAdded = {
-                            name: item.name,
-                            procedures: item.procedures,
-                            uuid: item.uuid,
-                            visitWindow: item.visitWindow,
-                            trialSSI: message,
-                            consentsSSI: []
+                    //visitToBeAdded.consentsSSI.push(consent.keySSI);
+                    let weaksFrom = item.weeks?.filter(weak => weak.type === 'weekFrom' || weak.type === 'week');
+                    if (weaksFrom)
+                        visitToBeAdded.weakFrom = weaksFrom[0]?.value;
+                    let weaksTo = item.weeks?.filter(weak => weak.type === 'weekTo');
+                    if (weaksTo)
+                        visitToBeAdded.weakTo = weaksTo[0]?.value;
+
+                    let plus = item.visitWindow?.filter(weak => weak.type === 'windowFrom');
+                    if (plus)
+                        visitToBeAdded.plus = plus[0]?.value;
+                    let minus = item.visitWindow?.filter(weak => weak.type === 'windowTo');
+                    if (plus)
+                        visitToBeAdded.minus = minus[0]?.value;
+                    this.VisitsAndProceduresRepository.findBy(visitToBeAdded.uuid, (err, existingVisit) => {
+                        if (err || !existingVisit) {
+
+                            this.VisitsAndProceduresRepository.create(visitToBeAdded.uuid, visitToBeAdded, (err, visitCreated) => {
+                                if (err) {
+                                    return console.error(err);
+                                }
+                            })
+                        } else if (existingVisit) {
+                            //visitToBeAdded.consentsSSI.push(existingVisit.consentsSSI);
+                            visitToBeAdded.procedures.push(existingVisit.procedures);
+
+                            this.VisitsAndProceduresRepository.update(visitToBeAdded.uuid, visitToBeAdded, (err, visitCreated) => {
+                                if (err) {
+                                    return console.error(err);
+                                }
+                            })
                         }
-
-                        visitToBeAdded.consentsSSI.push(consent.keySSI);
-                        let weaksFrom = item.weeks?.filter(weak => weak.type === 'weekFrom' || weak.type === 'week');
-                        if (weaksFrom)
-                            visitToBeAdded.weakFrom = weaksFrom[0]?.value;
-                        let weaksTo = item.weeks?.filter(weak => weak.type === 'weekTo');
-                        if (weaksTo)
-                            visitToBeAdded.weakTo = weaksTo[0]?.value;
-
-                        let plus = item.visitWindow?.filter(weak => weak.type === 'windowFrom');
-                        if (plus)
-                            visitToBeAdded.plus = plus[0]?.value;
-                        let minus = item.visitWindow?.filter(weak => weak.type === 'windowTo');
-                        if (plus)
-                            visitToBeAdded.minus = minus[0]?.value;
-                        this.VisitsAndProceduresRepository.findBy(visitToBeAdded.uuid, (err, existingVisit) => {
-                            if (err || !existingVisit) {
-
-                                this.VisitsAndProceduresRepository.create(visitToBeAdded.uuid, visitToBeAdded, (err, visitCreated) => {
-                                    if (err) {
-                                        return console.error(err);
-                                    }
-                                })
-                            } else if (existingVisit) {
-                                visitToBeAdded.consentsSSI.push(existingVisit.consentsSSI);
-                                visitToBeAdded.procedures.push(existingVisit.procedures);
-
-                                this.VisitsAndProceduresRepository.update(visitToBeAdded.uuid, visitToBeAdded, (err, visitCreated) => {
-                                    if (err) {
-                                        return console.error(err);
-                                    }
-                                })
-                            }
-                        })
-
                     })
-                }
 
-            })
+                })
+            }
         })
     }
 

@@ -62,6 +62,10 @@ export default class HCOService extends DSUService {
         this.mountSubEntity(trialSSI, 'trial', callback);
     }
 
+    mountVisit = (visitSSI, callback) => {
+        this.mountSubEntity(visitSSI, 'visit', callback);
+    }
+
     mountSite = (siteSSI, callback) => {
         this.mountSubEntity(siteSSI, 'site', callback);
     }
