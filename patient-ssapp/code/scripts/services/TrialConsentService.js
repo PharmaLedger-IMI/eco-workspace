@@ -66,6 +66,10 @@ export default class TrialConsentService extends DSUService {
         this.mountSubEntity(hcoDsuSSI, 'hco_dsu', callback);
     }
 
+    mountVisit = (visitSSI, callback) => {
+        this.mountSubEntity(visitSSI, 'visit', callback);
+    }
+
     mountSubEntity = (subEntitySSI, subEntityName, callback) => {
         if (this.ssi != null) {
             return this.mountEntity(subEntitySSI, this._getSubPath(subEntityName), () => this.getOrCreate(callback));

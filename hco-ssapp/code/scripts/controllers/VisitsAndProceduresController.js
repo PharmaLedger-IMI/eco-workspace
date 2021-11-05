@@ -83,36 +83,43 @@ export default class VisitsAndProceduresController extends WebcController {
 
     async _matchTpVisits() {
         if (this.model.visits && this.model.visits.length > 0) {
-            this.model.tp = await this.TrialParticipantRepository.findByAsync(this.model.tpUid);
+            let tpIndex = this.model.hcoDSU.volatile.tps.findIndex(tp => tp.uid === this.model.tpUid)
+            if (tpIndex === undefined) {
+                return;
+            }
+            this.model.tp = this.model.hcoDSU.volatile.tps[tpIndex];
             if (!this.model.tp.visits || this.model.tp.visits.length < 1) {
                 this.model.tp.visits = this.model.visits;
-                this._updateTrialParticipantRepository(this.model.tp.uid, this.model.tp);
+                this.HCOService.updateEntity(this.model.tp, {}, async (err, data) => {
+                    this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+                })
                 return;
             } else {
                 this.model.visits.forEach(visit => {
 
                     let visitTp = this.model.tp.visits.filter(v => v.uuid === visit.uuid)[0];
-                    visit.confirmed = visitTp.confirmed;
-                    visit.accepted = visitTp.accepted;
-                    visit.declined = visitTp.declined;
-                    if (!visit.accepted && !visit.declined) {
-                        visit.tsAcceptance = 'Required';
-                    } else {
-                        if (visit.accepted) {
-                            visit.tsAcceptance = 'Agreed';
+                    if (visitTp !== undefined) {
+                        visit.confirmed = visitTp.confirmed;
+                        visit.accepted = visitTp.accepted;
+                        visit.declined = visitTp.declined;
+                        if (!visit.accepted && !visit.declined) {
+                            visit.tsAcceptance = 'Required';
                         } else {
-                            visit.tsAcceptance = 'Declined';
+                            if (visit.accepted) {
+                                visit.tsAcceptance = 'Agreed';
+                            } else {
+                                visit.tsAcceptance = 'Declined';
+                            }
                         }
+                        visit.date = visitTp.date;
+                        visit.toShowDate = DateTimeService.convertStringToLocaleDateTimeString(visitTp.date);
                     }
-                    visit.date = visitTp.date;
-                    visit.toShowDate = DateTimeService.convertStringToLocaleDateTimeString(visitTp.date);
                 })
             }
         }
     }
 
     async _updateTrialParticipantVisit(visit, operation) {
-
         if (!this.model.tp.visits) {
             this.model.tp.visits = this.visits;
         }
@@ -120,8 +127,18 @@ export default class VisitsAndProceduresController extends WebcController {
         let objIndex = this.model.tp.visits.findIndex((obj => obj.uuid == visit.uuid));
         this.model.tp.visits[objIndex] = visit;
         this.model.visits = this.model.tp.visits;
-        await this.TrialParticipantRepository.updateAsync(this.model.tp.uid, this.model.tp);
-        this.sendMessageToPatient(visit, operation);
+        let v = this.model.hcoDSU.volatile.visit[0];
+        v.visits.visits = this.model.tp.visits;
+
+        this.HCOService.updateEntity(v, {}, async (err, data) => {
+            this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+            let tpIndex = this.model.hcoDSU.volatile.tps.findIndex(tp => tp.uid === this.model.tpUid)
+            this.model.tp = this.model.hcoDSU.volatile.tps[tpIndex];
+            this.HCOService.updateEntity(this.model.tp, {}, async (err, data) => {
+                this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+                this.sendMessageToPatient(visit, operation);
+            })
+        })
     }
 
     _attachHandlerBack() {
@@ -188,6 +205,11 @@ export default class VisitsAndProceduresController extends WebcController {
                     // this.model.visit = model.tp.visits[visitIndex];
                     this._updateTrialParticipantRepository(this.model.tp.uid, this.model.tp)
                     this.model.visits = this.model.tp.visits;
+                    let v = this.model.hcoDSU.volatile.visit[0];
+                    v.visits.visits = this.model.tp.visits;
+                    this.HCOService.updateEntity(v, {}, async (err, data) => {
+                        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+                    });
                     this.sendMessageToPatient(this.model.tp.visits[visitIndex], Constants.MESSAGES.HCO.COMMUNICATION.TYPE.UPDATE_VISIT);
                 },
                 (event) => {
@@ -255,9 +277,11 @@ export default class VisitsAndProceduresController extends WebcController {
                         model.confirmed = true;
                         let visitIndex = this.model.tp.visits.findIndex(v => v.pk === model.pk);
                         this.model.tp.visits[visitIndex].confirmed = true;
-                        this._updateTrialParticipantRepository(this.model.tp.uid, this.model.tp);
-                        this.model.visits = this.model.tp.visits;
-                        this.sendMessageToSponsor(model);
+                        this.HCOService.updateEntity(this.model.tp, {}, async (err, data) => {
+                            this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+                            this.model.visits = this.model.tp.visits;
+                            this.sendMessageToSponsor(model);
+                        })
                     }
                 },
                 (event) => {
@@ -285,10 +309,7 @@ export default class VisitsAndProceduresController extends WebcController {
     }
 
     async _initSite() {
-        let sites = await this.SiteService.getSitesAsync();
-        if (sites && sites.length > 0) {
-            this.model.site = sites[sites.length - 1];
-        }
+        this.model.site = this.model.hcoDSU.volatile.site[0];
     }
 
     _attachHandlerProcedures() {

@@ -48,8 +48,6 @@ export default class PatientsListController extends WebcController {
             trialSSI: this.history.win.history.state.state,
         });
         this._initServices();
-        this._initHandlers();
-        this._initFilterOptions();
     }
 
     async _initServices() {
@@ -60,6 +58,8 @@ export default class PatientsListController extends WebcController {
         this.HCOService = new HCOService();
         this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
         this._getTrialParticipants();
+        this._initHandlers();
+        this._initFilterOptions();
     }
 
     _initFilterOptions() {
@@ -97,7 +97,7 @@ export default class PatientsListController extends WebcController {
 
     async _getTrialParticipants() {
 
-        this.model.trialParticipants = (await this.TrialParticipantRepository.findAllAsync());
+        this.model.trialParticipants = this.model.hcoDSU.volatile.tps;
         this.model.trialParticipantsFinal = this.model.trialParticipants;
     }
 

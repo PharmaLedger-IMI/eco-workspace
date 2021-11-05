@@ -46,7 +46,7 @@
 <!--                        <psk-label class="table-cell">{{@period}} {{@unit}}</psk-label>-->
                         <!--                        <button class="link-button" data-tag="viewConsent" data="@id">{{@econsent.name}}</button>-->
 
-                        <div data-if="@date">
+                        <div data-if="@toShowDate">
                             <div slot="true">
                                 {{@toShowDate}} -
                                 <button class="link-button view-adjust-margin" data="@id"
@@ -74,7 +74,7 @@
                         <!--                            </div>-->
                         <!--                        </div>-->
 
-                        <div data-if="@date">
+                        <div data-if="@toShowDate">
                             <div slot="true">
                                 {{@toShowDate}}
                             </div>
@@ -84,7 +84,7 @@
                         </div>
 
                         <div class="special-row-two">
-                            <div data-if="@date">
+                            <div data-if="@toShowDate">
                                 <button slot="false" class="link-button view-adjust-margin"
                                         data="@id" data-tag="procedure:setDate">Schedule
                                 </button>
