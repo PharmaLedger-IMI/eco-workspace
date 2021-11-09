@@ -52,3 +52,6 @@ $ npm run build-all
 
 ## Running 
 To run the application launch your browser (preferably Chrome) in Incognito mode and access the http://localhost:8080 link.
+
+## Releases
+  DIDs integration (commit #0436a49b199a48a96b4c6fcb9fbd9a3676aa6bdb)  
