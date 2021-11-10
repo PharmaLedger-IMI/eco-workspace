@@ -61,21 +61,6 @@
       ]
     },
     {
-      "name": "menu-wallet-prototype",
-      "src": "http://github.com/privatesky/menu-wallet-prototype.git",
-      "actions": [
-        {
-          "type": "smartClone",
-          "target": ".",
-          "collectLog": false
-        },
-        {
-          "type": "execute",
-          "cmd": "cd menu-wallet-prototype && npm install"
-        }
-      ]
-    },
-    {
       "name": "dossier-explorer-wallet-prototype",
       "src": "https://github.com/PrivateSky/dossier-explorer-wallet-prototype.git",
       "actions": [
@@ -125,21 +110,6 @@
         {
           "type": "execute",
           "cmd": "cd dossier-explorer-ssapp && npm install"
-        }
-      ]
-    },
-    {
-      "name": "apihub-root/eco-wallet/loader",
-      "src": "http://github.com/privatesky/trust-loader.git",
-      "actions": [
-        {
-          "type": "smartClone",
-          "target": ".",
-          "collectLog": false
-        },
-        {
-          "type": "execute",
-          "cmd": "cd apihub-root/eco-wallet/loader && npm install"
         }
       ]
     },
@@ -225,16 +195,6 @@
         {
           "type": "execute",
           "cmd": "cd sponsor-ssapp && npm install"
-        }
-      ]
-    },
-    {
-      "name": "eco-ssapp",
-      "src": "",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd eco-ssapp && npm install"
         }
       ]
     },
@@ -441,24 +401,6 @@
       ]
     },
     {
-      "name": "eco-wallet_bind_to_menu-wallet-prototype",
-      "src": "",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd menu-wallet-prototype && npm run build"
-        },
-        {
-          "type": "copy",
-          "src": "./menu-wallet-prototype/seed",
-          "target": "./apihub-root/eco-wallet/wallet-patch/seed",
-          "options": {
-            "overwrite": true
-          }
-        }
-      ]
-    },
-    {
       "name": "hco-wallet-loader-build",
       "actions": [
         {
@@ -529,28 +471,6 @@
       ]
     },
     {
-      "name": "eco-wallet_bind_to_eco-ssapp",
-      "src": "",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd eco-ssapp && npm run build"
-        },
-        {
-          "type": "copy",
-          "src": "./eco-ssapp/seed",
-          "target": "./apihub-root/eco-wallet/apps-patch/eco-ssapp/seed",
-          "options": {
-            "overwrite": true
-          }
-        },
-        {
-          "type": "execute",
-          "cmd": "echo Use this folder template in order to customize the application instance by adding configuration, pages etc. > ./apihub-root/eco-wallet/apps-patch/eco-ssapp/readme"
-        }
-      ]
-    },
-    {
       "name": "hco-wallet_bind_to_hco-ssapp",
       "src": "",
       "actions": [
@@ -597,10 +517,6 @@
     {
       "name": "copy-bundles",
       "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd apihub-root/eco-wallet/loader && npm install"
-        },
         {
           "type": "execute",
           "cmd": "cd apihub-root/hco-wallet/loader && npm install"
