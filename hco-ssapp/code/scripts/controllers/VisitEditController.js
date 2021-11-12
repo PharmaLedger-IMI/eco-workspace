@@ -1,4 +1,5 @@
 import TrialService from "../services/TrialService.js";
+import HCOService from "../services/HCOService.js";
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
@@ -28,9 +29,7 @@ export default class VisitEditController extends WebcController {
             ...this.history.win.history.state.state,
         });
 
-        this._initServices(this.DSUStorage);
-        this._initHandlers();
-        this._initVisit();
+        this._initServices();
     }
 
     _initHandlers() {
@@ -39,28 +38,26 @@ export default class VisitEditController extends WebcController {
         this._attachHandlerSaveDetails();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS, DSUStorage);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
+    async _initServices() {
+        this.TrialService = new TrialService();
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        this._initHandlers();
+        this._initVisit();
     }
 
     async _initVisit() {
-        this.model.visit = await this.VisitsAndProceduresRepository.findByAsync(this.model.existingVisit.pk);
-
+        this.model.visit = this.model.hcoDSU.volatile.visit[0].visits.visits.find(v => v.uuid === this.model.existingVisit.uuid);
         this.model.details.value = this._getTextOrDefault(this.model.visit.details);
         this.model.toRemember.value = this._getTextOrDefault(this.model.visit.toRemember);
 
-        this.TrialParticipantRepository.findBy(this.model.tpUid, (err, tp) => {
-            if (err) {
-                return console.log(err);
-            }
-            this.model.tp = {
-                ...tp,
-                visit: this.model.visit
-            };
-        });
+        this.model.tp = {
+            ...this.model.hcoDSU.volatile.tps.find(tp => tp.uid === this.model.tpUid),
+            visit: this.model.visit
+        };
     }
 
     _getTextOrDefault(text) {

@@ -3,8 +3,8 @@ const DSUService = ecoServices.DSUService;
 
 export default class SiteService extends DSUService {
 
-    constructor(DSUStorage) {
-        super(DSUStorage, '/site');
+    constructor() {
+        super('/site');
     }
 
     getSites = (callback) => this.getEntities(callback);
@@ -34,4 +34,8 @@ export default class SiteService extends DSUService {
     updateEconsent = (trialSSI, data, callback) => this.updateEntity(data, this._getEconsentsPath(trialSSI), callback);
 
     _getEconsentsPath = (keySSI) => this.PATH + '/' + keySSI + '/consent';
+
+    getVisits = (trialSSI, callback) => this.getEntities(this._getVisitsPath(trialSSI), callback);
+
+    _getVisitsPath = (keySSI) => this.PATH + '/' + keySSI + '/visits';
 }

@@ -1,7 +1,7 @@
 <webc-container controller="TrialController">
   <link rel="stylesheet" href="assets/css/trials.css" />
   <div class="trial-header"><h1 class="trial-title">Trial</h1></div>
-  <div class="d-flex flex-row align-items-center" style="font-size: 18px !important">
+  <div class="d-flex flex-row align-items-center ml-5" style="font-size: 18px !important">
     <psk-link page="trials"> Trials</psk-link>
     <span> / </span>
     <div style="display: inline-block">
@@ -142,8 +142,8 @@
 
             <container slot="true">
               <div data-if="@visitsExist">
-                <div data-for="@filters">
-                  <div data-if="@selected" class="m-2">
+                <div data-for="@filters" class="m-2 d-flex flex-row">
+                  <div data-if="@selected" class="m-2 d-flex flex-row">
                     <container slot="false">
                       <button class="btn btn-bare" data-tag="filter-procedures" data-custom="@name">{{ @name }}</button>
                     </container>

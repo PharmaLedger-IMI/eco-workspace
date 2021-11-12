@@ -13,31 +13,6 @@
       "icon": "fa-heartbeat fa-lg"
     },
     {
-      "name": "Sites",
-      "tags": "sites",
-      "icon": "fa-hospital-o fa-lg"
-    },
-    {
-      "name": "Practitioners",
-      "tags": "practitioners",
-      "icon": "fa-user-md fa-lg"
-    },
-    {
-      "name": "Notifications",
-      "tags": "notifications",
-      "icon": "fa-bell-o fa-lg"
-    },
-    {
-      "name": "Trial Protocols",
-      "tags": "trial protocols",
-      "icon": "fa-check-square-o fa-lg"
-    },
-    {
-      "name": "My Account",
-      "tags": "my account",
-      "icon": "fa-user fa-lg"
-    },
-    {
       "name": "trial",
       "tags": "trial",
       "indexed": false

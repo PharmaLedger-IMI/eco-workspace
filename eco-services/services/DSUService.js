@@ -1,41 +1,70 @@
+const opendsu = require("opendsu");
+const storage = opendsu.loadApi('storage')
+
 class DSUService {
 
     PATH = "/";
 
-    constructor(DSUStorage, path = this.PATH) {
-        this.DSUStorage = DSUStorage;
+    constructor(path = this.PATH) {
+        this.DSUStorage = storage.getDSUStorage();
         this.PATH = path;
+    }
+
+    letDSUStorageInit = () => {
+        if (typeof this.initializationPromise === 'undefined') {
+            this.initializationPromise = new Promise((resolve) => {
+                if (this.DSUStorage === undefined || this.DSUStorage.directAccessEnabled === true) {
+                    return resolve();
+                }
+                this.DSUStorage.enableDirectAccess(() => {
+                    resolve();
+                })
+            });
+        }
+        return this.initializationPromise;
     }
 
     getEntities(path, callback) {
         [path, callback] = this.swapParamsIfPathIsMissing(path, callback);
-        this.DSUStorage.call('listDSUs', path, (err, dsuList) => {
-            if (err) {
-                return callback(err, undefined);
-            }
-            let entities = [];
-            let getServiceDsu = (dsuItem) => {
-                this.DSUStorage.getItem(this._getDsuStoragePath(dsuItem.identifier, path), (err, content) => {
-                    if (err) {
-                        entities.slice(0);
-                        return callback(err, undefined);
+        const resolver = opendsu.loadAPI('resolver');
+        this.letDSUStorageInit().then(() => {
+            this.DSUStorage.listMountedDSUs(path, (err, dsuList) => {
+                if (err) {
+                    return callback(err, undefined);
+                }
+                let entities = [];
+                let getServiceDsu = (dsuItem) => {
+                    let objectName = this.PATH.substring(1);
+                    let itemPathSplit = dsuItem.path.split('/')
+                    if (itemPathSplit.length > 1) {
+                        objectName = itemPathSplit[0];
                     }
-                    let textDecoder = new TextDecoder("utf-8");
-                    let entity = JSON.parse(textDecoder.decode(content));
-                    entities.push(entity);
+                    resolver.loadDSU(dsuItem.identifier, (err, dsu) => {
+                        if (err) {
+                            return callback(err);
+                        }
+                        dsu.readFile('/data.json', (err, content) => {
+                            if (err) {
+                                entities.slice(0);
+                                return callback(err, undefined);
+                            }
+                            let entity = JSON.parse(content.toString());
+                            entity.objectName = objectName;
+                            entities.push(entity);
 
-                    if (dsuList.length === 0) {
-                        return callback(undefined, entities);
-                    }
-                    getServiceDsu(dsuList.shift());
-                })
-            };
-
-            if (dsuList.length === 0) {
-                return callback(undefined, []);
-            }
-            getServiceDsu(dsuList.shift());
-        })
+                            if (dsuList.length === 0) {
+                                return callback(undefined, entities);
+                            }
+                            getServiceDsu(dsuList.shift());
+                        });
+                    });
+                };
+                if (dsuList.length === 0) {
+                    return callback(undefined, []);
+                }
+                getServiceDsu(dsuList.shift());
+            })
+        });
     }
 
     async getEntitiesAsync(path) {
@@ -44,31 +73,54 @@ class DSUService {
 
     getEntity(uid, path, callback) {
         [path, callback] = this.swapParamsIfPathIsMissing(path, callback);
-        this.DSUStorage.getItem(this._getDsuStoragePath(uid, path), (err, content) => {
+        const resolver = opendsu.loadAPI('resolver');
+        resolver.loadDSU(uid, (err, dsu) => {
             if (err) {
-                return callback(err, undefined);
+                return callback(err);
             }
-            let textDecoder = new TextDecoder("utf-8");
-            callback(undefined, JSON.parse(textDecoder.decode(content)));
-        })
+            dsu.readFile('/data.json', (err, data) => {
+                if (err) {
+                    return callback(err, undefined);
+                }
+                callback(undefined, JSON.parse(data.toString()));
+            });
+        });
     }
 
     async getEntityAsync(uid, path) {
         return this.asyncMyFunction(this.getEntity, [...arguments])
     }
 
+    createDSUAndMount(path, callback) {
+        [path, callback] = this.swapParamsIfPathIsMissing(path, callback);
+        const resolver = opendsu.loadAPI('resolver');
+        const keySSISpace = opendsu.loadAPI('keyssi');
+        const templateSSI = keySSISpace.createTemplateSeedSSI('default');
+        resolver.createDSU(templateSSI, (err, dsuInstance) => {
+            if (err) {
+                return callback(err);
+            }
+            dsuInstance.getKeySSIAsString((err, keySSI) => {
+                if (err) {
+                    return callback(err);
+                }
+                this.letDSUStorageInit().then(() => {
+                    this.DSUStorage.mount(path + '/' + keySSI, keySSI, (err) => {
+                        callback(err, keySSI);
+                    });
+                });
+            });
+        });
+    }
+
     saveEntity(entity, path, callback) {
         [path, callback] = this.swapParamsIfPathIsMissing(path, callback);
-        this.DSUStorage.call('createSSIAndMount', path, (err, keySSI) => {
+        this.createDSUAndMount(path, (err, keySSI) => {
             if (err) {
-                return callback(err, undefined);
+                return callback(err);
             }
-            // TODO: Decide the name of the identifier and remove the others.
-            entity.KeySSI = keySSI;
-            entity.keySSI = keySSI;
-            entity.uid = keySSI;
-            this.updateEntity(entity, path, callback);
-        })
+            this.updateEntity(this._getEntityWithIdentifiers(entity, keySSI), path, callback);
+        });
     }
 
     async saveEntityAsync(entity, path) {
@@ -77,12 +129,21 @@ class DSUService {
 
     updateEntity(entity, path, callback) {
         [path, callback] = this.swapParamsIfPathIsMissing(path, callback);
-        this.DSUStorage.setObject(this._getDsuStoragePath(entity.uid, path), entity, (err) => {
-            if (err) {
-                return callback(err, undefined);
-            }
-            callback(undefined, entity);
-        })
+        const resolver = opendsu.loadAPI('resolver');
+        entity.volatile = undefined;
+        resolver.loadDSU(entity.uid,
+            //{skipCache: true},
+            (err, dsu) => {
+                if (err) {
+                    return callback(err);
+                }
+                dsu.writeFile('/data.json', JSON.stringify(entity), (err) => {
+                    if (err) {
+                        return callback(err, undefined);
+                    }
+                    callback(undefined, entity);
+                });
+            });
     }
 
     async updateEntityAsync(entity, path) {
@@ -91,14 +152,16 @@ class DSUService {
 
     mountEntity(keySSI, path, callback) {
         [path, callback] = this.swapParamsIfPathIsMissing(path, callback);
-        this.DSUStorage.call('mount', path, keySSI, (err) => {
-            this.getEntity(keySSI, (err, entity) => {
-                if (err) {
-                    return callback(err, undefined);
-                }
-                callback(undefined, entity);
-            })
-        })
+        this.letDSUStorageInit().then(() => {
+            this.DSUStorage.mount(path + '/' + keySSI, keySSI, (err) => {
+                this.getEntity(keySSI, (err, entity) => {
+                    if (err) {
+                        return callback(err, undefined);
+                    }
+                    this.updateEntity(this._getEntityWithIdentifiers(entity, keySSI), path, callback);
+                })
+            });
+        });
     }
 
     async mountEntityAsync(keySSI, path) {
@@ -108,7 +171,7 @@ class DSUService {
     unmountEntity(uid, path, callback) {
         [path, callback] = this.swapParamsIfPathIsMissing(path, callback);
         let unmountPath = path + '/' + uid;
-        this.DSUStorage.call('unmount', unmountPath, (err, result) => {
+        this.DSUStorage.unmount(unmountPath, (err, result) => {
             if (err) {
                 return callback(err, undefined);
             }
@@ -120,8 +183,18 @@ class DSUService {
         return this.asyncMyFunction(this.unmountEntity, [...arguments])
     }
 
-    makeSSIReadOnly(keySSI, callback) {
-        this.DSUStorage.call('seedToSreadSSI', keySSI, callback);
+    makeSSIReadOnly(seedSSI, callback) {
+        const keySSISpace = opendsu.loadAPI('keyssi');
+        let parsedSeedSSI = keySSISpace.parse(seedSSI);
+        callback(undefined, parsedSeedSSI.derive().getIdentifier());
+    }
+
+    _getEntityWithIdentifiers(entity, keySSI) {
+        // TODO: Decide the name of the identifier and remove the others.
+        entity.KeySSI = keySSI;
+        entity.keySSI = keySSI;
+        entity.uid = keySSI;
+        return entity;
     }
 
     _getDsuStoragePath(keySSI, path = this.PATH) {
@@ -142,6 +215,80 @@ class DSUService {
                 resolve(data);
             })
         })
+    }
+
+    cloneDSU = (fromDSUSSI, toDSUPath, callback) => {
+        this.createDSUAndMount(toDSUPath, (err, keySSI) => {
+            if (err) {
+                return callback(err);
+            }
+            this.copyDSU(fromDSUSSI, keySSI, (err, copiedFiles) => {
+                if (err) {
+                    return callback(err);
+                }
+                let cloneDetails = {
+                    ssi: keySSI,
+                    copiedFiles: copiedFiles
+                }
+                callback(undefined, cloneDetails);
+            });
+        })
+    }
+
+    copyDSU = (fromDSUSSI, toDSUSSI, callback) => {
+        const resolver = opendsu.loadAPI('resolver');
+        resolver.loadDSU(fromDSUSSI, {skipCache: true}, (err, fromDSU) => {
+            if (err) {
+                return callback(err);
+            }
+            resolver.loadDSU(toDSUSSI, {skipCache: true}, (err, toDSU) => {
+                if (err) {
+                    return callback(err);
+                }
+                fromDSU.listFiles('/', (err, files) => {
+                    if (err) {
+                        return callback(err);
+                    }
+                    let copiedFiles = [];
+                    let copyFileToDSU = (file) => {
+                        fromDSU.readFile(file, (err, data) => {
+                            if (err) {
+                                return copyFileToDSU(files.pop());
+                            }
+                            if (file === "data.json") {
+                                data = JSON.parse(data.toString());
+                                data.genesisSSI = fromDSUSSI;
+                                data.uid = toDSUSSI;
+                                data.KeySSI = toDSUSSI;
+                                data.keySSI = toDSUSSI;
+                                data = JSON.stringify(data);
+                            }
+                            toDSU.writeFile(file, data, (err, newCreatedFile) => {
+                                if (err) {
+                                    return copyFileToDSU(files.pop());
+                                }
+                                copiedFiles.push(file);
+                                copyFileToDSU(files.pop());
+                            })
+                        })
+                        if (files.length === 0) {
+                            return callback(undefined, copiedFiles)
+                        }
+                    }
+                    if (files.length === 0) {
+                        return callback(undefined, copiedFiles)
+                    }
+                    copyFileToDSU(files.pop());
+                });
+            });
+        });
+    }
+
+    normalizePath = (path) => {
+        if (!path.endsWith('/')) {
+            path += '/';
+        }
+        return path;
     }
 }
 

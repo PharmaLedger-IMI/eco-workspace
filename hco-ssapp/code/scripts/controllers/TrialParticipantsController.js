@@ -1,8 +1,9 @@
+import HCOService from '../services/HCOService.js';
+
 const {WebcController} = WebCardinal.controllers;
 import SiteService from '../services/SiteService.js';
 import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
-
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
@@ -24,18 +25,19 @@ export default class TrialParticipantsController extends WebcController {
             ...getInitModel(),
             trialSSI: this.history.win.history.state.state,
         });
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
-        this._initTrial(this.model.trialSSI);
-        this._getSite();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
+    async _initServices() {
+        this.HCOService = new HCOService();
+        this.TrialService = new TrialService();
+        this.TrialParticipantService = new TrialParticipantsService();
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
-        this.SiteService = new SiteService(DSUStorage);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
+        this.SiteService = new SiteService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        this._initTrial(this.model.trialSSI);
     }
 
     _initHandlers() {
@@ -50,38 +52,41 @@ export default class TrialParticipantsController extends WebcController {
         });
     }
 
-    _initTrial(keySSI) {
-        this.TrialService.getTrial(keySSI, async (err, trial) => {
-            if (err) {
-                return console.log(err);
-            }
-            this.model.trial = trial;
-
-            this.model.trial.isInRecruitmentPeriod = true;
-            let actions = await this._getEconsentActionsMappedByUser(keySSI);
-            this.model.trialParticipants = await this._getTrialParticipantsMappedWithActionRequired(actions);
-            if (this.model.trial.recruitmentPeriod) {
-                let endDate = new Date(this.model.trial.recruitmentPeriod.endDate);
-                let currentDate = new Date();
-                this.model.trial.isInRecruitmentPeriod = currentDate <= endDate;
-            }
-        });
+    async _initTrial(keySSI) {
+        this.model.trial = this.model.hcoDSU.volatile?.trial[0];
+        this.model.trial.isInRecruitmentPeriod = true;
+        let actions = await this._getEconsentActionsMappedByUser(keySSI);
+        this.model.trialParticipants = await this._getTrialParticipantsMappedWithActionRequired(actions);
+        if (this.model.trial.recruitmentPeriod) {
+            let endDate = new Date(this.model.trial.recruitmentPeriod.endDate);
+            let currentDate = new Date();
+            this.model.trial.isInRecruitmentPeriod = currentDate <= endDate;
+        }
     }
 
     async _getTrialParticipantsMappedWithActionRequired(actions) {
-        let trialsR = (await this.TrialParticipantRepository.findAllAsync());
+        let nonObfuscatedTps = await this.TrialParticipantRepository.findAllAsync();
+        let tpsMappedByDID = {};
+        (await this.TrialParticipantRepository.findAllAsync()).forEach(tp => tpsMappedByDID[tp.did] = tp)
+        let trialsR = this.model.hcoDSU.volatile.tps;
         return trialsR
             .filter(tp => tp.trialNumber === this.model.trial.id)
             .map(tp => {
+                let nonObfuscatedTp = tpsMappedByDID[tp.did];
+                tp.name = nonObfuscatedTp.name;
+                tp.birthdate = nonObfuscatedTp.birthdate;
+                tp.enrolledDate = nonObfuscatedTp.enrolledDate;
+
                 let tpActions = actions[tp.did];
+                let actionNeeded = 'No action required';
                 if (tpActions === undefined || tpActions.length === 0) {
                     return {
                         ...tp,
-                        actionNeeded: 'No action required'
+                        actionNeeded: actionNeeded
                     }
                 }
                 let lastAction = tpActions[tpActions.length - 1];
-                let actionNeeded = 'No action required';
+
                 switch (lastAction.action.name) {
                     case 'withdraw': {
                         actionNeeded = 'TP Withdrawed';
@@ -246,32 +251,40 @@ export default class TrialParticipantsController extends WebcController {
         tp.enrolledDate = currentDate.toLocaleDateString();
         tp.trialSSI = this.model.trial.keySSI;
         let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
+        await this.HCOService.addTrialParticipantAsync(tp);
         trialParticipant.actionNeeded = 'No action required';
         this.model.trialParticipants.push(trialParticipant);
+
         this.sendMessageToPatient(
-            'add-to-trial',
+            Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_PATIENT,
+            {
+                tpNumber: '',
+                tpName: tp.name,
+                did: tp.did
+            },
             this.model.trialSSI,
-            {tpNumber: '', tpName: tp.name, did: tp.did},
             Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL
         );
         this._sendMessageToSponsor();
     }
 
-    sendMessageToPatient(operation, ssi, tp, shortMessage) {
+    sendMessageToPatient(operation, tp, trialSSI, shortMessage) {
+        let site = this.model.hcoDSU.volatile?.site[0];
         this.CommunicationService.sendMessage(tp.did, {
             operation: operation,
-            ssi: ssi,
+            ssi: site.uid,
             useCaseSpecifics: {
                 tpNumber: tp.tpNumber,
                 tpName: tp.tpName,
                 tpDid: tp.did,
-                sponsorIdentity: this.model.site.sponsorIdentity,
+                trialSSI: trialSSI,
+                sponsorIdentity: site.sponsorIdentity,
                 site: {
-                    name: this.model.site?.name,
-                    number: this.model.site?.id,
-                    country: this.model.site?.country,
-                    status: this.model.site?.status,
-                    keySSI: this.model.site?.keySSI,
+                    name: site?.name,
+                    number: site?.id,
+                    country: site?.country,
+                    status: site?.status,
+                    keySSI: site?.keySSI,
                 },
             },
             shortDescription: shortMessage,
@@ -292,26 +305,12 @@ export default class TrialParticipantsController extends WebcController {
         });
     }
 
-    _getSite() {
-        this.SiteService.getSites((err, sites) => {
-            if (err) {
-                return console.log(err);
-            }
-            if (sites && sites.length > 0) {
-                this.model.site = sites[0];
-                // To be fixed (@Raluca & @Cosmin)
-                //let filtered = sites?.filter(site => site.trialKeySSI === this.model.trial.keySSI);
-                //if (filtered) this.model.site = filtered[0];
-            }
-        });
-    }
-
     _sendMessageToSponsor() {
-        this.CommunicationService.sendMessage(this.model.site.sponsorIdentity, {
+        this.CommunicationService.sendMessage(this.model.hcoDSU.volatile?.site[0].sponsorIdentity, {
             operation: 'update-site-status',
             ssi: this.model.trialSSI,
             stageInfo: {
-                siteSSI: this.model.site.KeySSI,
+                siteSSI: this.model.hcoDSU.volatile?.site[0].KeySSI,
                 status: this.model.trial.stage
             },
             shortDescription: 'The stage of the site changed',

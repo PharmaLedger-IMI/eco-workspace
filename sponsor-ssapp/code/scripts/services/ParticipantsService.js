@@ -10,10 +10,9 @@ export default class ParticipantsService extends DSUService {
   PARTICIPANT_LIST_FILENAME = 'participants.json';
 
   constructor(DSUStorage) {
-    super(DSUStorage, '/consents');
+    super('/consents');
     this.storageService = getSharedStorage(DSUStorage);
-    this.DSUStorage = DSUStorage;
-    this.consentsService = new ConsentsService(this.DSUStorage);
+    this.consentsService = new ConsentsService();
   }
 
   // TODO: catch error only upper level and show pop up

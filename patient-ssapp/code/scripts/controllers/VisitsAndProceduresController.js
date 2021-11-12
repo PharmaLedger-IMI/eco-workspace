@@ -29,7 +29,7 @@ export default class VisitsAndProceduresController extends WebcController {
             }
         });
         // TODO: Change mock data from details, toRemember and procedures.
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
         this._initVisits();
     }
@@ -44,9 +44,9 @@ export default class VisitsAndProceduresController extends WebcController {
         this._attachHandlerViewProcedures();
     }
 
-    _initServices(DSUStorage) {
-        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.VISITS, DSUStorage);
-        this.TrialParticipantRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
+    _initServices() {
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.VISITS);
+        this.TrialParticipantRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
     }
 

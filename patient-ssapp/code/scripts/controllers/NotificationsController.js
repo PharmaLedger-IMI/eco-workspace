@@ -9,13 +9,13 @@ export default class NotificationsController extends WebcController {
   constructor(...props) {
     super(...props);
     this.setModel({});
-    this._initServices(this.DSUStorage);
+    this._initServices();
     this._attachNotificationNavigationHandler();
     this._initNotifications();
   }
 
-  _initServices(DSUStorage) {
-    this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.NOTIFICATIONS, DSUStorage);
+  _initServices() {
+    this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.NOTIFICATIONS);
   }
 
   _initNotifications() {

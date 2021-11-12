@@ -2,6 +2,7 @@ const ecoServices = require('eco-services');
 import TrialsService from '../services/TrialsService.js';
 import { trialStatusesEnum, trialTableHeaders, trialStagesEnum } from '../constants/trial.js';
 const DIDService = ecoServices.DIDService;
+const Constants = ecoServices.Constants;
 import ParticipantsService from '../services/ParticipantsService.js';
 import SitesService from '../services/SitesService.js';
 
@@ -86,7 +87,6 @@ export default class ListTrialsController extends WebcController {
       this.listenForMessages();
     });
 
-
     this.feedbackEmitter = null;
 
     this.model = {
@@ -112,21 +112,21 @@ export default class ListTrialsController extends WebcController {
       if (err) {
         return console.error(err);
       }
-      console.log('DATA MEESAGE:', data);
+      console.log('DATA MESSAGE:', data);
       switch (data.message.operation) {
-        case 'sign-econsent':
-        case 'update-econsent': {
+        case Constants.MESSAGES.SPONSOR.SIGN_ECOSENT:
+        case Constants.MESSAGES.SPONSOR.UPDATE_ECOSENT: {
           await this.participantsService.updateParticipant(
-              {
-                participantId: data.message.useCaseSpecifics.tpNumber,
-                action: data.message.useCaseSpecifics.action,
-                trialSSI: data.message.useCaseSpecifics.trialSSI,
-                consentSSI: data.message.ssi,
-                version: data.message.useCaseSpecifics.version,
-                type: data.sender === 'hcoIdentity' ? senderType.HCP : senderType.Patient,
-                operationDate: data.message.useCaseSpecifics.operationDate || null,
-              },
-              data.message.useCaseSpecifics.trialSSI
+            {
+              participantId: data.message.useCaseSpecifics.tpNumber,
+              action: data.message.useCaseSpecifics.action,
+              trialSSI: data.message.useCaseSpecifics.trialSSI,
+              consentSSI: data.message.ssi,
+              version: data.message.useCaseSpecifics.version,
+              type: data.sender === 'hcoIdentity' ? senderType.HCP : senderType.Patient,
+              operationDate: data.message.useCaseSpecifics.operationDate || null,
+            },
+            data.message.useCaseSpecifics.trialSSI
           );
           eventBusService.emitEventListeners(Topics.RefreshParticipants + data.message.useCaseSpecifics.trialSSI, data);
           break;
@@ -134,9 +134,9 @@ export default class ListTrialsController extends WebcController {
         case 'update-site-status': {
           if (data.message.stageInfo.siteSSI && data.message.stageInfo.status && data.message.ssi) {
             await this.sitesService.updateSiteStage(
-                data.message.ssi,
-                data.message.stageInfo.siteSSI,
-                data.message.stageInfo.status
+              data.message.ssi,
+              data.message.stageInfo.siteSSI,
+              data.message.stageInfo.status
             );
           }
         }
@@ -251,9 +251,9 @@ export default class ListTrialsController extends WebcController {
         await this.trialsService.deleteTrial(event.data);
         this.showFeedbackToast('Result', 'Trial deleted successfully', 'toast');
         this.getTrials();
-        sites.forEach(site => {
+        sites.forEach((site) => {
           this.sendMessageToHco('delete-trial', event.data, 'the trial was removed ', site.did);
-        })
+        });
       } catch (error) {
         this.showFeedbackToast('Result', 'ERROR: The was an error, trial cannot be deleted right now', 'toast');
       }

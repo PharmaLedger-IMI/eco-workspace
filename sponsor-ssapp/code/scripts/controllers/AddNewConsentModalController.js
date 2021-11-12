@@ -1,5 +1,5 @@
 import { consentTypeEnum } from '../constants/consent.js';
-import NewConsentService from '../services/NewConsentService.js';
+import ConsentService from '../services/ConsentService.js';
 
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
@@ -63,7 +63,7 @@ export default class AddNewConsentModalController extends WebcController {
 
     this.keySSI = keySSI;
 
-    this.consentsService = new NewConsentService(this.DSUStorage);
+    this.consentsService = new ConsentService(this.DSUStorage);
 
     if (this.isUpdate) {
       this.setModel({
@@ -171,7 +171,7 @@ export default class AddNewConsentModalController extends WebcController {
               },
             ],
           };
-          const result = await this.consentsService.createConsent(consent, this.keySSI);
+          const result = await this.consentsService.createConsent(consent, this.keySSI, this.site);
           this.model.submitButtonDisabled = false;
           this.send('confirmed', result);
         } else {
@@ -203,7 +203,6 @@ export default class AddNewConsentModalController extends WebcController {
             file: this.file[0],
           };
 
-          // console.log(JSON.stringify(this.site, null, 2), JSON.stringify(this.isUpdate, null, 2));
           const result = await this.consentsService.updateConsent(version, this.keySSI, this.site, this.isUpdate);
           this.model.submitButtonDisabled = false;
           this.send('confirmed', result);

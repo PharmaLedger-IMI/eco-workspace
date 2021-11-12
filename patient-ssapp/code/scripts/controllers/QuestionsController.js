@@ -9,13 +9,13 @@ export default class QuestionsController extends WebcController {
     constructor(...props) {
         super(...props);
         this.setModel({});
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._attachQuestionNavigationHandler();
         this._initQuestions();
     }
 
-    _initServices(DSUStorage) {
-        this.QuestionsRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.QUESTIONS, DSUStorage);
+    _initServices() {
+        this.QuestionsRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.QUESTIONS);
     }
 
     _initQuestions() {

@@ -1,8 +1,11 @@
 import TrialService from '../services/TrialService.js';
+import TrialConsentService from '../services/TrialConsentService.js';
+
 const {WebcController} = WebCardinal.controllers;
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
+const Constants = ecoServices.Constants;
 const DateTimeService = ecoServices.DateTimeService;
 const DIDService = ecoServices.DIDService;
 const BaseRepository = ecoServices.BaseRepository;
@@ -11,21 +14,23 @@ export default class HomeController extends WebcController {
     constructor(...props) {
         super(...props);
         this.setModel({});
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
         this._initTrials();
         this._initTrialParticipant();
     }
 
-    async _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
-        this.NotificationsRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.NOTIFICATIONS, DSUStorage);
-        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES, DSUStorage);
-        this.VisitsAndProceduresRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.VISITS, DSUStorage);
-        this.QuestionsRepository =  BaseRepository.getInstance(BaseRepository.identities.PATIENT.QUESTIONS, DSUStorage);
+    async _initServices() {
+        this.TrialService = new TrialService();
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT);
+        this.NotificationsRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.NOTIFICATIONS);
+        this.EconsentsStatusRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.ECOSESENT_STATUSES);
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.VISITS);
+        this.QuestionsRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.QUESTIONS);
 
         this.CommunicationService = await DIDService.getCommunicationServiceInstanceAsync(this);
+        this.TrialConsentService = new TrialConsentService();
+        this.model.trialConsent = await this.TrialConsentService.getOrCreateAsync();
         this._handleMessages();
     }
 
@@ -52,49 +57,88 @@ export default class HomeController extends WebcController {
             if (err) {
                 return console.error(err);
             }
+            let hcoIdentity = {
+                did: data.did,
+                domain: data.domain
+            }
             switch (data.message.operation) {
-                case 'refresh-trial': {
+                case  Constants.MESSAGES.PATIENT.REFRESH_TRIAL: {
                     this.TrialService.reMountTrial(data.message.ssi, (err, trial) => {
-                        this.TrialService.getEconsents(trial.keySSI, (err, consents) => {
-                            if (err) {
-                                return console.log(err);
-                            }
-                            this._saveConsentsStatuses(consents, this.model.tp?.did);
-                        });
+                        this._saveConsentsStatuses(this.model.trialConsent.volatile.ifc, this.model.tp?.did);
                     });
                     break;
                 }
-                case 'add-to-trial' : {
-                    this.saveNotification(data);
-                    let hcoIdentity = {
-                        did: data.did,
-                        domain: data.domain
-                    }
-                    this._saveTrialParticipantInfo(hcoIdentity, data.message.useCaseSpecifics);
-                    this.mountTrial(data);
+                case Constants.MESSAGES.PATIENT.ADD_TO_TRIAL : {
+                    this._handleAddToTrial(data);
+                    this._saveConsentsStatuses(this.model.trialConsent.volatile?.ifc?.consents, data.message.useCaseSpecifics.did);
                     break;
                 }
-                case 'schedule-visit' : {
+                case Constants.MESSAGES.PATIENT.SCHEDULE_VISIT : {
                     this.saveNotification(data);
                     this._saveVisit(data.message.useCaseSpecifics.visit);
+                    break;
                 }
-                case 'update-visit' : {
+                case Constants.MESSAGES.PATIENT.UPDATE_VISIT : {
                     this.saveNotification(data);
                     this._updateVisit(data.message.useCaseSpecifics.visit);
+                    break;
                 }
-                case 'update-tpNumber': {
+                case Constants.MESSAGES.PATIENT.UPDATE_TP_NUMBER: {
                     this.saveNotification(data);
                     this._updateTrialParticipant(data.message.useCaseSpecifics);
                     break;
                 }
-                case 'question-response': {
+                case Constants.MESSAGES.PATIENT.QUESTION_RESPONSE: {
                     this.saveNotification(data);
-                    this._updateQuestion(data.message.useCaseSpecifics);
+                    this._updateQuestion(data.message.useCaseSpecifics)
+                    break;
+                }
+                case Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_PATIENT: {
+                    this._handleAddToTrial(data);
+                    this._mountHCODSUAndSaveConsentStatuses(data, (err, data) => {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        this._sendTrialConsentToHCO(hcoIdentity);
+                    });
+                    break;
+                }
+                case Constants.MESSAGES.HCO.SEND_REFRESH_CONSENTS_TO_PATIENT: {
+                    this._mountICFAndSaveConsentStatuses(data, () => {});
+                    break;
                 }
             }
         });
     }
 
+    _sendTrialConsentToHCO(hcoIdentity) {
+        let sendObject = {
+            operation: Constants.MESSAGES.PATIENT.SEND_TRIAL_CONSENT_DSU_TO_HCO,
+            ssi: this.TrialConsentService.ssi,
+            shortDescription: null,
+        };
+        this.CommunicationService.sendMessage(hcoIdentity, sendObject);
+    }
+
+    _mountHCODSUAndSaveConsentStatuses(data, callback) {
+        this.TrialConsentService.mountHCODSU(data.message.ssi, (err, trialConsent) => {
+            if (err) {
+                return callback(err);
+            }
+            this.model.trialConsent = trialConsent;
+            callback(err, trialConsent);
+        })
+    }
+
+    _mountICFAndSaveConsentStatuses(data, callback) {
+        this.TrialConsentService.mountIFC(data.message.ssi, (err, trialConsent) => {
+            if (err) {
+                return callback(err);
+            }
+            this.model.trialConsent = trialConsent;
+            this._saveConsentsStatuses(this.model.trialConsent.volatile?.ifc, data.message.useCaseSpecifics.did);
+        })
+    }
 
     _attachHandlerTrialClick() {
         this.onTagEvent('home:trial', 'click', (trial, target, event) => {
@@ -128,28 +172,24 @@ export default class HomeController extends WebcController {
     }
 
     _attachHandlerVisits() {
-
         this.onTagClick('home:visits', (event) => {
             this.navigateToPageTag('visits-procedures', {
                 tpDid: this.model.tp.did,
                 tpUid: this.model.tp.uid
             });
-            ;
         });
     }
 
     async _saveConsentsStatuses(consents, did) {
+        if (consents === undefined) {
+            consents = [];
+        }
         for (const consent of consents) {
-            let i = consents.indexOf(consent);
             consent.actions = [];
-            if (consent.type === 'Mandatory') {
-                consent.actions.push({name: 'required'});
-            }
+            consent.actions.push({name: 'required'});
             consent.foreignConsentId = consent.keySSI;
-
             consent.tpDid = did;
-            let eco = await this.EconsentsStatusRepository.createAsync(consent);
-
+            await this.EconsentsStatusRepository.createAsync(consent);
         }
     }
 
@@ -177,12 +217,9 @@ export default class HomeController extends WebcController {
     }
 
     async _updateTrialParticipant(data) {
-
         this.model.tp.number = data.number;
         await this.TrialParticipantRepository.updateAsync(this.model.tp.uid, this.model.tp);
-
     }
-
 
     async saveNotification(message) {
         let notification = {
@@ -191,24 +228,12 @@ export default class HomeController extends WebcController {
             viewed: false,
             startDate: DateTimeService.convertStringToLocaleDate(),
         }
-        let not = await this.NotificationsRepository.createAsync(notification, (err, data) => {
-            if (err) {
-                return console.error(err);
-            }
-        });
+        await this.NotificationsRepository.createAsync(notification, () => {});
     }
 
-    async mountTrial(data) {
-
-        let trial = await this.TrialService.mountTrialAsync(data.message.ssi);
+    async mountTrial(trialSSI) {
+        let trial = await this.TrialService.mountTrialAsync(trialSSI);
         this.model.trials?.push(trial);
-        this.TrialService.getEconsents(data.message.ssi, (err, consents) => {
-            if (err) {
-                return console.log(err);
-            }
-            this._saveConsentsStatuses(consents, data.message.useCaseSpecifics.did);
-        });
-
     }
 
 
@@ -218,12 +243,7 @@ export default class HomeController extends WebcController {
                 return console.error(err);
             }
             this.model.tp.hasNewVisits = true;
-            this.TrialParticipantRepository.update(this.model.tp.uid, this.model.tp, (err, data) => {
-                if (err) {
-                    console.log(err);
-                }
-            })
-
+            this.TrialParticipantRepository.update(this.model.tp.uid, this.model.tp, () => {})
         })
     }
 
@@ -232,21 +252,23 @@ export default class HomeController extends WebcController {
             if (err || visits.length === 0) {
                 return;
             }
-            this.VisitsAndProceduresRepository.update(visits[0].pk, visitToBeUpdated, (err, updatedVisit) => {
-                if (err) {
-                    return err;
-                }
-            })
+            this.VisitsAndProceduresRepository.update(visits[0].pk, visitToBeUpdated, () => {})
         })
+    }
+
+    async _handleAddToTrial(data){
+        this.saveNotification(data);
+        let hcoIdentity = {
+            did: data.did,
+            domain: data.domain
+        }
+        await this._saveTrialParticipantInfo(hcoIdentity, data.message.useCaseSpecifics);
+        await this.mountTrial(data.message.useCaseSpecifics.trialSSI);
     }
 
     _updateQuestion(data) {
         if (data.question) {
-            this.QuestionsRepository.update(data.question.pk, data.question, (err, created) => {
-                if (err) {
-                    console.log(err);
-                }
-            })
+            this.QuestionsRepository.update(data.question.pk, data.question, () => {})
         }
     }
 }

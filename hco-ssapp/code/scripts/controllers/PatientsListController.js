@@ -1,3 +1,5 @@
+import HCOService from "../services/HCOService.js";
+
 const {WebcController} = WebCardinal.controllers;
 import SiteService from '../services/SiteService.js';
 import TrialService from '../services/TrialService.js';
@@ -45,17 +47,19 @@ export default class PatientsListController extends WebcController {
             ...getInitModel(),
             trialSSI: this.history.win.history.state.state,
         });
-        this._initServices(this.DSUStorage);
-        this._initHandlers();
-        this._getTrialParticipants();
-        this._initFilterOptions();
+        this._initServices();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
-        this.SiteService = new SiteService(DSUStorage);
+    async _initServices() {
+        this.TrialService = new TrialService();
+        this.TrialParticipantService = new TrialParticipantsService();
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
+        this.SiteService = new SiteService();
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        this._getTrialParticipants();
+        this._initHandlers();
+        this._initFilterOptions();
     }
 
     _initFilterOptions() {
@@ -93,7 +97,7 @@ export default class PatientsListController extends WebcController {
 
     async _getTrialParticipants() {
 
-        this.model.trialParticipants = (await this.TrialParticipantRepository.findAllAsync());
+        this.model.trialParticipants = this.model.hcoDSU.volatile.tps;
         this.model.trialParticipantsFinal = this.model.trialParticipants;
     }
 

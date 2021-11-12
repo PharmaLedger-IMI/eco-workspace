@@ -1,5 +1,6 @@
 import TrialService from "../services/TrialService.js";
 import SiteService from "../services/SiteService.js";
+import HCOService from "../services/HCOService.js";
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
@@ -21,13 +22,11 @@ export default class VisitsAndProceduresController extends WebcController {
         this.setModel({
             ...getInitModel(),
             ...this.history.win.history.state.state,
-            visits: []
+            visits: [],
+            generalVisits: []
         });
 
-        this._initServices(this.DSUStorage);
-        this._initHandlers();
-        this._initSite();
-        this._initVisits();
+        this._initServices();
     }
 
     _initHandlers() {
@@ -40,33 +39,66 @@ export default class VisitsAndProceduresController extends WebcController {
         this._attachHandlerProcedures();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS, DSUStorage);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
+    async _initServices() {
+        this.TrialService = new TrialService();
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
-        this.SiteService = new SiteService(DSUStorage);
+        this.SiteService = new SiteService();
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        this._initHandlers();
+        this._initSite();
+        this._initVisits();
     }
 
     async _initVisits() {
-        this.TrialService.getEconsents(this.model.trialSSI, async (err, econsents) => {
-            if (err) {
-                return err;
+        this.model.visits = this.model.hcoDSU.volatile.visit[0].visits.visits
+        this._extractDataVisit();
+        this._matchTpVisits();
+    }
+
+    _extractDataVisit() {
+
+        if (this.model.visits) {
+            this.model.visits.forEach(visit => {
+
+                let weaksFrom = visit.weeks?.filter(weak => weak.type === 'weekFrom' || weak.type === 'week');
+                if (weaksFrom)
+                    visit.weakFrom = weaksFrom[0]?.value;
+                let weaksTo = visit.weeks?.filter(weak => weak.type === 'weekTo');
+                if (weaksTo)
+                    visit.weakTo = weaksTo[0]?.value;
+
+                let plus = visit.visitWindow?.filter(weak => weak.type === 'windowFrom');
+                if (plus)
+                    visit.plus = plus[0]?.value;
+                let minus = visit.visitWindow?.filter(weak => weak.type === 'windowTo');
+                if (plus)
+                    visit.minus = minus[0]?.value;
+            });
+
+        }
+    }
+
+    async _matchTpVisits() {
+        if (this.model.visits && this.model.visits.length > 0) {
+            let tpIndex = this.model.hcoDSU.volatile.tps.findIndex(tp => tp.uid === this.model.tpUid)
+            if (tpIndex === undefined) {
+                return;
             }
-            let visits = await this.VisitsAndProceduresRepository.findAllAsync();
+            this.model.tp = this.model.hcoDSU.volatile.tps[tpIndex];
+            if (!this.model.tp.visits || this.model.tp.visits.length < 1) {
+                this.model.tp.visits = this.model.visits;
+                this.HCOService.updateEntity(this.model.tp, {}, async (err, data) => {
+                    this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+                })
+                return;
+            } else {
+                this.model.visits.forEach(visit => {
 
-            this.model.visits = visits.filter(vis => vis.trialSSI === this.model.trialSSI);
-
-            if (this.model.visits && this.model.visits.length > 0) {
-                this.model.tp = await this.TrialParticipantRepository.findByAsync(this.model.tpUid);
-                if (!this.model.tp.visits || this.model.tp.visits.length < 1) {
-                    this.model.tp.visits = this.model.visits;
-                    this._updateTrialParticipantRepository(this.model.tp.uid, this.model.tp);
-                    return;
-                } else {
-                    this.model.visits.forEach(visit => {
-
-                        let visitTp = this.model.tp.visits.filter(v => v.uuid === visit.uuid)[0];
+                    let visitTp = this.model.tp.visits.filter(v => v.uuid === visit.uuid)[0];
+                    if (visitTp !== undefined) {
                         visit.confirmed = visitTp.confirmed;
                         visit.accepted = visitTp.accepted;
                         visit.declined = visitTp.declined;
@@ -81,14 +113,13 @@ export default class VisitsAndProceduresController extends WebcController {
                         }
                         visit.date = visitTp.date;
                         visit.toShowDate = DateTimeService.convertStringToLocaleDateTimeString(visitTp.date);
-                    })
-                }
+                    }
+                })
             }
-        });
+        }
     }
 
     async _updateTrialParticipantVisit(visit, operation) {
-
         if (!this.model.tp.visits) {
             this.model.tp.visits = this.visits;
         }
@@ -96,8 +127,18 @@ export default class VisitsAndProceduresController extends WebcController {
         let objIndex = this.model.tp.visits.findIndex((obj => obj.uuid == visit.uuid));
         this.model.tp.visits[objIndex] = visit;
         this.model.visits = this.model.tp.visits;
-        await this.TrialParticipantRepository.updateAsync(this.model.tp.uid, this.model.tp);
-        this.sendMessageToPatient(visit, operation);
+        let v = this.model.hcoDSU.volatile.visit[0];
+        v.visits.visits = this.model.tp.visits;
+
+        this.HCOService.updateEntity(v, {}, async (err, data) => {
+            this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+            let tpIndex = this.model.hcoDSU.volatile.tps.findIndex(tp => tp.uid === this.model.tpUid)
+            this.model.tp = this.model.hcoDSU.volatile.tps[tpIndex];
+            this.HCOService.updateEntity(this.model.tp, {}, async (err, data) => {
+                this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+                this.sendMessageToPatient(visit, operation);
+            })
+        })
     }
 
     _attachHandlerBack() {
@@ -131,7 +172,6 @@ export default class VisitsAndProceduresController extends WebcController {
                     let date = new Date(event.detail);
                     model.date = event.detail;
                     model.toShowDate = DateTimeService.convertStringToLocaleDateTimeString(date);
-                    // this._updateVisit(model);
                     this._updateTrialParticipantVisit(model, Constants.MESSAGES.HCO.COMMUNICATION.TYPE.SCHEDULE_VISIT);
                 },
                 (event) => {
@@ -150,10 +190,6 @@ export default class VisitsAndProceduresController extends WebcController {
         await this.TrialParticipantRepository.updateAsync(uid, tp);
     }
 
-    async _updateVisitRepository(uid, visit) {
-        await this.VisitsAndProceduresRepository.updateAsync(uid, visit);
-    }
-
     _attachHandlerEditDate() {
         this.onTagEvent('procedure:editDate', 'click', (model, target, event) => {
             event.preventDefault();
@@ -167,10 +203,14 @@ export default class VisitsAndProceduresController extends WebcController {
                     this.model.tp.visits[visitIndex].toShowDate = DateTimeService.convertStringToLocaleDateTimeString(date);
                     // this.model.existingVisit.toShowDate = DateTimeService.convertStringToLocaleDateTimeString(date);
                     // this.model.visit = model.tp.visits[visitIndex];
-                    this._updateTrialParticipantRepository(this.model.tp.uid, model.tp)
+                    this._updateTrialParticipantRepository(this.model.tp.uid, this.model.tp)
                     this.model.visits = this.model.tp.visits;
-                    // this._updateVisitRepository(this.model.visit.pk, this.model.visit)
-                    this.sendMessageToPatient(model.tp.visits[visitIndex], Constants.MESSAGES.HCO.COMMUNICATION.TYPE.UPDATE_VISIT);
+                    let v = this.model.hcoDSU.volatile.visit[0];
+                    v.visits.visits = this.model.tp.visits;
+                    this.HCOService.updateEntity(v, {}, async (err, data) => {
+                        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+                    });
+                    this.sendMessageToPatient(this.model.tp.visits[visitIndex], Constants.MESSAGES.HCO.COMMUNICATION.TYPE.UPDATE_VISIT);
                 },
                 (event) => {
                     const response = event.detail;
@@ -185,9 +225,9 @@ export default class VisitsAndProceduresController extends WebcController {
     }
 
     _updateVisit(visit) {
-        let objIndex = this.model.visits.findIndex((obj => obj.uid == visit.uid));
+        let objIndex = this.model.visits.findIndex((obj => obj.keySSI == visit.keySSI));
         this.model.visits[objIndex] = visit;
-        let toBeChangedVisits = this.model.visits.filter(v => v.id === visit.id);
+        let toBeChangedVisits = this.model.visits.filter(v => v.keySSI === visit.keySSI);
         toBeChangedVisits.forEach(v => {
             let auxV = {
                 ...v,
@@ -237,9 +277,11 @@ export default class VisitsAndProceduresController extends WebcController {
                         model.confirmed = true;
                         let visitIndex = this.model.tp.visits.findIndex(v => v.pk === model.pk);
                         this.model.tp.visits[visitIndex].confirmed = true;
-                        this._updateTrialParticipantRepository(this.model.tp.uid, this.model.tp);
-                        this.model.visits = this.model.tp.visits;
-                        this.sendMessageToSponsor(model);
+                        this.HCOService.updateEntity(this.model.tp, {}, async (err, data) => {
+                            this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+                            this.model.visits = this.model.tp.visits;
+                            this.sendMessageToSponsor(model);
+                        })
                     }
                 },
                 (event) => {
@@ -267,10 +309,7 @@ export default class VisitsAndProceduresController extends WebcController {
     }
 
     async _initSite() {
-        let sites = await this.SiteService.getSitesAsync();
-        if (sites && sites.length > 0) {
-            this.model.site = sites[sites.length - 1];
-        }
+        this.model.site = this.model.hcoDSU.volatile.site[0];
     }
 
     _attachHandlerProcedures() {

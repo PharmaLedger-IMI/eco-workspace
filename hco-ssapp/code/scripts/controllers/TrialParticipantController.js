@@ -1,5 +1,6 @@
 import TrialService from '../services/TrialService.js';
 import SiteService from '../services/SiteService.js';
+import HCOService from "../services/HCOService.js";
 
 
 const {WebcController} = WebCardinal.controllers;
@@ -22,19 +23,18 @@ export default class TrialParticipantController extends WebcController {
             ...getInitModel(),
             ...this.history.win.history.state.state,
         });
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
-        this._initConsents(this.model.trialSSI);
-
     }
 
-    _initServices(DSUStorage) {
-
-        this.TrialService = new TrialService(DSUStorage);
-        this.SiteService = new SiteService(DSUStorage);
+    async _initServices() {
+        this.TrialService = new TrialService();
+        this.SiteService = new SiteService();
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
-
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        this._initConsents(this.model.trialSSI);
     }
 
     _initHandlers() {
@@ -50,29 +50,23 @@ export default class TrialParticipantController extends WebcController {
     }
 
     _initConsents(keySSI) {
-        this.TrialService.getEconsents(keySSI, (err, data) => {
-            if (err) {
-                return console.log(err);
-            }
-            this.model.econsents = data.map((consent) => {
-                return {
-                    ...consent,
-                    versionDateAsString: DateTimeService.convertStringToLocaleDate(consent.versionDate)
-                };
-            });
-            this._initTrialParticipant();
-        });
+        this.model.econsents = this.model.hcoDSU.volatile.icfs.map(consent => {
+            return {
+                ...consent,
+                versionDateAsString: DateTimeService.convertStringToLocaleDate(consent.versions[0].versionDate)
+            };
+        })
+        this._initTrialParticipant();
     }
 
-    _initTrialParticipant() {
-        this.TrialParticipantRepository.findBy(this.model.tpUid, (err, data) => {
-            if (err) {
-                return console.log(err);
-            }
-            this.model.tp = data;
-            this._computeEconsentsWithActions();
-
-        })
+    async _initTrialParticipant() {
+        let trialParticipant = this.model.hcoDSU.volatile.tps.find(tp => tp.uid === this.model.tpUid);
+        let nonObfuscatedTps = await this.TrialParticipantRepository.filterAsync(`did == ${trialParticipant.did}`);
+        if (nonObfuscatedTps.length > 0) {
+            trialParticipant.name = nonObfuscatedTps[0].name;
+        }
+        this.model.tp = trialParticipant;
+        this._computeEconsentsWithActions();
     }
 
     _attachHandlerNavigateToEconsentVersions() {
@@ -214,7 +208,7 @@ export default class TrialParticipantController extends WebcController {
             }
         }
         this.CommunicationService.sendMessage(CommunicationService.identities.IOT.PROFESSIONAL_IDENTITY, {
-            operation: 'add-trial-subject',
+            operation: Constants.MESSAGES.PATIENT.ADD_TRIAL_SUBJECT,
             useCaseSpecifics: messageForIot
         });
 
@@ -232,20 +226,19 @@ export default class TrialParticipantController extends WebcController {
     }
 
     _updateTrialParticipant(trialParticipant) {
-
-        this.TrialParticipantRepository.update(trialParticipant.uid, trialParticipant, (err, trialParticipant) => {
+        this.HCOService.updateEntity(trialParticipant, {}, (err, trialParticipant) => {
             if (err) {
                 return console.log(err);
             }
             this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.SUCCESS.ATTACH_TRIAL_PARTICIPANT_NUMBER);
             this._sendMessageToPatient(this.model.trialSSI, trialParticipant, 'Tp Number was attached');
-        });
-
+            this.TrialParticipantRepository.update(trialParticipant.uid, trialParticipant, () => {});
+        })
     }
 
     _sendMessageToPatient(ssi, tp, shortMessage) {
         this.CommunicationService.sendMessage(tp.did, {
-            operation: 'update-tpNumber',
+            operation: Constants.MESSAGES.PATIENT.UPDATE_TP_NUMBER,
             ssi: ssi,
             useCaseSpecifics: {
                 tpNumber: tp.number,

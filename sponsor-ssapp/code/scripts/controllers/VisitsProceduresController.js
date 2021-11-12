@@ -1,11 +1,13 @@
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
-import NewConsentService from '../services/NewConsentService.js';
+const Constats = ecoServices.Constants;
+import ConsentService from '../services/ConsentService.js';
 import TrialsService from '../services/TrialsService.js';
 import eventBusService from '../services/EventBusService.js';
 import SitesService from '../services/SitesService.js';
 import { Topics } from '../constants/topics.js';
-
+import { countryListAlpha2 } from '../constants/countries.js';
+import VisitsService from '../services/VisitsService.js';
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
 
@@ -16,9 +18,10 @@ export default class VisitsProceduresController extends WebcController {
 
     this.keySSI = keySSI;
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
-    this.consentsService = new NewConsentService(this.DSUStorage);
+    this.consentsService = new ConsentService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
+    this.visitsService = new VisitsService(this.DSUStorage);
     this.feedbackEmitter = null;
 
     this.model = {
@@ -30,6 +33,8 @@ export default class VisitsProceduresController extends WebcController {
       notEditable: true,
       filters: [],
       filteredProcedures: [],
+      selectedCountryIdx: 0,
+      selectedSiteIdx: 0,
     };
 
     this.attachEvents();
@@ -38,7 +43,6 @@ export default class VisitsProceduresController extends WebcController {
 
     eventBusService.addEventListener(Topics.RefreshTrialConsents, async () => {
       await this.getConsents();
-      this.model.filters = this.model.consents.map((x) => ({ name: x.name, selected: true }));
     });
   }
 
@@ -49,34 +53,30 @@ export default class VisitsProceduresController extends WebcController {
   }
 
   async getConsents() {
-    const consents = await this.consentsService.getTrialConsents(this.keySSI);
-    this.model.consents = JSON.parse(JSON.stringify(consents));
+    const visits = await this.visitsService.getTrialVisits(this.keySSI);
+    console.log(visits);
+    this.model.consents = visits.consents.map((x) => ({
+      name: x,
+    }));
     this.model.filters = this.model.consents.map((x) => ({ name: x.name, selected: true }));
 
-    if (consents.length > 0 && consents[0].visits && consents[0].visits.length > 0) {
-      await this.loadModel(consents);
+    if (visits.visits && visits.visits.length > 0) {
+      await this.loadModel(visits.visits);
     }
 
     return;
   }
 
-  async loadModel(consents) {
-    const visits = consents[0].visits;
+  async loadModel(visits) {
     let procedures = [];
-    consents.forEach((x) => {
-      if (x.visits && x.visits.length > 0) {
-        x.visits.forEach((y) => {
-          if (y.procedures && y.procedures.length > 0) {
-            procedures.push(y.procedures);
-          }
-        });
+    visits.forEach((y) => {
+      if (y.procedures && y.procedures.length > 0) {
+        procedures.push(y.procedures);
       }
     });
     procedures = _.flatten(procedures);
 
     visits.sort((a, b) => a.id - b.id);
-
-    console.log(visits);
 
     const randomizationIdx = visits.findIndex((x) => x.isRandomizationVisit === true);
     const resultVisits = visits.map((x, idx) => {
@@ -169,8 +169,8 @@ export default class VisitsProceduresController extends WebcController {
             required: false,
             options: this.model.consents.map((x) => ({
               label: x.name,
-              value: x.keySSI,
-              selected: procedure.consent.keySSI === x.keySSI ? 'selected' : null,
+              value: x.name,
+              selected: procedure.consent.name === x.name ? 'selected' : null,
             })),
           },
         };
@@ -196,19 +196,13 @@ export default class VisitsProceduresController extends WebcController {
         return this.model.filters.find((z) => z.name === y.label).selected && y.selected === 'selected' ? true : acc;
       }, false)
     );
-    console.log(JSON.parse(JSON.stringify(this.model.filteredProcedures)));
   }
 
   attachEvents() {
     this.model.addExpression(
       'visitsExist',
       () => {
-        return (
-          this.model.consents &&
-          Array.isArray(this.model.consents) &&
-          this.model.consents[0] &&
-          this.model.consents[0].visits
-        );
+        return this.model.consents && Array.isArray(this.model.consents) && this.model.consents.length > 0;
       },
       'consents'
     );
@@ -216,7 +210,6 @@ export default class VisitsProceduresController extends WebcController {
     this.model.addExpression(
       'noConsents',
       () => {
-        console.log('NO consents:', this.model.consents);
         return !(this.model.consents && Array.isArray(this.model.consents) && this.model.consents.length > 0);
       },
       'consents'
@@ -464,7 +457,7 @@ export default class VisitsProceduresController extends WebcController {
             required: false,
             options: this.model.consents.map((x) => ({
               label: x.name,
-              value: x.keySSI,
+              value: x.name,
             })),
           },
         },
@@ -504,9 +497,8 @@ export default class VisitsProceduresController extends WebcController {
             if (y.name.value === '') error = true;
             return {
               consent: {
-                keySSI: targetElement.value,
-                id: this.model.consents.find((z) => z.keySSI === targetElement.value).id,
-                name: targetElement.options[targetElement.selectedIndex].text,
+                // name: targetElement.options[targetElement.selectedIndex].text,
+                name: targetElement.value,
               },
               name: y.name.value,
               checked: y.visits[idx].checkbox.checked,
@@ -523,12 +515,12 @@ export default class VisitsProceduresController extends WebcController {
         return;
       }
 
-      await this.consentsService.updateBaseConsentVisits(result, this.keySSI);
+      await this.visitsService.updateTrialVisits(this.keySSI, { visits: result });
       await this.getConsents();
       const sites = await this.sitesService.getSites(this.keySSI);
-      sites.forEach(site => {
+      for (const site of sites) {
         this.sendMessageToHco('update-base-procedures', this.keySSI, 'Update trial consents', site.did);
-      });
+      }
       this.model.notEditable = !this.model.notEditable;
       return;
       //TODO: Save to corresponding consents
@@ -537,6 +529,11 @@ export default class VisitsProceduresController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage, did) {
+    console.log({
+      operation: operation,
+      ssi: ssi,
+      shortDescription: shortMessage,
+    });
     this.CommunicationService.sendMessage(did, {
       operation: operation,
       ssi: ssi,

@@ -7,12 +7,12 @@ export default class SiteController extends WebcController {
     constructor(...props) {
         super(...props);
         this.setModel({});
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initSite();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT, DSUStorage);
+    _initServices() {
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.PATIENT.TRIAL_PARTICIPANT);
     }
 
     _initSite() {

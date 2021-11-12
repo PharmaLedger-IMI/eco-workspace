@@ -1,4 +1,10 @@
 let LOADER_GLOBALS = {
+  DEFAULT_CREDENTIALS:{
+    email:"hco@pharmaledger.com",
+    password:"secret",
+    username : "private",
+    company:"PharmaLedger"
+  },
   THEME: 'app',
   LABELS_DICTIONARY: {
     APP_NAME: 'Hco App',

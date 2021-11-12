@@ -2,6 +2,7 @@
 const { WebcController } = WebCardinal.controllers;
 
 const ecoServices = require('eco-services');
+const Constants = ecoServices.Constants;
 import getSharedStorage from '../services/SharedDBStorageService.js';
 import SitesService from '../services/SitesService.js';
 import TrialsService from '../services/TrialsService.js';
@@ -9,7 +10,7 @@ import { menuOptions } from '../constants/trialDetails.js';
 import { countryListAlpha2 } from '../constants/countries.js';
 import { siteStatusesEnum } from './../constants/site.js';
 const CommunicationService = ecoServices.CommunicationService;
-import NewConsentService from '../services/NewConsentService.js';
+import ConsentService from '../services/ConsentService.js';
 import eventBusService from '../services/EventBusService.js';
 import { Topics } from '../constants/topics.js';
 
@@ -21,7 +22,7 @@ export default class TrialDetailsController extends WebcController {
     this.sitesService = new SitesService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
-    this.newConsentService = new NewConsentService(this.DSUStorage);
+    this.consentService = new ConsentService(this.DSUStorage);
 
     let { id, keySSI } = this.history.location.state;
 
@@ -201,7 +202,7 @@ export default class TrialDetailsController extends WebcController {
         (event) => {
           const response = event.detail;
           this.getSites();
-          this.sendMessageToHco('add-site', response.keySSI, 'Site added', response.did);
+          this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_SITE, response.keySSI, 'Site added', response.did);
           this.showFeedbackToast('Result', 'Site added successfully', 'toast');
           eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
         },
@@ -222,17 +223,22 @@ export default class TrialDetailsController extends WebcController {
       );
     });
 
-    this.onTagClick('add-trial-consent', async (event) => {
+    this.onTagClick('add-trial-consent', async (model, target, event) => {
+      const data = target.getAttribute('data-custom');
+
+      const selectedSite = JSON.parse(JSON.stringify(this.model.menu))
+        .find((x) => x.name === menuOptions.Consents)
+        .data.site.find((x) => x.selected === true)
+        .sites.find((x) => x.selected === true);
+
       this.showModalFromTemplate(
         'add-new-consent',
         async (event) => {
           const response = event.detail;
           await this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          this.model.sites
-              .forEach(country =>
-                country.sites.forEach(site => this.sendMessageToHco('add-trial-consent', null, 'Trial consent', site.did))
-              )
+          this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_CONSENT, response.keySSI, 'Trial consent', selectedSite.did);
+
           eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
         },
         (event) => {
@@ -248,6 +254,7 @@ export default class TrialDetailsController extends WebcController {
           disableBackdropClosing: false,
           isUpdate: false,
           existingIds: this.model.consents.map((x) => x.id) || [],
+          site: selectedSite,
         }
       );
     });
@@ -310,7 +317,7 @@ export default class TrialDetailsController extends WebcController {
           const response = event.detail;
           this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          this.sendMessageToHco('add-econsent-version', selectedSite.keySSI, 'New trial', selectedSite.did);
+          this.sendMessageToHco('add-econsent-version', response.keySSI, 'New consent version', selectedSite.did);
           eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
         },
         (event) => {
@@ -385,8 +392,9 @@ export default class TrialDetailsController extends WebcController {
 
   async getConsents() {
     await this.getSites();
-    const consents = await this.newConsentService.getTrialConsents(this.model.trial.keySSI);
-    this.model.consents = JSON.parse(JSON.stringify(consents));
+    // const consents = await this.consentService.getTrialConsents(this.model.trial.keySSI);
+    const consents = [];
+    this.model.consents = [];
 
     if (!this.model.trial) {
       await this.getTrial();
@@ -412,7 +420,7 @@ export default class TrialDetailsController extends WebcController {
                 .sort((a, b) =>
                   a.id.toUpperCase() < b.id.toUpperCase() ? -1 : a.id.toUpperCase() > b.id.toUpperCase() ? 1 : 0
                 )
-                .map((z) => ({ ...z, selected: false, consents: this.getSiteConsents(z.consents) }))
+                .map((z) => ({ ...z, selected: false, consents: z.consents }))
             : false,
         selected: previousSelectedState[countryListAlpha2[x]] || false,
       };
@@ -435,25 +443,30 @@ export default class TrialDetailsController extends WebcController {
   async changeSiteStatus(status, id) {
     const updated = await this.sitesService.changeSiteStatus(status, id, this.model.trial.keySSI);
 
-    const sites = await this.sitesService.getSites(this.model.trial.keySSI);
-    sites.forEach(site => {
-      this.CommunicationService.sendMessage(site.did, {
-        operation: 'site-status-change',
-        data: {
-          site: updated.keySSI,
-          status: status,
-        },
-        shortDescription: 'Status was updated',
-      });
+    console.log({
+      operation: 'site-status-change',
+      data: {
+        site: updated.keySSI,
+        status: status,
+      },
+      shortDescription: 'Status was updated',
+    });
+    this.CommunicationService.sendMessage(updated.did, {
+      operation: 'site-status-change',
+      data: {
+        site: updated.keySSI,
+        status: status,
+      },
+      shortDescription: 'Status was updated',
     });
   }
 
-  getSiteConsents(consents) {
-    const result = JSON.parse(JSON.stringify(this.model.consents)).map((x) => {
-      return consents.find((y) => y.id === x.id) || x;
-    });
-    return JSON.parse(JSON.stringify(result.map((x) => ({ ...x, selected: false }))));
-  }
+  // getSiteConsents(consents) {
+  //   const result = JSON.parse(JSON.stringify(this.model.consents)).map((x) => {
+  //     return consents.find((y) => y.id === x.id) || x;
+  //   });
+  //   return JSON.parse(JSON.stringify(result.map((x) => ({ ...x, selected: false }))));
+  // }
 
   showFeedbackToast(title, message, alertType) {
     if (typeof this.feedbackEmitter === 'function') {

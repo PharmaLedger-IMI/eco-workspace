@@ -5,8 +5,8 @@ export default class EconsentService extends DSUService {
 
     ECONSENT_PATH = "/econsents";
 
-    constructor(DSUStorage) {
-        super(DSUStorage, '/econsents');
+    constructor() {
+        super('/econsents');
     }
 
     getEconsentsStatuses = (callback) => this.getEntities(callback);
@@ -18,8 +18,6 @@ export default class EconsentService extends DSUService {
     saveEconsentAsync = (data, path) => this.saveEntityAsync(data, path);
 
     saveEconsentFile(file, eco, callback) {
-
-
         this.DSUStorage.uploadFile(
             this._getEconsentsFilePath(eco.KeySSI, eco.id),
             file,

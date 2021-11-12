@@ -1,4 +1,5 @@
 import TrialService from "../services/TrialService.js";
+import HCOService from "../services/HCOService.js";
 
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
@@ -23,9 +24,7 @@ export default class ProceduresViewController extends WebcController {
             ...this.history.win.history.state.state,
         });
 
-        this._initServices(this.DSUStorage);
-        this._initHandlers();
-        this._initProcedures();
+        this._initServices();
     }
 
     _initHandlers() {
@@ -34,18 +33,21 @@ export default class ProceduresViewController extends WebcController {
         this._attachHandlerConfirm();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS, DSUStorage);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
+    async _initServices() {
+        this.TrialService = new TrialService();
+        this.VisitsAndProceduresRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.VISITS);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        this._initHandlers();
+        this._initProcedures();
     }
 
     async _initProcedures() {
-        this.model.visit = await this.VisitsAndProceduresRepository.findByAsync(this.model.visitUuid);
-        this.model.tp = await this.TrialParticipantRepository.findByAsync(this.model.tpUid);
+        this.model.visit = this.model.hcoDSU.volatile.visit[0].visits.visits.find(v => v.uuid === this.model.visitUuid);
+        this.model.tp = this.model.hcoDSU.volatile.tps.find(tp => tp.uid === this.model.tpUid);
         this.model.procedures = this.model.visit.procedures;
-
         if (!this.model.tp.visits || this.model.tp.visits.length < 1) {
 
             this.model.tp.visits = this.model.visits;
@@ -66,9 +68,9 @@ export default class ProceduresViewController extends WebcController {
 
 
     async _updateTrialParticipant() {
-        // this.model.tp.procedures = this.model.procedures;
-
-        await this.TrialParticipantRepository.updateAsync(this.model.tp.uid, this.model.tp);
+        this.HCOService.updateEntity(this.model.tp, {}, async (err, data) => {
+            this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        })
     }
 
     _attachHandlerBack() {

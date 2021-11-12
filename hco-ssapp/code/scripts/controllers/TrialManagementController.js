@@ -1,4 +1,4 @@
-import TrialService from '../services/TrialService.js';
+import HCOService from '../services/HCOService.js';
 const {WebcController} = WebCardinal.controllers;
 
 let getInitModel = () => {
@@ -30,13 +30,14 @@ export default class TrialManagementController extends WebcController {
         super(...props);
 
         this.setModel(getInitModel());
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
-        this._initTrial();
     }
 
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
+    async _initServices() {
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+        this.model.trials = this.model.hcoDSU.volatile.trial !== undefined ? this.model.hcoDSU.volatile.trial : [];
     }
 
     _initHandlers() {
@@ -45,15 +46,6 @@ export default class TrialManagementController extends WebcController {
         this._attachHandlerBack();
         this.on('openFeedback', (e) => {
             this.feedbackEmitter = e.detail;
-        });
-    }
-
-    _initTrial() {
-        this.TrialService.getTrials((err, data) => {
-            if (err) {
-                return console.error(err);
-            }
-            this.model.trials = data;
         });
     }
 

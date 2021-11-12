@@ -2,6 +2,7 @@ import TrialService from '../services/TrialService.js';
 import TrialParticipantsService from '../services/TrialParticipantsService.js';
 import SiteService from '../services/SiteService.js';
 import PatientEcosentService from "../services/PatientEcosentService.js";
+import HCOService from "../services/HCOService.js";
 
 const {WebcController} = WebCardinal.controllers;
 
@@ -40,19 +41,21 @@ export default class EconsentSignController extends WebcController {
             this.model.controlsShouldBeVisible = true;
         }
 
-        this._initServices(this.DSUStorage);
+        this._initServices();
         this._initHandlers();
+    }
+
+    async _initServices() {
+        this.TrialService = new TrialService();
+        this.TrialParticipantService = new TrialParticipantsService();
+        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
+        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
+        this.SiteService = new SiteService();
+        this.HCOService = new HCOService();
+        this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
         this._initSite();
         this._initTrialParticipant();
         this._initConsent();
-    }
-
-    _initServices(DSUStorage) {
-        this.TrialService = new TrialService(DSUStorage);
-        this.TrialParticipantService = new TrialParticipantsService(DSUStorage);
-        this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
-        this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS, DSUStorage);
-        this.SiteService = new SiteService(DSUStorage);
     }
 
     _initHandlers() {
@@ -64,43 +67,39 @@ export default class EconsentSignController extends WebcController {
     }
 
     _initConsent() {
-        this.TrialService.getEconsent(this.model.trialSSI, this.model.econsentSSI, (err, econsent) => {
-            if (err) {
-                return console.log(err);
-            }
+        let econsent = this.model.hcoDSU.volatile.icfs.find(consent => consent.uid == this.model.econsentSSI);
+        if (econsent === undefined) {
+            return console.log('Error while loading econsent.');
+        }
+        this.model.econsent = {
+            ...econsent,
+            versionDateAsString: DateTimeService.convertStringToLocaleDate(econsent.versions[0].versionDate)
+        }
+        let currentVersion = '';
+        if (this.model.ecoVersion) {
+            currentVersion = econsent.versions.find(eco => eco.version === this.model.ecoVersion);
+        } else {
+            currentVersion = econsent.versions[econsent.versions.length - 1];
+            this.model.ecoVersion = currentVersion.version;
+        }
 
-            this.model.econsent = {
-                ...econsent,
-                versionDateAsString: DateTimeService.convertStringToLocaleDate(econsent.versionDate),
-            };
+        if (this.model.isManuallySigned) {
 
-            let currentVersion = '';
-            if (this.model.ecoVersion) {
-                currentVersion = econsent.versions.find(eco => eco.version === this.model.ecoVersion);
-            } else {
-                currentVersion = econsent.versions[econsent.versions.length - 1];
-                this.model.ecoVersion = currentVersion.version;
-            }
-
-            if (this.model.isManuallySigned) {
-
-                this.PatientEcosentService = new PatientEcosentService(this.DSUStorage, this.model.econsent.id);
-                this.PatientEcosentService.mountEcosent(this.model.manualKeySSI, (err, data) => {
-                    if (err) {
-                        return console.log(err);
-                    }
-                    let econsentFilePath = this._getEconsentManualFilePath(this.model.econsent.id, data.keySSI, this.model.manualAttachment);
-                    this.FileDownloader = new FileDownloader(econsentFilePath, this.model.manualAttachment);
-                    this._downloadFile();
-                })
-
-            } else {
-                let econsentFilePath = this._getEconsentFilePath(this.model.trialSSI, this.model.econsentSSI, this.model.ecoVersion, currentVersion.attachment);
-                this.FileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
+            this.PatientEcosentService = new PatientEcosentService(this.model.econsent.id);
+            this.PatientEcosentService.mountEcosent(this.model.manualKeySSI, (err, data) => {
+                if (err) {
+                    return console.log(err);
+                }
+                let econsentFilePath = this._getEconsentManualFilePath(this.model.econsent.id, data.keySSI, this.model.manualAttachment);
+                this.FileDownloader = new FileDownloader(econsentFilePath, this.model.manualAttachment);
                 this._downloadFile();
-            }
+            })
 
-        });
+        } else {
+            let econsentFilePath = this._getEconsentFilePath(econsent, currentVersion);
+            this.FileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
+            this._downloadFile();
+        }
     }
 
     sendMessageToSponsor(operation, shortMessage) {
@@ -125,8 +124,9 @@ export default class EconsentSignController extends WebcController {
         this.CommunicationService.sendMessage(this.model.site.sponsorIdentity, sendObject);
     }
 
-    _getEconsentFilePath(trialSSI, consentSSI, version, fileName) {
-        return '/trials/' + trialSSI + '/consent/' + consentSSI + '/consent/' + version ;
+    _getEconsentFilePath(econsent, currentVersion) {
+        return this.HCOService.PATH  + '/' + this.model.hcoDSU.uid + '/icfs/'
+        + econsent.uid + '/versions/' + currentVersion.version
     }
 
     _getEconsentManualFilePath(ecoID, consentSSI, fileName) {
@@ -143,7 +143,7 @@ export default class EconsentSignController extends WebcController {
                 toShowDate: currentDate.toLocaleDateString(),
             };
             this._updateEconsentWithDetails();
-            this.sendMessageToSponsor('sign-econsent', Constants.MESSAGES.HCO.COMMUNICATION.SPONSOR.SIGN_ECONSENT);
+            this.sendMessageToSponsor(Constants.MESSAGES.SPONSOR.SIGN_ECOSENT, Constants.MESSAGES.HCO.COMMUNICATION.SPONSOR.SIGN_ECONSENT);
             this.navigateToPageTag('home');
         });
     }
@@ -298,8 +298,7 @@ export default class EconsentSignController extends WebcController {
     }
 
     async _initSite() {
-
-        let sites = await this.SiteService.getSitesAsync();
+        let sites = this.model.hcoDSU.volatile.site;
         if (sites && sites.length > 0) {
             this.model.site = sites[sites.length - 1];
         }
