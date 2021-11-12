@@ -19,31 +19,41 @@
         <div class="">
             <strong>Consent List</strong>
             <hr>
-            <div data-for="@econsents">
-                <psk-layout columns="3" template-columns="10% 50% 40%"
-                            class="justify-content-center align-items-center table-row"
-                            data="@keySSI" data-tag="go-to-econsent">
-                    <div>
-                        <psk-img class="left-image" height='40'
-                                 src="assets/images/document_black.png" width='40'></psk-img>
-                    </div>
-                    <div class="layout-content">
-                        <strong>
-                            {{@name}}
-                        </strong>
+            <div data-if="@econsentsAreLoaded">
+            <div data-if="@hasConsents" slot="true">
+                <div data-for="@econsents" slot="true">
+                    <psk-layout columns="3" template-columns="10% 50% 40%"
+                                class="justify-content-center align-items-center table-row"
+                                data="@keySSI" data-tag="go-to-econsent">
                         <div>
-                            {{@version}} - {{@versionDateAsString}}
+                            <psk-img class="left-image" height='40'
+                                     src="assets/images/document_black.png" width='40'></psk-img>
                         </div>
-                        <div class="red-color">
-                            ({{@type}})
+                        <div class="layout-content">
+                            <strong>
+                                {{@name}}
+                            </strong>
+                            <div>
+                                {{@version}} - {{@versionDateAsString}}
+                            </div>
+                            <div class="red-color">
+                                ({{@type}})
+                            </div>
                         </div>
+                        <div class="layout-content">
+                            {{@status.name}}
+                        </div>
+                        <hr class="layout-hr">
+                    </psk-layout>
+                </div>
+                <div slot="false">
+                    <div class="alert alert-warning" role="alert">
+                        <i>No consents are yet available.</i>
                     </div>
-                    <div class="layout-content">
-                        {{@status.name}}
-                    </div>
-                    <hr class="layout-hr">
-                </psk-layout>
+                </div>
             </div>
+                <webc-spinner slot='false'></webc-spinner>
+
         </div>
 
         <button class="back-button" data-tag="back">Back</button>

@@ -17,6 +17,7 @@ export default class TrialController extends WebcController {
 
         this.model.trial = {};
         this.model.econsents = [];
+        this.model.econsentsAreLoaded = false;
         this.model.tpStatus = [];
         let receivedObject = this.history.win.history.state.state;
         this.model.keyssi = receivedObject.trialSSI;
@@ -71,6 +72,7 @@ export default class TrialController extends WebcController {
             if (consents === undefined) {
                 consents = [];
             }
+            this.model.hasConsents = consents.length > 0;
             this.model.econsents = consents?.map(econsent => {
                 let importantVersion = econsent.versions.sort((a, b) => new Date(b.versionDate) - new Date(a.versionDate))[0]
                 let status = statusesMappedByConsent[econsent.uid];
@@ -100,6 +102,9 @@ export default class TrialController extends WebcController {
             if (consents.length > 0) {
                 this.model.econsents[0].isMain = true;
             }
+
+            this.model.econsentsAreLoaded = true;
+
         });
     }
 
