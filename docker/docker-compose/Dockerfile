@@ -6,7 +6,7 @@ RUN git clone https://github.com/PharmaLedger-IMI/eco-workspace.git eco-workspac
 
 WORKDIR eco-workspace
 
-COPY ./trust-loader-config ./trust-loader-config
+#COPY ./trust-loader-config ./trust-loader-config
 
 RUN ls && npm run dev-install --unsafe-perm
 
