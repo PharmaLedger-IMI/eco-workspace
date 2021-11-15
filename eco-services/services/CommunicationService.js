@@ -63,10 +63,12 @@ class CommunicationService {
         const recipientIdentity = this.DEFAULT_FORMAT_IDENTIFIER + ':' + this.DEMO_METHOD_NAME + ':' + destinationDID;
         this.didDocument.sendMessage(JSON.stringify(toSentObject), recipientIdentity, (err) => {
             if (err) {
-                if (err.debug_message === 'Failed to send message' && destinationDomain !== this.senderIdentity.domain) {
-                    return console.log(destinationIdentity, ' was not initialized.');
+                if (
+                    err.debug_message === 'Failed to send message' &&
+                    destinationIdentity.domain !== this.senderIdentity.domain
+                ) {
+                    return console.log(destinationIdentity, ' is not available at the moment.');
                 }
-                return console.error(err);
             }
             console.log(this.senderIdentity, ' sent a message to ', destinationIdentity);
         });
