@@ -1,5 +1,6 @@
 const opendsu = require("opendsu");
 const w3cDID = opendsu.loadAPI('w3cdid');
+const messageQueueServiceInstance = require("./MessageQueueService");
 
 const DEMO_IDENTITIES = {
     ECO: {
@@ -110,7 +111,9 @@ class CommunicationService {
     _listenMessagesFromDomain(domain, callback) {
         this.didDocument.setDomain(domain);
         this.readMessage((err, msg) => {
-            callback(err, msg);
+            messageQueueServiceInstance.addCallback(async ()=>{
+                await callback(err, msg);
+            })
             this._listenMessagesFromDomain(domain, callback);
         })
     }
