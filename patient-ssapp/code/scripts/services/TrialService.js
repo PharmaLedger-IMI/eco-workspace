@@ -17,8 +17,9 @@ export default class TrialService extends DSUService {
 
     mountTrialAsync = (keySSI) => this.mountEntityAsync(keySSI);
 
-    reMountTrial = (keySSI, callback) => {
-        this.unmountEntity(keySSI, () => this.mountEntity(keySSI, callback))
+    reMountTrialAsync = async (keySSI) => {
+        await this.unmountEntityAsync(keySSI);
+        await this.mountEntityAsync(keySSI);
     };
 
     getTrialAsync = (uid) => this.getEntityAsync(uid);

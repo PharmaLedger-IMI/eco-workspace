@@ -58,8 +58,8 @@ export default class TrialConsentService extends DSUService {
         return this.asyncMyFunction(this.getOrCreate, [])
     }
 
-    mountIFC = (ifcSSI, callback) => {
-        this.mountSubEntity(ifcSSI, 'ifc', callback);
+    mountIFCAsync = async (ifcSSI) => {
+        return await this.mountSubEntityAsync(ifcSSI, 'ifc');
     }
 
     mountHCODSU = (hcoDsuSSI, callback) => {
@@ -80,6 +80,16 @@ export default class TrialConsentService extends DSUService {
             }
             this.mountEntity(subEntitySSI, this._getSubPath(subEntityName), () => this.getOrCreate(callback));
         })
+    }
+
+    mountSubEntityAsync = async (subEntitySSI, subEntityName) => {
+        if (this.ssi != null) {
+            await this.mountEntityAsync(subEntitySSI, this._getSubPath(subEntityName));
+            return await this.getOrCreateAsync();
+        }
+        await this.getOrCreateAsync();
+        await this.mountEntityAsync(subEntitySSI, this._getSubPath(subEntityName));
+        return await this.getOrCreateAsync();
     }
 
     saveEconsentFile = (file, path, callback) => {

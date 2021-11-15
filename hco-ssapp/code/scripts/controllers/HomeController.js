@@ -67,16 +67,18 @@ export default class HomeController extends WebcController {
     }
 
     _reMountTrialAndSendRefreshMessageToAllParticipants(data) {
-        this.HCOService.cloneIFCs(async () => {
+
+        this.HCOService.cloneIFCs(data.message.trialSSI, async () => {
             this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+
+            this.TrialParticipantRepository.findAll((err, tps) => {
+                if (err) {
+                    return console.log(err);
+                }
+                tps.forEach(tp => this.sendMessageToPatient(tp,
+                    Constants.MESSAGES.HCO.SEND_REFRESH_CONSENTS_TO_PATIENT, data.message.ssi, null))
+            })
         });
-        this.TrialParticipantRepository.findAll((err, tps) => {
-            if (err) {
-                return console.log(err);
-            }
-            tps.forEach(tp => this.sendMessageToPatient(tp,
-                Constants.MESSAGES.HCO.SEND_REFRESH_CONSENTS_TO_PATIENT, data.message.ssi, null))
-        })
     }
 
     _handleMessages() {
@@ -111,6 +113,7 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case Constants.MESSAGES.HCO.ADD_SITE: {
+
                     this._saveNotification(data.message, 'Your site was added to the trial ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
                     this.HCOService.mountSite(data.message.ssi, (err, site) => {
                         if (err) {

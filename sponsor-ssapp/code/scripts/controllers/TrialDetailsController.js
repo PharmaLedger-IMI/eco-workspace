@@ -483,6 +483,7 @@ export default class TrialDetailsController extends WebcController {
     this.CommunicationService.sendMessage(did, {
       operation: operation,
       ssi: ssi,
+      trialSSI:this.model.trial.keySSI,
       shortDescription: shortMessage,
     });
   }

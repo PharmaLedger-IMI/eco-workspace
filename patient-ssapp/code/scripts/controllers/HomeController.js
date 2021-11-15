@@ -53,7 +53,7 @@ export default class HomeController extends WebcController {
     }
 
     _handleMessages() {
-        this.CommunicationService.listenForMessages((err, data) => {
+        this.CommunicationService.listenForMessages(async (err, data) => {
             if (err) {
                 return console.error(err);
             }
@@ -61,6 +61,7 @@ export default class HomeController extends WebcController {
                 did: data.did,
                 domain: data.domain
             }
+            console.log("OPERATION:",data.message.operation);
             switch (data.message.operation) {
                 case  Constants.MESSAGES.PATIENT.REFRESH_TRIAL: {
                     this.TrialService.reMountTrial(data.message.ssi, (err, trial) => {
@@ -104,7 +105,7 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case Constants.MESSAGES.HCO.SEND_REFRESH_CONSENTS_TO_PATIENT: {
-                    this._mountICFAndSaveConsentStatuses(data, () => {});
+                    await this._mountICFAndSaveConsentStatuses(data);
                     break;
                 }
             }
@@ -130,14 +131,10 @@ export default class HomeController extends WebcController {
         })
     }
 
-    _mountICFAndSaveConsentStatuses(data, callback) {
-        this.TrialConsentService.mountIFC(data.message.ssi, (err, trialConsent) => {
-            if (err) {
-                return callback(err);
-            }
-            this.model.trialConsent = trialConsent;
-            this._saveConsentsStatuses(this.model.trialConsent.volatile?.ifc, data.message.useCaseSpecifics.did);
-        })
+    async _mountICFAndSaveConsentStatuses(data) {
+        let trialConsent = await this.TrialConsentService.mountIFCAsync(data.message.ssi);
+        this.model.trialConsent = trialConsent;
+        await this._saveConsentsStatuses(this.model.trialConsent.volatile?.ifc, data.message.useCaseSpecifics.did);
     }
 
     _attachHandlerTrialClick() {
