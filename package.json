@@ -27,7 +27,8 @@
     "freeze": "node ./node_modules/octopus/scripts/freeze dependencies install-mobile",
     "debug": "nodemon -e html,js,css,json --watch sponsor-ssapp/code --ignore sponsor-ssapp/code/constitution --ignore sponsor-ssapp/code/scripts/bundles --exec \"npm run build sponsor-ssapp\"",
     "debug:theme": "nodemon -e html,js,css --watch themes/sponsor-theme --exec \"npm run build:theme\"",
-    "build:theme": "cd themes/sponsor-theme && npm run build-dossier"
+    "build:theme": "cd themes/sponsor-theme && npm run build-dossier",
+    "build-ssapps": "npm run build csc-patient-ssapp && npm run build hco-ssapp && npm run build sponsor-ssapp"
   },
   "repository": {
     "type": "git",
