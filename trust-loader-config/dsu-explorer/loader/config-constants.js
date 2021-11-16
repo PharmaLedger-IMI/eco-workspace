@@ -1,4 +1,10 @@
 let LOADER_GLOBALS = {
+	DEFAULT_CREDENTIALS:{
+		email:"dsu-explorer@pharmaledger.com",
+		password:"secret",
+		username : "dsu-explorer",
+		company:"PharmaLedger"
+	},
 	THEME: "app",
 	LABELS_DICTIONARY: {
 		APP_NAME: "DSU Explorer",
