@@ -78,7 +78,8 @@ class CommunicationService {
         this.listenerIsActive = true;
         this.didDocument.readMessage((err, msg) => {
             this.listenerIsActive = false;
-            if (err) {
+            //network errors may occur
+            if (err.message !== 'Failed to fetch') {
                 return callback(err);
             }
             console.log(this.senderIdentity, ` received message: ${msg}`);
