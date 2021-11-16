@@ -65,10 +65,15 @@ export default class TrialParticipantsController extends WebcController {
     }
 
     async _getTrialParticipantsMappedWithActionRequired(actions) {
-        let nonObfuscatedTps = await this.TrialParticipantRepository.findAllAsync();
         let tpsMappedByDID = {};
-        (await this.TrialParticipantRepository.findAllAsync()).forEach(tp => tpsMappedByDID[tp.did] = tp)
+
+        let tps = await this.TrialParticipantRepository.findAllAsync();
+        if (tps.length === 0) {
+            return [];
+        }
+        tps.forEach(tp => tpsMappedByDID[tp.did] = tp)
         let trialsR = this.model.hcoDSU.volatile.tps;
+
         return trialsR
             .filter(tp => tp.trialNumber === this.model.trial.id)
             .map(tp => {

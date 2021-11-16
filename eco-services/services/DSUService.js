@@ -263,20 +263,18 @@ class DSUService {
                                 data.keySSI = toDSUSSI;
                                 data = JSON.stringify(data);
                             }
-                            toDSU.writeFile(file, data, (err, newCreatedFile) => {
+                            toDSU.writeFile(file, data, (err) => {
                                 if (err) {
-                                    return copyFileToDSU(files.pop());
+                                    return callback(err);
                                 }
+
                                 copiedFiles.push(file);
+                                if (files.length === 0) {
+                                    return callback(undefined, copiedFiles)
+                                }
                                 copyFileToDSU(files.pop());
                             })
                         })
-                        if (files.length === 0) {
-                            return callback(undefined, copiedFiles)
-                        }
-                    }
-                    if (files.length === 0) {
-                        return callback(undefined, copiedFiles)
                     }
                     copyFileToDSU(files.pop());
                 });

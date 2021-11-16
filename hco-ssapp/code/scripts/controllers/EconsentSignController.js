@@ -125,7 +125,7 @@ export default class EconsentSignController extends WebcController {
     }
 
     _getEconsentFilePath(econsent, currentVersion) {
-        return this.HCOService.PATH  + '/' + this.model.hcoDSU.uid + '/icfs/'
+        return this.HCOService.PATH  + '/' + this.model.hcoDSU.uid + '/icfs/' + this.model.trialSSI + "/"
         + econsent.uid + '/versions/' + currentVersion.version
     }
 

@@ -82,7 +82,8 @@ export default class HomeController extends WebcController {
     }
 
     _handleMessages() {
-        this.CommunicationService.listenForMessages((err, data) => {
+        this.CommunicationService.listenForMessages(async (err, data) => {
+            console.log("OPERATION", data.message.operation);
             if (err) {
                 return console.error(err);
             }
@@ -230,18 +231,20 @@ export default class HomeController extends WebcController {
             actionNeeded: actionNeeded
         });
 
-        let tp = this.model.hcoDSU.volatile.tps.find(tp => tp.did === message.useCaseSpecifics.tpDid)
-        if (tp === undefined) {
-            return console.error('Cannot find tp.');
-        }
-        tp.actionNeeded = actionNeeded;
-        tp.tpSigned = tpSigned;
-        tp.status = status;
-        this.HCOService.updateEntity(tp, {}, async (err, response) => {
-            if (err) {
-                return console.log(err);
+        if(this.model.hcoDSU.volatile.tps){
+            let tp = this.model.hcoDSU.volatile.tps.find(tp => tp.did === message.useCaseSpecifics.tpDid)
+            if (tp === undefined) {
+                return console.error('Cannot find tp.');
             }
-        });
+            tp.actionNeeded = actionNeeded;
+            tp.tpSigned = tpSigned;
+            tp.status = status;
+            this.HCOService.updateEntity(tp, {}, async (err, response) => {
+                if (err) {
+                    return console.log(err);
+                }
+            });
+        }
 
         econsent.uid = econsent.keySSI;
         econsent.versions[currentVersionIndex] = currentVersion;
