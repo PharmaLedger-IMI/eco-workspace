@@ -78,13 +78,16 @@ class CommunicationService {
         this.listenerIsActive = true;
         this.didDocument.readMessage((err, msg) => {
             this.listenerIsActive = false;
-            //network errors may occur
-            if (err.message !== 'Failed to fetch') {
-                return callback(err);
+            if (err) {
+                //network errors may occur
+                if (err.message !== 'Failed to fetch') {
+                    return callback(err);
+                }
+            } else {
+                console.log(this.senderIdentity, ` received message: ${msg}`);
+                msg = JSON.parse(msg);
+                callback(err, msg);
             }
-            console.log(this.senderIdentity, ` received message: ${msg}`);
-            msg = JSON.parse(msg);
-            callback(err, msg);
         });
     }
 
