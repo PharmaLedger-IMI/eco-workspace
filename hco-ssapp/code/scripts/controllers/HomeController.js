@@ -133,7 +133,7 @@ export default class HomeController extends WebcController {
                                     if (err) {
                                         return console.log(err);
                                     }
-                                    this._updateHcoDSU();
+                                    //this._updateHcoDSU();
                                     this.sendMessageToSponsor(senderIdentity, Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_SPONSOR, this.HCOService.ssi, null);
                                 })
                             });
@@ -163,6 +163,7 @@ export default class HomeController extends WebcController {
                     break;
                 }
             }
+            await this._updateHcoDSU();
         });
     }
 
