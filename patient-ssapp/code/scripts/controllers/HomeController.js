@@ -181,12 +181,25 @@ export default class HomeController extends WebcController {
         if (consents === undefined) {
             consents = [];
         }
+
+        //TODO extract this to a service. it is used also in TrialController
+        let statusesMappedByConsent = {};
+        let statuses = await this.EconsentsStatusRepository.findAllAsync();
+        statuses.filter(status => status.tpDid === this.model.tpDid);
+
+        statuses.forEach(status => {
+            statusesMappedByConsent[status.foreignConsentId] = status;
+        })
+
         for (const consent of consents) {
-            consent.actions = [];
-            consent.actions.push({name: 'required'});
-            consent.foreignConsentId = consent.keySSI;
-            consent.tpDid = did;
-            await this.EconsentsStatusRepository.createAsync(consent);
+            let status = statusesMappedByConsent[consent.uid];
+            if (!status) {
+                consent.actions = [];
+                consent.actions.push({name: 'required'});
+                consent.foreignConsentId = consent.keySSI;
+                consent.tpDid = did;
+                await this.EconsentsStatusRepository.createAsync(consent);
+            }
         }
     }
 
