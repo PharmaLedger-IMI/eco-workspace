@@ -6,13 +6,11 @@ import HCOService from "../services/HCOService.js";
 
 const {WebcController} = WebCardinal.controllers;
 
-const TEXT_MIME_TYPE = 'text/';
-
 const ecoServices = require('eco-services');
 const CommunicationService = ecoServices.CommunicationService;
 const DateTimeService = ecoServices.DateTimeService;
 const Constants = ecoServices.Constants;
-const FileDownloader = ecoServices.FileDownloader;
+const FileDownloaderService = ecoServices.FileDownloaderService;
 const BaseRepository = ecoServices.BaseRepository;
 
 let getInitModel = () => {
@@ -82,23 +80,21 @@ export default class EconsentSignController extends WebcController {
             currentVersion = econsent.versions[econsent.versions.length - 1];
             this.model.ecoVersion = currentVersion.version;
         }
+        this.fileDownloaderService = new FileDownloaderService(this.DSUStorage);
 
         if (this.model.isManuallySigned) {
-
             this.PatientEcosentService = new PatientEcosentService(this.model.econsent.id);
             this.PatientEcosentService.mountEcosent(this.model.manualKeySSI, (err, data) => {
                 if (err) {
                     return console.log(err);
                 }
                 let econsentFilePath = this._getEconsentManualFilePath(this.model.econsent.id, data.keySSI, this.model.manualAttachment);
-                this.FileDownloader = new FileDownloader(econsentFilePath, this.model.manualAttachment);
-                this._downloadFile();
+                this._downloadFile(econsentFilePath, this.model.manualAttachment);
             })
 
         } else {
             let econsentFilePath = this._getEconsentFilePath(econsent, currentVersion);
-            this.FileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
-            this._downloadFile();
+            this._downloadFile(econsentFilePath, currentVersion.attachment);
         }
     }
 
@@ -149,15 +145,15 @@ export default class EconsentSignController extends WebcController {
     }
 
 
-    _downloadFile = () => {
-        this.FileDownloader.downloadFile((downloadedFile) => {
-            this.rawBlob = downloadedFile.rawBlob;
-            this.mimeType = downloadedFile.contentType;
-            this.blob = new Blob([this.rawBlob], {
-                type: this.mimeType,
-            });
-            this._displayFile();
+    _downloadFile = async (filePath, fileName) => {
+        await this.fileDownloaderService.prepareDownloadFromDsu(filePath, fileName);
+        let fileBlob = this.fileDownloaderService.getFileBlob(fileName);
+        this.rawBlob = fileBlob.rawBlob;
+        this.mimeType = fileBlob.mimeType;
+        this.blob = new Blob([this.rawBlob], {
+            type: this.mimeType,
         });
+        this._displayFile();
     };
 
     _loadPdfOrTextFile = () => {
@@ -232,11 +228,6 @@ export default class EconsentSignController extends WebcController {
         }
     };
 
-    _showFeedbackToast(title, message, alertType) {
-        if (typeof this.feedbackEmitter === 'function') {
-            this.feedbackEmitter(message, title, alertType);
-        }
-    }
 
     _updateEconsentWithDetails(message) {
         let currentVersionIndex = this.model.econsent.versions.findIndex(eco => eco.version === this.model.ecoVersion)
