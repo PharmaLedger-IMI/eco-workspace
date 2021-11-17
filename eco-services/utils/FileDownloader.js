@@ -1,6 +1,7 @@
 class FileDownloader {
 
     constructor(path, fileName) {
+        console.warn("Obsolete. use FileDownloaderService in order to avoid using sw when downloading/uploading files")
         this.path = path;
         this.fileName = fileName;
 

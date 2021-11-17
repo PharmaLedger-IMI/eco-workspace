@@ -9,6 +9,7 @@ module.exports = {
     BaseRepository: require ("./repositories/BaseRepository"),
     Constants : require ("./utils/Constants"),
     FileDownloader : require ("./utils/FileDownloader"),
+    FileDownloaderService : require ("./utils/FileDownloaderService"),
 
     getController: function (controllerName) {
         return controllerRegistry.getControllerClass(controllerName);

@@ -282,11 +282,18 @@ class DSUService {
         });
     }
 
-    normalizePath = (path) => {
-        if (!path.endsWith('/')) {
-            path += '/';
-        }
-        return path;
+    readFile(path, callback) {
+        [path, callback] = this.swapParamsIfPathIsMissing(path, callback);
+        this.DSUStorage.readFile(path, (err, data) => {
+            if (err) {
+                return callback(err, undefined);
+            }
+            return callback(null, data);
+        });
+    }
+
+    async readFileAsync(path) {
+        return this.asyncMyFunction(this.readFile, [...arguments]);
     }
 }
 
