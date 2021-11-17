@@ -36,8 +36,12 @@ export default class TrialParticipantsController extends WebcController {
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
         this.SiteService = new SiteService();
+        await this.initializeData();
+    }
+
+    async initializeData(){
         this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
-        this._initTrial(this.model.trialSSI);
+        await this._initTrial(this.model.trialSSI);
     }
 
     _initHandlers() {
@@ -258,7 +262,8 @@ export default class TrialParticipantsController extends WebcController {
         trialParticipant.actionNeeded = 'No action required';
         //this.model.trialParticipants.push(trialParticipant);
         //refresh
-        await this._initTrial(this.model.trialSSI);
+        //TODO refactor the above code
+        await this.initializeData();
 
         this.sendMessageToPatient(
             Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_PATIENT,
