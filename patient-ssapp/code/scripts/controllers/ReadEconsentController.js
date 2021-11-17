@@ -5,12 +5,10 @@ import TrialConsentService from "../services/TrialConsentService.js";
 const ecoServices = require('eco-services');
 const BaseRepository = ecoServices.BaseRepository;
 const CommunicationService = ecoServices.CommunicationService;
-const FileDownloader = ecoServices.FileDownloader;
+const FileDownloaderService = ecoServices.FileDownloaderService;
 const Constants = ecoServices.Constants;
 
 const {WebcController} = WebCardinal.controllers;
-
-const TEXT_MIME_TYPE = 'text/';
 
 export default class ReadEconsentController extends WebcController {
     constructor(...props) {
@@ -52,8 +50,8 @@ export default class ReadEconsentController extends WebcController {
         this.model.econsent = econsent;
         let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
         let econsentFilePath = this.getEconsentFilePath(econsent, currentVersion);
-        this.FileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
-        this._downloadFile();
+        this.fileDownloaderService = new FileDownloaderService(this.DSUStorage);
+        this._downloadFile(econsentFilePath, currentVersion.attachment);
         this.EconsentsStatusRepository.findAll((err, data) => {
             if (err) {
                 return console.error(err);
@@ -133,14 +131,13 @@ export default class ReadEconsentController extends WebcController {
                 },
                 (event) => {
                     const response = event.detail;
-                }
-            ),
+                },
                 {
                     controller: 'DeclineConsentController',
                     disableExpanding: false,
                     disableBackdropClosing: false,
                     title: 'Decline Econsent',
-                };
+                });
         });
     }
 
@@ -166,14 +163,13 @@ export default class ReadEconsentController extends WebcController {
                 },
                 (event) => {
                     const response = event.detail;
-                }
-            ),
+                },
                 {
                     controller: 'WithdrawEconsent',
                     disableExpanding: false,
                     disableBackdropClosing: false,
                     title: 'Decline Econsent',
-                };
+                });
         });
     }
 
@@ -229,15 +225,15 @@ export default class ReadEconsentController extends WebcController {
         });
     }
 
-    _downloadFile = () => {
-        this.FileDownloader.downloadFile((downloadedFile) => {
-            this.rawBlob = downloadedFile.rawBlob;
-            this.mimeType = downloadedFile.contentType;
-            this.blob = new Blob([this.rawBlob], {
-                type: this.mimeType,
-            });
-            this._displayFile();
+    _downloadFile = async (filePath, fileName) => {
+        await this.fileDownloaderService.prepareDownloadFromDsu(filePath, fileName);
+        let fileBlob = this.fileDownloaderService.getFileBlob(fileName);
+        this.rawBlob = fileBlob.rawBlob;
+        this.mimeType = fileBlob.mimeType;
+        this.blob = new Blob([this.rawBlob], {
+            type: this.mimeType,
         });
+        this._displayFile();
     };
 
     _loadPdfOrTextFile = () => {

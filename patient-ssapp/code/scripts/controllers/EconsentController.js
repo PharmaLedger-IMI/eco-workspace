@@ -3,7 +3,7 @@ import ConsentStatusMapper from '../utils/ConsentStatusMapper.js';
 import TrialConsentService from "../services/TrialConsentService.js";
 
 const ecoServices = require('eco-services');
-const FileDownloader = ecoServices.FileDownloader;
+const FileDownloaderService = ecoServices.FileDownloaderService;
 const BaseRepository = ecoServices.BaseRepository;
 
 const {WebcController} = WebCardinal.controllers;
@@ -55,11 +55,11 @@ export default class EconsentController extends WebcController {
         let ecoVersion = this.model.historyData.ecoVersion;
         this.model.econsent = econsent;
         let currentVersion = econsent.versions.find(eco => eco.version === ecoVersion);
-        let econsentFilePath = this.getEconsentFilePath(econsent, currentVersion);
-        this.fileDownloader = new FileDownloader(econsentFilePath, currentVersion.attachment);
+        this.model.econsentFilePath = this.getEconsentFilePath(econsent, currentVersion);
+        this.model.econsentFilename = currentVersion.attachment;
+        this.fileDownloaderService = new FileDownloaderService(this.DSUStorage);
         this.model.econsent.versionDate = new Date(currentVersion.versionDate).toLocaleDateString('sw');
         this.model.econsent.version = currentVersion.version;
-        this._downloadFile();
 
         this.EconsentsStatusRepository.findAll((err, data) => {
             if (err) {
@@ -83,14 +83,12 @@ export default class EconsentController extends WebcController {
     }
 
     _attachHandlerDownload() {
-        this.onTagClick('econsent:download', (model, target, event) => {
+        this.onTagClick('econsent:download', async (model, target, event) => {
             console.log('econsent:download');
             event.preventDefault();
             event.stopImmediatePropagation();
-            this.fileDownloader.downloadFileToDevice({
-                contentType: this.mimeType,
-                rawBlob: this.rawBlob,
-            });
+            await this.fileDownloaderService.prepareDownloadFromDsu(this.model.econsentFilePath, this.model.econsentFilename);
+            this.fileDownloaderService.downloadFileToDevice(this.model.econsentFilename);
         });
     }
 
@@ -156,13 +154,4 @@ export default class EconsentController extends WebcController {
             + econsent.uid + '/versions/' + currentVersion.version;
     }
 
-    _downloadFile = () => {
-        this.fileDownloader.downloadFile((downloadedFile) => {
-            this.rawBlob = downloadedFile.rawBlob;
-            this.mimeType = downloadedFile.contentType;
-            this.blob = new Blob([this.rawBlob], {
-                type: this.mimeType,
-            });
-        });
-    };
 }
