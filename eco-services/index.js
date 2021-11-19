@@ -1,5 +1,3 @@
-const controllerRegistry = require("./controllers/ControllersRegistry").getControllersRegistry();
-
 module.exports = {
     CommunicationService: require("./services/CommunicationService"),
     DateTimeService: require("./services/DateTimeService"),
@@ -10,5 +8,4 @@ module.exports = {
     Constants : require ("./utils/Constants"),
     FileDownloader : require ("./utils/FileDownloader"),
     FileDownloaderService : require ("./utils/FileDownloaderService"),
-
 }
