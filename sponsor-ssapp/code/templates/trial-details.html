@@ -45,8 +45,7 @@
             </div>
             <div data-if="@loading" class="ml-5">
               <container slot="false">
-                <div data-if="@data">
-                  <div data-for="@data">
+                <div data-for="@data">
                     <div class="row bg-light">
                       <div
                         class="col-md-7 country-option d-flex align-items-center"
@@ -113,7 +112,6 @@
                       </div>
                     </div>
                   </div>
-                </div>
               </container>
             </div>
           </div>
@@ -128,7 +126,6 @@
             </div>
             <div data-if="@loading" class="ml-5">
               <container slot="false">
-                <div data-if="@data">
                   <!-- <div data-if="@data.trial">
                     <div class="row mb-2">
                       <div class="col-md-3 bold">Trial Consent Name</div>
@@ -157,8 +154,7 @@
                     <div class="col-md-2 bold">EC Approval</div>
                     <div class="col-md-1 bold">Document</div>
                   </div>
-                  <div data-if="@data.site">
-                    <div data-for="@data.site">
+                  <div data-for="@data.site">
                       <div class="row bg-light mr-2" data-if="@selected">
                         <container
                           data-tag="select-consent-country"
@@ -181,7 +177,6 @@
                       </div>
 
                       <div data-if="@selected">
-                        <div data-if="@sites">
                           <div data-for="@sites">
                             <div data-if="@selected" class="ml-2">
                               <container slot="true">
@@ -201,7 +196,6 @@
                                   </button>
                                 </div>
 
-                                <div data-if="@consents">
                                   <div data-for="@consents">
                                     <div data-if="@selected" class="ml-4">
                                       <container slot="true">
@@ -244,7 +238,6 @@
                                       </container>
                                     </div>
                                   </div>
-                                </div>
                               </container>
                               <container
                                 slot="false"
@@ -257,11 +250,8 @@
                               </container>
                             </div>
                           </div>
-                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
               </container>
             </div>
           </div>
