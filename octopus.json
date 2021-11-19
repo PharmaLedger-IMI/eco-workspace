@@ -129,6 +129,21 @@
       ]
     },
     {
+      "name": "apihub-root/trial-participant-wallet/loader",
+      "src": "http://github.com/privatesky/trust-loader.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
+        {
+          "type": "execute",
+          "cmd": "cd apihub-root/trial-participant-wallet/loader && npm install"
+        }
+      ]
+    },
+    {
       "name": "apihub-root/hco-wallet/loader",
       "src": "http://github.com/privatesky/trust-loader.git",
       "actions": [
@@ -224,6 +239,21 @@
         {
           "type": "execute",
           "cmd": "cd eco-services && npm install"
+        }
+      ]
+    },
+    {
+      "name": "trial-participant-ssapp",
+      "src": "https://github.com/PharmaLedger-IMI/trial-participant-ssapp.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
+        {
+          "type": "execute",
+          "cmd": "cd trial-participant-ssapp && npm install"
         }
       ]
     }
@@ -429,32 +459,6 @@
       ]
     },
     {
-      "name": "patient_wallet_bind_to_patient_ssapp",
-      "src": "",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd patient-ssapp && npm run build"
-        },
-        {
-          "type": "copy",
-          "src": "./patient-ssapp/seed",
-          "target": "./apihub-root/patient-wallet/apps-patch/patient-ssapp/seed",
-          "options": {
-            "overwrite": true
-          }
-        },
-        {
-          "type": "copy",
-          "src": "./patient-ssapp/seed",
-          "target": "./apihub-root/patient-wallet/wallet-patch/seed",
-          "options": {
-            "overwrite": true
-          }
-        }
-      ]
-    },
-    {
       "name": "hco-wallet_bind_to_hco-ssapp",
       "src": "",
       "actions": [
@@ -499,6 +503,28 @@
       ]
     },
     {
+      "name": "trial-participant-wallet_bind_to_trial-participant-ssapp",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd trial-participant-ssapp && npm run build"
+        },
+        {
+          "type": "copy",
+          "src": "./trial-participant-ssapp/seed",
+          "target": "./apihub-root/trial-participant-wallet/apps-patch/trial-participant-ssapp/seed",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "execute",
+          "cmd": "echo Use this folder template in order to customize the application instance by adding configuration, pages etc. > ./apihub-root/trial-participant-wallet/apps-patch/trial-participant-ssapp/readme"
+        }
+      ]
+    },
+    {
       "name": "copy-bundles",
       "actions": [
         {
@@ -512,6 +538,10 @@
         {
           "type": "execute",
           "cmd": "cd apihub-root/patient-wallet/loader && npm install"
+        },
+        {
+          "type": "execute",
+          "cmd": "cd apihub-root/trial-participant-wallet/loader && npm install"
         },
         {
           "type": "execute",
