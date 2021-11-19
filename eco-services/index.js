@@ -11,7 +11,4 @@ module.exports = {
     FileDownloader : require ("./utils/FileDownloader"),
     FileDownloaderService : require ("./utils/FileDownloaderService"),
 
-    getController: function (controllerName) {
-        return controllerRegistry.getControllerClass(controllerName);
-    }
 }
