@@ -21,3 +21,4 @@ env.json.devel
 .prettierrc
 .prettierignore
 .idea
+.vscode
