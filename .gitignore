@@ -7,7 +7,7 @@ menu-wallet-prototype
 dossier-explorer-wallet-prototype
 apihub-root/eco-wallet/loader
 apihub-root/dsu-explorer/loader
-apihub-root/patient-wallet/loader
+apihub-root/trial-participant-wallet/loader
 apihub-root/hco-wallet/loader
 apihub-root/sponsor-wallet/loader
 apihub-root/internal-volume/domains
@@ -15,6 +15,7 @@ apihub-root/external-volume/domains
 apihub-root/messaging/queues.json
 apihub-root/seedsBackup
 dossier-explorer-ssapp
+trial-participant-ssapp
 node_modules
 package-lock.json
 env.json.devel
