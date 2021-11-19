@@ -7,7 +7,7 @@ export default {
   mode: 'autologin',
   domain: 'vault',
   sw: true,
-  pwa: true,
+  pwa: false,
   didPrompt: true,
   workspace: 'eco',
   'legenda for properties':

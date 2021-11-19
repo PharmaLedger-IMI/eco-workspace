@@ -497,6 +497,14 @@
           }
         },
         {
+          "type": "copy",
+          "src": "./patient-ssapp/seed",
+          "target": "./apihub-root/patient-wallet/wallet-patch/seed",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
           "type": "execute",
           "cmd": "echo Use this folder template in order to customize the application instance by adding configuration, pages etc. > ./apihub-root/patient-wallet/apps-patch/patient-ssapp/readme"
         }
@@ -514,6 +522,14 @@
           "type": "copy",
           "src": "./trial-participant-ssapp/seed",
           "target": "./apihub-root/trial-participant-wallet/apps-patch/trial-participant-ssapp/seed",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "./trial-participant-ssapp/seed",
+          "target": "./apihub-root/trial-participant-wallet/wallet-patch/seed",
           "options": {
             "overwrite": true
           }
