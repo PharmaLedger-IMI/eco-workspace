@@ -13,6 +13,7 @@ apihub-root/sponsor-wallet/loader
 apihub-root/internal-volume/domains
 apihub-root/external-volume/domains
 apihub-root/messaging/queues.json
+apihub-root/seedsBackup
 dossier-explorer-ssapp
 node_modules
 package-lock.json
