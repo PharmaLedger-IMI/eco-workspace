@@ -159,8 +159,8 @@
       ]
     },
     {
-      "name": "themes/blue-csc-theme",
-      "src": "https://github.com/PharmaLedger-IMI/blue-csc-theme.git",
+      "name": "themes/blue-fluorite-theme",
+      "src": "https://github.com/PrivateSky/blue-fluorite-theme.git",
       "actions": [
         {
           "type": "smartClone",
@@ -169,17 +169,22 @@
         },
         {
           "type": "execute",
-          "cmd": "cd themes/blue-csc-theme && npm install"
+          "cmd": "cd themes/blue-fluorite-theme && npm install"
         }
       ]
     },
     {
-      "name": "themes/patient-theme",
-      "src": "",
+      "name": "themes/trial-participant-theme",
+      "src": "https://github.com/PharmaLedger-IMI/trial-participant-theme.git",
       "actions": [
         {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
+        {
           "type": "execute",
-          "cmd": "cd themes/patient-theme && npm install"
+          "cmd": "cd themes/trial-participant-theme && npm install"
         }
       ]
     },
@@ -282,12 +287,12 @@
       ]
     },
     {
-      "name": "patient-theme-wallet-build",
+      "name": "trial-participant-theme-wallet-build",
       "src": "",
       "actions": [
         {
           "type": "execute",
-          "cmd": "cd themes/patient-theme && npm run build-dossier"
+          "cmd": "cd themes/trial-participant-theme && npm run build-dossier"
         }
       ]
     },
