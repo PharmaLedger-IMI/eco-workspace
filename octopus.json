@@ -159,12 +159,17 @@
       ]
     },
     {
-      "name": "themes/blue-fluorite-theme",
-      "src": "",
+      "name": "themes/blue-csc-theme",
+      "src": "https://github.com/PharmaLedger-IMI/blue-csc-theme.git",
       "actions": [
         {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
+        {
           "type": "execute",
-          "cmd": "cd themes/blue-fluorite-theme && npm install"
+          "cmd": "cd themes/blue-csc-theme && npm install"
         }
       ]
     },
