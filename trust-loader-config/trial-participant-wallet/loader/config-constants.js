@@ -1,4 +1,5 @@
 let LOADER_GLOBALS = {
+  SHOW_ACTION_BUTTON:false,
   DEFAULT_CREDENTIALS:{
     email:"trial-participant@pharmaledger.com",
     password:"secret",
