@@ -159,6 +159,21 @@
       ]
     },
     {
+      "name": "common-services",
+      "src": "https://github.com/PharmaLedger-IMI/eco-iot-services.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
+        {
+          "type": "execute",
+          "cmd": "cd common-services && npm install"
+        }
+      ]
+    },
+    {
       "name": "themes/blue-fluorite-theme",
       "src": "https://github.com/PrivateSky/blue-fluorite-theme.git",
       "actions": [
