@@ -23,3 +23,6 @@ env.json.devel
 .prettierignore
 .idea
 .vscode
+/common-services
+/themes/blue-fluorite-theme
+/themes/trial-participant-theme
