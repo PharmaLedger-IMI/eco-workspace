@@ -19,18 +19,7 @@
   ],
   "componentsConfig": {
     "bricking": {},
-    "anchoring": {},
-    "eco-adaptor": {
-      "module": "./../../eco-adaptor",
-      "domainStrategies": {
-        "default": {
-          "type": "EcoAdaptor",
-          "option": {
-            "endpoint": "http://127.0.0.1:1000/adaptor"
-          }
-        }
-      }
-    }
+    "anchoring": {}
   },
   "enableRequestLogger": true,
   "enableJWTAuthorisation": false,
