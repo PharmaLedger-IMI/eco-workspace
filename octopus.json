@@ -120,6 +120,21 @@
       ]
     },
     {
+      "name": "apihub-root/clinical-site-wallet/loader",
+      "src": "http://github.com/privatesky/trust-loader.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
+        {
+          "type": "execute",
+          "cmd": "cd apihub-root/clinical-site-wallet/loader && npm install"
+        }
+      ]
+    },
+    {
       "name": "apihub-root/hco-wallet/loader",
       "src": "http://github.com/privatesky/trust-loader.git",
       "actions": [
@@ -195,6 +210,21 @@
       ]
     },
     {
+      "name": "themes/clinical-site-theme",
+      "src": "https://github.com/PharmaLedger-IMI/clinical-site-theme.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
+        {
+          "type": "execute",
+          "cmd": "cd themes/clinical-site-theme && npm install"
+        }
+      ]
+    },
+    {
       "name": "themes/sponsor-theme",
       "src": "",
       "actions": [
@@ -245,6 +275,21 @@
         {
           "type": "execute",
           "cmd": "cd trial-participant-ssapp && npm install"
+        }
+      ]
+    },
+    {
+      "name": "clinical-site-ssapp",
+      "src": "https://github.com/PharmaLedger-IMI/clinical-site-ssapp.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
+        {
+          "type": "execute",
+          "cmd": "cd clinical-site-ssapp && npm install"
         }
       ]
     }
@@ -299,6 +344,16 @@
         {
           "type": "execute",
           "cmd": "cd themes/trial-participant-theme && npm run build-dossier"
+        }
+      ]
+    },
+    {
+      "name": "clinical-site-theme-wallet-build",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd themes/clinical-site-theme && npm run build-dossier"
         }
       ]
     },
@@ -493,6 +548,32 @@
       ]
     },
     {
+      "name": "bind_clinical_site_ssapp_to_wallet",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd clinical-site-ssapp && npm run build"
+        },
+        {
+          "type": "copy",
+          "src": "./clinical-site-ssapp/seed",
+          "target": "./apihub-root/clinical-site-wallet/wallet-patch/seed",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "./clinical-site-ssapp/seed",
+          "target": "./apihub-root/clinical-site-wallet/apps-patch/clinical-site-ssapp/seed",
+          "options": {
+            "overwrite": true
+          }
+        }
+      ]
+    },
+    {
       "name": "copy-bundles",
       "actions": [
         {
@@ -506,6 +587,10 @@
         {
           "type": "execute",
           "cmd": "cd apihub-root/trial-participant-wallet/loader && npm install"
+        },
+        {
+          "type": "execute",
+          "cmd": "cd apihub-root/clinical-site-wallet/loader && npm install"
         },
         {
           "type": "execute",
