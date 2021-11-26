@@ -1,5 +1,5 @@
 export default {
-  appName: 'patient-wallet',
+  appName: 'trial-participant-wallet',
   vault: 'server',
   agent: 'browser',
   system: 'any',
