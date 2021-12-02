@@ -10,6 +10,7 @@ apihub-root/dsu-explorer/loader
 apihub-root/trial-participant-wallet/loader
 apihub-root/hco-wallet/loader
 apihub-root/sponsor-wallet/loader
+apihub-root/clinical-site-wallet/loader
 apihub-root/internal-volume/domains
 apihub-root/external-volume/domains
 apihub-root/messaging/queues.json
@@ -26,3 +27,5 @@ env.json.devel
 /common-services
 /themes/blue-fluorite-theme
 /themes/trial-participant-theme
+/themes/clinical-site-theme
+/clinical-site-ssapp
