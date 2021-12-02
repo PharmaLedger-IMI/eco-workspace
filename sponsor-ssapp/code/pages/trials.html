@@ -18,14 +18,14 @@
       <button class="btn btn-primary" data-tag="add-trial">Add Trial</button>
     </div>
 
-    <psk-condition condition="@trialArrayNotEmpty">
-      <div slot="condition-true">
+    <div data-if="@trialArrayNotEmpty">
+      <div slot="true">
         <webc-template template="table-template" data-view-model="@"></webc-template>
       </div>
-      <div slot="condition-false">
+      <div slot="false">
         <div>No trials available.</div>
       </div>
-    </psk-condition>
+    </div>
     <psk-list-feedbacks messages-to-display="5" time-alive="3000"> </psk-list-feedbacks>
   </webc-container>
 </psk-page>
