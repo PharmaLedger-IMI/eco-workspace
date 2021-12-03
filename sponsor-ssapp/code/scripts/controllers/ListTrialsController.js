@@ -79,15 +79,7 @@ export default class ListTrialsController extends WebcController {
     this.trialsService = new TrialsService(this.DSUStorage);
     this.participantsService = new ParticipantsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
-    DIDService.getCommunicationServiceInstance(this, (err, CommunicationService) => {
-      if (err) {
-        return console.log(err);
-      }
-      this.CommunicationService = CommunicationService;
-      this.listenForMessages();
-    });
 
-    this.feedbackEmitter = null;
 
     this.model = {
       statuses: this.statuses,
@@ -101,6 +93,22 @@ export default class ListTrialsController extends WebcController {
       type: 'trials',
       tableLength: 7,
     };
+
+
+    DIDService.getCommunicationServiceInstance(this, (err, CommunicationService) => {
+      if (err) {
+        return console.log(err);
+      }
+      this.CommunicationService = CommunicationService;
+      DIDService.getDid(this, (err, did) => {
+        if (!err) {
+          this.model.did = did;
+        }
+      });
+      this.listenForMessages();
+    });
+
+    this.feedbackEmitter = null;
 
     this.attachEvents();
 
