@@ -16,7 +16,16 @@ export default class AddNewConsentModalController extends WebcController {
     selectOptions: this.typesArray,
   };
 
+  existingNames = {
+    disabled: true,
+    label: 'Existing name:',
+    placeholder: 'Please select an option',
+    required: false,
+    options: [],
+  };
+
   name = {
+    readOnly: false,
     label: 'Name',
     name: 'name',
     required: true,
@@ -58,6 +67,7 @@ export default class AddNewConsentModalController extends WebcController {
     this.existingIds = props[0].existingIds || null;
     this.existingVersions = props[0].existingVersions || null;
     this.site = props[0].site || null;
+    this.consents = props[0].consents || [];
 
     let { id, keySSI } = this.history.location.state;
 
@@ -73,19 +83,30 @@ export default class AddNewConsentModalController extends WebcController {
           type: { ...this.type, value: this.isUpdate.type, disabled: true },
           version: this.version,
           attachment: this.attachment,
+          existingNames: {
+            ...this.existingNames,
+            options: this.consents.map((x) => ({ label: x, value: x, selected: false })),
+          },
         },
         submitButtonDisabled: true,
+        disableRadio: true,
+        consentsExists: this.consents.length > 0,
       });
     } else {
       this.setModel({
         consent: {
           id: this.id,
           name: this.name,
+          existingNames: {
+            ...this.existingNames,
+            options: this.consents.map((x) => ({ label: x, value: x, selected: false })),
+          },
           type: this.type,
           version: this.version,
           attachment: this.attachment,
         },
         submitButtonDisabled: true,
+        disableRadio: this.consents.length === 0,
       });
     }
 
@@ -131,13 +152,46 @@ export default class AddNewConsentModalController extends WebcController {
       if (event.data) this.file = event.data;
     });
 
+    document.getElementById('name-existing').addEventListener('change', (x) => {
+      this.model.consent.existingNames.disabled = false;
+      this.model.consent.name.readOnly = true;
+    });
+
+    document.getElementById('name-new').addEventListener('change', (x) => {
+      this.model.consent.existingNames.disabled = true;
+      this.model.consent.name.readOnly = false;
+    });
+
     this.onTagClick('create-consent', async (event) => {
       try {
         if (!this.isUpdate) {
           let valid = true;
+          let name = '';
+          if (this.model.isNotUpdate) {
+            const nameSelected = document.querySelector('input[name="name"]:checked').value;
+            if (nameSelected === 'new') {
+              name = this.model.consent.name.value;
+            } else {
+              name = this.model.consent.existingNames.value;
+            }
+            if (!name || name === '') {
+              valid = false;
+            }
+          } else {
+            name = this.model.consent.name.value;
+          }
+
+          console.log(name, valid);
+          debugger;
+
           for (const x in this.model.consent) {
             // TODO: check if file selected
-            if ((!this.model.consent[x].value || this.model.consent[x].value === '') && x !== 'attachment') {
+            if (
+              (!this.model.consent[x].value || this.model.consent[x].value === '') &&
+              x !== 'attachment' &&
+              x !== 'name' &&
+              x !== 'existingNames'
+            ) {
               this.model.consent[x] = {
                 ...this.model.consent[x],
                 invalidValue: true,
@@ -160,7 +214,7 @@ export default class AddNewConsentModalController extends WebcController {
 
           this.model.submitButtonDisabled = true;
           const consent = {
-            name: this.model.consent.name.value,
+            name,
             type: this.model.consent.type.value,
             id: this.model.consent.id.value,
             versions: [
