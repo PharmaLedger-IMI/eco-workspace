@@ -1,33 +1,35 @@
 <webc-container controller="TableTemplateController" data-view-model="@">
   <psk-layout class="background-primary table-row" columns="@tableLength">
-    <psk-for-each data-view-model="@headers" class="display-contents" style="display: contents">
+    <div data-for="@headers" class="display-contents" style="display: contents">
       <span class="d-flex flex-row align-items-center justify-content-between pr-1 table-cell">
-        <psk-button class="btn-bare gray" disabled="@notSortable" event-name="sort-column" event-data="@column">
-          <div class="background-primary d-flex flex-row align-items-center justify-content-between pr-1">
-            <psk-label label="@label"></psk-label>
+        <div class="btn-bare gray w-100" disabled="@notSortable" data-tag="sort-column" data-custom="@column">
+          <div class="background-primary w-100 d-flex flex-row align-items-center justify-content-between pr-1">
+            <label>{{@label}}</label>
             <div>
-              <psk-condition condition="@asc">
-                <div slot="condition-true">&uarr;</div>
-              </psk-condition>
-              <psk-condition condition="@desc">
-                <div slot="condition-true">&darr;</div>
-              </psk-condition>
-              <psk-condition condition="@notSortable">
-                <div slot="condition-false">
-                  <psk-condition condition="@asc">
-                    <div slot="condition-false">
-                      <psk-condition condition="@desc">
-                        <div style="font-weight: 300" slot="condition-false">&udarr;</div>
-                      </psk-condition>
+              <div data-if="@asc">
+                <div slot="true">&uarr;</div>
+                <div slot="false"></div>
+              </div>
+              <div data-if="@desc">
+                <div slot="true">&darr;</div>
+                <div slot="false"></div>
+              </div>
+              <div data-if="@notSortable">
+                <div slot="false">
+                  <div data-if="@asc">
+                    <div slot="false">
+                      <div data-if="@desc">
+                        <div style="font-weight: 300" slot="false">&udarr;</div>
+                      </div>
                     </div>
-                  </psk-condition>
+                  </div>
                 </div>
-              </psk-condition>
+              </div>
             </div>
           </div>
-        </psk-button>
+        </div>
       </span>
-    </psk-for-each>
+    </div>
   </psk-layout>
 
   <div data-if="@isTrialsTable">
