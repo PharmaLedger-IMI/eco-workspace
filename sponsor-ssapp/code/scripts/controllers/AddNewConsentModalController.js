@@ -181,9 +181,6 @@ export default class AddNewConsentModalController extends WebcController {
             name = this.model.consent.name.value;
           }
 
-          console.log(name, valid);
-          debugger;
-
           for (const x in this.model.consent) {
             // TODO: check if file selected
             if (
@@ -244,6 +241,9 @@ export default class AddNewConsentModalController extends WebcController {
             }, 1000);
             valid = false;
           }
+
+          console.log(this.existingVersions);
+          console.log(this.model.consent.version.value);
 
           if (this.existingVersions.indexOf(this.model.consent.version.value) > -1 || !this.file || !this.file[0]) {
             valid = false;

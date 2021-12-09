@@ -257,7 +257,7 @@ export default class TrialDetailsController extends WebcController {
           disableExpanding: true,
           disableBackdropClosing: false,
           isUpdate: false,
-          existingIds: this.model.consents.map((x) => x.id) || [],
+          existingIds: consents || [],
           site: selectedSite,
           consents,
         }
