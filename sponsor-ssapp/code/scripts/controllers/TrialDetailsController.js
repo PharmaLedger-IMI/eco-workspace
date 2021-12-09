@@ -13,6 +13,7 @@ const CommunicationService = ecoServices.CommunicationService;
 import ConsentService from '../services/ConsentService.js';
 import eventBusService from '../services/EventBusService.js';
 import { Topics } from '../constants/topics.js';
+import VisitsService from '../services/VisitsService.js';
 
 export default class TrialDetailsController extends WebcController {
   constructor(...props) {
@@ -21,6 +22,7 @@ export default class TrialDetailsController extends WebcController {
     this.storageService = getSharedStorage(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
+    this.visitsService = new VisitsService(this.DSUStorage);
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
     this.consentService = new ConsentService(this.DSUStorage);
 
@@ -231,6 +233,8 @@ export default class TrialDetailsController extends WebcController {
         .data.site.find((x) => x.selected === true)
         .sites.find((x) => x.selected === true);
 
+      const { consents } = await this.visitsService.getTrialVisits(this.model.trial.keySSI);
+
       this.showModalFromTemplate(
         'add-new-consent',
         async (event) => {
@@ -255,6 +259,7 @@ export default class TrialDetailsController extends WebcController {
           isUpdate: false,
           existingIds: this.model.consents.map((x) => x.id) || [],
           site: selectedSite,
+          consents,
         }
       );
     });

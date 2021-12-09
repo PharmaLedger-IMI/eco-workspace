@@ -9,6 +9,8 @@ export default class TrialMonitoringController extends WebcController {
 
     this.storageService = getSharedStorage(this.DSUStorage);
 
+    let { id, keySSI } = this.history.location.state;
+    console.log(id, keySSI);
     this.setModel({});
 
     this.attachEvents();
@@ -17,6 +19,7 @@ export default class TrialMonitoringController extends WebcController {
   }
 
   async init() {
+    this.model.selectedState = { countries: true, sites: false, participants: false };
     return;
   }
 
