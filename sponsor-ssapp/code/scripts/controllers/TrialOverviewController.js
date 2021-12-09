@@ -107,6 +107,7 @@ export default class TrialOverviewController extends WebcController {
       },
       countries: countriesData,
       sites: sitesData,
+      exists: true,
     };
     return;
   }

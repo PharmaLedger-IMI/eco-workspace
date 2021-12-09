@@ -202,7 +202,7 @@ export default class VisitsProceduresController extends WebcController {
     this.model.addExpression(
       'visitsExist',
       () => {
-        return this.model.consents && Array.isArray(this.model.consents) && this.model.consents.length > 0;
+        return !!(this.model.consents && Array.isArray(this.model.consents) && this.model.consents.length > 0);
       },
       'consents'
     );
@@ -210,7 +210,7 @@ export default class VisitsProceduresController extends WebcController {
     this.model.addExpression(
       'noConsents',
       () => {
-        return !(this.model.consents && Array.isArray(this.model.consents) && this.model.consents.length > 0);
+        return !!!(this.model.consents && Array.isArray(this.model.consents) && this.model.consents.length > 0);
       },
       'consents'
     );

@@ -80,7 +80,6 @@ export default class ListTrialsController extends WebcController {
     this.participantsService = new ParticipantsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
 
-
     this.model = {
       statuses: this.statuses,
       stages: this.stages,
@@ -93,7 +92,6 @@ export default class ListTrialsController extends WebcController {
       type: 'trials',
       tableLength: 7,
     };
-
 
     DIDService.getCommunicationServiceInstance(this, (err, CommunicationService) => {
       if (err) {
@@ -216,7 +214,7 @@ export default class ListTrialsController extends WebcController {
   attachEvents() {
     this.model.addExpression(
       'trialArrayNotEmpty',
-      () => this.model.trials && Array.isArray(this.model.trials) && this.model.trials.length > 0,
+      () => !!(this.model.trials && Array.isArray(this.model.trials) && this.model.trials.length > 0),
       'trials'
     );
 
