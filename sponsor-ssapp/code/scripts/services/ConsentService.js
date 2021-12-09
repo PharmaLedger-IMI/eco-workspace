@@ -1,6 +1,6 @@
 import getSharedStorage from './SharedDBStorageService.js';
-const ecoServices = require('eco-services');
-const DSUService = ecoServices.DSUService;
+const commonServices = require('common-services');
+const DSUService = commonServices.DSUService;
 import SitesService from './SitesService.js';
 import VisitsService from './VisitsService.js';
 

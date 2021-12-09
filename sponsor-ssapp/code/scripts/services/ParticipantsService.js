@@ -1,8 +1,8 @@
 import ConsentsService from '../services/ConsentsService.js';
 import { participantConsentStatusEnum, senderType } from '../constants/participant.js';
 import getSharedStorage from './SharedDBStorageService.js';
-const ecoServices = require('eco-services');
-const DSUService = ecoServices.DSUService;
+const commonServices = require('common-services');
+const DSUService = commonServices.DSUService;
 
 export default class ParticipantsService extends DSUService {
   PARTICIPANTS_TABLE = 'participants';

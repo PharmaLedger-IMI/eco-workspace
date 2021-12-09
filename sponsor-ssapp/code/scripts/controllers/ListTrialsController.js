@@ -1,8 +1,8 @@
-const ecoServices = require('eco-services');
+const commonServices = require('common-services');
 import TrialsService from '../services/TrialsService.js';
 import { trialStatusesEnum, trialTableHeaders, trialStagesEnum } from '../constants/trial.js';
-const DIDService = ecoServices.DIDService;
-const Constants = ecoServices.Constants;
+const DIDService = commonServices.DIDService;
+const Constants = commonServices.Constants;
 import ParticipantsService from '../services/ParticipantsService.js';
 import SitesService from '../services/SitesService.js';
 

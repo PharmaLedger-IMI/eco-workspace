@@ -1,15 +1,15 @@
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
 
-const ecoServices = require('eco-services');
-const Constants = ecoServices.Constants;
+const commonServices = require('common-services');
+const Constants = commonServices.Constants;
 import getSharedStorage from '../services/SharedDBStorageService.js';
 import SitesService from '../services/SitesService.js';
 import TrialsService from '../services/TrialsService.js';
 import { menuOptions } from '../constants/trialDetails.js';
 import { countryListAlpha2 } from '../constants/countries.js';
 import { siteStatusesEnum } from './../constants/site.js';
-const CommunicationService = ecoServices.CommunicationService;
+const CommunicationService = commonServices.CommunicationService;
 import ConsentService from '../services/ConsentService.js';
 import eventBusService from '../services/EventBusService.js';
 import { Topics } from '../constants/topics.js';
@@ -488,7 +488,7 @@ export default class TrialDetailsController extends WebcController {
     this.CommunicationService.sendMessage(did, {
       operation: operation,
       ssi: ssi,
-      trialSSI:this.model.trial.keySSI,
+      trialSSI: this.model.trial.keySSI,
       shortDescription: shortMessage,
     });
   }
