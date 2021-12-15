@@ -1,5 +1,5 @@
-import getSharedStorage from './SharedDBStorageService.js';
 const commonServices = require('common-services');
+const SharedStorage = commonServices.SharedStorage;
 const DSUService = commonServices.DSUService;
 
 export default class ConsentsService extends DSUService {
@@ -8,13 +8,13 @@ export default class ConsentsService extends DSUService {
 
   constructor(DSUStorage) {
     super('/consents');
-    this.storageService = getSharedStorage(DSUStorage);
+    this.storageService = SharedStorage.getInstance();
   }
 
   async getTrialConsents(trialKeySSI) {
     let result = null;
     try {
-      result = await this.storageService.getRecord(this.CONSENTS_TABLE, trialKeySSI);
+      result = await this.storageService.getRecordAsync(this.CONSENTS_TABLE, trialKeySSI);
     } catch (e) {
       result = undefined;
     }
@@ -81,7 +81,7 @@ export default class ConsentsService extends DSUService {
   }
 
   async deleteConsent(trialKeySSI, consentKeySSI) {
-    const trialConsents = await this.storageService.getRecord(this.CONSENTS_TABLE, trialKeySSI);
+    const trialConsents = await this.storageService.getRecordAsync(this.CONSENTS_TABLE, trialKeySSI);
     let selectedConsent = trialConsents.consents.find((x) => x.keySSI === consentKeySSI);
     let idx = trialConsents.consents.indexOf(selectedConsent);
 
@@ -89,7 +89,7 @@ export default class ConsentsService extends DSUService {
 
     trialConsents.consents[idx] = selectedConsent;
 
-    await this.storageService.updateRecord(this.CONSENTS_TABLE, trialKeySSI, trialConsents);
+    await this.storageService.updateRecordAsync(this.CONSENTS_TABLE, trialKeySSI, trialConsents);
 
     return;
   }
@@ -97,16 +97,18 @@ export default class ConsentsService extends DSUService {
   async addConsentToDB(data, trialKeySSI) {
     let trial = null;
     try {
-      trial = await this.storageService.getRecord(this.CONSENTS_TABLE, trialKeySSI);
+      trial = await this.storageService.getRecordAsync(this.CONSENTS_TABLE, trialKeySSI);
     } catch (e) {
       trial = undefined;
     }
 
     if (!trial) {
-      const newRecord = await this.storageService.insertRecord(this.CONSENTS_TABLE, trialKeySSI, { consents: [data] });
+      const newRecord = await this.storageService.insertRecordAsync(this.CONSENTS_TABLE, trialKeySSI, {
+        consents: [data],
+      });
       return newRecord;
     } else {
-      const updatedTrial = await this.storageService.updateRecord(this.CONSENTS_TABLE, trialKeySSI, {
+      const updatedTrial = await this.storageService.updateRecordAsync(this.CONSENTS_TABLE, trialKeySSI, {
         ...trial,
         consents: [...trial.consents, data],
       });
@@ -116,13 +118,13 @@ export default class ConsentsService extends DSUService {
   }
 
   async updateConsentToDB(data, trialKeySSI) {
-    const trial = await this.storageService.getRecord(this.CONSENTS_TABLE, trialKeySSI);
+    const trial = await this.storageService.getRecordAsync(this.CONSENTS_TABLE, trialKeySSI);
 
     const consentIdx = trial.consents.findIndex((x) => x.id === data.id);
 
     trial.consents[consentIdx] = data;
 
-    const updatedTrial = await this.storageService.updateRecord(this.CONSENTS_TABLE, trialKeySSI, trial);
+    const updatedTrial = await this.storageService.updateRecordAsync(this.CONSENTS_TABLE, trialKeySSI, trial);
 
     return updatedTrial;
   }

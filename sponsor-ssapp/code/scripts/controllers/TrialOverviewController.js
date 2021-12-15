@@ -9,13 +9,14 @@ import { Topics } from '../constants/topics.js';
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
 
-import getSharedStorage from '../services/SharedDBStorageService.js';
+const commonServices = require('common-services');
+const SharedStorage = commonServices.SharedStorage;
 
 export default class TrialOverviewController extends WebcController {
   constructor(...props) {
     super(...props);
 
-    this.storageService = getSharedStorage(this.DSUStorage);
+    this.storageService = SharedStorage.getInstance();
     this.trialService = new TrialsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
 

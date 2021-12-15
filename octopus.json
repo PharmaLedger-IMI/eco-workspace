@@ -44,7 +44,7 @@
           "type": "smartClone",
           "target": ".",
           "collectLog": false,
-	      "commit":"02e789235dedd330a2bd36f5705729ed37b25fa5"
+          "commit": "02e789235dedd330a2bd36f5705729ed37b25fa5"
         },
         {
           "type": "execute",
@@ -302,19 +302,6 @@
         {
           "type": "execute",
           "cmd": "cd webcardinal && npm run build-dossier"
-        }
-      ]
-    },
-    {
-      "name": "utilitaries",
-      "actions": [
-        {
-          "type": "copy",
-          "src": "./utilitaries",
-          "target": "./sponsor-ssapp/",
-          "options": {
-            "overwrite": true
-          }
         }
       ]
     },

@@ -1,5 +1,5 @@
-import getSharedStorage from './SharedDBStorageService.js';
 const commonServices = require('common-services');
+const SharedStorage = commonServices.SharedStorage;
 const DSUService = commonServices.DSUService;
 import { siteStagesEnum, siteStatusesEnum } from '../constants/site.js';
 import VisitsService from './VisitsService.js';
@@ -9,12 +9,12 @@ export default class SitesService extends DSUService {
 
   constructor(DSUStorage) {
     super('/sites');
-    this.storageService = getSharedStorage(DSUStorage);
+    this.storageService = SharedStorage.getInstance();
     this.visitsService = new VisitsService(DSUStorage);
   }
 
   async getSites(trialKeySSI) {
-    const result = await this.storageService.filter(this.getTableName(trialKeySSI));
+    const result = await this.storageService.filterAsync(this.getTableName(trialKeySSI));
     if (result) {
       return result.filter((x) => !x.deleted);
     } else return [];
@@ -26,11 +26,12 @@ export default class SitesService extends DSUService {
   }
 
   async getSiteFromDB(did, trialKeySSI) {
-    const result = await this.storageService.getRecord(this.getTableName(trialKeySSI), did);
+    const result = await this.storageService.getRecordAsync(this.getTableName(trialKeySSI), did);
     return result;
   }
 
   async createSite(data, trialKeySSI) {
+    debugger;
     const visits = await this.visitsService.getTrialVisits(trialKeySSI);
 
     const status = await this.saveEntityAsync(
@@ -70,7 +71,7 @@ export default class SitesService extends DSUService {
 
   async changeSiteStatus(status, did, trialKeySSI) {
     const site = await this.getSiteFromDB(did, trialKeySSI);
-    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.did, {
+    const updatedSite = await this.storageService.updateRecordAsync(this.getTableName(trialKeySSI), site.did, {
       ...site,
       status,
     });
@@ -84,7 +85,7 @@ export default class SitesService extends DSUService {
   async updateSiteStage(trialKeySSI, siteKeySSI, stage) {
     const siteDSU = await this.getSite(siteKeySSI);
     const site = await this.getSiteFromDB(siteDSU.did, trialKeySSI);
-    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.did, {
+    const updatedSite = await this.storageService.updateRecordAsync(this.getTableName(trialKeySSI), site.did, {
       ...site,
       stage,
     });
@@ -97,7 +98,7 @@ export default class SitesService extends DSUService {
 
   async changeSiteStage(stage, did, trialKeySSI) {
     const site = await this.getSiteFromDB(did, trialKeySSI);
-    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.did, {
+    const updatedSite = await this.storageService.updateRecordAsync(this.getTableName(trialKeySSI), site.did, {
       ...site,
       stage,
     });
@@ -117,7 +118,7 @@ export default class SitesService extends DSUService {
     } else {
       site.consents = [...site.consents, data];
     }
-    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.did, {
+    const updatedSite = await this.storageService.updateRecordAsync(this.getTableName(trialKeySSI), site.did, {
       ...site,
     });
 
@@ -127,9 +128,9 @@ export default class SitesService extends DSUService {
   }
 
   async deleteSite(did, trialKeySSI) {
-    const selectedSite = await this.storageService.getRecord(this.getTableName(trialKeySSI), did);
+    const selectedSite = await this.storageService.getRecordAsync(this.getTableName(trialKeySSI), did);
 
-    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), selectedSite.did, {
+    const updatedSite = await this.storageService.updateRecordAsync(this.getTableName(trialKeySSI), selectedSite.did, {
       ...selectedSite,
       deleted: true,
     });
@@ -138,7 +139,7 @@ export default class SitesService extends DSUService {
   }
 
   async addSiteToDB(data, trialKeySSI) {
-    const newRecord = await this.storageService.insertRecord(this.getTableName(trialKeySSI), data.did, data);
+    const newRecord = await this.storageService.insertRecordAsync(this.getTableName(trialKeySSI), data.did, data);
     return newRecord;
   }
 

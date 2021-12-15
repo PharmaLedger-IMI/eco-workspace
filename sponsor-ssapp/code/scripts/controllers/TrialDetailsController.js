@@ -2,8 +2,8 @@
 const { WebcController } = WebCardinal.controllers;
 
 const commonServices = require('common-services');
+const SharedStorage = commonServices.SharedStorage;
 const Constants = commonServices.Constants;
-import getSharedStorage from '../services/SharedDBStorageService.js';
 import SitesService from '../services/SitesService.js';
 import TrialsService from '../services/TrialsService.js';
 import { menuOptions } from '../constants/trialDetails.js';
@@ -19,7 +19,7 @@ export default class TrialDetailsController extends WebcController {
   constructor(...props) {
     super(...props);
 
-    this.storageService = getSharedStorage(this.DSUStorage);
+    this.storageService = SharedStorage.getInstance();
     this.sitesService = new SitesService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
     this.visitsService = new VisitsService(this.DSUStorage);
