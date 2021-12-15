@@ -136,7 +136,7 @@ export default class TrialDetailsController extends WebcController {
       const data = target.getAttribute('data-custom');
       const selectedCountry = this.model.sites.find((x) => x.country === data);
       for (const site of selectedCountry.sites) {
-        await this.changeSiteStatus(siteStatusesEnum.OnHold, site.id);
+        await this.changeSiteStatus(siteStatusesEnum.OnHold, site.did);
       }
 
       await this.getSites();
@@ -147,7 +147,7 @@ export default class TrialDetailsController extends WebcController {
       const data = target.getAttribute('data-custom');
       const selectedCountry = this.model.sites.find((x) => x.country === data);
       for (const site of selectedCountry.sites) {
-        await this.changeSiteStatus(siteStatusesEnum.Active, site.id);
+        await this.changeSiteStatus(siteStatusesEnum.Active, site.did);
       }
 
       await this.getSites();
@@ -158,7 +158,7 @@ export default class TrialDetailsController extends WebcController {
       const data = target.getAttribute('data-custom');
       const selectedCountry = this.model.sites.find((x) => x.country === data);
       for (const site of selectedCountry.sites) {
-        await this.changeSiteStatus(siteStatusesEnum.Cancelled, site.id);
+        await this.changeSiteStatus(siteStatusesEnum.Cancelled, site.did);
       }
 
       await this.getSites();
@@ -199,6 +199,7 @@ export default class TrialDetailsController extends WebcController {
     });
 
     this.onTagClick('add-site', async (event) => {
+      console.log(JSON.stringify(this.model.sites, null, 2));
       this.showModalFromTemplate(
         'add-new-site',
         (event) => {
@@ -219,7 +220,8 @@ export default class TrialDetailsController extends WebcController {
           controller: 'AddNewSiteModalController',
           disableExpanding: false,
           disableBackdropClosing: false,
-          existingIds: this.model.sites.map((x) => x.id) || [],
+          existingIds: _.flatten(this.model.sites.map((x) => x.sites.map((y) => y.id))) || [],
+          existingDids: _.flatten(this.model.sites.map((x) => x.sites.map((y) => y.did))) || [],
           trialKeySSI: this.model.trial.keySSI,
         }
       );
@@ -445,8 +447,8 @@ export default class TrialDetailsController extends WebcController {
     return JSON.parse(JSON.stringify(data));
   }
 
-  async changeSiteStatus(status, id) {
-    const updated = await this.sitesService.changeSiteStatus(status, id, this.model.trial.keySSI);
+  async changeSiteStatus(status, did) {
+    const updated = await this.sitesService.changeSiteStatus(status, did, this.model.trial.keySSI);
 
     console.log({
       operation: 'site-status-change',

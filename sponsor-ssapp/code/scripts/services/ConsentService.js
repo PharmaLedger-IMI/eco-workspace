@@ -58,7 +58,7 @@ export default class ConsentService extends DSUService {
         },
         site.keySSI
       );
-      await this.siteService.updateSiteConsents(updatedConsent, site.id, trialKeySSI);
+      await this.siteService.updateSiteConsents(updatedConsent, site.did, trialKeySSI);
       const visits = await this.visitsService.getTrialVisits(trialKeySSI);
       if (visits.consents.indexOf(data.name) === -1) {
         visits.consents.push(data.name);
@@ -80,7 +80,7 @@ export default class ConsentService extends DSUService {
     consentDSU.versions.push(data);
     const updatedConsent = await this.updateEntityAsync(consentDSU, path);
     await this.updateConsentToDB(updatedConsent, site.keySSI);
-    await this.siteService.updateSiteConsents(updatedConsent, site.id, trialKeySSI);
+    await this.siteService.updateSiteConsents(updatedConsent, site.did, trialKeySSI);
 
     return updatedConsent;
   }
@@ -144,7 +144,7 @@ export default class ConsentService extends DSUService {
       consent.visits = tempVisits;
       const updatedConsent = await this.updateEntityAsync(consent);
       await this.updateConsentToDB(updatedConsent, site.keySSI);
-      await this.siteService.updateSiteConsents(updatedConsent, site.id, trialKeySSI);
+      await this.siteService.updateSiteConsents(updatedConsent, site.did, trialKeySSI);
     }
 
     return;

@@ -45,7 +45,10 @@ export default class AddNewSiteModalController extends WebcController {
     super(...props);
 
     this.existingIds = props[0].existingIds;
+    this.existingDids = props[0].existingDids;
     this.trialKeySSI = props[0].trialKeySSI;
+
+    console.log(props);
 
     this.sitesService = new SitesService(this.DSUStorage);
 
@@ -80,6 +83,23 @@ export default class AddNewSiteModalController extends WebcController {
       }, 300);
     });
 
+    const didField = this.element.querySelector('#did-field');
+    didField.addEventListener('keydown', () => {
+      setTimeout(() => {
+        if (this.existingDids.indexOf(this.model.site.did.value) > -1) {
+          this.model.site.did = {
+            ...this.model.site.did,
+            invalidValue: true,
+          };
+          return;
+        }
+        this.model.site.did = {
+          ...this.model.site.did,
+          invalidValue: null,
+        };
+      }, 300);
+    });
+
     this.onTagClick('create-site', async (event) => {
       try {
         let valid = true;
@@ -100,6 +120,10 @@ export default class AddNewSiteModalController extends WebcController {
         }
 
         if (this.existingIds.indexOf(this.model.site.id.value) > -1) {
+          valid = false;
+        }
+
+        if (this.existingDids.indexOf(this.model.site.did.value) > -1) {
           valid = false;
         }
 

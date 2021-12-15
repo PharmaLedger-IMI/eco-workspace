@@ -25,8 +25,8 @@ export default class SitesService extends DSUService {
     return result;
   }
 
-  async getSiteFromDB(id, trialKeySSI) {
-    const result = await this.storageService.getRecord(this.getTableName(trialKeySSI), id);
+  async getSiteFromDB(did, trialKeySSI) {
+    const result = await this.storageService.getRecord(this.getTableName(trialKeySSI), did);
     return result;
   }
 
@@ -68,9 +68,9 @@ export default class SitesService extends DSUService {
     return site;
   }
 
-  async changeSiteStatus(status, id, trialKeySSI) {
-    const site = await this.getSiteFromDB(id, trialKeySSI);
-    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.id, {
+  async changeSiteStatus(status, did, trialKeySSI) {
+    const site = await this.getSiteFromDB(did, trialKeySSI);
+    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.did, {
       ...site,
       status,
     });
@@ -83,8 +83,8 @@ export default class SitesService extends DSUService {
 
   async updateSiteStage(trialKeySSI, siteKeySSI, stage) {
     const siteDSU = await this.getSite(siteKeySSI);
-    const site = await this.getSiteFromDB(siteDSU.id, trialKeySSI);
-    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.id, {
+    const site = await this.getSiteFromDB(siteDSU.did, trialKeySSI);
+    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.did, {
       ...site,
       stage,
     });
@@ -95,9 +95,9 @@ export default class SitesService extends DSUService {
     return updatedSite;
   }
 
-  async changeSiteStage(stage, id, trialKeySSI) {
-    const site = await this.getSiteFromDB(id, trialKeySSI);
-    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.id, {
+  async changeSiteStage(stage, did, trialKeySSI) {
+    const site = await this.getSiteFromDB(did, trialKeySSI);
+    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.did, {
       ...site,
       stage,
     });
@@ -108,8 +108,8 @@ export default class SitesService extends DSUService {
     return updatedSite;
   }
 
-  async updateSiteConsents(data, id, trialKeySSI) {
-    const site = await this.getSiteFromDB(id, trialKeySSI);
+  async updateSiteConsents(data, did, trialKeySSI) {
+    const site = await this.getSiteFromDB(did, trialKeySSI);
     const existingConsent = site.consents.find((x) => x.id === data.id);
     if (existingConsent) {
       existingConsent.versions = data.versions;
@@ -117,7 +117,7 @@ export default class SitesService extends DSUService {
     } else {
       site.consents = [...site.consents, data];
     }
-    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.id, {
+    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), site.did, {
       ...site,
     });
 
@@ -126,10 +126,10 @@ export default class SitesService extends DSUService {
     return updatedSiteDSU;
   }
 
-  async deleteSite(id, trialKeySSI) {
-    const selectedSite = await this.storageService.getRecord(this.getTableName(trialKeySSI), id);
+  async deleteSite(did, trialKeySSI) {
+    const selectedSite = await this.storageService.getRecord(this.getTableName(trialKeySSI), did);
 
-    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), selectedSite.id, {
+    const updatedSite = await this.storageService.updateRecord(this.getTableName(trialKeySSI), selectedSite.did, {
       ...selectedSite,
       deleted: true,
     });
@@ -138,7 +138,7 @@ export default class SitesService extends DSUService {
   }
 
   async addSiteToDB(data, trialKeySSI) {
-    const newRecord = await this.storageService.insertRecord(this.getTableName(trialKeySSI), data.id, data);
+    const newRecord = await this.storageService.insertRecord(this.getTableName(trialKeySSI), data.did, data);
     return newRecord;
   }
 
