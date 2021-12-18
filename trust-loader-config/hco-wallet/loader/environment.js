@@ -6,7 +6,7 @@ export default {
   browser: 'any',
   mode: 'autologin',
   domain: 'vault',
-  sw: false,
+  sw: true,
   pwa: false,
   didPrompt: true,
   workspace: 'eco',
