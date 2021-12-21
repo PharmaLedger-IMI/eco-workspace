@@ -6,4 +6,5 @@ services:
     image: eco:latest
     container_name: eco
     restart: always
-    ports: '8080:8081'
+    ports: 
+      - "8080:8081"
