@@ -1,0 +1,8 @@
+services:
+  eco-prod:
+    build: .
+    image: eco-prod:latest
+    container_name: eco-prod
+    restart: always
+    ports: 
+      - "8084:8081"
