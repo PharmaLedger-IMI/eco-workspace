@@ -1,0 +1,9 @@
+name: deploy-test
+on: [push]
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux]
+    steps:
+      - run: docker-compose down
+      - run: docker-compose build --no-cache
+      - run: docker-compose up -d --remove-orphans
