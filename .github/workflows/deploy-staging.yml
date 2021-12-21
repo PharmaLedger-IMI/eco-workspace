@@ -14,9 +14,9 @@ jobs:
         with:
           ref: 'staging'
 
-      - name: docker-compose down
+      - name: docker stop
         run: |
-          docker-compose down --remove-orphans
+          docker stop eco || true
 
       - name: docker-compose build
         run: |

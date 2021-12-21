@@ -14,9 +14,9 @@ jobs:
         with:
           ref: 'production'
 
-      - name: docker-compose down
+      - name: docker stop
         run: |
-          docker-compose down --remove-orphans
+          docker stop eco-prod || true
 
       - name: docker-compose build
         run: |
