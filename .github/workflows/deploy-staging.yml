@@ -1,11 +1,18 @@
-name: deploy-test
-on: [push]
+name: deploy-production
+
+on:
+  push:
+    branches:
+      - staging
+
 jobs:
   deploy:
     runs-on: [self-hosted, linux]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: 'staging'
 
       - name: docker-compose down
         run: |
