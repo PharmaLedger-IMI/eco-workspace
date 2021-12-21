@@ -16,7 +16,7 @@ jobs:
 
       - name: docker stop
         run: |
-          docker stop eco-prod
+          docker stop eco-prod || true
 
       - name: docker-compose build
         run: |

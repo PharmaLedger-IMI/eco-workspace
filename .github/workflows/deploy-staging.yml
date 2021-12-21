@@ -14,9 +14,9 @@ jobs:
         with:
           ref: 'staging'
 
-      - name: docker stop eco-prod
+      - name: docker stop
         run: |
-          docker stop eco
+          docker stop eco || true
 
       - name: docker-compose build
         run: |
