@@ -24,4 +24,4 @@ jobs:
 
       - name: docker-compose up
         run: |
-          docker-compose -p eco-prod up -d --remove-orphans
+          docker-compose -p eco_production up -d --remove-orphans
