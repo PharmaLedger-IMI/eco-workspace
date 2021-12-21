@@ -1,5 +1,7 @@
 name: deploy-test
 on: [push]
+defaults:
+  working-directory: /usr/local/eco-docker
 jobs:
   deploy:
     runs-on: [self-hosted, linux]
