@@ -1,12 +1,20 @@
 name: deploy-test
 on: [push]
-defaults:
-  run:
-    working-directory: /usr/local/eco-docker
 jobs:
   deploy:
     runs-on: [self-hosted, linux]
     steps:
-      - run: docker-compose down
-      - run: docker-compose build --no-cache
-      - run: docker-compose up -d --remove-orphans
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: docker-compose down
+        run: |
+          docker-compose down
+
+    - name: docker-compose build
+        run: |
+          docker-compose build --no-cache
+
+    - name: docker-compose up
+        run: |
+          docker-compose up -d --remove-orphans
