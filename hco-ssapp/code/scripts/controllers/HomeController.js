@@ -67,20 +67,26 @@ export default class HomeController extends WebcController {
     }
 
     _reMountTrialAndSendRefreshMessageToAllParticipants(data) {
-        this.HCOService.cloneIFCs(async () => {
-            this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
-        });
-        this.TrialParticipantRepository.findAll((err, tps) => {
-            if (err) {
-                return console.log(err);
-            }
-            tps.forEach(tp => this.sendMessageToPatient(tp,
-                Constants.MESSAGES.HCO.SEND_REFRESH_CONSENTS_TO_PATIENT, data.message.ssi, null))
-        })
+        //TODO change it to async function
+        return new Promise((resolve => {
+            this.HCOService.cloneIFCs(data.message.trialSSI, async () => {
+                this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+
+                this.TrialParticipantRepository.findAll((err, tps) => {
+                    if (err) {
+                        return console.log(err);
+                    }
+                    tps.forEach(tp => this.sendMessageToPatient(tp,
+                        Constants.MESSAGES.HCO.SEND_REFRESH_CONSENTS_TO_PATIENT, data.message.ssi, null))
+                    resolve();
+                })
+            });
+        }))
     }
 
     _handleMessages() {
-        this.CommunicationService.listenForMessages((err, data) => {
+        this.CommunicationService.listenForMessages(async (err, data) => {
+            console.log("OPERATION", data.message.operation);
             if (err) {
                 return console.error(err);
             }
@@ -91,12 +97,12 @@ export default class HomeController extends WebcController {
             switch (data.message.operation) {
                 case Constants.MESSAGES.HCO.ADD_CONSENT_VERSION: {
                     this._saveNotification(data.message, 'New ecosent version was added', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
-                    this._reMountTrialAndSendRefreshMessageToAllParticipants(data);
+                    await this._reMountTrialAndSendRefreshMessageToAllParticipants(data);
                     break;
                 }
                 case Constants.MESSAGES.HCO.ADD_CONSENT: {
                     this._saveNotification(data.message, 'New ecosent  was added', 'view trial', Constants.NOTIFICATIONS_TYPE.CONSENT_UPDATES);
-                    this._reMountTrialAndSendRefreshMessageToAllParticipants(data);
+                   await this._reMountTrialAndSendRefreshMessageToAllParticipants(data);
                     break;
                 }
                 case Constants.MESSAGES.HCO.SITE_STATUS_CHANGED: {
@@ -111,30 +117,34 @@ export default class HomeController extends WebcController {
                     break;
                 }
                 case Constants.MESSAGES.HCO.ADD_SITE: {
+
                     this._saveNotification(data.message, 'Your site was added to the trial ', 'view trial', Constants.NOTIFICATIONS_TYPE.TRIAL_UPDATES);
-                    this.HCOService.mountSite(data.message.ssi, (err, site) => {
-                        if (err) {
-                            return console.log(err);
-                        }
-                        site.sponsorIdentity = senderIdentity;
-                        this.HCOService.updateEntity(site, (err, updatedSite) => {
+                    const mountSiteAndUpdateEntity =  new Promise((resolve => {
+                        this.HCOService.mountSite(data.message.ssi, (err, site) => {
                             if (err) {
                                 return console.log(err);
                             }
-                            this.HCOService.mountTrial(site.trialKeySSI, (err, trial) => {
+                            site.sponsorIdentity = senderIdentity;
+                            this.HCOService.updateEntity(site, (err, updatedSite) => {
                                 if (err) {
                                     return console.log(err);
                                 }
-                                this.HCOService.mountVisit(site.visitsKeySSI, (err, visit) => {
+                                this.HCOService.mountTrial(site.trialKeySSI, (err, trial) => {
                                     if (err) {
                                         return console.log(err);
                                     }
-                                    this._updateHcoDSU();
-                                    this.sendMessageToSponsor(senderIdentity, Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_SPONSOR, this.HCOService.ssi, null);
-                                })
+                                    this.HCOService.mountVisit(site.visitsKeySSI, (err, visit) => {
+                                        if (err) {
+                                            return console.log(err);
+                                        }
+                                        this.sendMessageToSponsor(senderIdentity, Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_SPONSOR, this.HCOService.ssi, null);
+                                        resolve();
+                                    })
+                                });
                             });
                         });
-                    });
+                    }))
+                    await mountSiteAndUpdateEntity;
                     break;
                 }
                 case 'ask-question': {
@@ -159,6 +169,7 @@ export default class HomeController extends WebcController {
                     break;
                 }
             }
+            await this._updateHcoDSU();
         });
     }
 
@@ -227,18 +238,20 @@ export default class HomeController extends WebcController {
             actionNeeded: actionNeeded
         });
 
-        let tp = this.model.hcoDSU.volatile.tps.find(tp => tp.did === message.useCaseSpecifics.tpDid)
-        if (tp === undefined) {
-            return console.error('Cannot find tp.');
-        }
-        tp.actionNeeded = actionNeeded;
-        tp.tpSigned = tpSigned;
-        tp.status = status;
-        this.HCOService.updateEntity(tp, {}, async (err, response) => {
-            if (err) {
-                return console.log(err);
+        if(this.model.hcoDSU.volatile.tps){
+            let tp = this.model.hcoDSU.volatile.tps.find(tp => tp.did === message.useCaseSpecifics.tpDid)
+            if (tp === undefined) {
+                return console.error('Cannot find tp.');
             }
-        });
+            tp.actionNeeded = actionNeeded;
+            tp.tpSigned = tpSigned;
+            tp.status = status;
+            this.HCOService.updateEntity(tp, {}, async (err, response) => {
+                if (err) {
+                    return console.log(err);
+                }
+            });
+        }
 
         econsent.uid = econsent.keySSI;
         econsent.versions[currentVersionIndex] = currentVersion;

@@ -1,8 +1,8 @@
 import ConsentsService from '../services/ConsentsService.js';
 import { participantConsentStatusEnum, senderType } from '../constants/participant.js';
-import getSharedStorage from './SharedDBStorageService.js';
-const ecoServices = require('eco-services');
-const DSUService = ecoServices.DSUService;
+const commonServices = require('common-services');
+const SharedStorage = commonServices.SharedStorage;
+const DSUService = commonServices.DSUService;
 
 export default class ParticipantsService extends DSUService {
   PARTICIPANTS_TABLE = 'participants';
@@ -11,7 +11,7 @@ export default class ParticipantsService extends DSUService {
 
   constructor(DSUStorage) {
     super('/consents');
-    this.storageService = getSharedStorage(DSUStorage);
+    this.storageService = SharedStorage.getInstance();
     this.consentsService = new ConsentsService();
   }
 
@@ -20,7 +20,7 @@ export default class ParticipantsService extends DSUService {
     try {
       let result = null;
       try {
-        result = await this.storageService.filter(this.getTableName(trialKeySSI));
+        result = await this.storageService.filterAsync(this.getTableName(trialKeySSI));
       } catch (e) {
         result = undefined;
       }
@@ -43,7 +43,7 @@ export default class ParticipantsService extends DSUService {
 
       let list = await this.getTrialParticipants(trialKeySSI);
 
-      let participantExists = await this.storageService.filter(
+      let participantExists = await this.storageService.filterAsync(
         this.getTableName(trialKeySSI),
         `participantId == ${data.participantId}`
       );
@@ -61,7 +61,7 @@ export default class ParticipantsService extends DSUService {
           // doctorSignature: data.type === senderType.HCP ? data.operationDate : participant.doctorSignature,
         };
 
-        await this.storageService.updateRecord(this.getTableName(trialKeySSI), data.participantId, participant);
+        await this.storageService.updateRecordAsync(this.getTableName(trialKeySSI), data.participantId, participant);
       } else {
         const model = {
           participantId: data.participantId,
@@ -73,7 +73,7 @@ export default class ParticipantsService extends DSUService {
           // doctorSignature: data.type === senderType.HCP ? data.operationDate : null,
         };
 
-        await this.storageService.insertRecord(this.getTableName(trialKeySSI), data.participantId, model);
+        await this.storageService.insertRecordAsync(this.getTableName(trialKeySSI), data.participantId, model);
       }
 
       list = await this.getTrialParticipants(trialKeySSI);

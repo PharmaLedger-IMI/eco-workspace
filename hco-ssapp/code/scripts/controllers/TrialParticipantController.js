@@ -49,8 +49,18 @@ export default class TrialParticipantController extends WebcController {
         });
     }
 
-    _initConsents(keySSI) {
-        this.model.econsents = this.model.hcoDSU.volatile.icfs.map(consent => {
+    _initConsents(trialSSI) {
+
+
+        let icfs = this.model.hcoDSU.volatile.icfs;
+        let site = this.model.hcoDSU.volatile.site.find(site => site.trialKeySSI === trialSSI)
+        let siteConsentsKeySSis = site.consents.map(consent => consent.keySSI);
+        let trialConsents = icfs.filter(icf => {
+            return siteConsentsKeySSis.indexOf(icf.genesisSSI) > -1
+        })
+
+
+        this.model.econsents = trialConsents.map(consent => {
             return {
                 ...consent,
                 versionDateAsString: DateTimeService.convertStringToLocaleDate(consent.versions[0].versionDate)

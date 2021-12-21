@@ -1,26 +1,28 @@
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
 
-const ecoServices = require('eco-services');
-const Constants = ecoServices.Constants;
-import getSharedStorage from '../services/SharedDBStorageService.js';
+const commonServices = require('common-services');
+const SharedStorage = commonServices.SharedStorage;
+const Constants = commonServices.Constants;
 import SitesService from '../services/SitesService.js';
 import TrialsService from '../services/TrialsService.js';
 import { menuOptions } from '../constants/trialDetails.js';
 import { countryListAlpha2 } from '../constants/countries.js';
 import { siteStatusesEnum } from './../constants/site.js';
-const CommunicationService = ecoServices.CommunicationService;
+const CommunicationService = commonServices.CommunicationService;
 import ConsentService from '../services/ConsentService.js';
 import eventBusService from '../services/EventBusService.js';
 import { Topics } from '../constants/topics.js';
+import VisitsService from '../services/VisitsService.js';
 
 export default class TrialDetailsController extends WebcController {
   constructor(...props) {
     super(...props);
 
-    this.storageService = getSharedStorage(this.DSUStorage);
+    this.storageService = SharedStorage.getInstance();
     this.sitesService = new SitesService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
+    this.visitsService = new VisitsService(this.DSUStorage);
     this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
     this.consentService = new ConsentService(this.DSUStorage);
 
@@ -134,7 +136,7 @@ export default class TrialDetailsController extends WebcController {
       const data = target.getAttribute('data-custom');
       const selectedCountry = this.model.sites.find((x) => x.country === data);
       for (const site of selectedCountry.sites) {
-        await this.changeSiteStatus(siteStatusesEnum.OnHold, site.id);
+        await this.changeSiteStatus(siteStatusesEnum.OnHold, site.did);
       }
 
       await this.getSites();
@@ -145,7 +147,7 @@ export default class TrialDetailsController extends WebcController {
       const data = target.getAttribute('data-custom');
       const selectedCountry = this.model.sites.find((x) => x.country === data);
       for (const site of selectedCountry.sites) {
-        await this.changeSiteStatus(siteStatusesEnum.Active, site.id);
+        await this.changeSiteStatus(siteStatusesEnum.Active, site.did);
       }
 
       await this.getSites();
@@ -156,7 +158,7 @@ export default class TrialDetailsController extends WebcController {
       const data = target.getAttribute('data-custom');
       const selectedCountry = this.model.sites.find((x) => x.country === data);
       for (const site of selectedCountry.sites) {
-        await this.changeSiteStatus(siteStatusesEnum.Cancelled, site.id);
+        await this.changeSiteStatus(siteStatusesEnum.Cancelled, site.did);
       }
 
       await this.getSites();
@@ -197,6 +199,7 @@ export default class TrialDetailsController extends WebcController {
     });
 
     this.onTagClick('add-site', async (event) => {
+      console.log(JSON.stringify(this.model.sites, null, 2));
       this.showModalFromTemplate(
         'add-new-site',
         (event) => {
@@ -217,7 +220,8 @@ export default class TrialDetailsController extends WebcController {
           controller: 'AddNewSiteModalController',
           disableExpanding: false,
           disableBackdropClosing: false,
-          existingIds: this.model.sites.map((x) => x.id) || [],
+          existingIds: _.flatten(this.model.sites.map((x) => x.sites.map((y) => y.id))) || [],
+          existingDids: _.flatten(this.model.sites.map((x) => x.sites.map((y) => y.did))) || [],
           trialKeySSI: this.model.trial.keySSI,
         }
       );
@@ -230,6 +234,8 @@ export default class TrialDetailsController extends WebcController {
         .find((x) => x.name === menuOptions.Consents)
         .data.site.find((x) => x.selected === true)
         .sites.find((x) => x.selected === true);
+
+      const { consents } = await this.visitsService.getTrialVisits(this.model.trial.keySSI);
 
       this.showModalFromTemplate(
         'add-new-consent',
@@ -253,8 +259,9 @@ export default class TrialDetailsController extends WebcController {
           disableExpanding: true,
           disableBackdropClosing: false,
           isUpdate: false,
-          existingIds: this.model.consents.map((x) => x.id) || [],
+          existingIds: consents || [],
           site: selectedSite,
+          consents,
         }
       );
     });
@@ -440,8 +447,8 @@ export default class TrialDetailsController extends WebcController {
     return JSON.parse(JSON.stringify(data));
   }
 
-  async changeSiteStatus(status, id) {
-    const updated = await this.sitesService.changeSiteStatus(status, id, this.model.trial.keySSI);
+  async changeSiteStatus(status, did) {
+    const updated = await this.sitesService.changeSiteStatus(status, did, this.model.trial.keySSI);
 
     console.log({
       operation: 'site-status-change',
@@ -483,6 +490,7 @@ export default class TrialDetailsController extends WebcController {
     this.CommunicationService.sendMessage(did, {
       operation: operation,
       ssi: ssi,
+      trialSSI: this.model.trial.keySSI,
       shortDescription: shortMessage,
     });
   }

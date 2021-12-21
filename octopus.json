@@ -38,25 +38,17 @@
 
     {
       "name": "privatesky",
-      "src": "http://github.com/privatesky/privatesky.git",
+      "src": "http://github.com/privatesky/psk-release.git",
       "actions": [
         {
           "type": "smartClone",
           "target": ".",
-          "collectLog": false
+          "collectLog": false,
+          "commit": "02e789235dedd330a2bd36f5705729ed37b25fa5"
         },
         {
           "type": "execute",
           "cmd": "cd privatesky && npm install"
-        }
-      ]
-    },
-    {
-      "name": "build privatesky",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd privatesky && npm run build"
         }
       ]
     },
@@ -114,7 +106,7 @@
       ]
     },
     {
-      "name": "apihub-root/patient-wallet/loader",
+      "name": "apihub-root/trial-participant-wallet/loader",
       "src": "http://github.com/privatesky/trust-loader.git",
       "actions": [
         {
@@ -124,7 +116,22 @@
         },
         {
           "type": "execute",
-          "cmd": "cd apihub-root/patient-wallet/loader && npm install"
+          "cmd": "cd apihub-root/trial-participant-wallet/loader && npm install"
+        }
+      ]
+    },
+    {
+      "name": "apihub-root/clinical-site-wallet/loader",
+      "src": "http://github.com/privatesky/trust-loader.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
+        {
+          "type": "execute",
+          "cmd": "cd apihub-root/clinical-site-wallet/loader && npm install"
         }
       ]
     },
@@ -159,9 +166,29 @@
       ]
     },
     {
-      "name": "themes/blue-fluorite-theme",
-      "src": "",
+      "name": "common-services",
+      "src": "https://github.com/PharmaLedger-IMI/eco-iot-services.git",
       "actions": [
+        {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
+        {
+          "type": "execute",
+          "cmd": "cd common-services && npm install"
+        }
+      ]
+    },
+    {
+      "name": "themes/blue-fluorite-theme",
+      "src": "https://github.com/PrivateSky/blue-fluorite-theme.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
         {
           "type": "execute",
           "cmd": "cd themes/blue-fluorite-theme && npm install"
@@ -169,12 +196,32 @@
       ]
     },
     {
-      "name": "themes/patient-theme",
-      "src": "",
+      "name": "themes/trial-participant-theme",
+      "src": "https://github.com/PharmaLedger-IMI/trial-participant-theme.git",
       "actions": [
         {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
+        {
           "type": "execute",
-          "cmd": "cd themes/patient-theme && npm install"
+          "cmd": "cd themes/trial-participant-theme && npm install"
+        }
+      ]
+    },
+    {
+      "name": "themes/clinical-site-theme",
+      "src": "https://github.com/PharmaLedger-IMI/clinical-site-theme.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
+        {
+          "type": "execute",
+          "cmd": "cd themes/clinical-site-theme && npm install"
         }
       ]
     },
@@ -209,21 +256,41 @@
       ]
     },
     {
-      "name": "patient-ssapp",
-      "src": "",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd patient-ssapp && npm install"
-        }
-      ]
-    },
-    {
       "name": "eco-services",
       "actions": [
         {
           "type": "execute",
           "cmd": "cd eco-services && npm install"
+        }
+      ]
+    },
+    {
+      "name": "trial-participant-ssapp",
+      "src": "https://github.com/PharmaLedger-IMI/trial-participant-ssapp.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
+        {
+          "type": "execute",
+          "cmd": "cd trial-participant-ssapp && npm install"
+        }
+      ]
+    },
+    {
+      "name": "clinical-site-ssapp",
+      "src": "https://github.com/PharmaLedger-IMI/clinical-site-ssapp.git",
+      "actions": [
+        {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
+        {
+          "type": "execute",
+          "cmd": "cd clinical-site-ssapp && npm install"
         }
       ]
     }
@@ -235,35 +302,6 @@
         {
           "type": "execute",
           "cmd": "cd webcardinal && npm run build-dossier"
-        }
-      ]
-    },
-    {
-      "name": "utilitaries",
-      "actions": [
-        {
-          "type": "copy",
-          "src": "./utilitaries",
-          "target": "./hco-ssapp/",
-          "options": {
-            "overwrite": true
-          }
-        },
-        {
-          "type": "copy",
-          "src": "./utilitaries",
-          "target": "./patient-ssapp/",
-          "options": {
-            "overwrite": true
-          }
-        },
-        {
-          "type": "copy",
-          "src": "./utilitaries",
-          "target": "./sponsor-ssapp/",
-          "options": {
-            "overwrite": true
-          }
         }
       ]
     },
@@ -288,12 +326,22 @@
       ]
     },
     {
-      "name": "patient-theme-wallet-build",
+      "name": "trial-participant-theme-wallet-build",
       "src": "",
       "actions": [
         {
           "type": "execute",
-          "cmd": "cd themes/patient-theme && npm run build-dossier"
+          "cmd": "cd themes/trial-participant-theme && npm run build-dossier"
+        }
+      ]
+    },
+    {
+      "name": "clinical-site-theme-wallet-build",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd themes/clinical-site-theme && npm run build-dossier"
         }
       ]
     },
@@ -436,41 +484,6 @@
       ]
     },
     {
-      "name": "patient-wallet-loader-build",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd apihub-root/patient-wallet/loader && npm run build"
-        }
-      ]
-    },
-    {
-      "name": "patient_wallet_bind_to_patient_ssapp",
-      "src": "",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd patient-ssapp && npm run build"
-        },
-        {
-          "type": "copy",
-          "src": "./patient-ssapp/seed",
-          "target": "./apihub-root/patient-wallet/apps-patch/patient-ssapp/seed",
-          "options": {
-            "overwrite": true
-          }
-        },
-        {
-          "type": "copy",
-          "src": "./patient-ssapp/seed",
-          "target": "./apihub-root/patient-wallet/wallet-patch/seed",
-          "options": {
-            "overwrite": true
-          }
-        }
-      ]
-    },
-    {
       "name": "hco-wallet_bind_to_hco-ssapp",
       "src": "",
       "actions": [
@@ -493,24 +506,58 @@
       ]
     },
     {
-      "name": "patient-wallet_bind_to_patient-ssapp",
+      "name": "trial-participant-wallet_bind_to_trial-participant-ssapp",
       "src": "",
       "actions": [
         {
           "type": "execute",
-          "cmd": "cd patient-ssapp && npm run build"
+          "cmd": "cd trial-participant-ssapp && npm run build"
         },
         {
           "type": "copy",
-          "src": "./patient-ssapp/seed",
-          "target": "./apihub-root/patient-wallet/apps-patch/patient-ssapp/seed",
+          "src": "./trial-participant-ssapp/seed",
+          "target": "./apihub-root/trial-participant-wallet/apps-patch/trial-participant-ssapp/seed",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "./trial-participant-ssapp/seed",
+          "target": "./apihub-root/trial-participant-wallet/wallet-patch/seed",
           "options": {
             "overwrite": true
           }
         },
         {
           "type": "execute",
-          "cmd": "echo Use this folder template in order to customize the application instance by adding configuration, pages etc. > ./apihub-root/patient-wallet/apps-patch/patient-ssapp/readme"
+          "cmd": "echo Use this folder template in order to customize the application instance by adding configuration, pages etc. > ./apihub-root/trial-participant-wallet/apps-patch/trial-participant-ssapp/readme"
+        }
+      ]
+    },
+    {
+      "name": "bind_clinical_site_ssapp_to_wallet",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "cd clinical-site-ssapp && npm run build"
+        },
+        {
+          "type": "copy",
+          "src": "./clinical-site-ssapp/seed",
+          "target": "./apihub-root/clinical-site-wallet/wallet-patch/seed",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "./clinical-site-ssapp/seed",
+          "target": "./apihub-root/clinical-site-wallet/apps-patch/clinical-site-ssapp/seed",
+          "options": {
+            "overwrite": true
+          }
         }
       ]
     },
@@ -527,7 +574,11 @@
         },
         {
           "type": "execute",
-          "cmd": "cd apihub-root/patient-wallet/loader && npm install"
+          "cmd": "cd apihub-root/trial-participant-wallet/loader && npm install"
+        },
+        {
+          "type": "execute",
+          "cmd": "cd apihub-root/clinical-site-wallet/loader && npm install"
         },
         {
           "type": "execute",

@@ -36,8 +36,12 @@ export default class TrialParticipantsController extends WebcController {
         this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.HCO_IDENTITY);
         this.TrialParticipantRepository = BaseRepository.getInstance(BaseRepository.identities.HCO.TRIAL_PARTICIPANTS);
         this.SiteService = new SiteService();
+        await this.initializeData();
+    }
+
+    async initializeData(){
         this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
-        this._initTrial(this.model.trialSSI);
+        await this._initTrial(this.model.trialSSI);
     }
 
     _initHandlers() {
@@ -53,7 +57,7 @@ export default class TrialParticipantsController extends WebcController {
     }
 
     async _initTrial(keySSI) {
-        this.model.trial = this.model.hcoDSU.volatile?.trial[0];
+        this.model.trial = this.model.hcoDSU.volatile.trial.find(trial => trial.keySSI === keySSI);
         this.model.trial.isInRecruitmentPeriod = true;
         let actions = await this._getEconsentActionsMappedByUser(keySSI);
         this.model.trialParticipants = await this._getTrialParticipantsMappedWithActionRequired(actions);
@@ -65,10 +69,15 @@ export default class TrialParticipantsController extends WebcController {
     }
 
     async _getTrialParticipantsMappedWithActionRequired(actions) {
-        let nonObfuscatedTps = await this.TrialParticipantRepository.findAllAsync();
         let tpsMappedByDID = {};
-        (await this.TrialParticipantRepository.findAllAsync()).forEach(tp => tpsMappedByDID[tp.did] = tp)
+
+        let tps = await this.TrialParticipantRepository.findAllAsync();
+        if (tps.length === 0) {
+            return [];
+        }
+        tps.forEach(tp => tpsMappedByDID[tp.did] = tp)
         let trialsR = this.model.hcoDSU.volatile.tps;
+
         return trialsR
             .filter(tp => tp.trialNumber === this.model.trial.id)
             .map(tp => {
@@ -169,13 +178,11 @@ export default class TrialParticipantsController extends WebcController {
             event.stopImmediatePropagation();
             this.showModalFromTemplate(
                 'add-new-tp',
-                (event) => {
+               async (event) => {
                     const response = event.detail;
-
                     this.model.trial.stage = 'Recruiting';
-                    this.TrialService.updateTrialAsync(this.model.trial)
-
-                    this.createTpDsu(response);
+                    await this.TrialService.updateTrialAsync(this.model.trial);
+                    await this.createTpDsu(response);
                     this._showFeedbackToast('Result', Constants.MESSAGES.HCO.FEEDBACK.SUCCESS.ADD_TRIAL_PARTICIPANT);
 
                 },
@@ -253,7 +260,10 @@ export default class TrialParticipantsController extends WebcController {
         let trialParticipant = await this.TrialParticipantRepository.createAsync(tp);
         await this.HCOService.addTrialParticipantAsync(tp);
         trialParticipant.actionNeeded = 'No action required';
-        this.model.trialParticipants.push(trialParticipant);
+        //this.model.trialParticipants.push(trialParticipant);
+        //refresh
+        //TODO refactor the above code
+        await this.initializeData();
 
         this.sendMessageToPatient(
             Constants.MESSAGES.HCO.SEND_HCO_DSU_TO_PATIENT,
@@ -265,8 +275,43 @@ export default class TrialParticipantsController extends WebcController {
             this.model.trialSSI,
             Constants.MESSAGES.HCO.COMMUNICATION.PATIENT.ADD_TO_TRIAL
         );
-        this._sendMessageToSponsor();
+
+        this.HCOService.cloneIFCs(this.model.trialSSI, async () => {
+            this.model.hcoDSU = await this.HCOService.getOrCreateAsync();
+
+            let icfs = this.model.hcoDSU.volatile.icfs;
+            let site = this.model.hcoDSU.volatile.site.find(site => site.trialKeySSI === this.model.trialSSI)
+            let siteConsentsKeySSis = site.consents.map(consent => consent.keySSI);
+            let trialConsents = icfs.filter(icf => {
+                return siteConsentsKeySSis.indexOf(icf.genesisSSI) > -1
+            })
+
+            trialConsents.forEach(econsent => {
+                console.log(econsent);
+                this.sendConsentToPatient(Constants.MESSAGES.HCO.SEND_REFRESH_CONSENTS_TO_PATIENT, tp,
+                    econsent.genesisSSI, null)
+            })
+
+            this._sendMessageToSponsor();
+        });
     }
+
+
+    //TODO: will be refactored on DID integration
+    sendConsentToPatient(operation, tp, trialSSI, shortMessage) {
+        this.CommunicationService.sendMessage(tp.did, {
+            operation: operation,
+            ssi: trialSSI,
+            useCaseSpecifics: {
+                tpName: tp.name,
+                did: tp.did,
+                sponsorIdentity: tp.sponsorIdentity,
+                trialSSI: trialSSI
+            },
+            shortDescription: shortMessage,
+        });
+    }
+
 
     sendMessageToPatient(operation, tp, trialSSI, shortMessage) {
         let site = this.model.hcoDSU.volatile?.site[0];

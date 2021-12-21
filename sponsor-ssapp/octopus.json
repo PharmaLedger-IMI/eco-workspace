@@ -3,16 +3,16 @@
   "dependencies": [],
   "prebuild": [
     {
-      "name": "building eco-services",
+      "name": "building common-services",
       "actions": [
         {
           "type": "execute",
-          "cmd": "cd ../eco-services && npm run build"
+          "cmd": "cd ../common-services && npm run build"
         },
         {
           "type": "copy",
-          "src": "../eco-services/build/bundles/ecoServices.js",
-          "target": "code/scripts/bundles/ecoServices.js",
+          "src": "../common-services/build/bundles/commonServices.js",
+          "target": "code/scripts/bundles/commonServices.js",
           "options": {
             "overwrite": true
           }

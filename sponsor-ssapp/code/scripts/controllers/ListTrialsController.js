@@ -1,8 +1,8 @@
-const ecoServices = require('eco-services');
+const commonServices = require('common-services');
 import TrialsService from '../services/TrialsService.js';
 import { trialStatusesEnum, trialTableHeaders, trialStagesEnum } from '../constants/trial.js';
-const DIDService = ecoServices.DIDService;
-const Constants = ecoServices.Constants;
+const DIDService = commonServices.DIDService;
+const Constants = commonServices.Constants;
 import ParticipantsService from '../services/ParticipantsService.js';
 import SitesService from '../services/SitesService.js';
 
@@ -79,15 +79,6 @@ export default class ListTrialsController extends WebcController {
     this.trialsService = new TrialsService(this.DSUStorage);
     this.participantsService = new ParticipantsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
-    DIDService.getCommunicationServiceInstance(this, (err, CommunicationService) => {
-      if (err) {
-        return console.log(err);
-      }
-      this.CommunicationService = CommunicationService;
-      this.listenForMessages();
-    });
-
-    this.feedbackEmitter = null;
 
     this.model = {
       statuses: this.statuses,
@@ -101,6 +92,21 @@ export default class ListTrialsController extends WebcController {
       type: 'trials',
       tableLength: 7,
     };
+
+    DIDService.getCommunicationServiceInstance(this, (err, CommunicationService) => {
+      if (err) {
+        return console.log(err);
+      }
+      this.CommunicationService = CommunicationService;
+      DIDService.getDid(this, (err, did) => {
+        if (!err) {
+          this.model.did = did;
+        }
+      });
+      this.listenForMessages();
+    });
+
+    this.feedbackEmitter = null;
 
     this.attachEvents();
 
@@ -208,7 +214,7 @@ export default class ListTrialsController extends WebcController {
   attachEvents() {
     this.model.addExpression(
       'trialArrayNotEmpty',
-      () => this.model.trials && Array.isArray(this.model.trials) && this.model.trials.length > 0,
+      () => !!(this.model.trials && Array.isArray(this.model.trials) && this.model.trials.length > 0),
       'trials'
     );
 

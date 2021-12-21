@@ -1,5 +1,6 @@
 const opendsu = require("opendsu");
 const w3cDID = opendsu.loadAPI('w3cdid');
+const messageQueueServiceInstance = require("./MessageQueueService");
 
 const DEMO_IDENTITIES = {
     ECO: {
@@ -62,10 +63,12 @@ class CommunicationService {
         const recipientIdentity = this.DEFAULT_FORMAT_IDENTIFIER + ':' + this.DEMO_METHOD_NAME + ':' + destinationDID;
         this.didDocument.sendMessage(JSON.stringify(toSentObject), recipientIdentity, (err) => {
             if (err) {
-                if (err.debug_message === 'Failed to send message' && destinationDomain !== this.senderIdentity.domain) {
-                    return console.log(destinationIdentity, ' was not initialized.');
+                if (
+                    err.debug_message === 'Failed to send message' &&
+                    destinationIdentity.domain !== this.senderIdentity.domain
+                ) {
+                    return console.log(destinationIdentity, ' is not available at the moment.');
                 }
-                return console.error(err);
             }
             console.log(this.senderIdentity, ' sent a message to ', destinationIdentity);
         });
@@ -76,11 +79,15 @@ class CommunicationService {
         this.didDocument.readMessage((err, msg) => {
             this.listenerIsActive = false;
             if (err) {
-                return callback(err);
+                //network errors may occur
+                if (err.message !== 'Failed to fetch') {
+                    return callback(err);
+                }
+            } else {
+                console.log(this.senderIdentity, ` received message: ${msg}`);
+                msg = JSON.parse(msg);
+                callback(err, msg);
             }
-            console.log(this.senderIdentity, ` received message: ${msg}`);
-            msg = JSON.parse(msg);
-            callback(err, msg);
         });
     }
 
@@ -110,7 +117,9 @@ class CommunicationService {
     _listenMessagesFromDomain(domain, callback) {
         this.didDocument.setDomain(domain);
         this.readMessage((err, msg) => {
-            callback(err, msg);
+            messageQueueServiceInstance.addCallback(async ()=>{
+                await callback(err, msg);
+            })
             this._listenMessagesFromDomain(domain, callback);
         })
     }

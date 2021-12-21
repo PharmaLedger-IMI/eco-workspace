@@ -1,36 +1,38 @@
 <webc-container controller="TableTemplateController" data-view-model="@">
   <psk-layout class="background-primary table-row" columns="@tableLength">
-    <psk-for-each data-view-model="@headers" class="display-contents" style="display: contents">
+    <div data-for="@headers" class="display-contents" style="display: contents">
       <span class="d-flex flex-row align-items-center justify-content-between pr-1 table-cell">
-        <psk-button class="btn-bare gray" disabled="@notSortable" event-name="sort-column" event-data="@column">
-          <div class="background-primary d-flex flex-row align-items-center justify-content-between pr-1">
-            <psk-label label="@label"></psk-label>
+        <div class="btn-bare gray w-100" disabled="@notSortable" data-tag="sort-column" data-custom="@column">
+          <div class="background-primary w-100 d-flex flex-row align-items-center justify-content-between pr-1">
+            <label>{{@label}}</label>
             <div>
-              <psk-condition condition="@asc">
-                <div slot="condition-true">&uarr;</div>
-              </psk-condition>
-              <psk-condition condition="@desc">
-                <div slot="condition-true">&darr;</div>
-              </psk-condition>
-              <psk-condition condition="@notSortable">
-                <div slot="condition-false">
-                  <psk-condition condition="@asc">
-                    <div slot="condition-false">
-                      <psk-condition condition="@desc">
-                        <div style="font-weight: 300" slot="condition-false">&udarr;</div>
-                      </psk-condition>
+              <div data-if="@asc">
+                <div slot="true">&uarr;</div>
+                <div slot="false"></div>
+              </div>
+              <div data-if="@desc">
+                <div slot="true">&darr;</div>
+                <div slot="false"></div>
+              </div>
+              <div data-if="@notSortable">
+                <div slot="false">
+                  <div data-if="@asc">
+                    <div slot="false">
+                      <div data-if="@desc">
+                        <div style="font-weight: 300" slot="false">&udarr;</div>
+                      </div>
                     </div>
-                  </psk-condition>
+                  </div>
                 </div>
-              </psk-condition>
+              </div>
             </div>
           </div>
-        </psk-button>
+        </div>
       </span>
-    </psk-for-each>
+    </div>
   </psk-layout>
 
-  <span data-if="@isTrialsTable">
+  <div data-if="@isTrialsTable">
     <psk-for-each data-view-model="@pagination.items" style="display: contents">
       <psk-layout columns="7" class="justify-content-center align-items-center table-row">
         <psk-label class="table-cell" label="@id"></psk-label>
@@ -45,9 +47,9 @@
         </div>
       </psk-layout>
     </psk-for-each>
-  </span>
+  </div>
 
-  <span data-if="@isConsentsTable">
+  <div data-if="@isConsentsTable">
     <psk-for-each data-view-model="@pagination.items" style="display: contents">
       <psk-layout columns="7" class="justify-content-center align-items-center table-row">
         <psk-label class="table-cell" label="@id"></psk-label>
@@ -64,9 +66,9 @@
         </div>
       </psk-layout>
     </psk-for-each>
-  </span>
+  </div>
 
-  <span data-if="@isParticipantsTable">
+  <div data-if="@isParticipantsTable">
     <psk-for-each data-view-model="@pagination.items" style="display: contents">
       <psk-layout columns="6" class="justify-content-center align-items-center table-row">
         <psk-label class="table-cell" label="@participantId"></psk-label>
@@ -77,7 +79,7 @@
         <psk-label class="table-cell" label="@doctorSignature"></psk-label>
       </psk-layout>
     </psk-for-each>
-  </span>
+  </div>
 
   <div class="d-flex align-items-center justify-content-between flex-wrap">
     <div class="d-flex align-items-center justify-content-center">
@@ -97,8 +99,8 @@
         <span aria-hidden="true">&lsaquo;</span>
       </psk-button>
       <psk-for-each class="d-flex flex-row" data-view-model="@pagination.slicedPages">
-        <psk-condition condition="@active">
-          <div slot="condition-true" class="active">
+        <div data-if="@active">
+          <div slot="true" class="active">
             <psk-button
               class="page-link page-button active"
               label="@label"
@@ -107,7 +109,7 @@
             >
             </psk-button>
           </div>
-          <div slot="condition-false">
+          <div slot="false">
             <psk-button
               class="page-link page-button"
               label="@label"
@@ -115,7 +117,7 @@
               event-data="@value"
             ></psk-button>
           </div>
-        </psk-condition>
+        </div>
       </psk-for-each>
       <psk-button class="page-link page-button" disabled="@pagination.next" event-name="go-to-next-page">
         <span aria-hidden="true">&rsaquo;</span>

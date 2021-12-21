@@ -1,6 +1,6 @@
-import getSharedStorage from './SharedDBStorageService.js';
-const ecoServices = require('eco-services');
-const DSUService = ecoServices.DSUService;
+const commonServices = require('common-services');
+const SharedStorage = commonServices.SharedStorage;
+const DSUService = commonServices.DSUService;
 import { trialStatusesEnum } from '../constants/trial.js';
 import { trialStagesEnum } from '../constants/trial.js';
 import VisitsService from './VisitsService.js';
@@ -10,12 +10,12 @@ export default class TrialsService extends DSUService {
 
   constructor(DSUStorage) {
     super('/trials');
-    this.storageService = getSharedStorage(DSUStorage);
+    this.storageService = SharedStorage.getInstance();
     this.visitsService = new VisitsService(DSUStorage);
   }
 
   async getTrials() {
-    const result = await this.storageService.filter(this.TRIALS_TABLE);
+    const result = await this.storageService.filterAsync(this.TRIALS_TABLE);
     if (result) {
       return result.filter((x) => !x.deleted);
     } else return [];
@@ -27,7 +27,7 @@ export default class TrialsService extends DSUService {
   }
 
   async getTrialFromDB(id) {
-    return await this.storageService.getRecord(this.TRIALS_TABLE, id);
+    return await this.storageService.getRecordAsync(this.TRIALS_TABLE, id);
   }
 
   async createTrial(data) {
@@ -53,16 +53,16 @@ export default class TrialsService extends DSUService {
   }
 
   async deleteTrial(id) {
-    const selectedTrial = await this.storageService.getRecord(this.TRIALS_TABLE, id);
+    const selectedTrial = await this.storageService.getRecordAsync(this.TRIALS_TABLE, id);
 
-    const updatedTrial = await this.storageService.updateRecord(this.TRIALS_TABLE, selectedTrial.id, {
+    const updatedTrial = await this.storageService.updateRecordAsync(this.TRIALS_TABLE, selectedTrial.id, {
       ...selectedTrial,
       deleted: true,
     });
   }
 
   async addTrialToDB(data) {
-    const newRecord = await this.storageService.insertRecord(this.TRIALS_TABLE, data.id, data);
+    const newRecord = await this.storageService.insertRecordAsync(this.TRIALS_TABLE, data.id, data);
     return newRecord;
   }
 }

@@ -1,6 +1,6 @@
-const ecoServices = require('eco-services');
-const CommunicationService = ecoServices.CommunicationService;
-const Constats = ecoServices.Constants;
+const commonServices = require('common-services');
+const CommunicationService = commonServices.CommunicationService;
+const Constants = commonServices.Constants;
 import ConsentService from '../services/ConsentService.js';
 import TrialsService from '../services/TrialsService.js';
 import eventBusService from '../services/EventBusService.js';
@@ -202,7 +202,7 @@ export default class VisitsProceduresController extends WebcController {
     this.model.addExpression(
       'visitsExist',
       () => {
-        return this.model.consents && Array.isArray(this.model.consents) && this.model.consents.length > 0;
+        return !!(this.model.consents && Array.isArray(this.model.consents) && this.model.consents.length > 0);
       },
       'consents'
     );
@@ -210,7 +210,7 @@ export default class VisitsProceduresController extends WebcController {
     this.model.addExpression(
       'noConsents',
       () => {
-        return !(this.model.consents && Array.isArray(this.model.consents) && this.model.consents.length > 0);
+        return !!!(this.model.consents && Array.isArray(this.model.consents) && this.model.consents.length > 0);
       },
       'consents'
     );

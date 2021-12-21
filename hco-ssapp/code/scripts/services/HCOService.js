@@ -78,7 +78,7 @@ export default class HCOService extends DSUService {
         this.mountSubEntity(tcSSI, 'tc', callback);
     }
 
-    cloneIFCs = (callback) => {
+    cloneIFCs = (trialSSI,callback) => {
         if (this.ssi == null) {
             return callback(this.PATH + ' was not initialized yet.');
         }
@@ -90,9 +90,9 @@ export default class HCOService extends DSUService {
                 return callback(undefined, []);
             }
             let clonedICFS = [];
-            let site = sites[0];
+            let site = sites.find(site => site.trialKeySSI === trialSSI);
             let siteConsents = site.consents;
-            let icfsPath = this.PATH + '/' + this.ssi + '/icfs';
+            let icfsPath = this.PATH + '/' + this.ssi + '/icfs'+"/"+trialSSI;
             let icfsDSUService = new DSUService(icfsPath);
             icfsDSUService.getEntities((err, existingICFS) => {
                 if (err) {
