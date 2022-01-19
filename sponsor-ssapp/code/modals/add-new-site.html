@@ -6,13 +6,25 @@
       <psk-select view-model="site.countries"></psk-select>
     </div>
     <div class="m-2">
-      <psk-input id="id-field" view-model="site.id" event-name="id-changed"></psk-input>
+      <label>{{ @site.id.label }}</label><br>
+      <input id="id-field" class="input-box" data-view-model="@site.id" event-name="id-changed"></input>
+      <span data-if="@site.id.invalidValue">
+        <i class="red-invalid fas fa-times"></i>
+      </span>
     </div>
     <div class="m-2">
-      <psk-input view-model="site.name"></psk-input>
+      <label>{{ @site.name.label }}</label><br>
+      <input class="input-box" data-view-model="@site.name"></input>
+      <span data-if="@site.name.invalidValue">
+        <i class="red-invalid fas fa-times"></i>
+      </span>
     </div>
     <div class="m-2">
-      <psk-input id="did-field" disabled="true" view-model="site.did" event-name="did-changed"></psk-input>
+      <label>{{ @site.did.label }}</label><br>
+      <input id="did-field" class="input-box" data-view-model="@site.did" event-name="did-changed"></input>
+      <span data-if="@site.did.invalidValue">
+        <i class="red-invalid fas fa-times"></i>
+      </span>
     </div>
   </div>
 

@@ -82,3 +82,19 @@
   padding-left: 60px;
   font-size: 1.3rem;
 }
+
+.input-box {
+  box-sizing: border-box;
+  border-radius: 4px;
+  padding: 10px;
+  border-width: 1px;
+  border-color: #bbb;
+  border-style: solid;
+}
+
+.red-invalid {
+  color: red;
+  font-size: 24px;
+  margin-left: 5px;
+  font-weight: 600;
+}
