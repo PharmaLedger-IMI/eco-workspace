@@ -231,15 +231,6 @@
       ]
     },
     {
-      "name": "eco-services",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd eco-services && npm install"
-        }
-      ]
-    },
-    {
       "name": "trial-participant-ssapp",
       "src": "https://github.com/PharmaLedger-IMI/trial-participant-ssapp.git",
       "actions": [

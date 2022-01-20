@@ -5,7 +5,6 @@ mobile/scan-app
 privatesky
 menu-wallet-prototype
 dossier-explorer-wallet-prototype
-apihub-root/eco-wallet/loader
 apihub-root/dsu-explorer/loader
 apihub-root/trial-participant-wallet/loader
 apihub-root/sponsor-wallet/loader
