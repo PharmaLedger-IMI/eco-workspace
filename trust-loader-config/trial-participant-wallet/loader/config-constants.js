@@ -3,7 +3,7 @@ let LOADER_GLOBALS = {
   DEFAULT_CREDENTIALS:{
     email:"trial-participant@pharmaledger.com",
     password:"secret",
-    username : "private",
+    username : "patient",
     company:"PharmaLedger"
   },
   THEME: 'app',

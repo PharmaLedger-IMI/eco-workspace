@@ -17,7 +17,7 @@ export default class VisitsProceduresController extends WebcController {
     let { id, keySSI } = this.history.location.state;
 
     this.keySSI = keySSI;
-    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
+    this.CommunicationService = CommunicationService.getCommunicationServiceInstance();
     this.consentsService = new ConsentService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);

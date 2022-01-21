@@ -23,7 +23,7 @@ export default class TrialDetailsController extends WebcController {
     this.sitesService = new SitesService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
     this.visitsService = new VisitsService(this.DSUStorage);
-    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
+    this.CommunicationService = CommunicationService.getCommunicationServiceInstance()
     this.consentService = new ConsentService(this.DSUStorage);
 
     let { id, keySSI } = this.history.location.state;
@@ -204,6 +204,7 @@ export default class TrialDetailsController extends WebcController {
         'add-new-site',
         (event) => {
           const response = event.detail;
+          debugger;
           this.getSites();
           this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_SITE, response.keySSI, 'Site added', response.did);
           this.showFeedbackToast('Result', 'Site added successfully', 'toast');
