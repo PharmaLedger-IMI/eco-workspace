@@ -6,6 +6,8 @@ export default {
   browser: 'any',
   mode: 'dev-secure',
   domain: 'vault',
+  vaultDomain:"vault",
+  enclaveType:"WalletDBEnclave",
   sw: true,
   pwa: false,
   didPrompt: true,
