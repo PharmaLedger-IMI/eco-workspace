@@ -2,6 +2,7 @@
 const { WebcController } = WebCardinal.controllers;
 
 const commonServices = require('common-services');
+const ProfileService = commonServices.ProfileService;
 const SharedStorage = commonServices.SharedStorage;
 const Constants = commonServices.Constants;
 import SitesService from '../services/SitesService.js';
@@ -204,7 +205,6 @@ export default class TrialDetailsController extends WebcController {
         'add-new-site',
         (event) => {
           const response = event.detail;
-          debugger;
           this.getSites();
           this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_SITE, response.keySSI, 'Site added', response.did);
           this.showFeedbackToast('Result', 'Site added successfully', 'toast');
@@ -451,22 +451,18 @@ export default class TrialDetailsController extends WebcController {
   async changeSiteStatus(status, did) {
     const updated = await this.sitesService.changeSiteStatus(status, did, this.model.trial.keySSI);
 
-    console.log({
-      operation: 'site-status-change',
-      data: {
-        site: updated.keySSI,
-        status: status,
-      },
-      shortDescription: 'Status was updated',
-    });
-    this.CommunicationService.sendMessage(updated.did, {
-      operation: 'site-status-change',
-      data: {
-        site: updated.keySSI,
-        status: status,
-      },
-      shortDescription: 'Status was updated',
-    });
+    ProfileService.getProfileServiceInstance().getDID().then(senderDid => {
+      this.CommunicationService.sendMessage(updated.did, {
+        operation: 'site-status-change',
+        senderIdentity: senderDid,
+        data: {
+          site: updated.keySSI,
+          status: status,
+        },
+        shortDescription: 'Status was updated',
+      });
+    })
+
   }
 
   // getSiteConsents(consents) {
@@ -482,17 +478,19 @@ export default class TrialDetailsController extends WebcController {
     }
   }
 
-  sendMessageToHco(operation, ssi, shortMessage, did) {
-    console.log({
-      operation: operation,
-      data: ssi,
-      shortDescription: shortMessage,
-    });
-    this.CommunicationService.sendMessage(did, {
+  sendMessageToHco(operation, ssi, shortMessage, receiverDid) {
+
+  ProfileService.getProfileServiceInstance().getDID().then(senderDid => {
+    this.CommunicationService.sendMessage(receiverDid, {
+      senderIdentity: senderDid,
       operation: operation,
       ssi: ssi,
       trialSSI: this.model.trial.keySSI,
       shortDescription: shortMessage,
     });
+  }).catch(e => {
+    console.log(e);
+  })
+
   }
 }

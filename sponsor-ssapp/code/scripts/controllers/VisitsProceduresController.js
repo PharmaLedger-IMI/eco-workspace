@@ -1,6 +1,7 @@
 const commonServices = require('common-services');
 const CommunicationService = commonServices.CommunicationService;
 const Constants = commonServices.Constants;
+const {getProfileServiceInstance} = commonServices.ProfileService;
 import ConsentService from '../services/ConsentService.js';
 import TrialsService from '../services/TrialsService.js';
 import eventBusService from '../services/EventBusService.js';
@@ -529,15 +530,15 @@ export default class VisitsProceduresController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage, did) {
-    console.log({
-      operation: operation,
-      ssi: ssi,
-      shortDescription: shortMessage,
+
+    getProfileServiceInstance().getDID().then(senderDid => {
+      this.CommunicationService.sendMessage(did, {
+        senderIdentity:senderDid,
+        operation: operation,
+        ssi: ssi,
+        shortDescription: shortMessage,
+      });
     });
-    this.CommunicationService.sendMessage(did, {
-      operation: operation,
-      ssi: ssi,
-      shortDescription: shortMessage,
-    });
+
   }
 }

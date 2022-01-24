@@ -116,30 +116,30 @@ export default class ListTrialsController extends WebcController {
         return console.error(err);
       }
       console.log('DATA MESSAGE:', data);
-      switch (data.message.operation) {
+      switch (data.operation) {
         case Constants.MESSAGES.SPONSOR.SIGN_ECOSENT:
         case Constants.MESSAGES.SPONSOR.UPDATE_ECOSENT: {
           await this.participantsService.updateParticipant(
             {
-              participantId: data.message.useCaseSpecifics.tpNumber,
-              action: data.message.useCaseSpecifics.action,
-              trialSSI: data.message.useCaseSpecifics.trialSSI,
-              consentSSI: data.message.ssi,
-              version: data.message.useCaseSpecifics.version,
+              participantId: data.useCaseSpecifics.tpNumber,
+              action: data.useCaseSpecifics.action,
+              trialSSI: data.useCaseSpecifics.trialSSI,
+              consentSSI: data.ssi,
+              version: data.useCaseSpecifics.version,
               type: data.sender === 'hcoIdentity' ? senderType.HCP : senderType.Patient,
-              operationDate: data.message.useCaseSpecifics.operationDate || null,
+              operationDate: data.useCaseSpecifics.operationDate || null,
             },
-            data.message.useCaseSpecifics.trialSSI
+            data.useCaseSpecifics.trialSSI
           );
-          eventBusService.emitEventListeners(Topics.RefreshParticipants + data.message.useCaseSpecifics.trialSSI, data);
+          eventBusService.emitEventListeners(Topics.RefreshParticipants + data.useCaseSpecifics.trialSSI, data);
           break;
         }
         case 'update-site-status': {
-          if (data.message.stageInfo.siteSSI && data.message.stageInfo.status && data.message.ssi) {
+          if (data.stageInfo.siteSSI && data.stageInfo.status && data.ssi) {
             await this.sitesService.updateSiteStage(
-              data.message.ssi,
-              data.message.stageInfo.siteSSI,
-              data.message.stageInfo.status
+              data.ssi,
+              data.stageInfo.siteSSI,
+              data.stageInfo.status
             );
           }
         }
@@ -241,7 +241,7 @@ export default class ListTrialsController extends WebcController {
         {
           controller: 'AddNewTrialModalController',
           disableExpanding: false,
-          disableBackdropClosing: false,
+          disableBackdropClosing: true,
           existingIds: this.trials.map((x) => x.id) || [],
         }
       );
@@ -292,11 +292,16 @@ export default class ListTrialsController extends WebcController {
     });
   }
 
-  sendMessageToHco(operation, ssi, shortMessage, did) {
-    this.CommunicationService.sendMessage(did, {
-      operation: operation,
-      ssi: ssi,
-      shortDescription: shortMessage,
-    });
+  sendMessageToHco(operation, ssi, shortMessage, receiverDid) {
+
+    getProfileServiceInstance().getDID().then(senderDid => {
+      this.CommunicationService.sendMessage(receiverDid, {
+        senderIdentity:senderDid,
+        operation: operation,
+        ssi: ssi,
+        shortDescription: shortMessage,
+      });
+    })
+
   }
 }
