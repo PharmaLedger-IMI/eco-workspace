@@ -3,6 +3,7 @@ import TrialsService from '../services/TrialsService.js';
 import { trialStatusesEnum, trialTableHeaders, trialStagesEnum } from '../constants/trial.js';
 const {getCommunicationServiceInstance} = commonServices.CommunicationService;
 const {getProfileServiceInstance } = commonServices.ProfileService;
+const MessageHandlerService = commonServices.MessageHandlerService;
 const Constants = commonServices.Constants;
 import ParticipantsService from '../services/ParticipantsService.js';
 import SitesService from '../services/SitesService.js';
@@ -100,7 +101,6 @@ export default class ListTrialsController extends WebcController {
       this.model.did = did;
     })
 
-    this.CommunicationService = getCommunicationServiceInstance();
     this.listenForMessages();
 
     this.feedbackEmitter = null;
@@ -111,7 +111,7 @@ export default class ListTrialsController extends WebcController {
   }
 
   listenForMessages() {
-    this.CommunicationService.listenForMessages(async (err, data) => {
+    MessageHandlerService.init(async (err, data) =>{
       if (err) {
         return console.error(err);
       }
@@ -293,7 +293,8 @@ export default class ListTrialsController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage, receiverDid) {
-      this.CommunicationService.sendMessage(receiverDid, {
+      let communicationService = getCommunicationServiceInstance();
+      communicationService.sendMessage(receiverDid, {
         operation: operation,
         ssi: ssi,
         shortDescription: shortMessage,
