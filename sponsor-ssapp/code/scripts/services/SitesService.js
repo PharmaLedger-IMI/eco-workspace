@@ -9,7 +9,7 @@ export default class SitesService extends DSUService {
 
   constructor(DSUStorage) {
     super('/sites');
-    this.storageService = SharedStorage.getInstance();
+    this.storageService = SharedStorage.getSharedStorage(DSUStorage);
     this.visitsService = new VisitsService(DSUStorage);
   }
 
@@ -31,7 +31,6 @@ export default class SitesService extends DSUService {
   }
 
   async createSite(data, trialKeySSI) {
-    debugger;
     const visits = await this.visitsService.getTrialVisits(trialKeySSI);
 
     const status = await this.saveEntityAsync(

@@ -8,7 +8,7 @@ export default class ConsentsService extends DSUService {
 
   constructor(DSUStorage) {
     super('/consents');
-    this.storageService = SharedStorage.getInstance();
+    this.storageService = SharedStorage.getSharedStorage(DSUStorage);
   }
 
   async getTrialConsents(trialKeySSI) {

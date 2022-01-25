@@ -7,7 +7,7 @@ export default class VisitsService extends DSUService {
 
   constructor(DSUStorage) {
     super('/visits');
-    this.storageService = SharedStorage.getInstance();
+    this.storageService = SharedStorage.getSharedStorage(DSUStorage);
   }
 
   async getTrialVisits(trialKeySSI) {
