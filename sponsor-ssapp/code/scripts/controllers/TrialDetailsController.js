@@ -451,18 +451,14 @@ export default class TrialDetailsController extends WebcController {
   async changeSiteStatus(status, did) {
     const updated = await this.sitesService.changeSiteStatus(status, did, this.model.trial.keySSI);
 
-    ProfileService.getProfileServiceInstance().getDID().then(senderDid => {
       this.CommunicationService.sendMessage(updated.did, {
         operation: 'site-status-change',
-        senderIdentity: senderDid,
         data: {
           site: updated.keySSI,
           status: status,
         },
         shortDescription: 'Status was updated',
       });
-    })
-
   }
 
   // getSiteConsents(consents) {
@@ -479,18 +475,11 @@ export default class TrialDetailsController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage, receiverDid) {
-
-  ProfileService.getProfileServiceInstance().getDID().then(senderDid => {
     this.CommunicationService.sendMessage(receiverDid, {
-      senderIdentity: senderDid,
       operation: operation,
       ssi: ssi,
       trialSSI: this.model.trial.keySSI,
       shortDescription: shortMessage,
     });
-  }).catch(e => {
-    console.log(e);
-  })
-
   }
 }

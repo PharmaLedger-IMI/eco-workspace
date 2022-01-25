@@ -293,15 +293,10 @@ export default class ListTrialsController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage, receiverDid) {
-
-    getProfileServiceInstance().getDID().then(senderDid => {
       this.CommunicationService.sendMessage(receiverDid, {
-        senderIdentity:senderDid,
         operation: operation,
         ssi: ssi,
         shortDescription: shortMessage,
       });
-    })
-
   }
 }

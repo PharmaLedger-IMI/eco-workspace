@@ -531,14 +531,10 @@ export default class VisitsProceduresController extends WebcController {
 
   sendMessageToHco(operation, ssi, shortMessage, did) {
 
-    getProfileServiceInstance().getDID().then(senderDid => {
       this.CommunicationService.sendMessage(did, {
-        senderIdentity:senderDid,
         operation: operation,
         ssi: ssi,
         shortDescription: shortMessage,
       });
-    });
-
   }
 }
