@@ -1,5 +1,6 @@
 {
   "theme": "sponsor-theme",
+  "translations": "false",
   "pages": [
     {
       "name": "Trials",

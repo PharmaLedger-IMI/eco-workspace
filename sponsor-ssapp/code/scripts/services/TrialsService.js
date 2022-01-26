@@ -10,7 +10,7 @@ export default class TrialsService extends DSUService {
 
   constructor(DSUStorage) {
     super('/trials');
-    this.storageService = SharedStorage.getInstance();
+    this.storageService = SharedStorage.getSharedStorage(DSUStorage);
     this.visitsService = new VisitsService(DSUStorage);
   }
 

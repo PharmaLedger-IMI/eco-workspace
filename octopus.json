@@ -43,8 +43,7 @@
         {
           "type": "smartClone",
           "target": ".",
-          "collectLog": false,
-          "commit": "02e789235dedd330a2bd36f5705729ed37b25fa5"
+          "collectLog": false
         },
         {
           "type": "execute",
@@ -152,7 +151,7 @@
     },
     {
       "name": "common-services",
-      "src": "https://github.com/PharmaLedger-IMI/eco-iot-services.git",
+      "src": "https://github.com/Mastaleru/eco-iot-services.git",
       "actions": [
         {
           "type": "smartClone",
@@ -232,7 +231,7 @@
     },
     {
       "name": "trial-participant-ssapp",
-      "src": "https://github.com/PharmaLedger-IMI/trial-participant-ssapp.git",
+      "src": "https://github.com/Mastaleru/trial-participant-ssapp.git",
       "actions": [
         {
           "type": "smartClone",
@@ -247,7 +246,7 @@
     },
     {
       "name": "clinical-site-ssapp",
-      "src": "https://github.com/PharmaLedger-IMI/clinical-site-ssapp.git",
+      "src": "https://github.com/Mastaleru/clinical-site-ssapp.git",
       "actions": [
         {
           "type": "smartClone",

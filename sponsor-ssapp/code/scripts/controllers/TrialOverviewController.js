@@ -16,7 +16,7 @@ export default class TrialOverviewController extends WebcController {
   constructor(...props) {
     super(...props);
 
-    this.storageService = SharedStorage.getInstance();
+    this.storageService = SharedStorage.getSharedStorage(this.DSUStorage);
     this.trialService = new TrialsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
 

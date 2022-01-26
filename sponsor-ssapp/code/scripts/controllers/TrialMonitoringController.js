@@ -7,7 +7,7 @@ export default class TrialMonitoringController extends WebcController {
   constructor(...props) {
     super(...props);
 
-    this.storageService = SharedStorage.getInstance();
+    this.storageService = SharedStorage.getSharedStorage(this.DSUStorage);
 
     let { id, keySSI } = this.history.location.state;
     console.log(id, keySSI);

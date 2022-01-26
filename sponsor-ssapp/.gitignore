@@ -10,7 +10,6 @@ seed
 bundles
 package-lock.json
 .eslintrc.json
-CommunicationService.js
 DateTimeService.js
 DSUService.js
 Constants.js
