@@ -227,7 +227,36 @@ export default class TrialDetailsController extends WebcController {
       );
     });
 
-    this.onTagClick('add-trial-consent', async (model, target, event) => {
+    this.onTagClick('add-trial-consent', async (event) => {
+      this.showModalFromTemplate(
+        'add-new-trial-consent',
+        async (event) => {
+          const response = event.detail;
+          await this.getConsents();
+          this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
+          this.model.sites.forEach((country) =>
+            country.sites.forEach((site) => this.sendMessageToHco('add-trial-consent', null, 'Trial consent', site.did))
+          );
+          eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
+        },
+        (event) => {
+          const error = event.detail || null;
+          if (error instanceof Error) {
+            console.log(error);
+            this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new consent', 'toast');
+          }
+        },
+        {
+          controller: 'AddNewTrialConsentModalController',
+          disableExpanding: true,
+          disableBackdropClosing: false,
+          isUpdate: false,
+          existingIds: this.model.consents.map((x) => x.id) || [],
+        }
+      );
+    });
+
+    this.onTagClick('add-site-consent', async (model, target, event) => {
       const data = target.getAttribute('data-custom');
 
       const selectedSite = JSON.parse(JSON.stringify(this.model.menu))
@@ -306,6 +335,55 @@ export default class TrialDetailsController extends WebcController {
       });
 
       this.model.setChainValue(`menu.2.data.site.${selectedCountryIdx}.sites.${selectedSiteIdx}`, selectedSite);
+    });
+
+    this.onTagClick('select-trial-consent', async (model, target, event) => {
+      const data = target.getAttribute('data-custom');
+
+      const trialData = JSON.parse(JSON.stringify(this.model.menu)).find((x) => x.name === menuOptions.Consents).data
+        .trial;
+
+      trialData.forEach((x) => {
+        if (x.id === data) x.selected = !x.selected;
+        else x.selected = false;
+      });
+
+      this.model.setChainValue(`menu.2.data.trial`, trialData);
+    });
+
+    this.onTagClick('add-trial-version', async (model, target, event) => {
+      const data = target.getAttribute('data-custom');
+
+      const trialData = JSON.parse(JSON.stringify(this.model.menu)).find((x) => x.name === menuOptions.Consents).data
+        .trial;
+
+      const selectedConsent = trialData.find((x) => x.selected === true);
+
+      this.showModalFromTemplate(
+        'add-new-consent',
+        (event) => {
+          const response = event.detail;
+          this.getConsents();
+          this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
+          this.sendMessageToHco('add-econsent-version', response.keySSI, 'New consent version', selectedSite.did);
+          eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
+        },
+        (event) => {
+          const error = event.detail || null;
+          if (error instanceof Error) {
+            console.log(error);
+            this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new consent', 'toast');
+          }
+        },
+        {
+          controller: 'AddNewTrialConsentModalController',
+          disableExpanding: true,
+          disableBackdropClosing: false,
+          site: null,
+          isUpdate: selectedConsent,
+          existingVersions: trialData.filter((x) => x.id === event.data).map((x) => x.version) || [],
+        }
+      );
     });
 
     this.onTagClick('add-version', async (model, target, event) => {
@@ -399,9 +477,8 @@ export default class TrialDetailsController extends WebcController {
 
   async getConsents() {
     await this.getSites();
-    // const consents = await this.consentService.getTrialConsents(this.model.trial.keySSI);
-    const consents = [];
-    this.model.consents = [];
+    const consents = await this.consentService.getTrialConsents(this.model.trial.keySSI);
+    this.model.consents = JSON.parse(JSON.stringify(consents));
 
     if (!this.model.trial) {
       await this.getTrial();
@@ -444,6 +521,7 @@ export default class TrialDetailsController extends WebcController {
 
     const data = { trial: JSON.parse(JSON.stringify(consents)), site: sitesData };
     this.model.menu.find((x) => x.name === menuOptions.Consents).data = data;
+    console.log(JSON.parse(JSON.stringify(data.trial)));
     return JSON.parse(JSON.stringify(data));
   }
 

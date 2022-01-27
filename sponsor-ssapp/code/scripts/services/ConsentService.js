@@ -3,6 +3,7 @@ const SharedStorage = commonServices.SharedStorage;
 const DSUService = commonServices.DSUService;
 import SitesService from './SitesService.js';
 import VisitsService from './VisitsService.js';
+import TrialsService from './TrialsService.js';
 
 export default class ConsentService extends DSUService {
   CONSENTS_TABLE = 'consents';
@@ -13,6 +14,7 @@ export default class ConsentService extends DSUService {
     super('/consents');
     this.storageService = SharedStorage.getInstance();
     this.siteService = new SitesService(DSUStorage);
+    this.trialsService = new TrialsService(DSUStorage);
     this.visitsService = new VisitsService(DSUStorage);
     this.DSUStorage = DSUStorage;
   }
@@ -180,5 +182,97 @@ export default class ConsentService extends DSUService {
         });
       });
     });
+  }
+
+  async createTrialConsent(data, trialKeySSI) {
+    const path = this.getTrialConsentPath(trialKeySSI);
+    const consent = await this.saveEntityAsync(data, path);
+    const attachment = await this.uploadFile(
+      `${path}${consent.uid}/versions/${data.versions[0].version}/${data.versions[0].file.name}`,
+      data.versions[0].file
+    );
+    consent.versions[0].attachment = data.versions[0].file.name;
+    const updatedConsent = await this.updateEntityAsync(consent, path);
+
+    await this.addConsentToDB(
+      {
+        id: data.id,
+        keySSI: consent.uid,
+        name: data.name,
+        type: data.type,
+        uid: consent.uid,
+        versions: [
+          {
+            version: data.versions[0].version,
+            versionDate: data.versions[0].versionDate,
+            attachment: data.versions[0].file.name,
+          },
+        ],
+      },
+      trialKeySSI
+    );
+
+    await this.trialsService.updateTrialConsents(updatedConsent, trialKeySSI);
+
+    // TODO: make all ids keySSIs so unique
+    return consent;
+  }
+
+  async updateTrialConsent(data, trialKeySSI, site, consent) {
+    const selectedSiteConsent = site.consents.find((x) => x.id === consent.id);
+    if (selectedSiteConsent.versions.length === 1) {
+      const consentData = {
+        id: consent.id,
+        parentKeySSI: consent.uid,
+        name: consent.name,
+        type: consent.type,
+        versions: selectedSiteConsent.versions,
+      };
+
+      console.log(data, trialKeySSI, site.keySSI);
+      console.log(JSON.stringify(consent, null, 2));
+
+      const newConsent = await this.saveEntityAsync(consentData);
+
+      const attachmentKeySSI = await this.uploadFile(
+        '/consents/' + newConsent.uid + '/consent/' + data.version,
+        data.file
+      );
+
+      data.attachmentKeySSI = attachmentKeySSI;
+      data.attachment = data.file.name;
+      newConsent.versions.push(data);
+      const updatedConsentDSU = await this.updateEntityAsync(newConsent);
+      const siteConsents = await this.addConsentToDB(updatedConsentDSU, site.keySSI);
+
+      // await this.updateConsentToDB(updatedConsent, site.keySSI);
+
+      await this.mountConsent(site.keySSI, updatedConsentDSU.uid, true);
+
+      await this.siteService.updateSiteConsents(updatedConsentDSU, site.id, trialKeySSI);
+
+      return updatedConsentDSU;
+    } else {
+      const consentDSU = await this.getConsent(selectedSiteConsent.uid);
+      const attachmentKeySSI = await this.uploadFile(
+        '/consents/' + consentDSU.uid + '/consent/' + data.version,
+        data.file
+      );
+      data.attachmentKeySSI = attachmentKeySSI;
+      data.attachment = data.file.name;
+      consentDSU.versions.push(data);
+      const updatedConsent = await this.updateEntityAsync(consentDSU);
+      await this.updateConsentToDB(updatedConsent, site.keySSI);
+      await this.siteService.updateSiteConsents(updatedConsent, site.id, trialKeySSI);
+
+      // await this.unmountConsent(site.keySSI, updatedConsent.uid, true);
+      // await this.mountConsent(site.keySSI, updatedConsent.uid, true);
+
+      return updatedConsent;
+    }
+  }
+
+  getTrialConsentPath(trialKeySSI) {
+    return `${this.TRIALS_PATH}/${trialKeySSI}/consent/`;
   }
 }

@@ -1,0 +1,31 @@
+<h2 slot="header">New Consent</h2>
+
+<div class="d-flex flex-column justify-content-between">
+	<div class="m-2">
+		<label>{{ @consent.name.label }}</label><br>
+		<input class="input-box" data-view-model="@consent.name"></input>
+		<span data-if="@consent.name.invalidValue">
+			<i class="red-invalid fas fa-times"></i>
+		</span>
+	</div>
+	<div class="m-2">
+		<label>{{ @consent.id.label }}</label><br>
+		<input id="id-field" class="input-box" data-view-model="@consent.id" event-name="id-changed"></input>
+		<span data-if="@consent.id.invalidValue">
+			<i class="red-invalid fas fa-times"></i>
+		</span>
+	</div>
+  <div style="margin: 10px">
+    <psk-select view-model="consent.type"></psk-select>
+  </div>
+	<div class="m-2">
+		<label>{{ @consent.version.label }}</label><br>
+		<input id="version-field" class="input-box" data-view-model="@consent.version" event-name="id-changed"></input>
+		<span data-if="@consent.version.invalidValue">
+			<i class="red-invalid fas fa-times"></i>
+		</span>
+	</div>
+  <psk-files-chooser style="margin: 10px" view-model="consent.attachment" event-name="add-file"> </psk-files-chooser>
+</div>
+
+<button class="btn btn-primary" slot="footer" data-tag="create-consent">Submit</button>
