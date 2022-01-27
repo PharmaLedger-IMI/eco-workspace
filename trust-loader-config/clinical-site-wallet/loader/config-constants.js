@@ -9,7 +9,7 @@ let LOADER_GLOBALS = {
   THEME: 'app',
   LABELS_DICTIONARY: {
     APP_NAME: 'Clinical Site App',
-    APP_DESCRIPTION: 'The "backend" application for EPI',
+    APP_DESCRIPTION: 'Clinical Site Application',
     NEW_WALLET: 'New Account',
     ACCESS_WALLET: 'Access Account',
     WALLET_AUTHORIZATION: 'Authorization',
