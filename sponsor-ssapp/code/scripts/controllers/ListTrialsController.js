@@ -2,7 +2,7 @@ const commonServices = require('common-services');
 import TrialsService from '../services/TrialsService.js';
 import { trialStatusesEnum, trialTableHeaders, trialStagesEnum } from '../constants/trial.js';
 const {getCommunicationServiceInstance} = commonServices.CommunicationService;
-const {getProfileServiceInstance } = commonServices.ProfileService;
+const {getDidServiceInstance } = commonServices.DidService;
 const MessageHandlerService = commonServices.MessageHandlerService;
 const Constants = commonServices.Constants;
 import ParticipantsService from '../services/ParticipantsService.js';
@@ -96,8 +96,8 @@ export default class ListTrialsController extends WebcController {
     };
 
 
-    this.profileService = getProfileServiceInstance();
-    this.profileService.getDID().then((did)=>{
+    this.didService = getDidServiceInstance();
+    this.didService.getDID().then((did)=>{
       this.model.did = did;
     })
 

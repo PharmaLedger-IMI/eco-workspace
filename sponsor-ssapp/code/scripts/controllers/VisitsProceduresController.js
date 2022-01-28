@@ -1,7 +1,5 @@
 const commonServices = require('common-services');
 const CommunicationService = commonServices.CommunicationService;
-const Constants = commonServices.Constants;
-const {getProfileServiceInstance} = commonServices.ProfileService;
 import ConsentService from '../services/ConsentService.js';
 import TrialsService from '../services/TrialsService.js';
 import eventBusService from '../services/EventBusService.js';

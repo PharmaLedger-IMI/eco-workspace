@@ -2,7 +2,6 @@
 const { WebcController } = WebCardinal.controllers;
 
 const commonServices = require('common-services');
-const ProfileService = commonServices.ProfileService;
 const SharedStorage = commonServices.SharedStorage;
 const Constants = commonServices.Constants;
 import SitesService from '../services/SitesService.js';

@@ -1,6 +1,6 @@
 const commonServices = require('common-services');
 import TrialsService from '../services/TrialsService.js';
-const ProfileService = commonServices.ProfileService;
+const DidService = commonServices.DidService;
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
 
@@ -44,7 +44,7 @@ export default class AddNewTrialModalController extends WebcController {
     super(...props);
     this.existingIds = props[0].existingIds;
     this.trialsService = new TrialsService(this.DSUStorage);
-    ProfileService.getProfileServiceInstance().getDID().then((identityString)=>{
+    DidService.getDidServiceInstance().getDID().then((identityString)=>{
       this.did.value = identityString;
       this.setModel({
         trial: {
