@@ -156,34 +156,6 @@ export default class ConsentService extends DSUService {
     return `${this.SITES_PATH}/${siteKeySSI}/consent/`;
   }
 
-  //TODO: do it in DSUService
-  uploadFile(path, file) {
-    function getFileContentAsBuffer(file, callback) {
-      let fileReader = new FileReader();
-      fileReader.onload = function (evt) {
-        let arrayBuffer = fileReader.result;
-        callback(undefined, arrayBuffer);
-      };
-
-      fileReader.readAsArrayBuffer(file);
-    }
-
-    return new Promise((resolve, reject) => {
-      getFileContentAsBuffer(file, (err, arrayBuffer) => {
-        if (err) {
-          reject('Could not get file as a Buffer');
-        }
-        this.DSUStorage.writeFile(path, $$.Buffer.from(arrayBuffer), undefined, (err, keySSI) => {
-          if (err) {
-            reject(new Error(err));
-            return;
-          }
-          resolve();
-        });
-      });
-    });
-  }
-
   async createTrialConsent(data, trialKeySSI) {
     const path = this.getTrialConsentPath(trialKeySSI);
     const consent = await this.saveEntityAsync(data, path);
@@ -219,60 +191,52 @@ export default class ConsentService extends DSUService {
   }
 
   async updateTrialConsent(data, trialKeySSI, site, consent) {
-    const selectedSiteConsent = site.consents.find((x) => x.id === consent.id);
-    if (selectedSiteConsent.versions.length === 1) {
-      const consentData = {
-        id: consent.id,
-        parentKeySSI: consent.uid,
-        name: consent.name,
-        type: consent.type,
-        versions: selectedSiteConsent.versions,
-      };
+    const path = this.getTrialConsentPath(trialKeySSI);
+    const consentDSU = await this.getEntityAsync(consent.uid, path);
+    const attachment = await this.uploadFile(
+      `${path}${consentDSU.uid}/versions/${data.version}/${data.file.name}`,
+      data.file
+    );
+    data.attachment = data.file.name;
+    consentDSU.versions.push(data);
+    const updatedConsent = await this.updateEntityAsync(consentDSU, path);
+    await this.updateConsentToDB(updatedConsent, trialKeySSI);
+    await this.trialsService.updateTrialConsents(updatedConsent, trialKeySSI);
 
-      console.log(data, trialKeySSI, site.keySSI);
-      console.log(JSON.stringify(consent, null, 2));
-
-      const newConsent = await this.saveEntityAsync(consentData);
-
-      const attachmentKeySSI = await this.uploadFile(
-        '/consents/' + newConsent.uid + '/consent/' + data.version,
-        data.file
-      );
-
-      data.attachmentKeySSI = attachmentKeySSI;
-      data.attachment = data.file.name;
-      newConsent.versions.push(data);
-      const updatedConsentDSU = await this.updateEntityAsync(newConsent);
-      const siteConsents = await this.addConsentToDB(updatedConsentDSU, site.keySSI);
-
-      // await this.updateConsentToDB(updatedConsent, site.keySSI);
-
-      await this.mountConsent(site.keySSI, updatedConsentDSU.uid, true);
-
-      await this.siteService.updateSiteConsents(updatedConsentDSU, site.id, trialKeySSI);
-
-      return updatedConsentDSU;
-    } else {
-      const consentDSU = await this.getConsent(selectedSiteConsent.uid);
-      const attachmentKeySSI = await this.uploadFile(
-        '/consents/' + consentDSU.uid + '/consent/' + data.version,
-        data.file
-      );
-      data.attachmentKeySSI = attachmentKeySSI;
-      data.attachment = data.file.name;
-      consentDSU.versions.push(data);
-      const updatedConsent = await this.updateEntityAsync(consentDSU);
-      await this.updateConsentToDB(updatedConsent, site.keySSI);
-      await this.siteService.updateSiteConsents(updatedConsent, site.id, trialKeySSI);
-
-      // await this.unmountConsent(site.keySSI, updatedConsent.uid, true);
-      // await this.mountConsent(site.keySSI, updatedConsent.uid, true);
-
-      return updatedConsent;
-    }
+    return updatedConsent;
   }
 
   getTrialConsentPath(trialKeySSI) {
     return `${this.TRIALS_PATH}/${trialKeySSI}/consent/`;
+  }
+
+  //TODO: do it in DSUService
+  uploadFile(path, file) {
+    let getFileContentAsBuffer = (file, callback) => {
+      let fileReader = new FileReader();
+      fileReader.onload = function (evt) {
+        let arrayBuffer = fileReader.result;
+        callback(undefined, arrayBuffer);
+      };
+
+      fileReader.readAsArrayBuffer(file);
+    };
+
+    return new Promise((resolve, reject) => {
+      getFileContentAsBuffer(file, (err, arrayBuffer) => {
+        if (err) {
+          reject('Could not get file as a Buffer');
+        }
+        this.letDSUStorageInit().then(() => {
+          this.DSUStorage.writeFile(path, $$.Buffer.from(arrayBuffer), undefined, (err, keySSI) => {
+            if (err) {
+              reject(new Error(err));
+              return;
+            }
+            resolve();
+          });
+        });
+      });
+    });
   }
 }

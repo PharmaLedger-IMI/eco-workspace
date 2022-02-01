@@ -31,7 +31,6 @@ export default class SitesService extends DSUService {
   }
 
   async createSite(data, trialKeySSI) {
-    debugger;
     const visits = await this.visitsService.getTrialVisits(trialKeySSI);
 
     const status = await this.saveEntityAsync(

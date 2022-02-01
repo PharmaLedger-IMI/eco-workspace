@@ -234,9 +234,9 @@ export default class TrialDetailsController extends WebcController {
           const response = event.detail;
           await this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          this.model.sites.forEach((country) =>
-            country.sites.forEach((site) => this.sendMessageToHco('add-trial-consent', null, 'Trial consent', site.did))
-          );
+          // this.model.sites.forEach((country) =>
+          //   country.sites.forEach((site) => this.sendMessageToHco('add-trial-consent', null, 'Trial consent', site.did))
+          // );
           eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
         },
         (event) => {
@@ -358,14 +358,15 @@ export default class TrialDetailsController extends WebcController {
         .trial;
 
       const selectedConsent = trialData.find((x) => x.selected === true);
+      const existingVersions = selectedConsent.versions.map((x) => x.version);
 
       this.showModalFromTemplate(
-        'add-new-consent',
+        'add-new-trial-consent',
         (event) => {
           const response = event.detail;
           this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          this.sendMessageToHco('add-econsent-version', response.keySSI, 'New consent version', selectedSite.did);
+          // this.sendMessageToHco('add-econsent-version', response.keySSI, 'New consent version', selectedSite.did);
           eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
         },
         (event) => {
@@ -381,7 +382,7 @@ export default class TrialDetailsController extends WebcController {
           disableBackdropClosing: false,
           site: null,
           isUpdate: selectedConsent,
-          existingVersions: trialData.filter((x) => x.id === event.data).map((x) => x.version) || [],
+          existingVersions: existingVersions || [],
         }
       );
     });

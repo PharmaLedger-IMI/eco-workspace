@@ -156,12 +156,14 @@ export default class ConsentsService extends DSUService {
         if (err) {
           reject('Could not get file as a Buffer');
         }
-        this.DSUStorage.writeFile(path, $$.Buffer.from(arrayBuffer), undefined, (err, keySSI) => {
-          if (err) {
-            reject(new Error(err));
-            return;
-          }
-          resolve();
+        this.letDSUStorageInit().then(() => {
+          this.DSUStorage.writeFile(path, $$.Buffer.from(arrayBuffer), undefined, (err, keySSI) => {
+            if (err) {
+              reject(new Error(err));
+              return;
+            }
+            resolve();
+          });
         });
       });
     });

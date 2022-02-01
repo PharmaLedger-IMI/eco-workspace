@@ -68,8 +68,8 @@ export default class AddNewTrialConsentModalController extends WebcController {
     if (this.isUpdate) {
       this.setModel({
         consent: {
-          id: { ...this.id, value: this.isUpdate.id, readOnly: true },
-          name: { ...this.name, value: this.isUpdate.name, readOnly: true },
+          id: { ...this.id, value: this.isUpdate.id, disabled: true },
+          name: { ...this.name, value: this.isUpdate.name, disabled: true },
           type: { ...this.type, value: this.isUpdate.type, disabled: true },
           version: this.version,
           attachment: this.attachment,
