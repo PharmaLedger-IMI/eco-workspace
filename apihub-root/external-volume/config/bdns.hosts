@@ -10,39 +10,6 @@
          "$ORIGIN"
       ]
    },
-   "epi":{
-      "replicas":[
-
-      ],
-      "brickStorages":[
-         "$ORIGIN"
-      ],
-      "anchoringServices":[
-         "$ORIGIN"
-      ]
-   },
-   "epidev":{
-      "replicas":[
-
-      ],
-      "brickStorages":[
-         "$ORIGIN"
-      ],
-      "anchoringServices":[
-         "$ORIGIN"
-      ]
-   },
-   "epiqa":{
-      "replicas":[
-
-      ],
-      "brickStorages":[
-         "$ORIGIN"
-      ],
-      "anchoringServices":[
-         "$ORIGIN"
-      ]
-   },
    "vault":{
       "replicas":[
 
@@ -59,13 +26,13 @@
 
       ],
       "brickStorages":[
-         "$ORIGIN"
+         "http://localhost:8080"
       ],
       "anchoringServices":[
-         "$ORIGIN"
+         "http://localhost:8080"
       ],
       "mqEndpoints":[
-         "http://localhost:8081"
+         "http://localhost:8080"
       ]
    },
    "eco":{

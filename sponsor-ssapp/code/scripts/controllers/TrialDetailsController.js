@@ -19,11 +19,11 @@ export default class TrialDetailsController extends WebcController {
   constructor(...props) {
     super(...props);
 
-    this.storageService = SharedStorage.getInstance();
+    this.storageService = SharedStorage.getSharedStorage(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
     this.visitsService = new VisitsService(this.DSUStorage);
-    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
+    this.CommunicationService = CommunicationService.getCommunicationServiceInstance()
     this.consentService = new ConsentService(this.DSUStorage);
 
     let { id, keySSI } = this.history.location.state;
@@ -529,22 +529,14 @@ export default class TrialDetailsController extends WebcController {
   async changeSiteStatus(status, did) {
     const updated = await this.sitesService.changeSiteStatus(status, did, this.model.trial.keySSI);
 
-    console.log({
-      operation: 'site-status-change',
-      data: {
-        site: updated.keySSI,
-        status: status,
-      },
-      shortDescription: 'Status was updated',
-    });
-    this.CommunicationService.sendMessage(updated.did, {
-      operation: 'site-status-change',
-      data: {
-        site: updated.keySSI,
-        status: status,
-      },
-      shortDescription: 'Status was updated',
-    });
+      this.CommunicationService.sendMessage(updated.did, {
+        operation: 'site-status-change',
+        data: {
+          site: updated.keySSI,
+          status: status,
+        },
+        shortDescription: 'Status was updated',
+      });
   }
 
   // getSiteConsents(consents) {
@@ -560,13 +552,8 @@ export default class TrialDetailsController extends WebcController {
     }
   }
 
-  sendMessageToHco(operation, ssi, shortMessage, did) {
-    console.log({
-      operation: operation,
-      data: ssi,
-      shortDescription: shortMessage,
-    });
-    this.CommunicationService.sendMessage(did, {
+  sendMessageToHco(operation, ssi, shortMessage, receiverDid) {
+    this.CommunicationService.sendMessage(receiverDid, {
       operation: operation,
       ssi: ssi,
       trialSSI: this.model.trial.keySSI,

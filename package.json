@@ -29,7 +29,7 @@
     "debug:theme": "nodemon -e html,js,css --watch themes/sponsor-theme --exec \"npm run build:theme\"",
     "build:tp-theme": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"cd themes/trial-participant-theme && npm run build-dossier\"",
     "build:cs-theme": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"cd themes/clinical-site-theme && npm run build-dossier\"",
-    "build-ssapps": "npm run build trial-participant-ssapp && npm run build hco-ssapp && npm run build sponsor-ssapp",
+    "build-ssapps": "npm run build trial-participant-ssapp && npm run build clinical-site-ssapp && npm run build sponsor-ssapp",
     "build-tp": "npm run build:tp-theme && npm run build trial-participant-ssapp",
     "build-cs": "npm run build:cs-theme && npm run build clinical-site-ssapp"
   },

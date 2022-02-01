@@ -1,25 +1,10 @@
-// import { countryListAlpha2 } from '../constants/countries.js';
+const commonServices = require('common-services');
 import TrialsService from '../services/TrialsService.js';
-
+const DidService = commonServices.DidService;
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
 
 export default class AddNewTrialModalController extends WebcController {
-  // trialStatusesArray = Object.entries(trialStatusesEnum)
-  //   .map(([k, v]) => `${v}, ${v}`)
-  //   .join(' | ');
-
-  // trialCountriesArray = Object.entries(countryListAlpha2)
-  //   .map(([k, v]) => `${v}, ${k}`)
-  //   .join(' | ');
-
-  // countries = {
-  //   label: 'List of countries',
-  //   placeholder: 'Please select an option',
-  //   required: true,
-  //   selectOptions: this.trialCountriesArray,
-  //   selectionType: 'multiple',
-  // };
 
   name = {
     label: 'Name',
@@ -32,6 +17,7 @@ export default class AddNewTrialModalController extends WebcController {
   id = {
     label: 'Trial Number/ID',
     name: 'id',
+    invalid:false,
     required: true,
     placeholder: 'Please insert an Id...',
     value: '',
@@ -49,74 +35,56 @@ export default class AddNewTrialModalController extends WebcController {
     label: 'Sponsor DID',
     name: 'did',
     required: true,
+    disabled:true,
     placeholder: 'Please insert the sponsor DID...',
     value: '',
   };
 
   constructor(...props) {
     super(...props);
-
     this.existingIds = props[0].existingIds;
-
     this.trialsService = new TrialsService(this.DSUStorage);
-
-    this.setModel({
-      trial: {
-        id: this.id,
-        name: this.name,
-        // countries: this.countries,
-        sponsor: this.sponsor,
-        did: this.did,
-      },
-      submitButtonDisabled: true,
-    });
+    DidService.getDidServiceInstance().getDID().then((identityString)=>{
+      this.did.value = identityString;
+      this.setModel({
+        trial: {
+          id: this.id,
+          name: this.name,
+          sponsor: this.sponsor,
+          did: this.did,
+        },
+        submitButtonDisabled: false,
+      });
+    })
 
     this.attachAll();
   }
 
   attachAll() {
-    const idField = this.element.querySelector('#id-field');
-    idField.addEventListener('keydown', () => {
-      setTimeout(() => {
-        if (this.existingIds.indexOf(this.model.trial.id.value) > -1) {
-          this.model.trial.id = {
-            ...this.model.trial.id,
-            invalidValue: true,
-          };
-          return;
-        }
-        this.model.trial.id = {
-          ...this.model.trial.id,
-          invalidValue: null,
-        };
-      }, 300);
+    const trialId = 'trial.id.value';
+    const modelsChains = ['trial.name.value', 'trial.sponsor.value', trialId];
+
+    this.model.onChange(trialId, () => {
+      this.model.trial.id.invalidValue = this.existingIds.indexOf(this.model.trial.id.value) > -1
     });
+
+    /**
+     * check for empty inputs
+     */
+    modelsChains.forEach((modelChain) => {
+      this.model.onChange(modelChain, () => {
+        let formIsValid = true;
+        modelsChains.forEach((chain) => {
+          if (this.model.getChainValue(chain).trim() === "") {
+            formIsValid = false;
+          }
+        })
+        this.model.submitButtonDisabled = !formIsValid || this.model.trial.id.invalidValue;
+      })
+    })
 
     this.onTagClick('create-trial', async (event) => {
       try {
-        let valid = true;
-        for (const x in this.model.trial) {
-          if (!this.model.trial[x].value || this.model.trial[x].value === '') {
-            this.model.trial[x] = {
-              ...this.model.trial[x],
-              invalidValue: true,
-            };
-            setTimeout(() => {
-              this.model.trial[x] = {
-                ...this.model.trial[x],
-                invalidValue: null,
-              };
-            }, 1000);
-            valid = false;
-          }
-        }
-
-        if (this.existingIds.indexOf(this.model.trial.id.value) > -1) {
-          valid = false;
-        }
-
-        if (!valid) return;
-
         this.model.submitButtonDisabled = true;
         const trial = {
           name: this.model.trial.name.value,

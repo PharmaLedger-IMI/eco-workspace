@@ -9,7 +9,7 @@ export default class SitesService extends DSUService {
 
   constructor(DSUStorage) {
     super('/sites');
-    this.storageService = SharedStorage.getInstance();
+    this.storageService = SharedStorage.getSharedStorage(DSUStorage);
     this.visitsService = new VisitsService(DSUStorage);
   }
 

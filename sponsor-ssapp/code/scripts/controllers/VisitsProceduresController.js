@@ -1,6 +1,5 @@
 const commonServices = require('common-services');
 const CommunicationService = commonServices.CommunicationService;
-const Constants = commonServices.Constants;
 import ConsentService from '../services/ConsentService.js';
 import TrialsService from '../services/TrialsService.js';
 import eventBusService from '../services/EventBusService.js';
@@ -17,7 +16,7 @@ export default class VisitsProceduresController extends WebcController {
     let { id, keySSI } = this.history.location.state;
 
     this.keySSI = keySSI;
-    this.CommunicationService = CommunicationService.getInstance(CommunicationService.identities.ECO.SPONSOR_IDENTITY);
+    this.CommunicationService = CommunicationService.getCommunicationServiceInstance();
     this.consentsService = new ConsentService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
@@ -529,15 +528,11 @@ export default class VisitsProceduresController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage, did) {
-    console.log({
-      operation: operation,
-      ssi: ssi,
-      shortDescription: shortMessage,
-    });
-    this.CommunicationService.sendMessage(did, {
-      operation: operation,
-      ssi: ssi,
-      shortDescription: shortMessage,
-    });
+
+      this.CommunicationService.sendMessage(did, {
+        operation: operation,
+        ssi: ssi,
+        shortDescription: shortMessage,
+      });
   }
 }

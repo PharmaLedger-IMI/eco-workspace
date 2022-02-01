@@ -662,3 +662,13 @@
     fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
     fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
     fix for the bug that was preventing wallets to open on mobile devices (failing to check sw support)
+    #Fix for leaflet ssapp webcardinal migration
+    [Freeze]
+    
+    @webcardinal/internal
+    @webcardinal/core
+    @cardinal/essentials
+    @cardinal/forms
+    @cardinal/wiki
+    @cardinal/barcode
+    @cardinal/core

@@ -43,8 +43,7 @@
         {
           "type": "smartClone",
           "target": ".",
-          "collectLog": false,
-          "commit": "02e789235dedd330a2bd36f5705729ed37b25fa5"
+          "collectLog": false
         },
         {
           "type": "execute",
@@ -227,15 +226,6 @@
         {
           "type": "execute",
           "cmd": "cd sponsor-ssapp && npm install"
-        }
-      ]
-    },
-    {
-      "name": "eco-services",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd eco-services && npm install"
         }
       ]
     },

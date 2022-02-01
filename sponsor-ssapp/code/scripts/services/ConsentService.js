@@ -12,7 +12,7 @@ export default class ConsentService extends DSUService {
 
   constructor(DSUStorage) {
     super('/consents');
-    this.storageService = SharedStorage.getInstance();
+    this.storageService = SharedStorage.getSharedStorage(DSUStorage);
     this.siteService = new SitesService(DSUStorage);
     this.trialsService = new TrialsService(DSUStorage);
     this.visitsService = new VisitsService(DSUStorage);
