@@ -672,3 +672,4 @@
     @cardinal/wiki
     @cardinal/barcode
     @cardinal/core
+    #Fix for leaflet ssapp webcardinal migration

@@ -5,15 +5,14 @@ import ConsentService from '../services/ConsentService.js';
 const { WebcController } = WebCardinal.controllers;
 
 export default class AddNewTrialConsentModalController extends WebcController {
-  typesArray = Object.entries(consentTypeEnum)
-    .map(([k, v]) => `${v}, ${v}`)
-    .join(' | ');
+  typesArray = Object.entries(consentTypeEnum).map(([k, v]) => ({ value: v, label: v }));
 
   type = {
     label: 'Select type',
     placeholder: 'Please select an option',
     required: true,
     selectOptions: this.typesArray,
+    disabled: false,
   };
 
   name = {
@@ -156,6 +155,7 @@ export default class AddNewTrialConsentModalController extends WebcController {
             valid = false;
           }
 
+          console.log(JSON.stringify(this.model.consent));
           if (!valid) return;
 
           this.model.submitButtonDisabled = true;

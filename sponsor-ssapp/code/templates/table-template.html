@@ -1,135 +1,17 @@
-<webc-container controller="TableTemplateController" data-view-model="@">
-  <psk-layout class="background-primary table-row" columns="@tableLength">
-    <div data-for="@headers" class="display-contents" style="display: contents">
-      <span class="d-flex flex-row align-items-center justify-content-between pr-1 table-cell">
-        <div class="btn-bare gray w-100" disabled="@notSortable" data-tag="sort-column" data-custom="@column">
-          <div class="background-primary w-100 d-flex flex-row align-items-center justify-content-between pr-1">
-            <label>{{@label}}</label>
-            <div>
-              <div data-if="@asc">
-                <div slot="true">&uarr;</div>
-                <div slot="false"></div>
-              </div>
-              <div data-if="@desc">
-                <div slot="true">&darr;</div>
-                <div slot="false"></div>
-              </div>
-              <div data-if="@notSortable">
-                <div slot="false">
-                  <div data-if="@asc">
-                    <div slot="false">
-                      <div data-if="@desc">
-                        <div style="font-weight: 300" slot="false">&udarr;</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </span>
-    </div>
-  </psk-layout>
-
-  <div data-if="@isTrialsTable">
-    <psk-for-each data-view-model="@pagination.items" style="display: contents">
-      <psk-layout columns="7" class="justify-content-center align-items-center table-row">
-        <psk-label class="table-cell" label="@id"></psk-label>
-        <psk-label class="table-cell" label="@name"></psk-label>
-        <psk-label class="table-cell" label="@sponsor"></psk-label>
-        <psk-label class="table-cell" label="@stage"></psk-label>
-        <psk-label class="table-cell" label="@status"></psk-label>
-        <psk-label class="table-cell" label="@created"></psk-label>
-        <div class="d-flex flex-row">
-          <psk-button class="btn-bare table-cell" event-name="view-trial" event-data="@id"> &#128269; </psk-button>
-          <psk-button class="btn-bare table-cell" event-name="delete-trial" event-data="@id"> &#10060; </psk-button>
-        </div>
-      </psk-layout>
-    </psk-for-each>
-  </div>
-
-  <div data-if="@isConsentsTable">
-    <psk-for-each data-view-model="@pagination.items" style="display: contents">
-      <psk-layout columns="7" class="justify-content-center align-items-center table-row">
-        <psk-label class="table-cell" label="@id"></psk-label>
-        <psk-label class="table-cell" label="@name"></psk-label>
-        <psk-label class="table-cell" label="@version"></psk-label>
-        <psk-label class="table-cell" label="@versionDate"></psk-label>
-        <psk-label class="table-cell" label="@type"></psk-label>
-        <psk-label class="table-cell" label="@attachment"></psk-label>
-        <div class="d-flex flex-row">
-          <psk-button class="btn-bare table-cell" event-name="update-consent" event-data="@id"> &#9997; </psk-button>
-          <psk-button class="btn-bare table-cell" event-name="delete-consent" event-data="@keySSI">
-            &#10060;
-          </psk-button>
-        </div>
-      </psk-layout>
-    </psk-for-each>
-  </div>
-
-  <div data-if="@isParticipantsTable">
-    <psk-for-each data-view-model="@pagination.items" style="display: contents">
-      <psk-layout columns="6" class="justify-content-center align-items-center table-row">
-        <psk-label class="table-cell" label="@participantId"></psk-label>
-        <psk-label class="table-cell" label="@consentName"></psk-label>
-        <psk-label class="table-cell" label="@consentVersion"></psk-label>
-        <psk-label class="table-cell" label="@consentStatus"></psk-label>
-        <psk-label class="table-cell" label="@patientSignature"></psk-label>
-        <psk-label class="table-cell" label="@doctorSignature"></psk-label>
-      </psk-layout>
-    </psk-for-each>
-  </div>
-
-  <div class="d-flex align-items-center justify-content-between flex-wrap">
-    <div class="d-flex align-items-center justify-content-center">
-      <span>Page&nbsp;</span>
-      <!-- TODO: no two-way binding on select, also how to set default/initial value -->
-      <psk-select view-model="@pagination.pages" event-name="navigate-to-page"></psk-select>
-      <span>&nbsp;of&nbsp;</span>
-      <psk-label label="@pagination.totalPages"></psk-label>
-      <span>&nbsp;Pages</span>
+<webc-container controller="TableTemplateController" data-view-model="@" class="data-table">
+  <webc-datatable datasource="@dataSource" class="table-cell-web align-items-center justify-content-center">
+    <div slot="header" data-for="@headerItems" style="display: contents">
+      <span>{{ @name }}</span>
     </div>
 
-    <div class="d-flex flex-row">
-      <psk-button class="page-link page-button" disabled="@pagination.previous" event-name="go-to-first-page">
-        <span aria-hidden="true">&laquo;</span>
-      </psk-button>
-      <psk-button class="page-link page-button" disabled="@pagination.previous" event-name="go-to-previous-page">
-        <span aria-hidden="true">&lsaquo;</span>
-      </psk-button>
-      <psk-for-each class="d-flex flex-row" data-view-model="@pagination.slicedPages">
-        <div data-if="@active">
-          <div slot="true" class="active">
-            <psk-button
-              class="page-link page-button active"
-              label="@label"
-              event-name="navigate-to-page"
-              event-data="@value"
-            >
-            </psk-button>
-          </div>
-          <div slot="false">
-            <psk-button
-              class="page-link page-button"
-              label="@label"
-              event-name="navigate-to-page"
-              event-data="@value"
-            ></psk-button>
-          </div>
-        </div>
-      </psk-for-each>
-      <psk-button class="page-link page-button" disabled="@pagination.next" event-name="go-to-next-page">
-        <span aria-hidden="true">&rsaquo;</span>
-      </psk-button>
-      <psk-button class="page-link page-button" disabled="@pagination.next" event-name="go-to-last-page">
-        <span aria-hidden="true">&raquo;</span>
-      </psk-button>
-    </div>
+    <div>{{@id}}</div>
+    <div>{{@name}}</div>
+    <div>{{@sponsor}}</div>
+    <div>{{@stage}}</div>
+    <div>{{@status}}</div>
+    <div>{{@created}}</div>
+    <button data-tag="view-trial" class="button-icon btn btn-primary">View 🔎️</button>
 
-    <div class="d-flex align-items-center justify-content-center">
-      <psk-select view-model="@pagination.itemsPerPageOptions" event-name="set-items-per-page"></psk-select>
-      <span>&nbsp;Items Per Page</span>
-    </div>
-  </div>
+    <div slot="no-data">There are no items to display</div>
+  </webc-datatable>
 </webc-container>

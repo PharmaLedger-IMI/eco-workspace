@@ -1,8 +1,8 @@
 const commonServices = require('common-services');
 import TrialsService from '../services/TrialsService.js';
 import { trialStatusesEnum, trialTableHeaders, trialStagesEnum } from '../constants/trial.js';
-const {getCommunicationServiceInstance} = commonServices.CommunicationService;
-const {getDidServiceInstance } = commonServices.DidService;
+const { getCommunicationServiceInstance } = commonServices.CommunicationService;
+const { getDidServiceInstance } = commonServices.DidService;
 const MessageHandlerService = commonServices.MessageHandlerService;
 const Constants = commonServices.Constants;
 import ParticipantsService from '../services/ParticipantsService.js';
@@ -70,8 +70,8 @@ export default class ListTrialsController extends WebcController {
     itemsPerPage: 10,
     totalPages: null,
     itemsPerPageOptions: {
-      selectOptions: this.itemsPerPageArray.join(' | '),
-      value: this.itemsPerPageArray[1].toString(),
+      selectOptions: this.itemsPerPageArray.map((x) => ({ value: x, label: x })),
+      value: this.itemsPerPageArray[1].value,
     },
   };
 
@@ -95,11 +95,10 @@ export default class ListTrialsController extends WebcController {
       tableLength: 7,
     };
 
-
     this.didService = getDidServiceInstance();
-    this.didService.getDID().then((did)=>{
+    this.didService.getDID().then((did) => {
       this.model.did = did;
-    })
+    });
 
     this.listenForMessages();
 
@@ -111,7 +110,7 @@ export default class ListTrialsController extends WebcController {
   }
 
   listenForMessages() {
-    MessageHandlerService.init(async (err, data) =>{
+    MessageHandlerService.init(async (err, data) => {
       if (err) {
         return console.error(err);
       }
@@ -136,11 +135,7 @@ export default class ListTrialsController extends WebcController {
         }
         case 'update-site-status': {
           if (data.stageInfo.siteSSI && data.stageInfo.status && data.ssi) {
-            await this.sitesService.updateSiteStage(
-              data.ssi,
-              data.stageInfo.siteSSI,
-              data.stageInfo.status
-            );
+            await this.sitesService.updateSiteStage(data.ssi, data.stageInfo.siteSSI, data.stageInfo.status);
           }
         }
       }
@@ -162,20 +157,10 @@ export default class ListTrialsController extends WebcController {
     }
   }
 
-  // updateCountryOptions(trials) {
-  //   const countries = [];
-
-  //   trials.forEach((trial) =>
-  //     trial.countries.forEach((country) => !countries.includes(country) && countries.push(country))
-  //   );
-
-  //   this.model.countries = { ...this.countries, options: countries.map((x) => ({ label: x, value: x })) };
-  // }
-
   setTrialsModel(trials) {
     const model = trials.map((trial) => ({
       ...trial,
-      // countries: trial.countries.join(),
+      created: new Date(trial.created).toLocaleDateString('en-UK'),
     }));
 
     this.model.trials = model;
@@ -209,6 +194,21 @@ export default class ListTrialsController extends WebcController {
   }
 
   attachEvents() {
+    this.model.onChange('statuses.value', () => {
+      this.model.clearButtonDisabled = false;
+      this.filterData();
+    });
+
+    this.model.onChange('stages.value', () => {
+      this.model.clearButtonDisabled = false;
+      this.filterData();
+    });
+
+    this.model.onChange('search.value', () => {
+      this.model.clearButtonDisabled = false;
+      this.filterData();
+    });
+
     this.model.addExpression(
       'trialArrayNotEmpty',
       () => !!(this.model.trials && Array.isArray(this.model.trials) && this.model.trials.length > 0),
@@ -262,16 +262,11 @@ export default class ListTrialsController extends WebcController {
       }
     });
 
-    this.on('view-trial', async (event) => {
+    this.onTagClick('view-trial', async (model, target, event) => {
       this.navigateToPageTag('trial', {
-        id: event.data,
-        keySSI: this.trials.find((x) => x.id === event.data).keySSI,
+        id: model.id,
+        keySSI: this.trials.find((x) => x.id === model.id).keySSI,
       });
-    });
-
-    this.on('filters-changed', async (event) => {
-      this.model.clearButtonDisabled = false;
-      this.filterData();
     });
 
     this.onTagClick('filters-cleared', async (event) => {
@@ -293,11 +288,11 @@ export default class ListTrialsController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage, receiverDid) {
-      let communicationService = getCommunicationServiceInstance();
-      communicationService.sendMessage(receiverDid, {
-        operation: operation,
-        ssi: ssi,
-        shortDescription: shortMessage,
-      });
+    let communicationService = getCommunicationServiceInstance();
+    communicationService.sendMessage(receiverDid, {
+      operation: operation,
+      ssi: ssi,
+      shortDescription: shortMessage,
+    });
   }
 }

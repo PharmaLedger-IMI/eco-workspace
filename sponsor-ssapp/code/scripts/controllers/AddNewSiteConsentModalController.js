@@ -4,21 +4,21 @@ import ConsentService from '../services/ConsentService.js';
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
 
-export default class AddNewConsentModalController extends WebcController {
-  typesArray = Object.entries(consentTypeEnum)
-    .map(([k, v]) => `${v}, ${v}`)
-    .join(' | ');
+export default class AddNewSiteConsentModalController extends WebcController {
+  typesArray = Object.entries(consentTypeEnum).map(([k, v]) => ({ value: v, label: v }));
 
   type = {
     label: 'Select type',
     placeholder: 'Please select an option',
     required: true,
     selectOptions: this.typesArray,
+    value: null,
+    disabled: true,
   };
 
   existingNames = {
-    disabled: true,
-    label: 'Existing name:',
+    disabled: false,
+    label: 'Select a main consent:',
     placeholder: 'Please select an option',
     required: false,
     options: [],
@@ -30,7 +30,6 @@ export default class AddNewConsentModalController extends WebcController {
     name: 'name',
     required: true,
     placeholder: 'Please insert a name...',
-    value: '',
   };
 
   version = {
@@ -68,6 +67,7 @@ export default class AddNewConsentModalController extends WebcController {
     this.existingVersions = props[0].existingVersions || null;
     this.site = props[0].site || null;
     this.consents = props[0].consents || [];
+    console.log(this.consents);
 
     let { id, keySSI } = this.history.location.state;
 
@@ -99,9 +99,9 @@ export default class AddNewConsentModalController extends WebcController {
           name: this.name,
           existingNames: {
             ...this.existingNames,
-            options: this.consents.map((x) => ({ label: x, value: x, selected: false })),
+            options: this.consents.map((x) => ({ label: x.name, value: x.keySSI, selected: false })),
           },
-          type: this.type,
+          // type: {...this.type },
           version: this.version,
           attachment: this.attachment,
         },
@@ -150,16 +150,6 @@ export default class AddNewConsentModalController extends WebcController {
 
     this.on('add-file', (event) => {
       if (event.data) this.file = event.data;
-    });
-
-    document.getElementById('name-existing').addEventListener('change', (x) => {
-      this.model.consent.existingNames.disabled = false;
-      this.model.consent.name.readOnly = true;
-    });
-
-    document.getElementById('name-new').addEventListener('change', (x) => {
-      this.model.consent.existingNames.disabled = true;
-      this.model.consent.name.readOnly = false;
     });
 
     this.onTagClick('create-consent', async (event) => {

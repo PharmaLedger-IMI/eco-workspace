@@ -5,9 +5,7 @@ import SitesService from '../services/SitesService.js';
 const { WebcController } = WebCardinal.controllers;
 
 export default class AddNewSiteModalController extends WebcController {
-  trialCountriesArray = Object.entries(countryListAlpha2)
-    .map(([k, v]) => `${v}, ${k}`)
-    .join(' | ');
+  trialCountriesArray = Object.entries(countryListAlpha2).map(([k, v]) => ({ value: k, label: v }));
 
   countries = {
     label: 'List of countries',
@@ -134,7 +132,7 @@ export default class AddNewSiteModalController extends WebcController {
           name: this.model.site.name.value,
           id: this.model.site.id.value,
           did: this.model.site.did.value,
-          country: this.model.site.countries.value[0],
+          country: this.model.site.countries.value,
           consents: [],
         };
         const result = await this.sitesService.createSite(site, this.trialKeySSI);

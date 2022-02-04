@@ -1,41 +1,55 @@
-<psk-page title="Trials">
-  <link rel="stylesheet" href="assets/css/trials.css" />
-  <webc-container controller="ListTrialsController">
+<div class="main-container">
+  <div class="trial-header"><h1 class="trial-title">Trials</h1></div>
+  <div class="page-content">
+    <div class="container">
+      <link rel="stylesheet" href="assets/css/trials.css" />
+      <webc-container controller="ListTrialsController">
+        <div class="input-group share-did p-2">
+          <input type="text" class="form-control share-did-input" readonly value="@did" placeholder="Loading DID..." />
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary share-did-btn" type="button">
+              <i class="fa fa-share"></i>
+            </button>
+          </div>
+        </div>
 
-    <div class="input-group share-did p-2">
-      <input type="text" class="form-control share-did-input" readonly value="@did" placeholder="Loading DID...">
-      <div class="input-group-append">
-        <button class="btn btn-outline-secondary share-did-btn" type="button">
-          <i class="fa fa-share"></i>
-        </button>
-      </div>
-    </div>
+        <div class="d-flex flex-wrap justify-content-between align-items-center py-3 mb-5">
+          <div class="d-flex flex-column">
+            <label>{{ @statuses.label }}</label>
+            <select class="form-control" data-for="@statuses.options" value="@statuses.value">
+              <option value="@value">{{@label}}</option>
+            </select>
+          </div>
+          <div class="d-flex flex-column">
+            <label>{{ @stages.label }}</label>
+            <select class="form-control" data-for="@stages.options" value="@stages.value">
+              <option value="@value">{{@label}}</option>
+            </select>
+          </div>
+          <div class="d-flex flex-column">
+            <label>{{ @search.label }}</label>
+            <input class="form-control" id="search-field" data-view-model="@search" event-name="filters-changed"></input>
+          </div>
+          <div class="align-self-end">
+            <button class="btn btn-primary" disabled="@clearButtonDisabled" data-tag="filters-cleared">
+              Clear filters
+            </button>
+          </div>
+          <div class="align-self-end">
+            <button class="btn btn-primary" data-tag="add-trial">Add Trial</button>
+          </div>
+        </div>
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center py-3 mb-5">
-      <!-- <div class="d-flex flex-column">
-        <psk-select view-model="countries" event-name="filters-changed" event-data="country"></psk-select>
-      </div> -->
-      <div class="d-flex flex-column">
-        <psk-select view-model="statuses" event-name="filters-changed" event-data="status"></psk-select>
-      </div>
-      <div class="d-flex flex-column">
-        <psk-select view-model="stages" event-name="filters-changed" event-data="stage"></psk-select>
-      </div>
-      <div class="d-flex flex-column">
-        <psk-input id="search-field" view-model="search" event-name="filters-changed" event-data="text"></psk-input>
-      </div>
-      <button class="btn btn-primary" disabled="@clearButtonDisabled" data-tag="filters-cleared">Clear filters</button>
-      <button class="btn btn-primary" data-tag="add-trial">Add Trial</button>
+        <div data-if="@trialArrayNotEmpty">
+          <div slot="true">
+            <webc-template template="table-template" data-view-model="@"></webc-template>
+          </div>
+          <div slot="false">
+            <div>No trials available.</div>
+          </div>
+        </div>
+        <psk-list-feedbacks messages-to-display="5" time-alive="3000"> </psk-list-feedbacks>
+      </webc-container>
     </div>
-
-    <div data-if="@trialArrayNotEmpty">
-      <div slot="true">
-        <webc-template template="table-template" data-view-model="@"></webc-template>
-      </div>
-      <div slot="false">
-        <div>No trials available.</div>
-      </div>
-    </div>
-    <psk-list-feedbacks messages-to-display="5" time-alive="3000"> </psk-list-feedbacks>
-  </webc-container>
-</psk-page>
+  </div>
+</div>

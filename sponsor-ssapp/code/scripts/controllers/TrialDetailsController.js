@@ -23,7 +23,7 @@ export default class TrialDetailsController extends WebcController {
     this.sitesService = new SitesService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
     this.visitsService = new VisitsService(this.DSUStorage);
-    this.CommunicationService = CommunicationService.getCommunicationServiceInstance()
+    this.CommunicationService = CommunicationService.getCommunicationServiceInstance();
     this.consentService = new ConsentService(this.DSUStorage);
 
     let { id, keySSI } = this.history.location.state;
@@ -219,7 +219,7 @@ export default class TrialDetailsController extends WebcController {
         {
           controller: 'AddNewSiteModalController',
           disableExpanding: false,
-          disableBackdropClosing: false,
+          disableBackdropClosing: true,
           existingIds: _.flatten(this.model.sites.map((x) => x.sites.map((y) => y.id))) || [],
           existingDids: _.flatten(this.model.sites.map((x) => x.sites.map((y) => y.did))) || [],
           trialKeySSI: this.model.trial.keySSI,
@@ -248,8 +248,8 @@ export default class TrialDetailsController extends WebcController {
         },
         {
           controller: 'AddNewTrialConsentModalController',
-          disableExpanding: true,
-          disableBackdropClosing: false,
+          disableExpanding: false,
+          disableBackdropClosing: true,
           isUpdate: false,
           existingIds: this.model.consents.map((x) => x.id) || [],
         }
@@ -267,7 +267,7 @@ export default class TrialDetailsController extends WebcController {
       const { consents } = await this.visitsService.getTrialVisits(this.model.trial.keySSI);
 
       this.showModalFromTemplate(
-        'add-new-consent',
+        'add-new-site-consent',
         async (event) => {
           const response = event.detail;
           await this.getConsents();
@@ -284,13 +284,14 @@ export default class TrialDetailsController extends WebcController {
           }
         },
         {
-          controller: 'AddNewConsentModalController',
-          disableExpanding: true,
-          disableBackdropClosing: false,
+          controller: 'AddNewSiteConsentModalController',
+          disableExpanding: false,
+          disableBackdropClosing: true,
+          existingConsents: consents,
           isUpdate: false,
           existingIds: consents || [],
           site: selectedSite,
-          consents,
+          consents: JSON.parse(JSON.stringify(this.model.trial.consents)),
         }
       );
     });
@@ -378,8 +379,8 @@ export default class TrialDetailsController extends WebcController {
         },
         {
           controller: 'AddNewTrialConsentModalController',
-          disableExpanding: true,
-          disableBackdropClosing: false,
+          disableExpanding: false,
+          disableBackdropClosing: true,
           site: null,
           isUpdate: selectedConsent,
           existingVersions: existingVersions || [],
@@ -398,7 +399,7 @@ export default class TrialDetailsController extends WebcController {
       const selectedConsent = selectedSite.consents.find((x) => x.selected === true);
 
       this.showModalFromTemplate(
-        'add-new-consent',
+        'add-new-site-consent',
         (event) => {
           const response = event.detail;
           this.getConsents();
@@ -414,9 +415,9 @@ export default class TrialDetailsController extends WebcController {
           }
         },
         {
-          controller: 'AddNewConsentModalController',
-          disableExpanding: true,
-          disableBackdropClosing: false,
+          controller: 'AddNewSiteConsentModalController',
+          disableExpanding: false,
+          disableBackdropClosing: true,
           site: selectedSite,
           isUpdate: selectedConsent,
           existingVersions: selectedSite.consents.filter((x) => x.id === event.data).map((x) => x.version) || [],
@@ -529,14 +530,14 @@ export default class TrialDetailsController extends WebcController {
   async changeSiteStatus(status, did) {
     const updated = await this.sitesService.changeSiteStatus(status, did, this.model.trial.keySSI);
 
-      this.CommunicationService.sendMessage(updated.did, {
-        operation: 'site-status-change',
-        data: {
-          site: updated.keySSI,
-          status: status,
-        },
-        shortDescription: 'Status was updated',
-      });
+    this.CommunicationService.sendMessage(updated.did, {
+      operation: 'site-status-change',
+      data: {
+        site: updated.keySSI,
+        status: status,
+      },
+      shortDescription: 'Status was updated',
+    });
   }
 
   // getSiteConsents(consents) {
