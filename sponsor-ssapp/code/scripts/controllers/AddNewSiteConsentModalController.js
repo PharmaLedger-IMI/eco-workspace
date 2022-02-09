@@ -5,25 +5,6 @@ import ConsentService from '../services/ConsentService.js';
 const { WebcController } = WebCardinal.controllers;
 
 export default class AddNewSiteConsentModalController extends WebcController {
-  typesArray = Object.entries(consentTypeEnum).map(([k, v]) => ({ value: v, label: v }));
-
-  type = {
-    label: 'Select type',
-    placeholder: 'Please select an option',
-    required: true,
-    selectOptions: this.typesArray,
-    value: null,
-    disabled: true,
-  };
-
-  existingNames = {
-    disabled: false,
-    label: 'Select a main consent:',
-    placeholder: 'Please select an option',
-    required: false,
-    options: [],
-  };
-
   name = {
     readOnly: false,
     label: 'Name',
@@ -48,25 +29,15 @@ export default class AddNewSiteConsentModalController extends WebcController {
     files: [],
   };
 
-  id = {
-    label: 'Consent Number/ID',
-    name: 'id',
-    required: true,
-    placeholder: 'Please insert an Id...',
-    value: '',
-  };
-
   file = null;
   isUpdate = false;
 
   constructor(...props) {
     super(...props);
 
-    this.isUpdate = props[0].isUpdate;
-    this.existingIds = props[0].existingIds || null;
-    this.existingVersions = props[0].existingVersions || null;
     this.site = props[0].site || null;
     this.consents = props[0].consents || [];
+    this.selectedConsent = props[0].selectedConsent || [];
     console.log(this.consents);
 
     let { id, keySSI } = this.history.location.state;
@@ -75,184 +46,68 @@ export default class AddNewSiteConsentModalController extends WebcController {
 
     this.consentsService = new ConsentService(this.DSUStorage);
 
-    if (this.isUpdate) {
-      this.setModel({
-        consent: {
-          id: { ...this.id, value: this.isUpdate.id, readOnly: true },
-          name: { ...this.name, value: this.isUpdate.name, readOnly: true },
-          type: { ...this.type, value: this.isUpdate.type, disabled: true },
-          version: this.version,
-          attachment: this.attachment,
-          existingNames: {
-            ...this.existingNames,
-            options: this.consents.map((x) => ({ label: x, value: x, selected: false })),
-          },
+    this.setModel({
+      consent: {
+        type: this.selectedConsent.type,
+        trialConsentName: this.selectedConsent.name,
+        trialConsentKeySSI: this.selectedConsent.KeySSI,
+        trialConsentVersion: Math.max.apply(
+          Math,
+          this.selectedConsent.versions.map((o) => parseInt(o.version))
+        ),
+        name: this.name,
+        version: {
+          ...this.version,
+          value: Math.max.apply(
+            Math,
+            this.selectedConsent.versions.map((o) => parseInt(o.version))
+          ),
+          disabled: true,
         },
-        submitButtonDisabled: true,
-        disableRadio: true,
-        consentsExists: this.consents.length > 0,
-      });
-    } else {
-      this.setModel({
-        consent: {
-          id: this.id,
-          name: this.name,
-          existingNames: {
-            ...this.existingNames,
-            options: this.consents.map((x) => ({ label: x.name, value: x.keySSI, selected: false })),
-          },
-          // type: {...this.type },
-          version: this.version,
-          attachment: this.attachment,
-        },
-        submitButtonDisabled: true,
-        disableRadio: this.consents.length === 0,
-      });
-    }
-
+        attachment: this.attachment,
+      },
+      submitButtonDisabled: true,
+    });
     this.attachAll();
   }
 
   attachAll() {
-    const idField = this.element.querySelector('#id-field');
-    idField.addEventListener('keydown', () => {
-      setTimeout(() => {
-        if (this.existingIds && this.existingIds.indexOf(this.model.consent.id.value) > -1) {
-          this.model.consent.id = {
-            ...this.model.consent.id,
-            invalidValue: true,
-          };
-          return;
-        }
-        this.model.consent.id = {
-          ...this.model.consent.id,
-          invalidValue: null,
-        };
-      }, 300);
-    });
-
-    const versionField = this.element.querySelector('#version-field');
-    versionField.addEventListener('keydown', () => {
-      setTimeout(() => {
-        if (this.existingVersions && this.existingVersions.indexOf(this.model.consent.version.value) > -1) {
-          this.model.consent.version = {
-            ...this.model.consent.version,
-            invalidValue: true,
-          };
-          return;
-        }
-        this.model.consent.version = {
-          ...this.model.consent.version,
-          invalidValue: null,
-        };
-      }, 300);
-    });
-
     this.on('add-file', (event) => {
       if (event.data) this.file = event.data;
     });
 
     this.onTagClick('create-consent', async (event) => {
       try {
-        if (!this.isUpdate) {
-          let valid = true;
-          let name = '';
-          if (this.model.isNotUpdate) {
-            const nameSelected = document.querySelector('input[name="name"]:checked').value;
-            if (nameSelected === 'new') {
-              name = this.model.consent.name.value;
-            } else {
-              name = this.model.consent.existingNames.value;
-            }
-            if (!name || name === '') {
-              valid = false;
-            }
-          } else {
-            name = this.model.consent.name.value;
-          }
+        const data = JSON.parse(JSON.stringify(this.model.consent));
+        const result = {
+          trialConsentVersion: data.trialConsentVersion,
+          trialConsentKeySSI: data.trialConsentKeySSI,
+          trialConsentName: data.trialConsentName,
+          file: this.file[0],
+          type: data.type,
+          versions: [
+            {
+              version: data.version.value,
+              versionDate: new Date().toISOString(),
+              file: this.file[0],
+            },
+          ],
+          name: data.name.value,
+        };
 
-          for (const x in this.model.consent) {
-            // TODO: check if file selected
-            if (
-              (!this.model.consent[x].value || this.model.consent[x].value === '') &&
-              x !== 'attachment' &&
-              x !== 'name' &&
-              x !== 'existingNames'
-            ) {
-              this.model.consent[x] = {
-                ...this.model.consent[x],
-                invalidValue: true,
-              };
-              setTimeout(() => {
-                this.model.consent[x] = {
-                  ...this.model.consent[x],
-                  invalidValue: null,
-                };
-              }, 1000);
-              valid = false;
-            }
-          }
-
-          if (this.existingIds.indexOf(this.model.consent.id.value) > -1 || !this.file || !this.file[0]) {
-            valid = false;
-          }
-
-          if (!valid) return;
-
-          this.model.submitButtonDisabled = true;
-          const consent = {
-            name,
-            type: this.model.consent.type.value,
-            id: this.model.consent.id.value,
-            versions: [
-              {
-                version: this.model.consent.version.value,
-                versionDate: new Date().toISOString(),
-                file: this.file[0],
-              },
-            ],
-          };
-          const result = await this.consentsService.createConsent(consent, this.keySSI, this.site);
-          this.model.submitButtonDisabled = false;
-          this.send('confirmed', result);
+        console.log(result);
+        let outcome = null;
+        const exists = this.site.consents.find((x) => x.trialConsentKeySSI === data.trialConsentKeySSI && x.name);
+        debugger;
+        if (exists) {
+          outcome = await this.consentsService.addSiteConsentVersion(result, this.keySSI, this.site);
         } else {
-          let valid = true;
-
-          if (!this.model.consent.version.value || this.model.consent.version.value === '') {
-            this.model.consent.version = {
-              ...this.model.consent.version,
-              invalidValue: true,
-            };
-            setTimeout(() => {
-              this.model.consent.version = {
-                ...this.model.consent.version,
-                invalidValue: null,
-              };
-            }, 1000);
-            valid = false;
-          }
-
-          console.log(this.existingVersions);
-          console.log(this.model.consent.version.value);
-
-          if (this.existingVersions.indexOf(this.model.consent.version.value) > -1 || !this.file || !this.file[0]) {
-            valid = false;
-          }
-
-          if (!valid) return;
-
-          const version = {
-            version: this.model.consent.version.value,
-            versionDate: new Date().toISOString(),
-            file: this.file[0],
-          };
-
-          const result = await this.consentsService.updateConsent(version, this.keySSI, this.site, this.isUpdate);
-          this.model.submitButtonDisabled = false;
-          this.send('confirmed', result);
+          outcome = await this.consentsService.addSiteConsent(result, this.keySSI, this.site);
         }
+        this.model.submitButtonDisabled = false;
+        this.send('confirmed', outcome);
       } catch (error) {
-        this.send('closed', new Error('There was an issue creating the trial'));
+        this.send('closed', new Error('There was an issue creating the site consent'));
         console.log(error);
       }
     });

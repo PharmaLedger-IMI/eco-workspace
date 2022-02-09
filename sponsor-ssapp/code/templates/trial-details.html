@@ -1,4 +1,4 @@
-<webc-container controller="TrialDetailsController" >
+<webc-container controller="TrialDetailsController">
   <link rel="stylesheet" href="assets/css/trial-details.css" />
 
   <div data-for="@menu">
@@ -220,10 +220,10 @@
                             data-custom="@id"
                           >
                             <i class="fas fa-minus"></i>
-                            <div class="col-md-3">{{ @name }}</div>
-                            <button class="btn btn-primary ml-auto" data-tag="add-site-consent" data-custom="@id">
+                            <div class="col-md-3">{{ @id }}</div>
+                            <!-- <button class="btn btn-primary ml-auto" data-tag="add-site-consent" data-custom="@id">
                               Add Consent
-                            </button>
+                            </button> -->
                           </div>
 
                           <div data-for="@consents">
@@ -235,15 +235,17 @@
                                 >
                                   <div class="row col-md-10" data-tag="select-consent" data-custom="@id">
                                     <i class="fas fa-minus"></i>
-                                    <div class="col-md-4">{{ @name }}</div>
-                                    <div class="col-md-3">{{ @type }}</div>
+                                    <div class="col-md-3">{{ @trialConsentName }}</div>
+                                    <div class="col-md-2">{{ @type }}</div>
+                                    <div class="col-md-2">{{ @name }}</div>
+                                    <div class="col-md-3">{{ @trialConsentVersion }}</div>
                                   </div>
                                   <button
                                     class="col-md-2 btn btn-primary ml-auto"
-                                    data-tag="add-version"
-                                    data-custom="@id"
+                                    data-tag="add-site-consent"
+                                    data-custom="@trialConsentKeySSI"
                                   >
-                                    Add Version
+                                    Add Consent
                                   </button>
                                 </container>
 
@@ -259,12 +261,21 @@
                               <container
                                 slot="false"
                                 class="col-md-12 bg-light country-option d-flex align-items-center py-2"
-                                data-tag="select-consent"
-                                data-custom="@id"
                               >
-                                <i class="fas fa-plus"></i>
-                                <div class="col-md-3">{{ @name }}</div>
-                                <div class="col-md-3">{{ @type }}</div>
+                                <div class="row col-md-10" data-tag="select-consent" data-custom="@keySSI">
+                                  <i class="fas fa-plus"></i>
+                                  <div class="col-md-3">{{ @trialConsentName }}</div>
+                                  <div class="col-md-2">{{ @type }}</div>
+                                  <div class="col-md-2">{{ @name }}</div>
+                                  <div class="col-md-3">{{ @trialConsentVersion }}</div>
+                                </div>
+                                <button
+                                  class="col-md-2 btn btn-primary ml-auto"
+                                  data-tag="add-site-consent"
+                                  data-custom="@trialConsentKeySSI"
+                                >
+                                  Add Consent
+                                </button>
                               </container>
                             </div>
                           </div>
@@ -276,7 +287,7 @@
                           data-custom="@id"
                         >
                           <i class="fas fa-plus"></i>
-                          <div class="col-md-3">{{ @name }}</div>
+                          <div class="col-md-3">{{ @id }}</div>
                         </container>
                       </div>
                     </div>

@@ -109,11 +109,12 @@ export default class SitesService extends DSUService {
   }
 
   async updateSiteConsents(data, did, trialKeySSI) {
+    debugger;
     const site = await this.getSiteFromDB(did, trialKeySSI);
-    const existingConsent = site.consents.find((x) => x.id === data.id);
+    const existingConsent = site.consents.find((x) => x.keySSI === data.keySSI);
     if (existingConsent) {
-      existingConsent.versions = data.versions;
-      existingConsent.visits = data.visits || [];
+      existingConsent.versions.push(data.versions[data.versions.length - 1]);
+      // existingConsent.visits = data.visits || [];
     } else {
       site.consents = [...site.consents, data];
     }

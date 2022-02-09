@@ -2,23 +2,20 @@
 
 <div class="d-flex flex-column justify-content-between">
   <div style="margin-left: 10px">
-    <label>{{ @consent.existingNames.label }}</label>
+    <label>Trial Consent Type</label>
+    <input class="form-control" value="@consent.type" disabled="true"></input>
   </div>
-  <div style="margin: 10px">
-    <select
-      disabled="@consent.existingNames.disabled"
-      class="form-control"
-      style="width: 150px"
-      name="@consent.existingNames.name"
-      id="name"
-      data-for="@consent.existingNames.options"
-    >
-      <option value="@value" selected="@selected">{{@label}}</option>
-    </select>
+
+  <div style="margin-left: 10px">
+    <label>Trial Consent Name</label>
+    <input class="form-control" value="@consent.trialConsentName" disabled="true"></input>
   </div>
-  <div style="margin-left: 10px; margin-top: 10px" class="d-flex flex-row">
-    <label for="name-new">{{ @consent.radioNameTypeNew.label }}</label>
+
+  <div style="margin-left: 10px">
+    <label>Trial Consent Version</label>
+    <input class="form-control" value="@consent.trialConsentVersion" disabled="true"></input>
   </div>
+
   <div style="margin-left: 10px; margin-bottom: 10px; margin-right: 10px">
     <label>{{ @consent.name.label }}</label><br>
     <input class="form-control" data-view-model="@consent.name"></input>
@@ -27,19 +24,6 @@
       <small class="form-text text-danger">A consent with this name already exits</small>
     </span>
   </div>
-  <div style="margin: 10px">
-    <label>{{ @consent.id.label }}</label><br>
-    <input class="form-control" id="id-field" data-view-model="@consent.id" event-name="id-changed"></input>
-    <span data-if="@consent.id.invalidValue">
-      <i class="red-invalid fas fa-times"></i>
-      <small class="form-text text-danger">A consent with this id already exits</small>
-    </span>
-  </div>
-  <!-- <div style="margin: 10px">
-    <select class="form-control" data-for="@consent.type.selectOptions" required="required" value="@consent.type.value" disabled="@consent.type.disabled">
-      <option value="@value">{{@label}}</option>
-    </select>
-  </div> -->
   <div style="margin: 10px">
     <label>{{ @consent.version.label }}</label><br>
     <input class="form-control" id="version-field" data-view-model="@consent.version" event-name="version-changed"></input>

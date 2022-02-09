@@ -264,7 +264,11 @@ export default class TrialDetailsController extends WebcController {
         .data.site.find((x) => x.selected === true)
         .sites.find((x) => x.selected === true);
 
-      const { consents } = await this.visitsService.getTrialVisits(this.model.trial.keySSI);
+      // const { consents } = await this.visitsService.getTrialVisits(this.model.trial.keySSI);
+
+      console.log(selectedSite);
+      const selectedConsent = JSON.parse(JSON.stringify(this.model.trial.consents.find((x) => x.keySSI === data)));
+      console.log(selectedConsent);
 
       this.showModalFromTemplate(
         'add-new-site-consent',
@@ -287,16 +291,15 @@ export default class TrialDetailsController extends WebcController {
           controller: 'AddNewSiteConsentModalController',
           disableExpanding: false,
           disableBackdropClosing: true,
-          existingConsents: consents,
-          isUpdate: false,
-          existingIds: consents || [],
           site: selectedSite,
+          selectedConsent,
           consents: JSON.parse(JSON.stringify(this.model.trial.consents)),
         }
       );
     });
 
     this.onTagClick('select-consent-country', async (model, target, event) => {
+      debugger;
       const data = target.getAttribute('data-custom');
       // await this.getSites();
       const newSiteData = JSON.parse(JSON.stringify(this.model.menu))
@@ -315,12 +318,18 @@ export default class TrialDetailsController extends WebcController {
         .find((x) => x.name === menuOptions.Consents)
         .data.site.map((x) => ({
           ...x,
-          sites: x.sites.map((y) => ({ ...y, selected: y.id === data ? !y.selected : false })),
+          sites: x.sites.map((y) => ({
+            ...y,
+            selected: y.id === data ? !y.selected : false,
+            consents: this.getSiteConsents(y),
+          })),
         }));
+      console.log(JSON.parse(JSON.stringify(newSiteData)));
       this.model.setChainValue('menu.2.data.site', newSiteData);
     });
 
     this.onTagClick('select-consent', async (model, target, event) => {
+      debugger;
       const data = target.getAttribute('data-custom');
 
       const siteData = JSON.parse(JSON.stringify(this.model.menu)).find((x) => x.name === menuOptions.Consents).data
@@ -331,7 +340,7 @@ export default class TrialDetailsController extends WebcController {
       const selectedSiteIdx = siteData.find((x) => x.selected === true).sites.findIndex((x) => x.selected === true);
 
       selectedSite.consents.forEach((x) => {
-        if (x.id === data) x.selected = !x.selected;
+        if (x.KeySSI === data) x.selected = !x.selected;
         else x.selected = false;
       });
 
@@ -424,6 +433,57 @@ export default class TrialDetailsController extends WebcController {
         }
       );
     });
+  }
+
+  getSiteConsents(site) {
+    const consents = JSON.parse(JSON.stringify(this.model.consents));
+    if (!site.consents || site.consents.length === 0) {
+      const result = consents.map((x) => ({
+        type: x.type,
+        trialConsentKeySSI: x.keySSI,
+        trialConsentName: x.name,
+        versions: [],
+        trialConsentVersion: Math.max.apply(
+          Math,
+          x.versions.map((o) => parseInt(o.version))
+        ),
+        id: x.id,
+        name: null,
+      }));
+      console.log(result);
+      return result;
+    } else {
+      console.log(site.consents);
+
+      const result = consents.map((x) => {
+        const exists = site.consents.find((y) => y.trialConsentKeySSI === x.keySSI);
+        console.log('exists:', exists);
+        if (exists) {
+          return {
+            ...exists,
+            trialConsentVersion: Math.max.apply(
+              Math,
+              x.versions.map((o) => parseInt(o.version))
+            ),
+          };
+        } else {
+          return {
+            type: x.type,
+            trialConsentKeySSI: x.keySSI,
+            trialConsentName: x.name,
+            versions: [],
+            trialConsentVersion: Math.max.apply(
+              Math,
+              x.versions.map((o) => parseInt(o.version))
+            ),
+            id: x.id,
+            name: null,
+          };
+        }
+      });
+      console.log(result);
+      return result;
+    }
   }
 
   resetMenu(menu) {
