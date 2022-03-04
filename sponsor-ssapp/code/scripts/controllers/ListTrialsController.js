@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-undef
 const commonServices = require('common-services');
 import TrialsService from '../services/TrialsService.js';
 import { trialStatusesEnum, trialTableHeaders, trialStagesEnum } from '../constants/trial.js';
@@ -16,8 +17,8 @@ import { senderType } from '../constants/participant.js';
 const { WebcController } = WebCardinal.controllers;
 
 export default class ListTrialsController extends WebcController {
-  statusesArray = Object.entries(trialStatusesEnum).map(([k, v]) => v);
-  stagesArray = Object.entries(trialStagesEnum).map(([k, v]) => v);
+  statusesArray = Object.entries(trialStatusesEnum).map(([_k, v]) => v);
+  stagesArray = Object.entries(trialStagesEnum).map(([_k, v]) => v);
   itemsPerPageArray = [5, 10, 15, 20, 30];
 
   headers = trialTableHeaders;
@@ -158,10 +159,12 @@ export default class ListTrialsController extends WebcController {
   }
 
   setTrialsModel(trials) {
-    const model = trials.map((trial) => ({
-      ...trial,
-      created: new Date(trial.created).toLocaleDateString('en-UK'),
-    }));
+    const model = trials
+      .map((trial) => ({
+        ...trial,
+        created: new Date(trial.created).toLocaleDateString('en-UK'),
+      }))
+      .sort((a, b) => a.id - b.id);
 
     this.model.trials = model;
     this.model.data = model;
@@ -219,15 +222,14 @@ export default class ListTrialsController extends WebcController {
       this.feedbackEmitter = e.detail;
     });
 
-    this.on('run-filters', (e) => {
+    this.on('run-filters', () => {
       this.filterData();
     });
 
-    this.onTagClick('add-trial', async (event) => {
+    this.onTagClick('add-trial', async () => {
       this.showModalFromTemplate(
         'add-new-trial',
-        (event) => {
-          const response = event.detail;
+        () => {
           this.getTrials();
           this.showFeedbackToast('Result', 'Trial added successfully', 'toast');
         },
@@ -262,14 +264,34 @@ export default class ListTrialsController extends WebcController {
       }
     });
 
-    this.onTagClick('view-trial', async (model, target, event) => {
-      this.navigateToPageTag('trial', {
+    this.onTagClick('view-trial-sites', async (model) => {
+      this.navigateToPageTag('sites', {
         id: model.id,
         keySSI: this.trials.find((x) => x.id === model.id).keySSI,
       });
     });
 
-    this.onTagClick('filters-cleared', async (event) => {
+    this.onTagClick('view-trial-visits', async (model) => {
+      this.navigateToPageTag('sites', {
+        id: model.id,
+        keySSI: this.trials.find((x) => x.id === model.id).keySSI,
+      });
+    });
+
+    this.onTagClick('view-trial-consents', async (model) => {
+      this.navigateToPageTag('trial-consents', {
+        id: model.id,
+        keySSI: this.trials.find((x) => x.id === model.id).keySSI,
+      });
+    });
+
+    this.onTagClick('view-trial-status', async (model) => {
+      this.navigateToPageTag('sites', {
+        id: model.id,
+        keySSI: this.trials.find((x) => x.id === model.id).keySSI,
+      });
+    });
+    this.onTagClick('filters-cleared', async () => {
       this.model.clearButtonDisabled = true;
       // this.model.countries.value = null;
       this.model.statuses.value = null;

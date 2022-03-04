@@ -17,7 +17,7 @@ export const trialStagesEnum = {
 export const trialTableHeaders = [
   {
     column: 'id',
-    label: 'Id',
+    label: 'Trial Number / ID',
     notSortable: false,
     type: 'number',
     asc: null,
@@ -32,16 +32,8 @@ export const trialTableHeaders = [
     desc: null,
   },
   {
-    column: 'sponsor',
-    label: 'Sponsor',
-    notSortable: false,
-    type: 'string',
-    asc: null,
-    desc: null,
-  },
-  {
-    column: 'stage',
-    label: 'Stage',
+    column: 'created',
+    label: 'Created',
     notSortable: false,
     type: 'string',
     asc: null,
@@ -56,8 +48,8 @@ export const trialTableHeaders = [
     desc: null,
   },
   {
-    column: 'created',
-    label: 'Created',
+    column: 'stage',
+    label: 'Stage',
     notSortable: false,
     type: 'string',
     asc: null,
@@ -65,7 +57,7 @@ export const trialTableHeaders = [
   },
   {
     column: null,
-    label: 'Controls',
+    label: 'Options',
     notSortable: true,
     desc: null,
   },

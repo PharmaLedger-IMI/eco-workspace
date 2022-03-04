@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-undef
 const commonServices = require('common-services');
 import TrialsService from '../services/TrialsService.js';
 const DidService = commonServices.DidService;
@@ -5,7 +6,6 @@ const DidService = commonServices.DidService;
 const { WebcController } = WebCardinal.controllers;
 
 export default class AddNewTrialModalController extends WebcController {
-
   name = {
     label: 'Name',
     name: 'name',
@@ -17,7 +17,7 @@ export default class AddNewTrialModalController extends WebcController {
   id = {
     label: 'Trial Number/ID',
     name: 'id',
-    invalid:false,
+    invalid: false,
     required: true,
     placeholder: 'Please insert an Id...',
     value: '',
@@ -35,7 +35,7 @@ export default class AddNewTrialModalController extends WebcController {
     label: 'Sponsor DID',
     name: 'did',
     required: true,
-    disabled:true,
+    disabled: true,
     placeholder: 'Please insert the sponsor DID...',
     value: '',
   };
@@ -44,18 +44,20 @@ export default class AddNewTrialModalController extends WebcController {
     super(...props);
     this.existingIds = props[0].existingIds;
     this.trialsService = new TrialsService(this.DSUStorage);
-    DidService.getDidServiceInstance().getDID().then((identityString)=>{
-      this.did.value = identityString;
-      this.setModel({
-        trial: {
-          id: this.id,
-          name: this.name,
-          sponsor: this.sponsor,
-          did: this.did,
-        },
-        submitButtonDisabled: false,
+    DidService.getDidServiceInstance()
+      .getDID()
+      .then((identityString) => {
+        this.did.value = identityString;
+        this.setModel({
+          trial: {
+            id: this.id,
+            name: this.name,
+            sponsor: this.sponsor,
+            did: this.did,
+          },
+          submitButtonDisabled: false,
+        });
       });
-    })
 
     this.attachAll();
   }
@@ -65,7 +67,7 @@ export default class AddNewTrialModalController extends WebcController {
     const modelsChains = ['trial.name.value', 'trial.sponsor.value', trialId];
 
     this.model.onChange(trialId, () => {
-      this.model.trial.id.invalidValue = this.existingIds.indexOf(this.model.trial.id.value) > -1
+      this.model.trial.id.invalidValue = this.existingIds.indexOf(this.model.trial.id.value) > -1;
     });
 
     /**
@@ -75,15 +77,15 @@ export default class AddNewTrialModalController extends WebcController {
       this.model.onChange(modelChain, () => {
         let formIsValid = true;
         modelsChains.forEach((chain) => {
-          if (this.model.getChainValue(chain).trim() === "") {
+          if (this.model.getChainValue(chain).trim() === '') {
             formIsValid = false;
           }
-        })
+        });
         this.model.submitButtonDisabled = !formIsValid || this.model.trial.id.invalidValue;
-      })
-    })
+      });
+    });
 
-    this.onTagClick('create-trial', async (event) => {
+    this.onTagClick('create-trial', async () => {
       try {
         this.model.submitButtonDisabled = true;
         const trial = {

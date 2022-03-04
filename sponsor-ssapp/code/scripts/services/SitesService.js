@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-undef
 const commonServices = require('common-services');
 const SharedStorage = commonServices.SharedStorage;
 const DSUService = commonServices.DSUService;
@@ -76,7 +77,7 @@ export default class SitesService extends DSUService {
     });
 
     const statusDSU = await this.getEntityAsync(site.statusKeySSI, this.getStatusPath(site.keySSI));
-    const updatedStatusDSU = await this.updateEntityAsync({ ...statusDSU, status }, this.getStatusPath(site.keySSI));
+    await this.updateEntityAsync({ ...statusDSU, status }, this.getStatusPath(site.keySSI));
 
     return updatedSite;
   }
@@ -90,7 +91,7 @@ export default class SitesService extends DSUService {
     });
 
     const statusDSU = await this.getEntityAsync(site.statusKeySSI, this.getStatusPath(site.keySSI));
-    const updatedStatusDSU = await this.updateEntityAsync({ ...statusDSU, stage }, this.getStatusPath(site.keySSI));
+    await this.updateEntityAsync({ ...statusDSU, stage }, this.getStatusPath(site.keySSI));
 
     return updatedSite;
   }
@@ -103,13 +104,12 @@ export default class SitesService extends DSUService {
     });
 
     const statusDSU = await this.getEntityAsync(site.statusKeySSI, this.getStatusPath(site.keySSI));
-    const updatedStatusDSU = await this.updateEntityAsync({ ...statusDSU, stage }, this.getStatusPath(site.keySSI));
+    await this.updateEntityAsync({ ...statusDSU, stage }, this.getStatusPath(site.keySSI));
 
     return updatedSite;
   }
 
   async updateSiteConsents(data, did, trialKeySSI) {
-    debugger;
     const site = await this.getSiteFromDB(did, trialKeySSI);
     const existingConsent = site.consents.find((x) => x.keySSI === data.keySSI);
     if (existingConsent) {
@@ -118,7 +118,7 @@ export default class SitesService extends DSUService {
     } else {
       site.consents = [...site.consents, data];
     }
-    const updatedSite = await this.storageService.updateRecordAsync(this.getTableName(trialKeySSI), site.did, {
+    await this.storageService.updateRecordAsync(this.getTableName(trialKeySSI), site.did, {
       ...site,
     });
 
@@ -130,7 +130,7 @@ export default class SitesService extends DSUService {
   async deleteSite(did, trialKeySSI) {
     const selectedSite = await this.storageService.getRecordAsync(this.getTableName(trialKeySSI), did);
 
-    const updatedSite = await this.storageService.updateRecordAsync(this.getTableName(trialKeySSI), selectedSite.did, {
+    await this.storageService.updateRecordAsync(this.getTableName(trialKeySSI), selectedSite.did, {
       ...selectedSite,
       deleted: true,
     });

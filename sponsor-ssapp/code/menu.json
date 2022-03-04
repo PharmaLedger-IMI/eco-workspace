@@ -13,8 +13,8 @@
       "icon": "fa-heartbeat fa-lg"
     },
     {
-      "name": "trial",
-      "tags": "trial",
+      "name": "Sites",
+      "tags": "sites",
       "indexed": false
     }
   ]

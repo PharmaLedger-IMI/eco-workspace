@@ -1,4 +1,3 @@
-import { consentTypeEnum } from '../constants/consent.js';
 import ConsentService from '../services/ConsentService.js';
 
 // eslint-disable-next-line no-undef
@@ -40,9 +39,9 @@ export default class AddNewSiteConsentModalController extends WebcController {
     this.selectedConsent = props[0].selectedConsent || [];
     console.log(this.consents);
 
-    let { id, keySSI } = this.history.location.state;
+    let { trialKeySSI } = this.history.location.state;
 
-    this.keySSI = keySSI;
+    this.keySSI = trialKeySSI;
 
     this.consentsService = new ConsentService(this.DSUStorage);
 
@@ -76,7 +75,7 @@ export default class AddNewSiteConsentModalController extends WebcController {
       if (event.data) this.file = event.data;
     });
 
-    this.onTagClick('create-consent', async (event) => {
+    this.onTagClick('create-consent', async () => {
       try {
         const data = JSON.parse(JSON.stringify(this.model.consent));
         const result = {
@@ -98,7 +97,6 @@ export default class AddNewSiteConsentModalController extends WebcController {
         console.log(result);
         let outcome = null;
         const exists = this.site.consents.find((x) => x.trialConsentKeySSI === data.trialConsentKeySSI && x.name);
-        debugger;
         if (exists) {
           outcome = await this.consentsService.addSiteConsentVersion(result, this.keySSI, this.site);
         } else {

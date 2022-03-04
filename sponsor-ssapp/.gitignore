@@ -17,3 +17,4 @@ FileDownloader.js
 SharedStorage.js
 ionic-core
 api.js
+.eslintrc.js

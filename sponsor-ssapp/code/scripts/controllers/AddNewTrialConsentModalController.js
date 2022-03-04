@@ -5,7 +5,7 @@ import ConsentService from '../services/ConsentService.js';
 const { WebcController } = WebCardinal.controllers;
 
 export default class AddNewTrialConsentModalController extends WebcController {
-  typesArray = Object.entries(consentTypeEnum).map(([k, v]) => ({ value: v, label: v }));
+  typesArray = Object.entries(consentTypeEnum).map(([_k, v]) => ({ value: v, label: v }));
 
   type = {
     label: 'Select type',
@@ -58,7 +58,7 @@ export default class AddNewTrialConsentModalController extends WebcController {
     this.existingVersions = props[0].existingVersions || null;
     this.site = props[0].site || null;
 
-    let { id, keySSI } = this.history.location.state;
+    let { keySSI } = this.history.location.state;
 
     this.keySSI = keySSI;
 
@@ -130,7 +130,7 @@ export default class AddNewTrialConsentModalController extends WebcController {
       if (event.data) this.file = event.data;
     });
 
-    this.onTagClick('create-consent', async (event) => {
+    this.onTagClick('create-consent', async () => {
       try {
         if (!this.isUpdate) {
           let valid = true;

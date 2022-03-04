@@ -18,17 +18,8 @@
     <script src="resources/lodash/lodash.js"></script>
     <script src="resources/uuid/uuidv4.min.js"></script>
     <script src="resources/css/fonts/fontawesome5/js/all.min.js"></script>
-
-    <!-- Ionic dist -->
-    <!-- <link rel="stylesheet" href="assets/ionic-core/css/ionic.bundle.css" />
-    <link rel="stylesheet" href="assets/test.css" />
-    <script type="module" src="assets/ionic-core/ionic.esm.js"></script> -->
-
-    <!-- Ionicons dist -->
-    <!-- <script type="module" src="assets/ionic-core/ionicons/ionicons.esm.js"></script> -->
-
-    <!-- Ion PWA Elements dist -->
-    <!-- <script type="module" src="assets/ionic-core/pwa-elements/ionicpwaelements.esm.js"></script> -->
+    <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
+    <link href="themes/clinical-site-theme/index.css" rel="stylesheet" type="text/css" />
 
     <script>
       if (window.frameElement) {
@@ -47,15 +38,35 @@
     </script>
   </head>
 
-  <body>
+  <!-- <body>
     <webc-app-root class="" style="display: flex; width: 100%; align-items: stretch">
-      <!-- <aside class="sponsor-navbar">
-        <div class="side-menu-logo">
-          <img src="/assets/svg/pharmaledger-logo-negative.svg" alt="pharmaledger logo" />
-        </div>
-        <webc-app-menu class="sponsor-navbar"> </webc-app-menu>
-      </aside> -->
       <webc-app-router style="width: 100%; overflow-x: hidden" failRedirectTo="/home"></webc-app-router>
     </webc-app-root>
   </body>
+</html> -->
+
+  <webc-app-root>
+    <webc-app-container>
+      <header class="d-flex flex-row align-content-center justify-content-between" slot="before">
+        <img alt="PharmaLedger logo" src="themes/clinical-site-theme/images/pharmaledger-logo.jpg" class="img-s" />
+        <div class="d-flex flex-row justify-content-center align-items-center">
+          <button class="button-menu button-transparent" data-tag="header:help">Help</button>
+          <button class="button-menu" data-tag="header:logout">Logout</button>
+        </div>
+      </header>
+      <webc-app-router failRedirectTo="/home"> </webc-app-router>
+      <footer class="eu-container" slot="after">
+        <div class="left-image-eu">
+          <img src="themes/clinical-site-theme/images/EU_flag.jpg" class="img-s" />
+        </div>
+        <div class="right-text-eu">
+          <label>
+            This project has received funding from the European Union’s Horizon 2020 research and innovation programme
+            under grant agreement No 853992
+          </label>
+          <label>Copyright &copy; PharmaLedger Consortium 2020–2023</label>
+        </div>
+      </footer>
+    </webc-app-container>
+  </webc-app-root>
 </html>
