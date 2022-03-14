@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-undef
 const commonServices = require('common-services');
 const SharedStorage = commonServices.SharedStorage;
 const DSUService = commonServices.DSUService;
@@ -56,7 +57,7 @@ export default class TrialsService extends DSUService {
   async deleteTrial(id) {
     const selectedTrial = await this.storageService.getRecordAsync(this.TRIALS_TABLE, id);
 
-    const updatedTrial = await this.storageService.updateRecordAsync(this.TRIALS_TABLE, selectedTrial.id, {
+    await this.storageService.updateRecordAsync(this.TRIALS_TABLE, selectedTrial.id, {
       ...selectedTrial,
       deleted: true,
     });
@@ -77,7 +78,7 @@ export default class TrialsService extends DSUService {
     } else {
       trial.consents = [...trial.consents, data];
     }
-    const updatedTrial = await this.storageService.updateRecordAsync(this.TRIALS_TABLE, trial.id, {
+    await this.storageService.updateRecordAsync(this.TRIALS_TABLE, trial.id, {
       ...trial,
     });
 

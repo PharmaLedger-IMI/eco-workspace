@@ -4,6 +4,7 @@ const SharedStorage = commonServices.SharedStorage;
 const DSUService = commonServices.DSUService;
 import { siteStagesEnum, siteStatusesEnum } from '../constants/site.js';
 import VisitsService from './VisitsService.js';
+import TrialsService from './TrialsService.js';
 export default class SitesService extends DSUService {
   SITES_TABLE = 'sites';
   SITES_PATH = '/sites';
@@ -12,6 +13,7 @@ export default class SitesService extends DSUService {
     super('/sites');
     this.storageService = SharedStorage.getSharedStorage(DSUStorage);
     this.visitsService = new VisitsService(DSUStorage);
+    this.trialsService = new TrialsService(DSUStorage);
   }
 
   async getSites(trialKeySSI) {
@@ -32,6 +34,7 @@ export default class SitesService extends DSUService {
   }
 
   async createSite(data, trialKeySSI) {
+    const trial = await this.trialsService.getTrial(trialKeySSI);
     const visits = await this.visitsService.getTrialVisits(trialKeySSI);
 
     const status = await this.saveEntityAsync(
@@ -47,7 +50,9 @@ export default class SitesService extends DSUService {
       statusKeySSI: status.uid,
       visitsKeySSI: visits.keySSI,
       created: new Date().toISOString(),
-      trialKeySSI,
+      trialName: trial.name,
+      trialSponsor: trial.sponsor,
+      trialId: trial.id,
     });
 
     await this.unmountEntityAsync(status.uid, '/statuses');
@@ -63,6 +68,9 @@ export default class SitesService extends DSUService {
         stage: siteStagesEnum.Created,
         status: siteStatusesEnum.Active,
         created: new Date().toISOString(),
+        trialName: trial.name,
+        trialSponsor: trial.sponsor,
+        trialId: trial.id,
       },
       trialKeySSI
     );

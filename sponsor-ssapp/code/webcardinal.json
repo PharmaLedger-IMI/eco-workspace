@@ -11,13 +11,6 @@
       "icon": "fa-times"
     },
     {
-      "name": "Sites",
-      "path": "/sites",
-      "src": "sites.html",
-      "tag": "sites",
-      "icon": "fa-times"
-    },
-    {
       "name": "Trial Consents",
       "path": "/trials/consents",
       "src": "trial-consents.html",
@@ -25,10 +18,10 @@
       "icon": "fa-times"
     },
     {
-      "name": "Site Consents",
-      "path": "/sites/consents",
-      "src": "site-consents.html",
-      "tag": "site-consents",
+      "name": "Trial Visits",
+      "path": "/trials/visits",
+      "src": "trial-visits.html",
+      "tag": "trial-visits",
       "icon": "fa-times"
     },
     {
@@ -43,6 +36,20 @@
       "path": "/trials/consents/history",
       "src": "consent-history.html",
       "tag": "consent-history",
+      "icon": "fa-times"
+    },
+    {
+      "name": "Sites",
+      "path": "/sites",
+      "src": "sites.html",
+      "tag": "sites",
+      "icon": "fa-times"
+    },
+    {
+      "name": "Site Consents",
+      "path": "/sites/consents",
+      "src": "site-consents.html",
+      "tag": "site-consents",
       "icon": "fa-times"
     },
     {

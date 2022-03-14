@@ -98,7 +98,7 @@ export default class AddNewSiteModalController extends WebcController {
       }, 300);
     });
 
-    this.onTagClick('create-site', async (event) => {
+    this.onTagClick('create-site', async () => {
       try {
         let valid = true;
         for (const x in this.model.site) {

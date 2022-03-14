@@ -152,3 +152,19 @@ button.btn.btn-bare.btn-link {
   margin: 0 !important;
   padding: 0 !important;
 }
+
+.procedures-container > div:nth-child(odd) {
+  background: rgba(0, 135, 152, 0.19);
+}
+
+.procedures-container > div:nth-child(odd) > div {
+  background: rgba(0, 135, 152, 0.19);
+}
+
+.procedures-container > div:nth-child(even) {
+  background: rgba(0, 52, 91, 0.3);
+}
+
+.procedures-container > div:nth-child(even) > div {
+  background: rgba(0, 52, 91, 0.3);
+}

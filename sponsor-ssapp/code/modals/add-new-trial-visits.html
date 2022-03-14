@@ -1,0 +1,20 @@
+<h2 slot="header">New Visits</h2>
+
+<div data-if="@consentsArrayNotEmpty">
+  <div slot="true">
+    <div class="d-flex flex-column justify-content-between">
+      <div style="margin: 10px">
+        <select class="form-control" data-for="@consents.selectOptions" required="required" value="@consents.value">
+          <option value="@value">{{@label}}</option>
+        </select>
+        <div data-if="@consents.invalidValue" class="d-flex flex-row">
+          <i class="red-invalid fas fa-times mr-2"></i>
+          <small class="form-text text-danger">Please select a consent</small>
+        </div>
+      </div>
+      <psk-files-chooser style="margin: 10px" view-model="visits.attachment" event-name="add-file"> </psk-files-chooser>
+    </div>
+  </div>
+</div>
+
+<button class="btn btn-primary" slot="footer" data-tag="create-visits">Submit</button>

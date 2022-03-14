@@ -272,7 +272,7 @@ export default class ListTrialsController extends WebcController {
     });
 
     this.onTagClick('view-trial-visits', async (model) => {
-      this.navigateToPageTag('sites', {
+      this.navigateToPageTag('trial-visits', {
         id: model.id,
         keySSI: this.trials.find((x) => x.id === model.id).keySSI,
       });
