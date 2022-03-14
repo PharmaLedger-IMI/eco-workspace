@@ -6,6 +6,7 @@ export default {
   browser: 'any',
   mode: 'dev-secure',
   domain: 'eco',
+  didDomain:'eco',
   vaultDomain:"eco",
   enclaveType:"WalletDBEnclave",
   sw: false,
