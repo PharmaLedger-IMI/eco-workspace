@@ -491,5 +491,8 @@
         }
       ]
     }
-  ]
+  ],
+  "install-mobile": [],
+  "build-mobile": [],
+  "docs": []
 }
