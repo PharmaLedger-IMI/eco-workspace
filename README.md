@@ -22,7 +22,7 @@ After the repository was cloned, you must install all the dependencies.
 $ cd eco-workspace
 #Important: If you plan to contribute to the project and/or dependecies please set DEV:true
 #in the file env.json before you run the installation!
-$ npm install
+$ npm dev-install
 ```
 **Note:** this command might take quite some time depending on your internet connection and you machine processing power.
 
