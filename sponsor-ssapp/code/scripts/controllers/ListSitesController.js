@@ -78,11 +78,12 @@ export default class ListSitesController extends WebcController {
 
     this.trialsService = new TrialsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
-    let { id, keySSI } = this.history.location.state;
+    let { id, keySSI, uid } = this.history.location.state;
 
     this.model = {
       id,
       keySSI,
+      uid,
       statuses: this.statuses,
       stages: this.stages,
       countries: this.countries,

@@ -38,30 +38,34 @@ export default class TrialsService extends DSUService {
       status: trialStatusesEnum.Active,
       created: new Date().toISOString(),
     });
-    const visits = this.visitsService.createTrialVisits(trial.uid, {});
+    const visits = await this.visitsService.createTrialVisits(trial.keySSI, {});
     await this.addTrialToDB({
       id: trial.id,
-      keySSI: trial.uid,
+      keySSI: trial.keySSI,
+      uid: trial.uid,
+      sReadSSI: trial.sReadSSI,
       name: trial.name,
       status: trial.status,
       sponsor: trial.sponsor,
       did: trial.did,
       stage: trial.stage,
       created: trial.created,
-      visitsKeySSI: visits.uid,
+      visitsKeySSI: visits.keySSI,
+      visitsUid: visits.uid,
+      visitsSReadSSI: visits.sReadSSI,
       consents: [],
     });
     return trial;
   }
 
-  async deleteTrial(id) {
-    const selectedTrial = await this.storageService.getRecordAsync(this.TRIALS_TABLE, id);
+  // async deleteTrial(id) {
+  //   const selectedTrial = await this.storageService.getRecordAsync(this.TRIALS_TABLE, id);
 
-    await this.storageService.updateRecordAsync(this.TRIALS_TABLE, selectedTrial.id, {
-      ...selectedTrial,
-      deleted: true,
-    });
-  }
+  //   await this.storageService.updateRecordAsync(this.TRIALS_TABLE, selectedTrial.id, {
+  //     ...selectedTrial,
+  //     deleted: true,
+  //   });
+  // }
 
   async addTrialToDB(data) {
     const newRecord = await this.storageService.insertRecordAsync(this.TRIALS_TABLE, data.id, data);
@@ -81,6 +85,8 @@ export default class TrialsService extends DSUService {
     await this.storageService.updateRecordAsync(this.TRIALS_TABLE, trial.id, {
       ...trial,
     });
+
+    debugger;
 
     const updatedTrialDSU = await this.updateEntityAsync({ ...trialDSU, consents: trial.consents });
     return updatedTrialDSU;

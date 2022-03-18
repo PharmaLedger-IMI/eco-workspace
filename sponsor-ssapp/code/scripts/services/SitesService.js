@@ -45,10 +45,12 @@ export default class SitesService extends DSUService {
       '/statuses'
     );
 
+    debugger;
+
     const site = await this.saveEntityAsync({
       ...data,
-      statusKeySSI: status.uid,
-      visitsKeySSI: visits.keySSI,
+      statusKeySSI: status.keySSI,
+      visitsSReadSSI: visits.sReadSSI,
       created: new Date().toISOString(),
       trialName: trial.name,
       trialSponsor: trial.sponsor,
@@ -56,15 +58,21 @@ export default class SitesService extends DSUService {
     });
 
     await this.unmountEntityAsync(status.uid, '/statuses');
-    await this.mountEntityAsync(status.uid, this.getStatusPath(site.uid));
+    await this.mountEntityAsync(status.keySSI, this.getStatusPath(site.uid));
     await this.mountEntityAsync(visits.keySSI, this.getVisitsPath(site.uid));
 
     await this.addSiteToDB(
       {
         ...data,
-        keySSI: site.uid,
-        statusKeySSI: status.uid,
+        keySSI: site.keySSI,
+        uid: site.uid,
+        sReadSSI: site.sReadSSI,
+        statusKeySSI: status.keySSI,
+        statusUid: status.uid,
+        statusSReadSSI: status.sReadSSI,
         visitsKeySSI: visits.keySSI,
+        visitsUid: visits.uid,
+        visitsSReadSSI: visits.sReadSSI,
         stage: siteStagesEnum.Created,
         status: siteStatusesEnum.Active,
         created: new Date().toISOString(),
@@ -155,11 +163,11 @@ export default class SitesService extends DSUService {
     return this.SITES_TABLE + '_' + trialKeySSI;
   }
 
-  getStatusPath(siteKeySSI) {
-    return this.SITES_PATH + '/' + siteKeySSI + '/' + 'status';
+  getStatusPath(siteUid) {
+    return this.SITES_PATH + '/' + siteUid + '/' + 'status';
   }
 
-  getVisitsPath(siteKeySSI) {
-    return this.SITES_PATH + '/' + siteKeySSI + '/' + 'visits';
+  getVisitsPath(siteUid) {
+    return this.SITES_PATH + '/' + siteUid + '/' + 'visits';
   }
 }

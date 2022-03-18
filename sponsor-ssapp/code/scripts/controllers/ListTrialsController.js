@@ -249,46 +249,50 @@ export default class ListTrialsController extends WebcController {
       );
     });
 
-    this.on('delete-trial', async (event) => {
-      try {
-        const trial = await this.trialsService.getTrialFromDB(event.data);
-        const sites = await this.sitesService.getSites(trial.keySSI);
-        await this.trialsService.deleteTrial(event.data);
-        this.showFeedbackToast('Result', 'Trial deleted successfully', 'toast');
-        this.getTrials();
-        sites.forEach((site) => {
-          this.sendMessageToHco('delete-trial', event.data, 'the trial was removed ', site.did);
-        });
-      } catch (error) {
-        this.showFeedbackToast('Result', 'ERROR: The was an error, trial cannot be deleted right now', 'toast');
-      }
-    });
+    // this.on('delete-trial', async (event) => {
+    //   try {
+    //     const trial = await this.trialsService.getTrialFromDB(event.data);
+    //     const sites = await this.sitesService.getSites(trial.keySSI);
+    //     await this.trialsService.deleteTrial(event.data);
+    //     this.showFeedbackToast('Result', 'Trial deleted successfully', 'toast');
+    //     this.getTrials();
+    //     sites.forEach((site) => {
+    //       this.sendMessageToHco('delete-trial', event.data, 'the trial was removed ', site.did);
+    //     });
+    //   } catch (error) {
+    //     this.showFeedbackToast('Result', 'ERROR: The was an error, trial cannot be deleted right now', 'toast');
+    //   }
+    // });
 
     this.onTagClick('view-trial-sites', async (model) => {
       this.navigateToPageTag('sites', {
         id: model.id,
-        keySSI: this.trials.find((x) => x.id === model.id).keySSI,
+        keySSI: model.keySSI,
+        uid: model.uid,
       });
     });
 
     this.onTagClick('view-trial-visits', async (model) => {
       this.navigateToPageTag('trial-visits', {
         id: model.id,
-        keySSI: this.trials.find((x) => x.id === model.id).keySSI,
+        keySSI: model.keySSI,
+        uid: model.uid,
       });
     });
 
     this.onTagClick('view-trial-consents', async (model) => {
       this.navigateToPageTag('trial-consents', {
         id: model.id,
-        keySSI: this.trials.find((x) => x.id === model.id).keySSI,
+        keySSI: model.keySSI,
+        uid: model.uid,
       });
     });
 
     this.onTagClick('view-trial-status', async (model) => {
       this.navigateToPageTag('sites', {
         id: model.id,
-        keySSI: this.trials.find((x) => x.id === model.id).keySSI,
+        keySSI: model.keySSI,
+        uid: model.uid,
       });
     });
     this.onTagClick('filters-cleared', async () => {

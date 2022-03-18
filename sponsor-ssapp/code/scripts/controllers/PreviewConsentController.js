@@ -43,9 +43,10 @@ export default class PreviewConsentController extends WebcController {
   }
 
   async init() {
+    debugger;
     const econsentFilePath = this.getEconsentManualFilePath(
-      this.model.keySSI,
-      this.model.consent.keySSI,
+      this.model.uid,
+      this.model.consent.uid,
       this.model.consent.version
     );
     this.downloadFile(econsentFilePath, this.model.consent.attachment);
@@ -147,7 +148,7 @@ export default class PreviewConsentController extends WebcController {
     }
   };
 
-  getEconsentManualFilePath(trialKeySSI, consentKeySSI, version) {
-    return '/trials/' + trialKeySSI + '/consent/' + consentKeySSI + '/versions/' + version;
+  getEconsentManualFilePath(trialUid, consentUid, version) {
+    return '/trials/' + trialUid + '/consent/' + consentUid + '/versions/' + version;
   }
 }

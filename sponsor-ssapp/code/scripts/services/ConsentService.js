@@ -99,6 +99,7 @@ export default class ConsentService extends DSUService {
   }
   async createConsent(data, trialKeySSI, site = null) {
     if (site) {
+      debugger;
       const path = this.getConsentPath(site.keySSI);
       const consent = await this.saveEntityAsync(data, path);
       const attachment = await this.uploadFile(
@@ -226,7 +227,9 @@ export default class ConsentService extends DSUService {
 
   async createTrialConsent(data, trialKeySSI) {
     debugger;
-    const path = this.getTrialConsentPath(trialKeySSI);
+    const trialDSU = await this.trialsService.getTrial(trialKeySSI);
+    const trial = await this.trialsService.getTrialFromDB(trialDSU.id);
+    const path = this.getTrialConsentPath(trial.uid);
     const consent = await this.saveEntityAsync(data, path);
     const attachment = await this.uploadFile(
       `${path}${consent.uid}/versions/${data.versions[0].version}/${data.versions[0].file.name}`,
@@ -238,10 +241,11 @@ export default class ConsentService extends DSUService {
     await this.addConsentToDB(
       {
         id: data.id,
-        keySSI: consent.uid,
+        keySSI: consent.keySSI,
+        uid: consent.uid,
+        sReadSSI: consent.sReadSSI,
         name: data.name,
         type: data.type,
-        uid: consent.uid,
         versions: [
           {
             version: data.versions[0].version,
@@ -260,6 +264,7 @@ export default class ConsentService extends DSUService {
   }
 
   async updateTrialConsent(data, trialKeySSI, site, consent) {
+    debugger;
     const path = this.getTrialConsentPath(trialKeySSI);
     const consentDSU = await this.getEntityAsync(consent.uid, path);
     const attachment = await this.uploadFile(

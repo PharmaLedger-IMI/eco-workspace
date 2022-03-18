@@ -23,7 +23,11 @@ export default class VisitsService extends DSUService {
       visits: [],
     });
     await this.addVisitsToDB(trialKeySSI, {
-      keySSI: visits.uid,
+      keySSI: visits.keySSI,
+      uid: visits.uid,
+      sReadSSI: visits.sReadSSI,
+      uid: visits.uid,
+      sReadSSI: visits.sReadSSI,
       visits: [],
     });
     return visits;
@@ -31,7 +35,7 @@ export default class VisitsService extends DSUService {
 
   async updateTrialVisits(trialKeySSI, data, consentId) {
     const visitsDb = await this.getTrialVisits(trialKeySSI);
-    const visitsDSU = await this.getEntityAsync(visitsDb.keySSI);
+    const visitsDSU = await this.getEntityAsync(visitsDb.uid);
 
     let exists = visitsDb.visits.findIndex((x) => x.consentId === consentId);
     if (exists > -1) {
