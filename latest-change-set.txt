@@ -672,3 +672,17 @@
     @cardinal/wiki
     @cardinal/barcode
     @cardinal/core
+    #Fix for leaflet ssapp webcardinal migration
+    Add dist folder for each WebCardinal bundle from release
+    fixed createMarketplace swarm
+    #583 Remove progress percentage and refresh button from loader
+    send the load complete event from ssapp
+    #583 Remove progress percentage and refresh button from loader
+    #583 Remove progress percentage and refresh button from loader
+    #583 Remove progress percentage and refresh button from loader
+    fixed the file viewer modal design
+    #112 IOT
+    small notes grid improvements
+
+    Merge branch 'master' of https://github.com/PharmaLedger-IMI/trial-participant-ssapp
+    breadcrumb work WIP
