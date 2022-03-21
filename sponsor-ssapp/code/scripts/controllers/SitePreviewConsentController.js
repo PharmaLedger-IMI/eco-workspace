@@ -11,14 +11,16 @@ const { WebcController } = WebCardinal.controllers;
 export default class SitePreviewConsentController extends WebcController {
   constructor(...props) {
     super(...props);
-    let { trialId, trialKeySSI, siteId, siteKeySSI, data, history } = this.history.location.state;
+    let { trialId, trialKeySSI, trialUid, siteId, siteKeySSI, siteUid, data, history } = this.history.location.state;
 
     console.log(trialId, trialKeySSI, siteId, siteKeySSI, data, history);
     this.model = {
       trialId,
       trialKeySSI,
+      trialUid,
       siteId,
       siteKeySSI,
+      siteUid,
       consent: data,
       history,
       pdf: {
@@ -44,8 +46,8 @@ export default class SitePreviewConsentController extends WebcController {
 
   async init() {
     const econsentFilePath = this.getEconsentManualFilePath(
-      this.model.siteKeySSI,
-      this.model.consent.keySSI,
+      this.model.siteUid,
+      this.model.consent.uid,
       this.model.consent.version
     );
     this.downloadFile(econsentFilePath, this.model.consent.attachment);
@@ -56,8 +58,10 @@ export default class SitePreviewConsentController extends WebcController {
       this.navigateToPageTag('site-consents', {
         trialId: this.model.trialId,
         trialKeySSI: this.model.trialKeySSI,
+        trialUid: this.model.trialUid,
         siteKeySSI: this.model.siteKeySSI,
         siteId: this.model.siteId,
+        siteUid: this.model.siteUid,
       });
     });
 
@@ -65,8 +69,10 @@ export default class SitePreviewConsentController extends WebcController {
       this.navigateToPageTag('site-consent-history', {
         trialId: this.model.trialId,
         trialKeySSI: this.model.trialKeySSI,
+        trialUid: this.model.trialUid,
         siteId: this.model.siteId,
         siteKeySSI: this.model.siteKeySSI,
+        siteUid: this.model.siteUid,
         data: JSON.parse(JSON.stringify(this.model.history)),
       });
     });
@@ -75,6 +81,7 @@ export default class SitePreviewConsentController extends WebcController {
       this.navigateToPageTag('sites', {
         id: this.model.trialId,
         keySSI: this.model.trialKeySSI,
+        uid: this.model.trialUid,
       });
     });
   }
@@ -158,7 +165,7 @@ export default class SitePreviewConsentController extends WebcController {
     }
   };
 
-  getEconsentManualFilePath(siteKeySSI, consentKeySSI, version) {
-    return '/sites/' + siteKeySSI + '/consent/' + consentKeySSI + '/versions/' + version;
+  getEconsentManualFilePath(siteUid, consentUid, version) {
+    return '/sites/' + siteUid + '/consent/' + consentUid + '/versions/' + version;
   }
 }

@@ -44,9 +44,10 @@ export default class AddNewSiteModalController extends WebcController {
 
     this.existingIds = props[0].existingIds;
     this.existingDids = props[0].existingDids;
-    this.trialKeySSI = props[0].trialKeySSI;
-    let { uid } = this.history.location.state;
-    this.uid = uid;
+    let { id, keySSI, uid } = this.history.location.state;
+    this.trialUid = uid;
+    this.trialKeySSI = keySSI;
+    this.trialId = id;
 
     console.log(props);
 
@@ -137,7 +138,7 @@ export default class AddNewSiteModalController extends WebcController {
           country: this.model.site.countries.value,
           consents: [],
         };
-        const result = await this.sitesService.createSite(site, this.trialKeySSI, this.uid);
+        const result = await this.sitesService.createSite(site, this.trialId);
         this.model.submitButtonDisabled = false;
         this.send('confirmed', result);
       } catch (error) {

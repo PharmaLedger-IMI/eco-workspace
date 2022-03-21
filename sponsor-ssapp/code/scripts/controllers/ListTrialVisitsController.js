@@ -13,15 +13,15 @@ const { WebcController } = WebCardinal.controllers;
 export default class ListTrialVisitsController extends WebcController {
   constructor(...props) {
     super(...props);
-    let { id, keySSI, data } = this.history.location.state;
-
+    let { id, keySSI, uid } = this.history.location.state;
+    debugger;
     this.consentService = new ConsentService(this.DSUStorage);
     this.visitsService = new VisitsService(this.DSUStorage);
 
     this.model = {
       id,
       keySSI,
-      data,
+      uid,
     };
 
     this.didService = getDidServiceInstance();
@@ -42,6 +42,7 @@ export default class ListTrialVisitsController extends WebcController {
   }
 
   async getConsents() {
+    debugger;
     this.consents = await this.consentService.getTrialConsents(this.model.keySSI);
     console.log(JSON.parse(JSON.stringify(this.consents)));
     this.model.consents = this.consents.map((x, idx) => ({ ...x, selected: idx === 0 ? true : false }));

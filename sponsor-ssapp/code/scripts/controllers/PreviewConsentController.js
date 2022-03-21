@@ -11,7 +11,7 @@ const { WebcController } = WebCardinal.controllers;
 export default class PreviewConsentController extends WebcController {
   constructor(...props) {
     super(...props);
-    let { id, keySSI, data, history } = this.history.location.state;
+    let { id, keySSI, uid, data, history } = this.history.location.state;
 
     console.log('CONSTRUCTOR:', history);
 
@@ -19,6 +19,7 @@ export default class PreviewConsentController extends WebcController {
     this.model = {
       id,
       keySSI,
+      uid,
       consent: data,
       history,
       pdf: {
@@ -57,6 +58,7 @@ export default class PreviewConsentController extends WebcController {
       this.navigateToPageTag('trial-consents', {
         id: this.model.id,
         keySSI: this.model.keySSI,
+        uid: this.model.uid,
       });
     });
 
@@ -64,6 +66,7 @@ export default class PreviewConsentController extends WebcController {
       this.navigateToPageTag('consent-history', {
         id: this.model.id,
         keySSI: this.model.keySSI,
+        uid: this.model.uid,
         data: JSON.parse(JSON.stringify(this.model.history)),
       });
     });

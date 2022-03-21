@@ -49,7 +49,7 @@ export default class AddNewSiteConsentModalController extends WebcController {
       consent: {
         type: this.selectedConsent.type,
         trialConsentName: this.selectedConsent.name,
-        trialConsentKeySSI: this.selectedConsent.KeySSI,
+        trialConsentId: this.selectedConsent.id,
         trialConsentVersion: Math.max.apply(
           Math,
           this.selectedConsent.versions.map((o) => parseInt(o.version))
@@ -80,7 +80,7 @@ export default class AddNewSiteConsentModalController extends WebcController {
         const data = JSON.parse(JSON.stringify(this.model.consent));
         const result = {
           trialConsentVersion: data.trialConsentVersion,
-          trialConsentKeySSI: data.trialConsentKeySSI,
+          trialConsentId: data.trialConsentId,
           trialConsentName: data.trialConsentName,
           file: this.file[0],
           type: data.type,
@@ -96,7 +96,7 @@ export default class AddNewSiteConsentModalController extends WebcController {
 
         console.log(result);
         let outcome = null;
-        const exists = this.site.consents.find((x) => x.trialConsentKeySSI === data.trialConsentKeySSI && x.name);
+        const exists = this.site.consents.find((x) => x.trialConsentId === data.trialConsentId && x.name);
         if (exists) {
           outcome = await this.consentsService.addSiteConsentVersion(result, this.keySSI, this.site);
         } else {

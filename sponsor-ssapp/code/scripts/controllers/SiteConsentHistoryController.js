@@ -16,13 +16,15 @@ export default class SiteConsentHistoryController extends WebcController {
 
   constructor(...props) {
     super(...props);
-    let { trialId, trialKeySSI, siteId, siteKeySSI, data } = this.history.location.state;
+    let { trialId, trialKeySSI, trialUid, siteId, siteKeySSI, siteUid, data } = this.history.location.state;
 
     this.model = {
       trialId,
       trialKeySSI,
+      trialUid,
       siteId,
       siteKeySSI,
+      siteUid,
       data,
       headers: this.headers,
     };
@@ -46,8 +48,10 @@ export default class SiteConsentHistoryController extends WebcController {
       this.navigateToPageTag('site-consents', {
         trialId: this.model.trialId,
         trialKeySSI: this.model.trialKeySSI,
+        trialUid: this.model.trialUid,
         siteKeySSI: this.model.siteKeySSI,
         siteId: this.model.siteId,
+        siteUid: this.model.siteUid,
       });
     });
 
@@ -55,6 +59,7 @@ export default class SiteConsentHistoryController extends WebcController {
       this.navigateToPageTag('sites', {
         id: this.model.trialId,
         keySSI: this.model.trialKeySSI,
+        uid: this.model.trialUid,
       });
     });
 
@@ -62,8 +67,10 @@ export default class SiteConsentHistoryController extends WebcController {
       this.navigateToPageTag('site-preview-consent', {
         trialId: this.model.trialId,
         trialKeySSI: this.model.trialKeySSI,
+        trialUid: this.model.trialUid,
         siteKeySSI: this.model.siteKeySSI,
         siteId: this.model.siteId,
+        siteUid: this.model.siteUid,
         data: model,
         history: JSON.parse(JSON.stringify(this.model.data)),
       });

@@ -231,8 +231,10 @@ export default class ListSitesController extends WebcController {
       this.navigateToPageTag('site-consents', {
         trialId: this.model.id,
         trialKeySSI: this.model.keySSI,
+        trialUid: this.model.uid,
         siteKeySSI: model.keySSI,
         siteId: model.id,
+        siteUid: model.uid,
       });
     });
 

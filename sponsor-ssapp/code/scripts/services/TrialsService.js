@@ -22,8 +22,8 @@ export default class TrialsService extends DSUService {
     } else return [];
   }
 
-  async getTrial(keySSI) {
-    const result = await this.getEntityAsync(keySSI);
+  async getTrial(uid) {
+    const result = await this.getEntityAsync(uid);
     return result;
   }
 
@@ -72,8 +72,9 @@ export default class TrialsService extends DSUService {
     return newRecord;
   }
 
-  async updateTrialConsents(data, trialKeySSI) {
-    const trialDSU = await this.getEntityAsync(trialKeySSI);
+  async updateTrialConsents(data, trialUid) {
+    debugger;
+    const trialDSU = await this.getEntityAsync(trialUid);
     const trial = await this.getTrialFromDB(trialDSU.id);
     const existingConsent = trial.consents && trial.consents.find((x) => x.id === data.id);
     if (existingConsent) {
@@ -85,8 +86,6 @@ export default class TrialsService extends DSUService {
     await this.storageService.updateRecordAsync(this.TRIALS_TABLE, trial.id, {
       ...trial,
     });
-
-    debugger;
 
     const updatedTrialDSU = await this.updateEntityAsync({ ...trialDSU, consents: trial.consents });
     return updatedTrialDSU;

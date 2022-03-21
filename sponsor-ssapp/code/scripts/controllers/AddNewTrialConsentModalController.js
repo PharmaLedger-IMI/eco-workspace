@@ -58,9 +58,11 @@ export default class AddNewTrialConsentModalController extends WebcController {
     this.existingVersions = props[0].existingVersions || null;
     this.site = props[0].site || null;
 
-    let { keySSI } = this.history.location.state;
+    let { id, keySSI, uid } = this.history.location.state;
 
     this.keySSI = keySSI;
+    this.trialId = id;
+    this.trialUid = uid;
 
     this.consentsService = new ConsentService(this.DSUStorage);
 
@@ -171,7 +173,7 @@ export default class AddNewTrialConsentModalController extends WebcController {
               },
             ],
           };
-          const result = await this.consentsService.createTrialConsent(consent, this.keySSI);
+          const result = await this.consentsService.createTrialConsent(consent, this.trialId);
           this.model.submitButtonDisabled = false;
           this.send('confirmed', result);
         } else {
@@ -204,7 +206,7 @@ export default class AddNewTrialConsentModalController extends WebcController {
           };
 
           // console.log(JSON.stringify(this.site, null, 2), JSON.stringify(this.isUpdate, null, 2));
-          const result = await this.consentsService.updateTrialConsent(version, this.keySSI, this.site, this.isUpdate);
+          const result = await this.consentsService.updateTrialConsent(version, this.trialId, this.site, this.isUpdate);
           this.model.submitButtonDisabled = false;
           this.send('confirmed', result);
         }

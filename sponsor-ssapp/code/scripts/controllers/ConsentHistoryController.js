@@ -35,11 +35,12 @@ export default class ConsentHistoryConsentsController extends WebcController {
 
   constructor(...props) {
     super(...props);
-    let { id, keySSI, data } = this.history.location.state;
+    let { id, keySSI, uid, data } = this.history.location.state;
 
     this.model = {
       id,
       keySSI,
+      uid,
       data,
       pagination: this.pagination,
       headers: this.headers,
@@ -67,6 +68,7 @@ export default class ConsentHistoryConsentsController extends WebcController {
       this.navigateToPageTag('trial-consents', {
         id: this.model.id,
         keySSI: this.model.keySSI,
+        uid: this.model.uid,
       });
     });
 
@@ -74,6 +76,7 @@ export default class ConsentHistoryConsentsController extends WebcController {
       this.navigateToPageTag('preview-consent', {
         id: this.model.id,
         keySSI: this.model.keySSI,
+        uid: this.model.uid,
         data: model,
         history: JSON.parse(JSON.stringify(this.model.data)),
       });

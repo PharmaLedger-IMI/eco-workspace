@@ -28,9 +28,11 @@ export default class AddNewTrialConsentModalController extends WebcController {
 
     this.consents = props[0].consents || null;
 
-    let { keySSI } = this.history.location.state;
+    let { id, keySSI, uid } = this.history.location.state;
 
+    this.id = id;
     this.keySSI = keySSI;
+    this.uid = uid;
 
     this.consentsService = new ConsentService(this.DSUStorage);
     this.visitsService = new VisitsService(this.DSUStorage);

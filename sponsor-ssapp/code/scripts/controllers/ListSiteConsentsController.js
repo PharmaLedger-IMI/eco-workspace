@@ -43,13 +43,15 @@ export default class ListTrialConsentsController extends WebcController {
     this.trialsService = new TrialsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
     this.consentService = new ConsentService(this.DSUStorage);
-    let { trialId, trialKeySSI, siteKeySSI, siteId } = this.history.location.state;
+    let { trialId, trialKeySSI, trialUid, siteKeySSI, siteId, siteUid } = this.history.location.state;
 
     this.model = {
       trialId,
       trialKeySSI,
+      trialUid,
       siteKeySSI,
       siteId,
+      siteUid,
       site: null,
       consents: [],
       trialConsents: [],
@@ -80,7 +82,8 @@ export default class ListTrialConsentsController extends WebcController {
   async getConsents() {
     this.model.trialConsents = await this.consentService.getTrialConsents(this.model.trialKeySSI);
     console.log(JSON.parse(JSON.stringify(this.model.trialConsents)));
-    const site = await this.sitesService.getSite(this.model.siteKeySSI);
+    const site = await this.sitesService.getSite(this.model.siteUid);
+
     console.log(JSON.parse(JSON.stringify(site)));
     const model = this.getSiteConsents(site);
     this.model.site = site;
@@ -109,7 +112,7 @@ export default class ListTrialConsentsController extends WebcController {
       return result;
     } else {
       const result = consents.map((x) => {
-        const exists = site.consents.find((y) => y.trialConsentKeySSI === x.keySSI);
+        const exists = site.consents.find((y) => y.trialConsentId === x.id);
         if (exists) {
           return {
             ...exists,
@@ -124,7 +127,7 @@ export default class ListTrialConsentsController extends WebcController {
         } else {
           return {
             type: x.type,
-            trialConsentKeySSI: x.keySSI,
+            trialConsentId: x.id,
             trialConsentName: x.name,
             versions: [],
             trialConsentVersion: Math.max.apply(
@@ -206,8 +209,10 @@ export default class ListTrialConsentsController extends WebcController {
       this.navigateToPageTag('site-consent-history', {
         trialId: this.model.trialId,
         trialKeySSI: this.model.trialKeySSI,
+        trialUid: this.model.trialUid,
         siteId: this.model.siteId,
         siteKeySSI: this.model.siteKeySSI,
+        siteUid: this.model.siteUid,
         data: JSON.parse(JSON.stringify(data)),
       });
     });
@@ -216,8 +221,10 @@ export default class ListTrialConsentsController extends WebcController {
       this.navigateToPageTag('site-preview-consent', {
         trialId: this.model.trialId,
         trialKeySSI: this.model.trialKeySSI,
+        trialUid: this.model.trialUid,
         siteId: this.model.siteId,
         siteKeySSI: this.model.siteKeySSI,
+        siteUid: this.model.siteUid,
         data: model,
         history: null,
       });
@@ -227,6 +234,7 @@ export default class ListTrialConsentsController extends WebcController {
       this.navigateToPageTag('sites', {
         id: this.model.trialId,
         keySSI: this.model.trialKeySSI,
+        uid: this.model.trialUid,
       });
     });
   }

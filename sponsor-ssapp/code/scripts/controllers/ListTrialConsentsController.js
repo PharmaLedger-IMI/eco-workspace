@@ -43,11 +43,12 @@ export default class ListTrialConsentsController extends WebcController {
     this.trialsService = new TrialsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
     this.consentService = new ConsentService(this.DSUStorage);
-    let { id, keySSI } = this.history.location.state;
+    let { id, keySSI, uid } = this.history.location.state;
 
     this.model = {
       id,
       keySSI,
+      uid,
       consents: [],
       pagination: this.pagination,
       headers: this.headers,
@@ -74,6 +75,7 @@ export default class ListTrialConsentsController extends WebcController {
 
   async getConsents() {
     const consents = await this.consentService.getTrialConsents(this.model.keySSI);
+    debugger;
     console.log(JSON.parse(JSON.stringify(consents)));
     this.setConsentsModel(JSON.parse(JSON.stringify(consents)));
     this.consents = consents;
@@ -179,6 +181,7 @@ export default class ListTrialConsentsController extends WebcController {
       this.navigateToPageTag('consent-history', {
         id: this.model.id,
         keySSI: this.model.keySSI,
+        uid: this.model.uid,
         data: JSON.parse(JSON.stringify(data)),
       });
     });
@@ -187,6 +190,7 @@ export default class ListTrialConsentsController extends WebcController {
       this.navigateToPageTag('preview-consent', {
         id: this.model.id,
         keySSI: this.model.keySSI,
+        uid: this.model.uid,
         data: model,
         history: null,
       });
