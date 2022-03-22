@@ -6,6 +6,7 @@ const { getCommunicationServiceInstance } = commonServices.CommunicationService;
 const { getDidServiceInstance } = commonServices.DidService;
 import SitesService from '../services/SitesService.js';
 import ConsentService from '../services/ConsentService.js';
+const Constants = commonServices.Constants;
 
 // import eventBusService from '../services/EventBusService.js';
 // import { Topics } from '../constants/topics.js';
@@ -177,7 +178,13 @@ export default class ListTrialConsentsController extends WebcController {
           // const response = event.detail;
           await this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          // this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_CONSENT, response.keySSI, 'Trial consent', selectedSite.did);
+          // debugger;
+          // this.sendMessageToHco(
+          //   Constants.MESSAGES.HCO.ADD_CONSENT,
+          //   response.sReadSSI,
+          //   'Site consent',
+          //   selectedSite.did
+          // );
         },
         (event) => {
           const error = event.detail || null;

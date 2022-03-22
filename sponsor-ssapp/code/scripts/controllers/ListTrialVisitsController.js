@@ -3,6 +3,7 @@ const commonServices = require('common-services');
 const { getDidServiceInstance } = commonServices.DidService;
 import ConsentService from '../services/ConsentService.js';
 import VisitsService from '../services/VisitsService.js';
+const Constants = commonServices.Constants;
 
 // import eventBusService from '../services/EventBusService.js';
 // import { Topics } from '../constants/topics.js';
@@ -79,8 +80,14 @@ export default class ListTrialVisitsController extends WebcController {
         'add-new-trial-visits',
         () => {
           this.getVisits();
-          // this.showFeedbackToast('Result', 'Visits were added successfully', 'toast');
-          // this.sendMessageToHco('add-econsent-version', response.keySSI, 'New consent version', selectedSite.did);
+          this.showFeedbackToast('Result', 'Visits were added successfully', 'toast');
+          // debugger;
+          // this.sendMessageToHco(
+          //   Constants.MESSAGES.HCO.UPDATE_BASE_PROCEDURES,
+          //   site.uid,
+          //   'New consent version',
+          //   selectedSite.did
+          // );
           // eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
         },
         (event) => {
