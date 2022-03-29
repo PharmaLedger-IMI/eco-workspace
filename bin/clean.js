@@ -41,10 +41,10 @@ function  walk(dir, filterFiles, filterFolders, done) {
 
 function filterFiles(name){
 
-    if(name.endsWith("\\seed") || name.endsWith("/seed")){
-            console.log("Deleting seed file:", name);
-            fs.unlinkSync(name);
-        }
+    if(name.endsWith("cardinal\\seed") || name.endsWith("cardinal/seed")){
+        console.log("Deleting seed file:", name);
+        fs.unlinkSync(name);
+    }
     return undefined;
 }
 
@@ -58,7 +58,7 @@ function deleteFolderContent(name, text){
         function(name){
         },
         function(err, result){}
-        );
+    );
 }
 
 function filterFolders(name){
@@ -66,10 +66,6 @@ function filterFolders(name){
         if(name.endsWith("/anchors") || name.endsWith("\\anchors")){
             deleteFolderContent(name, "Deleting anchors:")
         }
-
-        // if(name.endsWith("/bundles") || name.endsWith("\\bundles")){
-        //     deleteFolderContent(name, "Deleting bundles:")
-        // }
 
         if(name.indexOf("/brick-storage/") > 0 || name.indexOf("\\brick-storage\\") > 0 ){
             deleteFolderContent(name, "Deleting bricks:")
@@ -85,4 +81,3 @@ walk(myPath, filterFiles, filterFolders, function(err, result){
     })
 
 });
-
