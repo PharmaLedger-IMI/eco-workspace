@@ -204,7 +204,6 @@ export default class ListSitesController extends WebcController {
         (event) => {
           const response = event.detail;
           this.getSites();
-          debugger;
           this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_SITE, response.sReadSSI, 'Site added', response.did);
           this.showFeedbackToast('Result', 'Site added successfully', 'toast');
           eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);

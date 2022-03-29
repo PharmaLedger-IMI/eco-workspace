@@ -26,8 +26,6 @@ export default class VisitsService extends DSUService {
       keySSI: visits.keySSI,
       uid: visits.uid,
       sReadSSI: visits.sReadSSI,
-      uid: visits.uid,
-      sReadSSI: visits.sReadSSI,
       visits: [],
     });
     return visits;

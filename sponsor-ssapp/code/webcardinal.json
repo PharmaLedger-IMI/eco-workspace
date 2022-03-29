@@ -1,6 +1,6 @@
 {
   "theme": "clinical-site-theme",
-  "translations": "false",
+  "translations": false,
   "logLevel": "none",
   "pages": [
     {

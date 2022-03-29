@@ -53,6 +53,7 @@ export default class SitesService extends DSUService {
       trialName: trial.name,
       trialSponsor: trial.sponsor,
       trialId: trial.id,
+      trialSReadSSI:trial.sReadSSI
     });
 
     await this.unmountEntityAsync(status.uid, '/statuses');
