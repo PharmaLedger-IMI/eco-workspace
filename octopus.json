@@ -44,7 +44,7 @@
           "type": "smartClone",
           "target": ".",
           "collectLog": false,
-		  "commit":"efc69bd80aa9b6efe99c5c6701c0f96b72129947"    
+          "commit": "e7c923dbaf6cbe75041bcfb1dd8600b8ddb0508d"
         },
         {
           "type": "execute",
@@ -331,7 +331,7 @@
           "cmd": "cd dossier-explorer-wallet-prototype && npm run build"
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./dossier-explorer-wallet-prototype/seed",
           "target": "./apihub-root/dsu-explorer/wallet-patch/seed",
           "options": {
@@ -349,7 +349,7 @@
           "cmd": "cd dossier-explorer-ssapp && npm run build"
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./dossier-explorer-ssapp/seed",
           "target": "./apihub-root/dsu-explorer/apps-patch/dossier-explorer-ssapp/seed",
           "options": {
@@ -393,7 +393,7 @@
           "cmd": "cd sponsor-ssapp && npm run build"
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./sponsor-ssapp/seed",
           "target": "./apihub-root/sponsor-wallet/apps-patch/sponsor-ssapp/seed",
           "options": {
@@ -401,7 +401,7 @@
           }
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./sponsor-ssapp/seed",
           "target": "./apihub-root/sponsor-wallet/wallet-patch/seed",
           "options": {
@@ -423,7 +423,7 @@
           "cmd": "cd trial-participant-ssapp && npm run build"
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./trial-participant-ssapp/seed",
           "target": "./apihub-root/trial-participant-wallet/apps-patch/trial-participant-ssapp/seed",
           "options": {
@@ -431,7 +431,7 @@
           }
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./trial-participant-ssapp/seed",
           "target": "./apihub-root/trial-participant-wallet/wallet-patch/seed",
           "options": {
@@ -453,7 +453,7 @@
           "cmd": "cd clinical-site-ssapp && npm run build"
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./clinical-site-ssapp/seed",
           "target": "./apihub-root/clinical-site-wallet/wallet-patch/seed",
           "options": {
@@ -461,7 +461,7 @@
           }
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./clinical-site-ssapp/seed",
           "target": "./apihub-root/clinical-site-wallet/apps-patch/clinical-site-ssapp/seed",
           "options": {
