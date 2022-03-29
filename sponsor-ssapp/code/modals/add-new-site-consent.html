@@ -1,0 +1,38 @@
+<h2 slot="header">New Consent</h2>
+
+<div class="d-flex flex-column justify-content-between">
+  <div style="margin-left: 10px">
+    <label>Trial Consent Type</label>
+    <input class="form-control" value="@consent.type" disabled="true"></input>
+  </div>
+
+  <div style="margin-left: 10px">
+    <label>Trial Consent Name</label>
+    <input class="form-control" value="@consent.trialConsentName" disabled="true"></input>
+  </div>
+
+  <div style="margin-left: 10px">
+    <label>Trial Consent Version</label>
+    <input class="form-control" value="@consent.trialConsentVersion" disabled="true"></input>
+  </div>
+
+  <div style="margin-left: 10px; margin-bottom: 10px; margin-right: 10px">
+    <label>{{ @consent.name.label }}</label><br>
+    <input class="form-control" data-view-model="@consent.name"></input>
+    <span data-if="@consent.name.invalidValue">
+      <i class="red-invalid fas fa-times"></i>
+      <small class="form-text text-danger">A consent with this name already exits</small>
+    </span>
+  </div>
+  <div style="margin: 10px">
+    <label>{{ @consent.version.label }}</label><br>
+    <input class="form-control" id="version-field" data-view-model="@consent.version" event-name="version-changed"></input>
+    <span data-if="@consent.version.invalidValue">
+      <i class="red-invalid fas fa-times"></i>
+      <small class="form-text text-danger">A consent with this version already exits</small>
+    </span>
+  </div>
+  <psk-files-chooser style="margin: 10px" view-model="consent.attachment" event-name="add-file"> </psk-files-chooser>
+</div>
+
+<button class="btn btn-primary" slot="footer" data-tag="create-consent">Submit</button>

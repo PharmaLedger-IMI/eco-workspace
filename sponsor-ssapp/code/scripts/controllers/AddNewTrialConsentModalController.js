@@ -4,28 +4,18 @@ import ConsentService from '../services/ConsentService.js';
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
 
-export default class AddNewConsentModalController extends WebcController {
-  typesArray = Object.entries(consentTypeEnum)
-    .map(([k, v]) => `${v}, ${v}`)
-    .join(' | ');
+export default class AddNewTrialConsentModalController extends WebcController {
+  typesArray = Object.entries(consentTypeEnum).map(([_k, v]) => ({ value: v, label: v }));
 
   type = {
     label: 'Select type',
     placeholder: 'Please select an option',
     required: true,
     selectOptions: this.typesArray,
-  };
-
-  existingNames = {
-    disabled: true,
-    label: 'Existing name:',
-    placeholder: 'Please select an option',
-    required: false,
-    options: [],
+    disabled: false,
   };
 
   name = {
-    readOnly: false,
     label: 'Name',
     name: 'name',
     required: true,
@@ -67,46 +57,36 @@ export default class AddNewConsentModalController extends WebcController {
     this.existingIds = props[0].existingIds || null;
     this.existingVersions = props[0].existingVersions || null;
     this.site = props[0].site || null;
-    this.consents = props[0].consents || [];
 
-    let { id, keySSI } = this.history.location.state;
+    let { id, keySSI, uid } = this.history.location.state;
 
     this.keySSI = keySSI;
+    this.trialId = id;
+    this.trialUid = uid;
 
     this.consentsService = new ConsentService(this.DSUStorage);
 
     if (this.isUpdate) {
       this.setModel({
         consent: {
-          id: { ...this.id, value: this.isUpdate.id, readOnly: true },
-          name: { ...this.name, value: this.isUpdate.name, readOnly: true },
+          id: { ...this.id, value: this.isUpdate.id, disabled: true },
+          name: { ...this.name, value: this.isUpdate.name, disabled: true },
           type: { ...this.type, value: this.isUpdate.type, disabled: true },
           version: this.version,
           attachment: this.attachment,
-          existingNames: {
-            ...this.existingNames,
-            options: this.consents.map((x) => ({ label: x, value: x, selected: false })),
-          },
         },
         submitButtonDisabled: true,
-        disableRadio: true,
-        consentsExists: this.consents.length > 0,
       });
     } else {
       this.setModel({
         consent: {
           id: this.id,
           name: this.name,
-          existingNames: {
-            ...this.existingNames,
-            options: this.consents.map((x) => ({ label: x, value: x, selected: false })),
-          },
           type: this.type,
           version: this.version,
           attachment: this.attachment,
         },
         submitButtonDisabled: true,
-        disableRadio: this.consents.length === 0,
       });
     }
 
@@ -152,43 +132,13 @@ export default class AddNewConsentModalController extends WebcController {
       if (event.data) this.file = event.data;
     });
 
-    document.getElementById('name-existing').addEventListener('change', (x) => {
-      this.model.consent.existingNames.disabled = false;
-      this.model.consent.name.readOnly = true;
-    });
-
-    document.getElementById('name-new').addEventListener('change', (x) => {
-      this.model.consent.existingNames.disabled = true;
-      this.model.consent.name.readOnly = false;
-    });
-
-    this.onTagClick('create-consent', async (event) => {
+    this.onTagClick('create-consent', async () => {
       try {
         if (!this.isUpdate) {
           let valid = true;
-          let name = '';
-          if (this.model.isNotUpdate) {
-            const nameSelected = document.querySelector('input[name="name"]:checked').value;
-            if (nameSelected === 'new') {
-              name = this.model.consent.name.value;
-            } else {
-              name = this.model.consent.existingNames.value;
-            }
-            if (!name || name === '') {
-              valid = false;
-            }
-          } else {
-            name = this.model.consent.name.value;
-          }
-
           for (const x in this.model.consent) {
             // TODO: check if file selected
-            if (
-              (!this.model.consent[x].value || this.model.consent[x].value === '') &&
-              x !== 'attachment' &&
-              x !== 'name' &&
-              x !== 'existingNames'
-            ) {
+            if ((!this.model.consent[x].value || this.model.consent[x].value === '') && x !== 'attachment') {
               this.model.consent[x] = {
                 ...this.model.consent[x],
                 invalidValue: true,
@@ -207,11 +157,12 @@ export default class AddNewConsentModalController extends WebcController {
             valid = false;
           }
 
+          console.log(JSON.stringify(this.model.consent));
           if (!valid) return;
 
           this.model.submitButtonDisabled = true;
           const consent = {
-            name,
+            name: this.model.consent.name.value,
             type: this.model.consent.type.value,
             id: this.model.consent.id.value,
             versions: [
@@ -222,7 +173,7 @@ export default class AddNewConsentModalController extends WebcController {
               },
             ],
           };
-          const result = await this.consentsService.createConsent(consent, this.keySSI, this.site);
+          const result = await this.consentsService.createTrialConsent(consent, this.trialId);
           this.model.submitButtonDisabled = false;
           this.send('confirmed', result);
         } else {
@@ -242,9 +193,6 @@ export default class AddNewConsentModalController extends WebcController {
             valid = false;
           }
 
-          console.log(this.existingVersions);
-          console.log(this.model.consent.version.value);
-
           if (this.existingVersions.indexOf(this.model.consent.version.value) > -1 || !this.file || !this.file[0]) {
             valid = false;
           }
@@ -257,7 +205,8 @@ export default class AddNewConsentModalController extends WebcController {
             file: this.file[0],
           };
 
-          const result = await this.consentsService.updateConsent(version, this.keySSI, this.site, this.isUpdate);
+          // console.log(JSON.stringify(this.site, null, 2), JSON.stringify(this.isUpdate, null, 2));
+          const result = await this.consentsService.updateTrialConsent(version, this.trialId, this.site, this.isUpdate);
           this.model.submitButtonDisabled = false;
           this.send('confirmed', result);
         }

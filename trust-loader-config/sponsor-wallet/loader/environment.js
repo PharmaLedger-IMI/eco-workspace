@@ -9,7 +9,7 @@ export default {
   didDomain:'eco',
   vaultDomain:"eco",
   enclaveType:"WalletDBEnclave",
-  sw: true,
+  sw: false,
   pwa: false,
   workspace: 'eco',
   'legenda for properties':

@@ -27,3 +27,4 @@ env.json.devel
 /themes/trial-participant-theme
 /themes/clinical-site-theme
 /clinical-site-ssapp
+.eslintrc.js

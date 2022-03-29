@@ -1,8 +1,9 @@
+// eslint-disable-next-line no-undef
 const commonServices = require('common-services');
 import TrialsService from '../services/TrialsService.js';
 import { trialStatusesEnum, trialTableHeaders, trialStagesEnum } from '../constants/trial.js';
-const {getCommunicationServiceInstance} = commonServices.CommunicationService;
-const {getDidServiceInstance } = commonServices.DidService;
+const { getCommunicationServiceInstance } = commonServices.CommunicationService;
+const { getDidServiceInstance } = commonServices.DidService;
 const MessageHandlerService = commonServices.MessageHandlerService;
 const Constants = commonServices.Constants;
 import ParticipantsService from '../services/ParticipantsService.js';
@@ -16,8 +17,8 @@ import { senderType } from '../constants/participant.js';
 const { WebcController } = WebCardinal.controllers;
 
 export default class ListTrialsController extends WebcController {
-  statusesArray = Object.entries(trialStatusesEnum).map(([k, v]) => v);
-  stagesArray = Object.entries(trialStagesEnum).map(([k, v]) => v);
+  statusesArray = Object.entries(trialStatusesEnum).map(([_k, v]) => v);
+  stagesArray = Object.entries(trialStagesEnum).map(([_k, v]) => v);
   itemsPerPageArray = [5, 10, 15, 20, 30];
 
   headers = trialTableHeaders;
@@ -70,8 +71,8 @@ export default class ListTrialsController extends WebcController {
     itemsPerPage: 10,
     totalPages: null,
     itemsPerPageOptions: {
-      selectOptions: this.itemsPerPageArray.join(' | '),
-      value: this.itemsPerPageArray[1].toString(),
+      selectOptions: this.itemsPerPageArray.map((x) => ({ value: x, label: x })),
+      value: this.itemsPerPageArray[1].value,
     },
   };
 
@@ -95,11 +96,10 @@ export default class ListTrialsController extends WebcController {
       tableLength: 7,
     };
 
-
     this.didService = getDidServiceInstance();
-    this.didService.getDID().then((did)=>{
+    this.didService.getDID().then((did) => {
       this.model.did = did;
-    })
+    });
 
     this.listenForMessages();
 
@@ -111,7 +111,7 @@ export default class ListTrialsController extends WebcController {
   }
 
   listenForMessages() {
-    MessageHandlerService.init(async (err, data) =>{
+    MessageHandlerService.init(async (err, data) => {
       if (err) {
         return console.error(err);
       }
@@ -136,11 +136,7 @@ export default class ListTrialsController extends WebcController {
         }
         case 'update-site-status': {
           if (data.stageInfo.siteSSI && data.stageInfo.status && data.ssi) {
-            await this.sitesService.updateSiteStage(
-              data.ssi,
-              data.stageInfo.siteSSI,
-              data.stageInfo.status
-            );
+            await this.sitesService.updateSiteStage(data.ssi, data.stageInfo.siteSSI, data.stageInfo.status);
           }
         }
       }
@@ -162,21 +158,13 @@ export default class ListTrialsController extends WebcController {
     }
   }
 
-  // updateCountryOptions(trials) {
-  //   const countries = [];
-
-  //   trials.forEach((trial) =>
-  //     trial.countries.forEach((country) => !countries.includes(country) && countries.push(country))
-  //   );
-
-  //   this.model.countries = { ...this.countries, options: countries.map((x) => ({ label: x, value: x })) };
-  // }
-
   setTrialsModel(trials) {
-    const model = trials.map((trial) => ({
-      ...trial,
-      // countries: trial.countries.join(),
-    }));
+    const model = trials
+      .map((trial) => ({
+        ...trial,
+        created: new Date(trial.created).toLocaleDateString('en-UK'),
+      }))
+      .sort((a, b) => a.id - b.id);
 
     this.model.trials = model;
     this.model.data = model;
@@ -209,6 +197,21 @@ export default class ListTrialsController extends WebcController {
   }
 
   attachEvents() {
+    this.model.onChange('statuses.value', () => {
+      this.model.clearButtonDisabled = false;
+      this.filterData();
+    });
+
+    this.model.onChange('stages.value', () => {
+      this.model.clearButtonDisabled = false;
+      this.filterData();
+    });
+
+    this.model.onChange('search.value', () => {
+      this.model.clearButtonDisabled = false;
+      this.filterData();
+    });
+
     this.model.addExpression(
       'trialArrayNotEmpty',
       () => !!(this.model.trials && Array.isArray(this.model.trials) && this.model.trials.length > 0),
@@ -219,15 +222,14 @@ export default class ListTrialsController extends WebcController {
       this.feedbackEmitter = e.detail;
     });
 
-    this.on('run-filters', (e) => {
+    this.on('run-filters', () => {
       this.filterData();
     });
 
-    this.onTagClick('add-trial', async (event) => {
+    this.onTagClick('add-trial', async () => {
       this.showModalFromTemplate(
         'add-new-trial',
-        (event) => {
-          const response = event.detail;
+        () => {
           this.getTrials();
           this.showFeedbackToast('Result', 'Trial added successfully', 'toast');
         },
@@ -247,34 +249,53 @@ export default class ListTrialsController extends WebcController {
       );
     });
 
-    this.on('delete-trial', async (event) => {
-      try {
-        const trial = await this.trialsService.getTrialFromDB(event.data);
-        const sites = await this.sitesService.getSites(trial.keySSI);
-        await this.trialsService.deleteTrial(event.data);
-        this.showFeedbackToast('Result', 'Trial deleted successfully', 'toast');
-        this.getTrials();
-        sites.forEach((site) => {
-          this.sendMessageToHco('delete-trial', event.data, 'the trial was removed ', site.did);
-        });
-      } catch (error) {
-        this.showFeedbackToast('Result', 'ERROR: The was an error, trial cannot be deleted right now', 'toast');
-      }
-    });
+    // this.on('delete-trial', async (event) => {
+    //   try {
+    //     const trial = await this.trialsService.getTrialFromDB(event.data);
+    //     const sites = await this.sitesService.getSites(trial.keySSI);
+    //     await this.trialsService.deleteTrial(event.data);
+    //     this.showFeedbackToast('Result', 'Trial deleted successfully', 'toast');
+    //     this.getTrials();
+    //     sites.forEach((site) => {
+    //       this.sendMessageToHco('delete-trial', event.data, 'the trial was removed ', site.did);
+    //     });
+    //   } catch (error) {
+    //     this.showFeedbackToast('Result', 'ERROR: The was an error, trial cannot be deleted right now', 'toast');
+    //   }
+    // });
 
-    this.on('view-trial', async (event) => {
-      this.navigateToPageTag('trial', {
-        id: event.data,
-        keySSI: this.trials.find((x) => x.id === event.data).keySSI,
+    this.onTagClick('view-trial-sites', async (model) => {
+      this.navigateToPageTag('sites', {
+        id: model.id,
+        keySSI: model.keySSI,
+        uid: model.uid,
       });
     });
 
-    this.on('filters-changed', async (event) => {
-      this.model.clearButtonDisabled = false;
-      this.filterData();
+    this.onTagClick('view-trial-visits', async (model) => {
+      this.navigateToPageTag('trial-visits', {
+        id: model.id,
+        keySSI: model.keySSI,
+        uid: model.uid,
+      });
     });
 
-    this.onTagClick('filters-cleared', async (event) => {
+    this.onTagClick('view-trial-consents', async (model) => {
+      this.navigateToPageTag('trial-consents', {
+        id: model.id,
+        keySSI: model.keySSI,
+        uid: model.uid,
+      });
+    });
+
+    this.onTagClick('view-trial-status', async (model) => {
+      this.navigateToPageTag('sites', {
+        id: model.id,
+        keySSI: model.keySSI,
+        uid: model.uid,
+      });
+    });
+    this.onTagClick('filters-cleared', async () => {
       this.model.clearButtonDisabled = true;
       // this.model.countries.value = null;
       this.model.statuses.value = null;
@@ -293,11 +314,11 @@ export default class ListTrialsController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage, receiverDid) {
-      let communicationService = getCommunicationServiceInstance();
-      communicationService.sendMessage(receiverDid, {
-        operation: operation,
-        ssi: ssi,
-        shortDescription: shortMessage,
-      });
+    let communicationService = getCommunicationServiceInstance();
+    communicationService.sendMessage(receiverDid, {
+      operation: operation,
+      ssi: ssi,
+      shortDescription: shortMessage,
+    });
   }
 }

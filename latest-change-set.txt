@@ -673,6 +673,7 @@
     @cardinal/barcode
     @cardinal/core
     #Fix for leaflet ssapp webcardinal migration
+<<<<<<< HEAD
     Add dist folder for each WebCardinal bundle from release
     fixed createMarketplace swarm
     #583 Remove progress percentage and refresh button from loader
@@ -686,3 +687,5 @@
 
     Merge branch 'master' of https://github.com/PharmaLedger-IMI/trial-participant-ssapp
     breadcrumb work WIP
+=======
+>>>>>>> ff3cf030abbdb9a1ffe1cd3faa0117defb5c3877
