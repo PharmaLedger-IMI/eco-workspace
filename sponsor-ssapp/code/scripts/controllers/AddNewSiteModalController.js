@@ -5,9 +5,7 @@ import SitesService from '../services/SitesService.js';
 const { WebcController } = WebCardinal.controllers;
 
 export default class AddNewSiteModalController extends WebcController {
-  trialCountriesArray = Object.entries(countryListAlpha2)
-    .map(([k, v]) => `${v}, ${k}`)
-    .join(' | ');
+  trialCountriesArray = Object.entries(countryListAlpha2).map(([k, v]) => ({ value: k, label: v }));
 
   countries = {
     label: 'List of countries',
@@ -46,7 +44,10 @@ export default class AddNewSiteModalController extends WebcController {
 
     this.existingIds = props[0].existingIds;
     this.existingDids = props[0].existingDids;
-    this.trialKeySSI = props[0].trialKeySSI;
+    let { id, keySSI, uid } = this.history.location.state;
+    this.trialUid = uid;
+    this.trialKeySSI = keySSI;
+    this.trialId = id;
 
     console.log(props);
 
@@ -100,7 +101,7 @@ export default class AddNewSiteModalController extends WebcController {
       }, 300);
     });
 
-    this.onTagClick('create-site', async (event) => {
+    this.onTagClick('create-site', async () => {
       try {
         let valid = true;
         for (const x in this.model.site) {
@@ -134,10 +135,10 @@ export default class AddNewSiteModalController extends WebcController {
           name: this.model.site.name.value,
           id: this.model.site.id.value,
           did: this.model.site.did.value,
-          country: this.model.site.countries.value[0],
+          country: this.model.site.countries.value,
           consents: [],
         };
-        const result = await this.sitesService.createSite(site, this.trialKeySSI);
+        const result = await this.sitesService.createSite(site, this.trialId);
         this.model.submitButtonDisabled = false;
         this.send('confirmed', result);
       } catch (error) {

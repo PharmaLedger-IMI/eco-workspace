@@ -9,7 +9,7 @@ export default class TrialController extends WebcController {
       id: null,
     });
 
-    let { id, keySSI } = this.history.location.state;
+    let { id } = this.history.location.state;
 
     this.model.id = id;
 

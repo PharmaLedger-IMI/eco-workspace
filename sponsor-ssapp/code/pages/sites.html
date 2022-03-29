@@ -1,11 +1,17 @@
-<div class="main-container">
-  <div class="trial-header">
-    <h1 class="trial-title"><label>Trials</label></h1>
-  </div>
-  <div class="page-content">
-    <div class="container">
-      <link rel="stylesheet" href="assets/css/trials.css" />
-      <webc-container controller="ListTrialsController">
+<webc-container controller="ListSitesController">
+  <link rel="stylesheet" href="assets/css/trials.css" />
+  <div class="main-container">
+    <div class="trial-header">
+      <h1 class="trial-title">
+        <webc-link tag="trials">Trials</webc-link>
+        <span> / </span>
+        <label>{{ @id }}</label>
+        <span> / </span>
+        <label>Sites</label>
+      </h1>
+    </div>
+    <div class="page-content">
+      <div class="container">
         <div class="input-group share-did p-2">
           <input type="text" class="form-control share-did-input" readonly value="@did" placeholder="Loading DID..." />
           <div class="input-group-append">
@@ -38,20 +44,20 @@
             </button>
           </div>
           <div class="align-self-end">
-            <button class="btn btn-primary" data-tag="add-trial">Add Trial</button>
+            <button class="btn btn-primary" data-tag="add-site">Add Site</button>
           </div>
         </div>
 
-        <div data-if="@trialArrayNotEmpty">
+        <div data-if="@sitesArrayNotEmpty">
           <div slot="true">
-            <webc-template template="table-template" data-view-model="@"></webc-template>
+            <webc-template template="table-sites" data-view-model="@"></webc-template>
           </div>
           <div slot="false">
-            <div>No trials available.</div>
+            <div>No sites available.</div>
           </div>
         </div>
         <psk-list-feedbacks messages-to-display="5" time-alive="3000"> </psk-list-feedbacks>
-      </webc-container>
+      </div>
     </div>
   </div>
-</div>
+</webc-container>

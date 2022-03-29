@@ -8,7 +8,8 @@
     "build": "node ./node_modules/octopus/scripts/buildDSU.js",
     "postbuild": "node ./node_modules/octopus/scripts/run postbuild devmode",
     "update": "npm install",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint --ext .js --ignore-path .gitignore ."
   },
   "repository": {
     "type": "git",
@@ -24,9 +25,10 @@
     "octopus": "git+http://github.com/privatesky/octopus.git"
   },
   "devDependencies": {
-    "ionicons": "^5.5.1",
     "@ionic/cli": "^6.13.1",
     "@ionic/core": "^5.6.0",
-    "@ionic/pwa-elements": "^3.0.2"
+    "@ionic/pwa-elements": "^3.0.2",
+    "eslint": "^8.9.0",
+    "ionicons": "^5.5.1"
   }
 }

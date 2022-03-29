@@ -5,14 +5,6 @@ export const consentTypeEnum = {
 
 export const consentTableHeaders = [
   {
-    column: 'id',
-    label: 'Id',
-    notSortable: false,
-    type: 'number',
-    asc: null,
-    desc: null,
-  },
-  {
     column: 'name',
     label: 'Consent Name',
     notSortable: false,
@@ -21,11 +13,9 @@ export const consentTableHeaders = [
     desc: null,
   },
   {
-    column: 'version',
-    label: 'Version',
+    column: 'attachment',
+    label: 'Attachment',
     notSortable: false,
-    type: 'string',
-    asc: null,
     desc: null,
   },
   {
@@ -41,14 +31,67 @@ export const consentTableHeaders = [
     desc: null,
   },
   {
+    column: 'version',
+    label: 'Version',
+    notSortable: false,
+    type: 'string',
+    asc: null,
+    desc: null,
+  },
+  {
+    column: null,
+    label: 'Options',
+    notSortable: true,
+    desc: null,
+  },
+];
+
+export const siteConsentTableHeaders = [
+  {
+    column: 'trialConsentName',
+    label: 'Main Cons. Name',
+    notSortable: false,
+    type: 'string',
+    asc: null,
+    desc: null,
+  },
+  {
+    column: 'trialConsentVersion',
+    label: 'Main Cons. Version',
+    notSortable: false,
+    type: 'string',
+    asc: null,
+    desc: null,
+  },
+  {
     column: 'attachment',
     label: 'Attachment',
     notSortable: false,
     desc: null,
   },
   {
+    column: 'versionDate',
+    label: 'Date',
+    notSortable: false,
+    desc: null,
+  },
+  {
+    column: 'type',
+    label: 'Type',
+    notSortable: false,
+    desc: null,
+  },
+  {
+    column: 'version',
+    label: 'Version',
+    notSortable: false,
+    type: 'string',
+    asc: null,
+    desc: null,
+  },
+  {
     column: null,
-    label: 'Controls',
+    label: 'Options',
     notSortable: true,
     desc: null,
   },

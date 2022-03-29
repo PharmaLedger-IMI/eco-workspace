@@ -1,6 +1,8 @@
+/* eslint-disable no-case-declarations */
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
 
+// eslint-disable-next-line no-undef
 const commonServices = require('common-services');
 const SharedStorage = commonServices.SharedStorage;
 const Constants = commonServices.Constants;
@@ -23,15 +25,15 @@ export default class TrialDetailsController extends WebcController {
     this.sitesService = new SitesService(this.DSUStorage);
     this.trialsService = new TrialsService(this.DSUStorage);
     this.visitsService = new VisitsService(this.DSUStorage);
-    this.CommunicationService = CommunicationService.getCommunicationServiceInstance()
+    this.CommunicationService = CommunicationService.getCommunicationServiceInstance();
     this.consentService = new ConsentService(this.DSUStorage);
 
-    let { id, keySSI } = this.history.location.state;
+    let { id } = this.history.location.state;
 
-    const menu = _.map(menuOptions, (x, idx) => ({
+    const menu = _.map(menuOptions, (x) => ({
       name: x,
       selected: false,
-      selectedOption: _.map(menuOptions, (x) => false),
+      selectedOption: _.map(menuOptions, () => false),
       data: false,
       loading: true,
     }));
@@ -108,7 +110,7 @@ export default class TrialDetailsController extends WebcController {
   }
 
   attachEvents() {
-    this.onTagClick('select-menu', async (model, target, event) => {
+    this.onTagClick('select-menu', async (model, target) => {
       const data = target.getAttribute('data-custom');
       const menu = JSON.parse(JSON.stringify(this.model.menu));
       const option = menu.find((x) => x.name === data);
@@ -122,7 +124,7 @@ export default class TrialDetailsController extends WebcController {
       }
     });
 
-    this.onTagClick('select-country', async (model, target, event) => {
+    this.onTagClick('select-country', async (model, target) => {
       const data = target.getAttribute('data-custom');
       await this.getSites();
       let menuData = JSON.parse(
@@ -132,7 +134,7 @@ export default class TrialDetailsController extends WebcController {
       this.model.menu.find((x) => x.name === menuOptions.CountriesSites).data = menuData;
     });
 
-    this.onTagClick('country-on-hold', async (model, target, event) => {
+    this.onTagClick('country-on-hold', async (model, target) => {
       const data = target.getAttribute('data-custom');
       const selectedCountry = this.model.sites.find((x) => x.country === data);
       for (const site of selectedCountry.sites) {
@@ -143,7 +145,7 @@ export default class TrialDetailsController extends WebcController {
       eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
     });
 
-    this.onTagClick('country-resume', async (model, target, event) => {
+    this.onTagClick('country-resume', async (model, target) => {
       const data = target.getAttribute('data-custom');
       const selectedCountry = this.model.sites.find((x) => x.country === data);
       for (const site of selectedCountry.sites) {
@@ -154,7 +156,7 @@ export default class TrialDetailsController extends WebcController {
       eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
     });
 
-    this.onTagClick('country-terminate', async (model, target, event) => {
+    this.onTagClick('country-terminate', async (model, target) => {
       const data = target.getAttribute('data-custom');
       const selectedCountry = this.model.sites.find((x) => x.country === data);
       for (const site of selectedCountry.sites) {
@@ -165,12 +167,12 @@ export default class TrialDetailsController extends WebcController {
       eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
     });
 
-    this.onTagClick('site-edit', async (model, target, event) => {
-      const data = target.getAttribute('data-custom');
+    this.onTagClick('site-edit', async (_model, _target) => {
+      // const data = target.getAttribute('data-custom');
       // TODO
     });
 
-    this.onTagClick('site-on-hold', async (model, target, event) => {
+    this.onTagClick('site-on-hold', async (model, target) => {
       const data = target.getAttribute('data-custom');
       await this.changeSiteStatus(siteStatusesEnum.OnHold, data);
       await this.getSites();
@@ -178,7 +180,7 @@ export default class TrialDetailsController extends WebcController {
       eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
     });
 
-    this.onTagClick('site-resume', async (model, target, event) => {
+    this.onTagClick('site-resume', async (model, target) => {
       const data = target.getAttribute('data-custom');
       await this.changeSiteStatus(siteStatusesEnum.Active, data);
       await this.getSites();
@@ -186,7 +188,7 @@ export default class TrialDetailsController extends WebcController {
       eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
     });
 
-    this.onTagClick('site-terminate', async (model, target, event) => {
+    this.onTagClick('site-terminate', async (model, target) => {
       const data = target.getAttribute('data-custom');
       await this.changeSiteStatus(siteStatusesEnum.Cancelled, data);
       await this.getSites();
@@ -198,7 +200,7 @@ export default class TrialDetailsController extends WebcController {
       this.feedbackEmitter = e.detail;
     });
 
-    this.onTagClick('add-site', async (event) => {
+    this.onTagClick('add-site', async () => {
       console.log(JSON.stringify(this.model.sites, null, 2));
       this.showModalFromTemplate(
         'add-new-site',
@@ -219,7 +221,7 @@ export default class TrialDetailsController extends WebcController {
         {
           controller: 'AddNewSiteModalController',
           disableExpanding: false,
-          disableBackdropClosing: false,
+          disableBackdropClosing: true,
           existingIds: _.flatten(this.model.sites.map((x) => x.sites.map((y) => y.id))) || [],
           existingDids: _.flatten(this.model.sites.map((x) => x.sites.map((y) => y.did))) || [],
           trialKeySSI: this.model.trial.keySSI,
@@ -227,7 +229,36 @@ export default class TrialDetailsController extends WebcController {
       );
     });
 
-    this.onTagClick('add-trial-consent', async (model, target, event) => {
+    this.onTagClick('add-trial-consent', async () => {
+      this.showModalFromTemplate(
+        'add-new-trial-consent',
+        async (_event) => {
+          // const response = event.detail;
+          await this.getConsents();
+          this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
+          // this.model.sites.forEach((country) =>
+          //   country.sites.forEach((site) => this.sendMessageToHco('add-trial-consent', null, 'Trial consent', site.did))
+          // );
+          eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
+        },
+        (event) => {
+          const error = event.detail || null;
+          if (error instanceof Error) {
+            console.log(error);
+            this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new consent', 'toast');
+          }
+        },
+        {
+          controller: 'AddNewTrialConsentModalController',
+          disableExpanding: false,
+          disableBackdropClosing: true,
+          isUpdate: false,
+          existingIds: this.model.consents.map((x) => x.id) || [],
+        }
+      );
+    });
+
+    this.onTagClick('add-site-consent', async (model, target) => {
       const data = target.getAttribute('data-custom');
 
       const selectedSite = JSON.parse(JSON.stringify(this.model.menu))
@@ -235,10 +266,14 @@ export default class TrialDetailsController extends WebcController {
         .data.site.find((x) => x.selected === true)
         .sites.find((x) => x.selected === true);
 
-      const { consents } = await this.visitsService.getTrialVisits(this.model.trial.keySSI);
+      // const { consents } = await this.visitsService.getTrialVisits(this.model.trial.keySSI);
+
+      console.log(selectedSite);
+      const selectedConsent = JSON.parse(JSON.stringify(this.model.trial.consents.find((x) => x.keySSI === data)));
+      console.log(selectedConsent);
 
       this.showModalFromTemplate(
-        'add-new-consent',
+        'add-new-site-consent',
         async (event) => {
           const response = event.detail;
           await this.getConsents();
@@ -255,18 +290,17 @@ export default class TrialDetailsController extends WebcController {
           }
         },
         {
-          controller: 'AddNewConsentModalController',
-          disableExpanding: true,
-          disableBackdropClosing: false,
-          isUpdate: false,
-          existingIds: consents || [],
+          controller: 'AddNewSiteConsentModalController',
+          disableExpanding: false,
+          disableBackdropClosing: true,
           site: selectedSite,
-          consents,
+          selectedConsent,
+          consents: JSON.parse(JSON.stringify(this.model.trial.consents)),
         }
       );
     });
 
-    this.onTagClick('select-consent-country', async (model, target, event) => {
+    this.onTagClick('select-consent-country', async (model, target) => {
       const data = target.getAttribute('data-custom');
       // await this.getSites();
       const newSiteData = JSON.parse(JSON.stringify(this.model.menu))
@@ -279,18 +313,23 @@ export default class TrialDetailsController extends WebcController {
       this.model.setChainValue('menu.2.data.site', newSiteData);
     });
 
-    this.onTagClick('select-consent-site', async (model, target, event) => {
+    this.onTagClick('select-consent-site', async (model, target) => {
       const data = target.getAttribute('data-custom');
       const newSiteData = JSON.parse(JSON.stringify(this.model.menu))
         .find((x) => x.name === menuOptions.Consents)
         .data.site.map((x) => ({
           ...x,
-          sites: x.sites.map((y) => ({ ...y, selected: y.id === data ? !y.selected : false })),
+          sites: x.sites.map((y) => ({
+            ...y,
+            selected: y.id === data ? !y.selected : false,
+            consents: this.getSiteConsents(y),
+          })),
         }));
+      console.log(JSON.parse(JSON.stringify(newSiteData)));
       this.model.setChainValue('menu.2.data.site', newSiteData);
     });
 
-    this.onTagClick('select-consent', async (model, target, event) => {
+    this.onTagClick('select-consent', async (model, target) => {
       const data = target.getAttribute('data-custom');
 
       const siteData = JSON.parse(JSON.stringify(this.model.menu)).find((x) => x.name === menuOptions.Consents).data
@@ -301,15 +340,65 @@ export default class TrialDetailsController extends WebcController {
       const selectedSiteIdx = siteData.find((x) => x.selected === true).sites.findIndex((x) => x.selected === true);
 
       selectedSite.consents.forEach((x) => {
-        if (x.id === data) x.selected = !x.selected;
+        if (x.KeySSI === data) x.selected = !x.selected;
         else x.selected = false;
       });
 
       this.model.setChainValue(`menu.2.data.site.${selectedCountryIdx}.sites.${selectedSiteIdx}`, selectedSite);
     });
 
-    this.onTagClick('add-version', async (model, target, event) => {
+    this.onTagClick('select-trial-consent', async (model, target) => {
       const data = target.getAttribute('data-custom');
+
+      const trialData = JSON.parse(JSON.stringify(this.model.menu)).find((x) => x.name === menuOptions.Consents).data
+        .trial;
+
+      trialData.forEach((x) => {
+        if (x.id === data) x.selected = !x.selected;
+        else x.selected = false;
+      });
+
+      this.model.setChainValue(`menu.2.data.trial`, trialData);
+    });
+
+    this.onTagClick('add-trial-version', async (_model, _target) => {
+      // const data = target.getAttribute('data-custom');
+
+      const trialData = JSON.parse(JSON.stringify(this.model.menu)).find((x) => x.name === menuOptions.Consents).data
+        .trial;
+
+      const selectedConsent = trialData.find((x) => x.selected === true);
+      const existingVersions = selectedConsent.versions.map((x) => x.version);
+
+      this.showModalFromTemplate(
+        'add-new-trial-consent',
+        (_event) => {
+          // const response = event.detail;
+          this.getConsents();
+          this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
+          // this.sendMessageToHco('add-econsent-version', response.keySSI, 'New consent version', selectedSite.did);
+          eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
+        },
+        (event) => {
+          const error = event.detail || null;
+          if (error instanceof Error) {
+            console.log(error);
+            this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new consent', 'toast');
+          }
+        },
+        {
+          controller: 'AddNewTrialConsentModalController',
+          disableExpanding: false,
+          disableBackdropClosing: true,
+          site: null,
+          isUpdate: selectedConsent,
+          existingVersions: existingVersions || [],
+        }
+      );
+    });
+
+    this.onTagClick('add-version', async (model, target, event) => {
+      // const data = target.getAttribute('data-custom');
 
       const selectedSite = JSON.parse(JSON.stringify(this.model.menu))
         .find((x) => x.name === menuOptions.Consents)
@@ -319,7 +408,7 @@ export default class TrialDetailsController extends WebcController {
       const selectedConsent = selectedSite.consents.find((x) => x.selected === true);
 
       this.showModalFromTemplate(
-        'add-new-consent',
+        'add-new-site-consent',
         (event) => {
           const response = event.detail;
           this.getConsents();
@@ -335,15 +424,66 @@ export default class TrialDetailsController extends WebcController {
           }
         },
         {
-          controller: 'AddNewConsentModalController',
-          disableExpanding: true,
-          disableBackdropClosing: false,
+          controller: 'AddNewSiteConsentModalController',
+          disableExpanding: false,
+          disableBackdropClosing: true,
           site: selectedSite,
           isUpdate: selectedConsent,
           existingVersions: selectedSite.consents.filter((x) => x.id === event.data).map((x) => x.version) || [],
         }
       );
     });
+  }
+
+  getSiteConsents(site) {
+    const consents = JSON.parse(JSON.stringify(this.model.consents));
+    if (!site.consents || site.consents.length === 0) {
+      const result = consents.map((x) => ({
+        type: x.type,
+        trialConsentKeySSI: x.keySSI,
+        trialConsentName: x.name,
+        versions: [],
+        trialConsentVersion: Math.max.apply(
+          Math,
+          x.versions.map((o) => parseInt(o.version))
+        ),
+        id: x.id,
+        name: null,
+      }));
+      console.log(result);
+      return result;
+    } else {
+      console.log(site.consents);
+
+      const result = consents.map((x) => {
+        const exists = site.consents.find((y) => y.trialConsentKeySSI === x.keySSI);
+        console.log('exists:', exists);
+        if (exists) {
+          return {
+            ...exists,
+            trialConsentVersion: Math.max.apply(
+              Math,
+              x.versions.map((o) => parseInt(o.version))
+            ),
+          };
+        } else {
+          return {
+            type: x.type,
+            trialConsentKeySSI: x.keySSI,
+            trialConsentName: x.name,
+            versions: [],
+            trialConsentVersion: Math.max.apply(
+              Math,
+              x.versions.map((o) => parseInt(o.version))
+            ),
+            id: x.id,
+            name: null,
+          };
+        }
+      });
+      console.log(result);
+      return result;
+    }
   }
 
   resetMenu(menu) {
@@ -366,8 +506,9 @@ export default class TrialDetailsController extends WebcController {
     switch (menu.name) {
       case menuOptions.TrialDetails:
         await this.getTrial();
-        const trial = JSON.parse(JSON.stringify(this.model.trial));
-        this.model.menu[idx] = JSON.parse(JSON.stringify(this.activateMenu(menu, idx, trial)));
+        this.model.menu[idx] = JSON.parse(
+          JSON.stringify(this.activateMenu(menu, idx, JSON.parse(JSON.stringify(this.model.trial))))
+        );
         break;
       case menuOptions.CountriesSites:
         await this.getSites();
@@ -399,9 +540,8 @@ export default class TrialDetailsController extends WebcController {
 
   async getConsents() {
     await this.getSites();
-    // const consents = await this.consentService.getTrialConsents(this.model.trial.keySSI);
-    const consents = [];
-    this.model.consents = [];
+    const consents = await this.consentService.getTrialConsents(this.model.trial.keySSI);
+    this.model.consents = JSON.parse(JSON.stringify(consents));
 
     if (!this.model.trial) {
       await this.getTrial();
@@ -444,20 +584,21 @@ export default class TrialDetailsController extends WebcController {
 
     const data = { trial: JSON.parse(JSON.stringify(consents)), site: sitesData };
     this.model.menu.find((x) => x.name === menuOptions.Consents).data = data;
+    console.log(JSON.parse(JSON.stringify(data.trial)));
     return JSON.parse(JSON.stringify(data));
   }
 
   async changeSiteStatus(status, did) {
     const updated = await this.sitesService.changeSiteStatus(status, did, this.model.trial.keySSI);
 
-      this.CommunicationService.sendMessage(updated.did, {
-        operation: 'site-status-change',
-        data: {
-          site: updated.keySSI,
-          status: status,
-        },
-        shortDescription: 'Status was updated',
-      });
+    this.CommunicationService.sendMessage(updated.did, {
+      operation: 'site-status-change',
+      data: {
+        site: updated.keySSI,
+        status: status,
+      },
+      shortDescription: 'Status was updated',
+    });
   }
 
   // getSiteConsents(consents) {
