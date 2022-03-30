@@ -75,7 +75,6 @@ export default class ListTrialConsentsController extends WebcController {
 
   async getConsents() {
     const consents = await this.consentService.getTrialConsents(this.model.keySSI);
-    debugger;
     console.log(JSON.parse(JSON.stringify(consents)));
     this.setConsentsModel(JSON.parse(JSON.stringify(consents)));
     this.consents = consents;

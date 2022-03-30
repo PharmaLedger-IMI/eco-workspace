@@ -44,7 +44,6 @@ export default class PreviewConsentController extends WebcController {
   }
 
   async init() {
-    debugger;
     const econsentFilePath = this.getEconsentManualFilePath(
       this.model.uid,
       this.model.consent.uid,

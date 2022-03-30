@@ -101,11 +101,9 @@ export default class AddNewSiteConsentModalController extends WebcController {
         const exists = this.site.consents.find((x) => x.trialConsentId === data.trialConsentId && x.name);
         if (exists) {
           outcome = await this.consentsService.addSiteConsentVersion(result, this.keySSI, this.site);
-          debugger;
           this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_CONSENT, outcome.uid, 'Site consent', this.site.did);
         } else {
           outcome = await this.consentsService.addSiteConsent(result, this.keySSI, this.site);
-          debugger;
           this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_CONSENT, outcome.sReadSSI, 'Site consent', this.site.did);
         }
         this.model.submitButtonDisabled = false;

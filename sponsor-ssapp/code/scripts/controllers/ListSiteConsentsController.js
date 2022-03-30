@@ -97,7 +97,7 @@ export default class ListTrialConsentsController extends WebcController {
     if (!site.consents || site.consents.length === 0) {
       const result = consents.map((x) => ({
         type: x.type,
-        trialConsentKeySSI: x.keySSI,
+        trialConsentId: x.id,
         trialConsentName: x.name,
         versions: [],
         trialConsentVersion: Math.max.apply(
@@ -168,7 +168,7 @@ export default class ListTrialConsentsController extends WebcController {
       console.log(model);
 
       const selectedConsent = JSON.parse(
-        JSON.stringify(this.model.trialConsents.find((x) => x.keySSI === model.trialConsentKeySSI))
+        JSON.stringify(this.model.trialConsents.find((x) => x.id === model.trialConsentId))
       );
       console.log(selectedConsent);
 
@@ -178,7 +178,6 @@ export default class ListTrialConsentsController extends WebcController {
           // const response = event.detail;
           await this.getConsents();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
-          // debugger;
           // this.sendMessageToHco(
           //   Constants.MESSAGES.HCO.ADD_CONSENT,
           //   response.sReadSSI,

@@ -73,7 +73,6 @@ export default class TrialsService extends DSUService {
   }
 
   async updateTrialConsents(data, trialUid) {
-    debugger;
     const trialDSU = await this.getEntityAsync(trialUid);
     const trial = await this.getTrialFromDB(trialDSU.id);
     const existingConsent = trial.consents && trial.consents.find((x) => x.id === data.id);

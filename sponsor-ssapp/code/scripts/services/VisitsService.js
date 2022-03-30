@@ -34,7 +34,6 @@ export default class VisitsService extends DSUService {
   async updateTrialVisits(trialKeySSI, data, consentId) {
     const visitsDb = await this.getTrialVisits(trialKeySSI);
     const visitsDSU = await this.getEntityAsync(visitsDb.uid);
-    debugger;
     let exists = visitsDb.visits.findIndex((x) => x.consentId === consentId);
     if (exists > -1) {
       visitsDb.visits[exists] = { ...visitsDb.visits[exists], data };

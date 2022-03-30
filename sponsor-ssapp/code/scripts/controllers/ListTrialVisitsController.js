@@ -15,7 +15,6 @@ export default class ListTrialVisitsController extends WebcController {
   constructor(...props) {
     super(...props);
     let { id, keySSI, uid } = this.history.location.state;
-    debugger;
     this.consentService = new ConsentService(this.DSUStorage);
     this.visitsService = new VisitsService(this.DSUStorage);
 
@@ -43,7 +42,6 @@ export default class ListTrialVisitsController extends WebcController {
   }
 
   async getConsents() {
-    debugger;
     this.consents = await this.consentService.getTrialConsents(this.model.keySSI);
     console.log(JSON.parse(JSON.stringify(this.consents)));
     this.model.consents = this.consents.map((x, idx) => ({ ...x, selected: idx === 0 ? true : false }));
@@ -81,7 +79,6 @@ export default class ListTrialVisitsController extends WebcController {
         () => {
           this.getVisits();
           this.showFeedbackToast('Result', 'Visits were added successfully', 'toast');
-          // debugger;
           // this.sendMessageToHco(
           //   Constants.MESSAGES.HCO.UPDATE_BASE_PROCEDURES,
           //   site.uid,

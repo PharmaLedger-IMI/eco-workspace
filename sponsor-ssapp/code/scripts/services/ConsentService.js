@@ -71,7 +71,6 @@ export default class ConsentService extends DSUService {
   }
 
   async addSiteConsentVersion(model, trialKeySSI, siteDSU) {
-    debugger;
     const site = await this.siteService.getSite(siteDSU.uid);
     const selectedSiteConsent = site.consents.find((x) => x.trialConsentId === model.trialConsentId);
     const path = this.getConsentPath(site.uid);
@@ -273,7 +272,6 @@ export default class ConsentService extends DSUService {
   }
 
   async updateTrialConsent(data, trialId, site, consent) {
-    debugger;
     const trial = await this.trialsService.getTrialFromDB(trialId);
     const path = this.getTrialConsentPath(trial.uid);
     const consentDSU = await this.getEntityAsync(consent.uid, path);
