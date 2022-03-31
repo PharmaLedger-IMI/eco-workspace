@@ -1,5 +1,7 @@
 import { countryListAlpha2 } from '../constants/countries.js';
 import SitesService from '../services/SitesService.js';
+const commonServices = require('common-services');
+const { getDidServiceInstance } = commonServices.DidService;
 
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;
@@ -61,6 +63,11 @@ export default class AddNewSiteModalController extends WebcController {
         did: this.did,
       },
       submitButtonDisabled: true,
+    });
+
+    this.didService = getDidServiceInstance();
+    this.didService.getDID().then((did) => {
+      this.model.did = did;
     });
 
     this.attachAll();
@@ -136,6 +143,7 @@ export default class AddNewSiteModalController extends WebcController {
           id: this.model.site.id.value,
           did: this.model.site.did.value,
           country: this.model.site.countries.value,
+          sponsorDid: this.model.did,
           consents: [],
         };
         const result = await this.sitesService.createSite(site, this.trialId);
