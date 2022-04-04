@@ -53,7 +53,7 @@ export default class SitesService extends DSUService {
       trialName: trial.name,
       trialSponsor: trial.sponsor,
       trialId: trial.id,
-      trialSReadSSI:trial.sReadSSI
+      trialSReadSSI: trial.sReadSSI,
     });
 
     await this.unmountEntityAsync(status.uid, '/statuses');
@@ -94,6 +94,15 @@ export default class SitesService extends DSUService {
     const statusDSU = await this.getEntityAsync(site.statusUid, this.getStatusPath(site.uid));
     await this.updateEntityAsync({ ...statusDSU, status }, this.getStatusPath(site.uid));
 
+    return updatedSite;
+  }
+
+  async updateSiteContact(model, did, trialKeySSI) {
+    const siteDSU = await this.getSite(model.uid);
+    const updatedSite = await this.storageService.updateRecordAsync(this.getTableName(trialKeySSI), did, {
+      ...model,
+    });
+    const updatedSiteDSU = await this.updateEntityAsync({ ...siteDSU, name: model.name });
     return updatedSite;
   }
 

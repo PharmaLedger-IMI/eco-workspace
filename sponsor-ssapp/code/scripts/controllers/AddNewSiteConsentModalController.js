@@ -100,11 +100,20 @@ export default class AddNewSiteConsentModalController extends WebcController {
         let outcome = null;
         const exists = this.site.consents.find((x) => x.trialConsentId === data.trialConsentId && x.name);
         if (exists) {
+          debugger;
           outcome = await this.consentsService.addSiteConsentVersion(result, this.keySSI, this.site);
-          this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_CONSENT, outcome.uid, 'Site consent', this.site.did);
+          this.sendMessageToHco(
+            Constants.MESSAGES.SPONSOR.UPDATE_ECOSENT,
+            this.site.uid,
+            'Site consent',
+            this.site.did,
+            outcome.uid
+          );
         } else {
+          debugger;
           outcome = await this.consentsService.addSiteConsent(result, this.keySSI, this.site);
-          this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_CONSENT, outcome.sReadSSI, 'Site consent', this.site.did);
+          // this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_CONSENT, outcome.sReadSSI, 'Site consent', this.site.did);
+          this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_CONSENT, this.site.uid, 'Site consent', this.site.did);
         }
         this.model.submitButtonDisabled = false;
         this.send('confirmed', outcome);
@@ -115,12 +124,17 @@ export default class AddNewSiteConsentModalController extends WebcController {
     });
   }
 
-  sendMessageToHco(operation, ssi, shortMessage, receiverDid) {
+  sendMessageToHco(operation, ssi, shortMessage, receiverDid, econsentUid = null) {
     let communicationService = getCommunicationServiceInstance();
-    communicationService.sendMessage(receiverDid, {
+    const message = {
       operation: operation,
       ssi: ssi,
       shortDescription: shortMessage,
-    });
+    };
+
+    if (econsentUid) {
+      message.econsentUid = econsentUid;
+    }
+    communicationService.sendMessage(receiverDid, message);
   }
 }

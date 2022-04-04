@@ -226,6 +226,33 @@ export default class ListSitesController extends WebcController {
       );
     });
 
+    this.onTagClick('edit-site-contact', async (model) => {
+      console.log(JSON.stringify(model));
+      this.showModalFromTemplate(
+        'edit-site-contact',
+        (event) => {
+          const response = event.detail;
+          this.getSites();
+          this.sendMessageToHco(Constants.MESSAGES.SPONSOR.UPDATE_SITE, response.uid, 'Site updated', response.did);
+          this.showFeedbackToast('Result', 'Site added successfully', 'toast');
+          eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
+        },
+        (event) => {
+          const error = event.detail || null;
+          if (error instanceof Error) {
+            console.log(error);
+            this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new site', 'toast');
+          }
+        },
+        {
+          controller: 'EditSiteContactModalController',
+          disableExpanding: false,
+          disableBackdropClosing: true,
+          site: model,
+        }
+      );
+    });
+
     this.onTagClick('view-site-consents', async (model) => {
       console.log(model);
       this.navigateToPageTag('site-consents', {
