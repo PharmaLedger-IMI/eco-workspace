@@ -289,12 +289,28 @@ export default class ListTrialsController extends WebcController {
     });
 
     this.onTagClick('view-trial-status', async (model) => {
-      this.navigateToPageTag('sites', {
-        id: model.id,
-        keySSI: model.keySSI,
-        uid: model.uid,
-      });
+      this.showModalFromTemplate(
+        'add-new-trial-status',
+        () => {
+          // this.getTrials();
+          // this.showFeedbackToast('Result', 'Trial added successfully', 'toast');
+        },
+        (event) => {
+          const error = event.detail || null;
+          if (error instanceof Error) {
+            console.log(error);
+            this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new trial', 'toast');
+          }
+        },
+        {
+          controller: 'AddNewTrialStatusModalController',
+          disableExpanding: false,
+          disableBackdropClosing: true,
+          // existingIds: this.trials.map((x) => x.id) || [],
+        }
+      );
     });
+
     this.onTagClick('filters-cleared', async () => {
       this.model.clearButtonDisabled = true;
       // this.model.countries.value = null;
