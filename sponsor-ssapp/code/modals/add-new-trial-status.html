@@ -1,0 +1,17 @@
+<h2 slot="header">Change Status</h2>
+
+<div class="d-flex flex-column justify-content-between">
+  <div style="margin: 10px">
+    <select
+      class="form-control"
+      data-for="@status.selectOptions"
+      required="required"
+      value="@status.value"
+      disabled="@status.disabled"
+    >
+      <option value="@value">{{@label}}</option>
+    </select>
+  </div>
+</div>
+
+<button class="btn btn-primary" slot="footer" data-tag="submit">Submit</button>

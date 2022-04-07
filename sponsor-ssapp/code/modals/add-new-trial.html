@@ -1,23 +1,54 @@
 <h2 slot="header">New Trial</h2>
 
-<form>
+<form class="m-2">
   <div class="d-flex flex-column justify-content-between">
-    <div class="m-2">
-      <psk-input view-model="trial.name"></psk-input>
+    <div class="form-group">
+      <label>{{ @trial.name.label }}</label>
+      <input class="form-control" data-view-model="@trial.name" value="@trial.name.value" />
+      <span data-if="@trial.name.invalidValue">
+        <i class="red-invalid fas fa-times"></i>
+      </span>
     </div>
-    <div class="m-2">
-      <psk-input id="id-field" view-model="trial.id" event-name="id-changed"></psk-input>
+    <div class="form-group">
+      <label>{{ @trial.id.label }}</label>
+      <input
+        class="form-control"
+        id="id-field"
+        data-view-model="@trial.id"
+        event-name="id-changed"
+        value="@trial.id.value"
+      />
+      <span data-if="@trial.id.invalidValue" class="d-flex flex-row align-items-center">
+        <i class="text-danger fas fa-times mr-1"></i>
+        <small class="form-text text-danger">A trial with this ID already exits</small>
+      </span>
     </div>
-    <div class="m-2">
-      <psk-input id="sponsor-field" disabled="true" view-model="trial.sponsor" event-name="sponsor-changed"></psk-input>
+    <div class="form-group">
+      <label>{{ @trial.sponsor.label }}</label>
+      <input
+        class="form-control"
+        id="sponsor-field"
+        data-view-model="@trial.sponsor"
+        event-name="sponsor-changed"
+        value="@trial.sponsor.value"
+      />
+      <span data-if="@trial.sponsor.invalidValue">
+        <i class="red-invalid fas fa-times"></i>
+      </span>
     </div>
-    <div class="m-2">
-      <psk-input id="did-field" disabled="true" view-model="trial.did" event-name="did-changed"></psk-input>
+    <div class="form-group">
+      <label>{{ @trial.did.label }}</label>
+      <input
+        class="form-control"
+        id="did-field"
+        data-view-model="@trial.did"
+        event-name="did-changed"
+        value="@trial.did.value"
+      />
     </div>
-    <!-- <div class="d-flex flex-row m-2">
-      <psk-select view-model="trial.countries"></psk-select>
-    </div> -->
   </div>
 
-  <button class="btn btn-primary" slot="footer" data-tag="create-trial">Submit</button>
+  <button class="btn btn-primary mt-2" slot="footer" disabled="@submitButtonDisabled" data-tag="create-trial">
+    Submit
+  </button>
 </form>

@@ -1,0 +1,14 @@
+<h2 slot="header">Edit Contact</h2>
+
+<form class="m-2">
+  <div class="d-flex flex-column justify-content-between">
+    <div class="form-group">
+      <label>{{ @site.name.label }}</label><br>
+      <input  class="form-control" data-view-model="@site.name"></input>
+    </div>
+  </div>
+
+  <button class="btn btn-primary mt-2" slot="footer" data-tag="update-contact">
+    Submit
+  </button>
+</form>

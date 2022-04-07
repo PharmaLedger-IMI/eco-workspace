@@ -13,6 +13,7 @@ body {
   padding: 0;
   font-family: 'Open Sans';
   font-size: 0.95rem;
+  background: white !important;
 }
 
 html,
@@ -29,7 +30,6 @@ pre {
 }
 
 header {
-  background: #7aa354;
 }
 
 @media only screen and (max-width: 960px) {
@@ -41,4 +41,130 @@ header {
 
 .page-title {
   display: none !important;
+}
+
+.table-cell-web {
+  width: 100%;
+  height: 100%;
+  flex-basis: 100% !important;
+  /* border-right: 1px solid rgba(150, 150, 150, 0.2); */
+  padding: 8px 5px;
+  margin: 0;
+  /* padding: 0 5px !important; */
+}
+
+.btn-bare-web {
+  background: none;
+  border: none;
+}
+
+.rows-container {
+  border-bottom: 1px solid rgba(150, 150, 150, 0.2);
+  border-left: 1px solid rgba(150, 150, 150, 0.2);
+  border-right: 1px solid rgba(150, 150, 150, 0.2);
+}
+
+.rows-container > div > div:hover {
+  background-color: #fafafa;
+}
+
+.table-template label {
+  margin-bottom: 0 !important;
+}
+
+.data-table .webc-datatable--header {
+  font-size: 110%;
+  font-weight: bold;
+  padding: 0.5rem 0;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--primary-color);
+}
+
+.trials-data-table .webc-datatable--container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 2fr;
+  align-items: baseline;
+  gap: 0;
+}
+
+.sites-data-table .webc-datatable--container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
+  align-items: baseline;
+  gap: 0;
+}
+
+.data-table .webc-datatable--container div {
+  width: 100%;
+  height: 100%;
+  flex-basis: 100% !important;
+}
+
+.data-table .webc-datatable--container div span {
+  border-bottom: 1px solid;
+  border-top: 1px solid;
+}
+
+.main-container {
+  margin: auto;
+  max-width: 1300px;
+}
+
+.trials-data-table .webc-datatable--container > div:nth-child(12n + 2),
+.trials-data-table .webc-datatable--container > div:nth-child(12n + 3),
+.trials-data-table .webc-datatable--container > div:nth-child(12n + 4),
+.trials-data-table .webc-datatable--container > div:nth-child(12n + 5),
+.trials-data-table .webc-datatable--container > div:nth-child(12n + 6),
+.trials-data-table .webc-datatable--container > div:nth-child(12n + 7) {
+  background: rgba(0, 135, 152, 0.19);
+}
+
+.trials-data-table .webc-datatable--container > div:nth-child(12n + 8),
+.trials-data-table .webc-datatable--container > div:nth-child(12n + 9),
+.trials-data-table .webc-datatable--container > div:nth-child(12n + 10),
+.trials-data-table .webc-datatable--container > div:nth-child(12n + 11),
+.trials-data-table .webc-datatable--container > div:nth-child(12n + 12),
+.trials-data-table .webc-datatable--container > div:nth-child(12n + 13) {
+  background: rgba(0, 52, 91, 0.3);
+}
+
+.sites-data-table .webc-datatable--container > div:nth-child(14n + 2),
+.sites-data-table .webc-datatable--container > div:nth-child(14n + 3),
+.sites-data-table .webc-datatable--container > div:nth-child(14n + 4),
+.sites-data-table .webc-datatable--container > div:nth-child(14n + 5),
+.sites-data-table .webc-datatable--container > div:nth-child(14n + 6),
+.sites-data-table .webc-datatable--container > div:nth-child(14n + 7),
+.sites-data-table .webc-datatable--container > div:nth-child(14n + 8) {
+  background: rgba(0, 135, 152, 0.19);
+}
+
+.sites-data-table .webc-datatable--container > div:nth-child(14n + 9),
+.sites-data-table .webc-datatable--container > div:nth-child(14n + 10),
+.sites-data-table .webc-datatable--container > div:nth-child(14n + 11),
+.sites-data-table .webc-datatable--container > div:nth-child(14n + 12),
+.sites-data-table .webc-datatable--container > div:nth-child(14n + 13),
+.sites-data-table .webc-datatable--container > div:nth-child(14n + 14),
+.sites-data-table .webc-datatable--container > div:nth-child(14n + 15) {
+  background: rgba(0, 52, 91, 0.3);
+}
+
+button.btn.btn-bare.btn-link {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.procedures-container > div:nth-child(odd) {
+  background: rgba(0, 135, 152, 0.19);
+}
+
+.procedures-container > div:nth-child(odd) > div {
+  background: rgba(0, 135, 152, 0.19);
+}
+
+.procedures-container > div:nth-child(even) {
+  background: rgba(0, 52, 91, 0.3);
+}
+
+.procedures-container > div:nth-child(even) > div {
+  background: rgba(0, 52, 91, 0.3);
 }

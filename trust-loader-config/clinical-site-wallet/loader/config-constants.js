@@ -3,13 +3,13 @@ let LOADER_GLOBALS = {
   DEFAULT_CREDENTIALS:{
     email:"clinical-site@pharmaledger.com",
     password:"secret",
-    username : "private",
+    username : "site",
     company:"PharmaLedger"
   },
   THEME: 'app',
   LABELS_DICTIONARY: {
     APP_NAME: 'Clinical Site App',
-    APP_DESCRIPTION: 'The "backend" application for EPI',
+    APP_DESCRIPTION: 'Clinical Site Application',
     NEW_WALLET: 'New Account',
     ACCESS_WALLET: 'Access Account',
     WALLET_AUTHORIZATION: 'Authorization',

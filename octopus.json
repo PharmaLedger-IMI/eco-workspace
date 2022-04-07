@@ -44,7 +44,7 @@
           "type": "smartClone",
           "target": ".",
           "collectLog": false,
-          "commit": "02e789235dedd330a2bd36f5705729ed37b25fa5"
+          "commit": "e7c923dbaf6cbe75041bcfb1dd8600b8ddb0508d"
         },
         {
           "type": "execute",
@@ -136,21 +136,6 @@
       ]
     },
     {
-      "name": "apihub-root/hco-wallet/loader",
-      "src": "http://github.com/privatesky/trust-loader.git",
-      "actions": [
-        {
-          "type": "smartClone",
-          "target": ".",
-          "collectLog": false
-        },
-        {
-          "type": "execute",
-          "cmd": "cd apihub-root/hco-wallet/loader && npm install"
-        }
-      ]
-    },
-    {
       "name": "apihub-root/sponsor-wallet/loader",
       "src": "http://github.com/privatesky/web-dossier-loader.git",
       "actions": [
@@ -172,7 +157,7 @@
         {
           "type": "smartClone",
           "target": ".",
-          "collectLog": false
+          "collectLog": false	  
         },
         {
           "type": "execute",
@@ -242,25 +227,6 @@
         {
           "type": "execute",
           "cmd": "cd sponsor-ssapp && npm install"
-        }
-      ]
-    },
-    {
-      "name": "hco-ssapp",
-      "src": "",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd hco-ssapp && npm install"
-        }
-      ]
-    },
-    {
-      "name": "eco-services",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd eco-services && npm install"
         }
       ]
     },
@@ -365,7 +331,7 @@
           "cmd": "cd dossier-explorer-wallet-prototype && npm run build"
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./dossier-explorer-wallet-prototype/seed",
           "target": "./apihub-root/dsu-explorer/wallet-patch/seed",
           "options": {
@@ -383,7 +349,7 @@
           "cmd": "cd dossier-explorer-ssapp && npm run build"
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./dossier-explorer-ssapp/seed",
           "target": "./apihub-root/dsu-explorer/apps-patch/dossier-explorer-ssapp/seed",
           "options": {
@@ -427,7 +393,7 @@
           "cmd": "cd sponsor-ssapp && npm run build"
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./sponsor-ssapp/seed",
           "target": "./apihub-root/sponsor-wallet/apps-patch/sponsor-ssapp/seed",
           "options": {
@@ -435,7 +401,7 @@
           }
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./sponsor-ssapp/seed",
           "target": "./apihub-root/sponsor-wallet/wallet-patch/seed",
           "options": {
@@ -449,63 +415,6 @@
       ]
     },
     {
-      "name": "hco-wallet-loader-build",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd apihub-root/hco-wallet/loader && npm run build"
-        }
-      ]
-    },
-    {
-      "name": "hco-wallet_bind_to_hco_ssapp",
-      "src": "",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd hco-ssapp && npm run build"
-        },
-        {
-          "type": "copy",
-          "src": "./hco-ssapp/seed",
-          "target": "./apihub-root/hco-wallet/apps-patch/hco-ssapp/seed",
-          "options": {
-            "overwrite": true
-          }
-        },
-        {
-          "type": "copy",
-          "src": "./hco-ssapp/seed",
-          "target": "./apihub-root/hco-wallet/wallet-patch/seed",
-          "options": {
-            "overwrite": true
-          }
-        }
-      ]
-    },
-    {
-      "name": "hco-wallet_bind_to_hco-ssapp",
-      "src": "",
-      "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd hco-ssapp && npm run build"
-        },
-        {
-          "type": "copy",
-          "src": "./hco-ssapp/seed",
-          "target": "./apihub-root/hco-wallet/apps-patch/hco-ssapp/seed",
-          "options": {
-            "overwrite": true
-          }
-        },
-        {
-          "type": "execute",
-          "cmd": "echo Use this folder template in order to customize the application instance by adding configuration, pages etc. > ./apihub-root/hco-wallet/apps-patch/hco-ssapp/readme"
-        }
-      ]
-    },
-    {
       "name": "trial-participant-wallet_bind_to_trial-participant-ssapp",
       "src": "",
       "actions": [
@@ -514,7 +423,7 @@
           "cmd": "cd trial-participant-ssapp && npm run build"
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./trial-participant-ssapp/seed",
           "target": "./apihub-root/trial-participant-wallet/apps-patch/trial-participant-ssapp/seed",
           "options": {
@@ -522,7 +431,7 @@
           }
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./trial-participant-ssapp/seed",
           "target": "./apihub-root/trial-participant-wallet/wallet-patch/seed",
           "options": {
@@ -544,7 +453,7 @@
           "cmd": "cd clinical-site-ssapp && npm run build"
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./clinical-site-ssapp/seed",
           "target": "./apihub-root/clinical-site-wallet/wallet-patch/seed",
           "options": {
@@ -552,7 +461,7 @@
           }
         },
         {
-          "type": "copy",
+          "type": "copySeed",
           "src": "./clinical-site-ssapp/seed",
           "target": "./apihub-root/clinical-site-wallet/apps-patch/clinical-site-ssapp/seed",
           "options": {
@@ -564,10 +473,6 @@
     {
       "name": "copy-bundles",
       "actions": [
-        {
-          "type": "execute",
-          "cmd": "cd apihub-root/hco-wallet/loader && npm install"
-        },
         {
           "type": "execute",
           "cmd": "cd apihub-root/dsu-explorer/loader && npm install"
@@ -586,5 +491,8 @@
         }
       ]
     }
-  ]
+  ],
+  "install-mobile": [],
+  "build-mobile": [],
+  "docs": []
 }

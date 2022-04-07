@@ -2,10 +2,10 @@
   <link rel="stylesheet" href="assets/css/trials.css" />
   <div class="trial-header"><h1 class="trial-title">Trial</h1></div>
   <div class="d-flex flex-row align-items-center ml-5" style="font-size: 18px !important">
-    <psk-link page="trials"> Trials</psk-link>
-    <span> / </span>
     <div style="display: inline-block">
-      <psk-label label="@id"></psk-label>
+      <webc-link tag="trials">Trials</webc-link>
+      <span> / </span>
+      <label>{{ @id }}</label>
     </div>
   </div>
 
@@ -14,17 +14,17 @@
   <psk-tab-navigator default="0">
     <!-- *************** Trial Overview ******************** -->
     <psk-tab title="Trial Overview">
-      <webc-template template="trial-overview" data-view-model="@"></webc-template>
+      <webc-template template="trial-overview"></webc-template>
     </psk-tab>
 
     <!-- *************** Trial Monitoring ******************** -->
     <psk-tab title="Trial Monitoring">
-      <webc-template template="trial-monitoring" data-view-model="@"></webc-template>
+      <webc-template template="trial-monitoring"></webc-template>
     </psk-tab>
 
     <!-- *************** Trial Details ******************** -->
     <psk-tab title="Trial Details">
-      <webc-template template="trial-details" data-view-model="@"></webc-template>
+      <webc-template template="trial-details"></webc-template>
     </psk-tab>
 
     <!-- *************** PARTICIPANTS ******************** -->

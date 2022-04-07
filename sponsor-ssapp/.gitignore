@@ -10,7 +10,6 @@ seed
 bundles
 package-lock.json
 .eslintrc.json
-CommunicationService.js
 DateTimeService.js
 DSUService.js
 Constants.js
@@ -18,3 +17,4 @@ FileDownloader.js
 SharedStorage.js
 ionic-core
 api.js
+.eslintrc.js

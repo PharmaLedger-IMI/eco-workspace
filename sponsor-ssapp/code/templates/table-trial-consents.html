@@ -1,0 +1,20 @@
+<webc-container controller="TableTemplateController" data-view-model="@" class="trials-data-table data-table">
+  <webc-datatable datasource="@dataSource" class="table-cell-web align-items-center justify-content-center">
+    <div slot="header" class="table-header" data-for="@headerItems" style="display: contents">
+      <span class="py-2">{{ @name }}</span>
+    </div>
+
+    <div class="">{{@name}}</div>
+    <div class="">{{@attachment}}</div>
+    <div class="">{{@versionDate}}</div>
+    <div class="">{{@type}}</div>
+    <div class="">{{@version}}</div>
+    <div class="">
+      <button data-tag="view-attachment" class="btn btn-bare btn-link">Preview</button> |
+      <button data-tag="view-consent-history" class="btn btn-bare btn-link">Consent History</button> |
+      <button data-tag="add-trial-version" class="btn btn-bare btn-link">Add Version</button>
+    </div>
+
+    <div slot="no-data">There are no items to display</div>
+  </webc-datatable>
+</webc-container>

@@ -1,11 +1,69 @@
 {
-  "theme": "sponsor-theme",
+  "theme": "clinical-site-theme",
+  "translations": false,
+  "logLevel": "none",
   "pages": [
     {
       "name": "Trials",
       "path": "/trials",
       "src": "trials.html",
       "tag": "trials",
+      "icon": "fa-times"
+    },
+    {
+      "name": "Trial Consents",
+      "path": "/trials/consents",
+      "src": "trial-consents.html",
+      "tag": "trial-consents",
+      "icon": "fa-times"
+    },
+    {
+      "name": "Trial Visits",
+      "path": "/trials/visits",
+      "src": "trial-visits.html",
+      "tag": "trial-visits",
+      "icon": "fa-times"
+    },
+    {
+      "name": "Preview Consent",
+      "path": "/trials/consents/preview",
+      "src": "preview-consent.html",
+      "tag": "preview-consent",
+      "icon": "fa-times"
+    },
+    {
+      "name": "Trial Consent History",
+      "path": "/trials/consents/history",
+      "src": "consent-history.html",
+      "tag": "consent-history",
+      "icon": "fa-times"
+    },
+    {
+      "name": "Sites",
+      "path": "/sites",
+      "src": "sites.html",
+      "tag": "sites",
+      "icon": "fa-times"
+    },
+    {
+      "name": "Site Consents",
+      "path": "/sites/consents",
+      "src": "site-consents.html",
+      "tag": "site-consents",
+      "icon": "fa-times"
+    },
+    {
+      "name": "Site Consent History",
+      "path": "/sites/consents/history",
+      "src": "site-consent-history.html",
+      "tag": "site-consent-history",
+      "icon": "fa-times"
+    },
+    {
+      "name": "Site Preview Consent",
+      "path": "/sites/consents/preview",
+      "src": "site-preview-consent.html",
+      "tag": "site-preview-consent",
       "icon": "fa-times"
     },
     {

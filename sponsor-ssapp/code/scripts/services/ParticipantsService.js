@@ -11,8 +11,8 @@ export default class ParticipantsService extends DSUService {
 
   constructor(DSUStorage) {
     super('/consents');
-    this.storageService = SharedStorage.getInstance();
-    this.consentsService = new ConsentsService();
+    this.storageService = SharedStorage.getSharedStorage(DSUStorage);
+    this.consentsService = new ConsentsService(DSUStorage);
   }
 
   // TODO: catch error only upper level and show pop up
