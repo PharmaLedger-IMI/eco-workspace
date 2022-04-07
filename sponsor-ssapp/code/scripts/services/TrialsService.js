@@ -91,7 +91,6 @@ export default class TrialsService extends DSUService {
   }
 
   async changeTrialStatus(status, trial) {
-    debugger;
     const trialDb = await this.getTrialFromDB(trial.id);
     const updatedTrial = await this.storageService.updateRecordAsync(this.TRIALS_TABLE, trial.id, {
       ...trialDb,

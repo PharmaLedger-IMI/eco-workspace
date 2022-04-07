@@ -292,7 +292,6 @@ export default class ListTrialsController extends WebcController {
       this.showModalFromTemplate(
         'add-new-trial-status',
         async (event) => {
-          debugger;
           await this.updateSiteStatuses(event.detail);
           await this.getTrials();
           this.showFeedbackToast('Result', 'Trial status changed successfully', 'toast');
