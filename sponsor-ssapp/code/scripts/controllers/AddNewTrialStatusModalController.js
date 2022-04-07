@@ -6,7 +6,7 @@ import { trialStatusesEnum } from '../constants/trial.js';
 const { WebcController } = WebCardinal.controllers;
 
 export default class AddNewTrialStatusModalController extends WebcController {
-  statusesArray = Object.entries(trialStatusesEnum).map(([_k, v]) => v);
+  statusesArray = Object.entries(trialStatusesEnum).map(([_k, v]) => ({ value: v, label: v }));
 
   status = {
     label: 'Select status',
@@ -16,12 +16,14 @@ export default class AddNewTrialStatusModalController extends WebcController {
     disabled: false,
   };
 
+  trial = null;
+
   constructor(...props) {
     super(...props);
-    // this.existingIds = props[0].existingIds;
+    this.trial = props[0].trial;
     this.trialsService = new TrialsService(this.DSUStorage);
 
-    this.model.status = this.status;
+    this.model.status = { ...this.status, value: this.trial.status };
 
     this.attachAll();
   }
@@ -29,16 +31,7 @@ export default class AddNewTrialStatusModalController extends WebcController {
   attachAll() {
     this.onTagClick('submit', async () => {
       try {
-        // this.model.submitButtonDisabled = true;
-        // const trial = {
-        //   name: this.model.trial.name.value,
-        //   id: this.model.trial.id.value,
-        //   sponsor: this.model.trial.sponsor.value,
-        //   did: this.model.trial.did.value,
-        //   consents: [],
-        // };
-        // const result = await this.trialsService.createTrial(trial);
-        // this.model.submitButtonDisabled = false;
+        const result = await this.trialsService.changeTrialStatus(this.model.status.value, this.trial);
         this.send('confirmed', result);
       } catch (error) {
         this.send('closed', new Error('There was an issue updating the status/stage'));

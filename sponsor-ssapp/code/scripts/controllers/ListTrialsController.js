@@ -291,9 +291,11 @@ export default class ListTrialsController extends WebcController {
     this.onTagClick('view-trial-status', async (model) => {
       this.showModalFromTemplate(
         'add-new-trial-status',
-        () => {
-          // this.getTrials();
-          // this.showFeedbackToast('Result', 'Trial added successfully', 'toast');
+        async (event) => {
+          debugger;
+          await this.updateSiteStatuses(event.detail);
+          await this.getTrials();
+          this.showFeedbackToast('Result', 'Trial status changed successfully', 'toast');
         },
         (event) => {
           const error = event.detail || null;
@@ -306,7 +308,7 @@ export default class ListTrialsController extends WebcController {
           controller: 'AddNewTrialStatusModalController',
           disableExpanding: false,
           disableBackdropClosing: true,
-          // existingIds: this.trials.map((x) => x.id) || [],
+          trial: model,
         }
       );
     });
@@ -336,5 +338,15 @@ export default class ListTrialsController extends WebcController {
       ssi: ssi,
       shortDescription: shortMessage,
     });
+  }
+
+  async updateSiteStatuses(trial) {
+    const sites = await this.sitesService.getSites(trial.keySSI);
+
+    for (const site of sites) {
+      await this.sitesService.changeSiteStatus(trial.status, site.did, trial.keySSI);
+      this.sendMessageToHco(Constants.MESSAGES.SPONSOR.UPDATE_SITE_STATUS, site.uid, 'Status updated', site.did);
+    }
+    return;
   }
 }
