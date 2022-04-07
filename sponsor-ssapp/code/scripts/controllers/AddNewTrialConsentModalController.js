@@ -47,7 +47,15 @@ export default class AddNewTrialConsentModalController extends WebcController {
     value: '',
   };
 
-  file = null;
+  file = {
+    label: 'Consent FIle',
+    name: 'file',
+    required: true,
+    placeholder: 'Please select a file...',
+    value: null,
+    invalidValue: false,
+  };
+
   isUpdate = false;
 
   constructor(...props) {
@@ -74,6 +82,7 @@ export default class AddNewTrialConsentModalController extends WebcController {
           type: { ...this.type, value: this.isUpdate.type, disabled: true },
           version: this.version,
           attachment: this.attachment,
+          file: this.file,
         },
         submitButtonDisabled: true,
       });
@@ -85,6 +94,7 @@ export default class AddNewTrialConsentModalController extends WebcController {
           type: this.type,
           version: this.version,
           attachment: this.attachment,
+          file: this.file,
         },
         submitButtonDisabled: true,
       });
@@ -129,7 +139,13 @@ export default class AddNewTrialConsentModalController extends WebcController {
     });
 
     this.on('add-file', (event) => {
-      if (event.data) this.file = event.data;
+      console.log(event);
+      if (event.data) {
+        this.model.consent.file.value = event.data;
+      }
+      if (!event.data || event.data.length === 0) {
+        this.model.consent.file.value = null;
+      }
     });
 
     this.onTagClick('create-consent', async () => {
@@ -153,7 +169,7 @@ export default class AddNewTrialConsentModalController extends WebcController {
             }
           }
 
-          if (this.existingIds.indexOf(this.model.consent.id.value) > -1 || !this.file || !this.file[0]) {
+          if (this.existingIds.indexOf(this.model.consent.id.value) > -1) {
             valid = false;
           }
 
@@ -169,7 +185,7 @@ export default class AddNewTrialConsentModalController extends WebcController {
               {
                 version: this.model.consent.version.value,
                 versionDate: new Date().toISOString(),
-                file: this.file[0],
+                file: this.model.consent.file.value[0],
               },
             ],
           };
@@ -193,7 +209,7 @@ export default class AddNewTrialConsentModalController extends WebcController {
             valid = false;
           }
 
-          if (this.existingVersions.indexOf(this.model.consent.version.value) > -1 || !this.file || !this.file[0]) {
+          if (this.existingVersions.indexOf(this.model.consent.version.value) > -1) {
             valid = false;
           }
 
@@ -202,7 +218,7 @@ export default class AddNewTrialConsentModalController extends WebcController {
           const version = {
             version: this.model.consent.version.value,
             versionDate: new Date().toISOString(),
-            file: this.file[0],
+            file: this.model.consent.file.value[0],
           };
 
           // console.log(JSON.stringify(this.site, null, 2), JSON.stringify(this.isUpdate, null, 2));

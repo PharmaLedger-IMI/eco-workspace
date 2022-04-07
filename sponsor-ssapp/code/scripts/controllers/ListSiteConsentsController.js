@@ -205,7 +205,7 @@ export default class ListTrialConsentsController extends WebcController {
 
     this.onTagClick('view-site-consent-history', async (model) => {
       console.log(model);
-      const selectedConsent = this.model.data.find((x) => x.keySSI === model.keySSI);
+      const selectedConsent = this.model.data.find((x) => x.uid === model.uid);
       const data = selectedConsent.versions.map((x) => ({
         ...selectedConsent,
         ...x,

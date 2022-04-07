@@ -30,7 +30,15 @@ export default class AddNewSiteConsentModalController extends WebcController {
     files: [],
   };
 
-  file = null;
+  file = {
+    label: 'Consent FIle',
+    name: 'file',
+    required: true,
+    placeholder: 'Please select a file...',
+    value: null,
+    invalidValue: false,
+  };
+
   isUpdate = false;
 
   constructor(...props) {
@@ -49,6 +57,7 @@ export default class AddNewSiteConsentModalController extends WebcController {
 
     this.setModel({
       consent: {
+        file: this.file,
         type: this.selectedConsent.type,
         trialConsentName: this.selectedConsent.name,
         trialConsentId: this.selectedConsent.id,
@@ -74,33 +83,60 @@ export default class AddNewSiteConsentModalController extends WebcController {
 
   attachAll() {
     this.on('add-file', (event) => {
-      if (event.data) this.file = event.data;
+      console.log(event);
+      if (event.data) {
+        this.model.consent.file.value = event.data;
+      }
+      if (!event.data || event.data.length === 0) {
+        this.model.consent.file.value = null;
+      }
     });
 
     this.onTagClick('create-consent', async () => {
       try {
-        const data = JSON.parse(JSON.stringify(this.model.consent));
+        console.log(JSON.parse(JSON.stringify(this.model.consent)));
+        let valid = true;
+        for (const x in this.model.consent) {
+          // TODO: check if file selected
+          if (!this.model.consent.name.value || this.model.consent.name.value === '') {
+            Object.assign(this.model.consent.name, { invalidValue: true });
+            setTimeout(() => {
+              Object.assign(this.model.consent.name, { invalidValue: null });
+            }, 1000);
+            valid = false;
+          }
+
+          if (!this.model.consent.file.value || this.model.consent.file.value === '') {
+            Object.assign(this.model.consent.file, { invalidValue: true });
+            setTimeout(() => {
+              Object.assign(this.model.consent.file, { invalidValue: null });
+            }, 1000);
+            valid = false;
+          }
+        }
+
+        console.log(JSON.parse(JSON.stringify(this.model.consent)));
+        if (!valid) return;
+
         const result = {
-          trialConsentVersion: data.trialConsentVersion,
-          trialConsentId: data.trialConsentId,
-          trialConsentName: data.trialConsentName,
-          file: this.file[0],
-          type: data.type,
+          trialConsentVersion: this.model.consent.trialConsentVersion,
+          trialConsentId: this.model.consent.trialConsentId,
+          trialConsentName: this.model.consent.trialConsentName,
+          file: this.model.consent.file.value[0],
+          type: this.model.consent.type,
           versions: [
             {
-              version: data.version.value,
+              version: this.model.consent.version.value,
               versionDate: new Date().toISOString(),
-              file: this.file[0],
+              file: this.model.consent.file.value[0],
             },
           ],
-          name: data.name.value,
+          name: this.model.consent.name.value,
         };
 
-        console.log(result);
         let outcome = null;
-        const exists = this.site.consents.find((x) => x.trialConsentId === data.trialConsentId && x.name);
+        const exists = this.site.consents.find((x) => x.trialConsentId === this.model.consent.trialConsentId && x.name);
         if (exists) {
-          debugger;
           outcome = await this.consentsService.addSiteConsentVersion(result, this.keySSI, this.site);
           this.sendMessageToHco(
             Constants.MESSAGES.SPONSOR.UPDATE_ECOSENT,
@@ -110,7 +146,6 @@ export default class AddNewSiteConsentModalController extends WebcController {
             outcome.uid
           );
         } else {
-          debugger;
           outcome = await this.consentsService.addSiteConsent(result, this.keySSI, this.site);
           // this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_CONSENT, outcome.sReadSSI, 'Site consent', this.site.did);
           this.sendMessageToHco(Constants.MESSAGES.HCO.ADD_CONSENT, this.site.uid, 'Site consent', this.site.did);

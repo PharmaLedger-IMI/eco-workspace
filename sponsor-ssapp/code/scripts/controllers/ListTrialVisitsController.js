@@ -3,7 +3,9 @@ const commonServices = require('common-services');
 const { getDidServiceInstance } = commonServices.DidService;
 import ConsentService from '../services/ConsentService.js';
 import VisitsService from '../services/VisitsService.js';
+import SitesService from '../services/SitesService.js';
 const Constants = commonServices.Constants;
+const { getCommunicationServiceInstance } = commonServices.CommunicationService;
 
 // import eventBusService from '../services/EventBusService.js';
 // import { Topics } from '../constants/topics.js';
@@ -17,6 +19,7 @@ export default class ListTrialVisitsController extends WebcController {
     let { id, keySSI, uid } = this.history.location.state;
     this.consentService = new ConsentService(this.DSUStorage);
     this.visitsService = new VisitsService(this.DSUStorage);
+    this.sitesService = new SitesService(this.DSUStorage);
 
     this.model = {
       id,
@@ -76,16 +79,9 @@ export default class ListTrialVisitsController extends WebcController {
 
       this.showModalFromTemplate(
         'add-new-trial-visits',
-        () => {
+        (event) => {
           this.getVisits();
-          this.showFeedbackToast('Result', 'Visits were added successfully', 'toast');
-          // this.sendMessageToHco(
-          //   Constants.MESSAGES.HCO.UPDATE_BASE_PROCEDURES,
-          //   site.uid,
-          //   'New consent version',
-          //   selectedSite.did
-          // );
-          // eventBusService.emitEventListeners(Topics.RefreshTrialConsents, null);
+          this.sendMessageToAllTrialSites();
         },
         (event) => {
           const error = event.detail || null;
@@ -102,5 +98,25 @@ export default class ListTrialVisitsController extends WebcController {
         }
       );
     });
+  }
+
+  async sendMessageToAllTrialSites() {
+    const sites = await this.sitesService.getSites(this.model.keySSI);
+    for (const site of sites) {
+      this.sendMessageToHco(Constants.MESSAGES.HCO.UPDATE_BASE_PROCEDURES, site.uid, 'New consent version', site.did);
+    }
+  }
+
+  sendMessageToHco(operation, ssi, shortMessage, receiverDid) {
+    try {
+      let communicationService = getCommunicationServiceInstance();
+      communicationService.sendMessage(receiverDid, {
+        operation: operation,
+        ssi: ssi,
+        shortDescription: shortMessage,
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
