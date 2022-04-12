@@ -70,7 +70,7 @@ export default class AddNewSiteConsentModalController extends WebcController {
           ...this.version,
           value: Math.max.apply(
             Math,
-            this.selectedConsent.versions.map((o) => parseInt(o.version))
+            this.selectedConsent.versions.map((o) => parseInt(o.version)+1)
           ),
           disabled: true,
         },
@@ -139,7 +139,7 @@ export default class AddNewSiteConsentModalController extends WebcController {
         if (exists) {
           outcome = await this.consentsService.addSiteConsentVersion(result, this.keySSI, this.site);
           this.sendMessageToHco(
-            Constants.MESSAGES.SPONSOR.UPDATE_ECOSENT,
+            Constants.MESSAGES.SPONSOR.ADD_CONSENT_VERSION,
             this.site.uid,
             'Site consent',
             this.site.did,
