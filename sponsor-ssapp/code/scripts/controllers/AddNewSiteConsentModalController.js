@@ -68,11 +68,7 @@ export default class AddNewSiteConsentModalController extends WebcController {
         name: this.name,
         version: {
           ...this.version,
-          value: Math.max.apply(
-            Math,
-            this.selectedConsent.versions.map((o) => parseInt(o.version))
-          ),
-          disabled: true,
+          value: null,
         },
         attachment: this.attachment,
       },
@@ -113,6 +109,19 @@ export default class AddNewSiteConsentModalController extends WebcController {
             }, 1000);
             valid = false;
           }
+        }
+
+        const existingVersions = this.selectedConsent.versions.map((o) => parseInt(o.version));
+        const selectedValue = parseInt(this.model.consent.version.value);
+        const smallerThan = selectedValue < Math.max.apply(Math, existingVersions);
+        const versionExists = existingVersions.indexOf(selectedValue) > -1;
+
+        if (smallerThan || versionExists) {
+          Object.assign(this.model.consent.version, { invalidValue: true });
+          setTimeout(() => {
+            Object.assign(this.model.consent.version, { invalidValue: null });
+          }, 1000);
+          valid = false;
         }
 
         console.log(JSON.parse(JSON.stringify(this.model.consent)));

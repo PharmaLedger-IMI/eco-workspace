@@ -213,6 +213,17 @@ export default class AddNewTrialConsentModalController extends WebcController {
             valid = false;
           }
 
+          const existingVersions = this.existingVersions.map((o) => parseInt(o));
+          const selectedValue = parseInt(this.model.consent.version.value);
+          const smallerThan = selectedValue < Math.max.apply(Math, existingVersions);
+          if (smallerThan) {
+            Object.assign(this.model.consent.version, { invalidValue: true });
+            setTimeout(() => {
+              Object.assign(this.model.consent.version, { invalidValue: null });
+            }, 1000);
+            valid = false;
+          }
+
           if (!valid) return;
 
           const version = {
