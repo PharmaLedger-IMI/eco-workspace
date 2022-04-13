@@ -65,6 +65,13 @@ export default class AddNewTrialConsentModalController extends WebcController {
     this.existingIds = props[0].existingIds || null;
     this.existingVersions = props[0].existingVersions || null;
     this.site = props[0].site || null;
+    debugger;
+    this.selectedVersion = this.isUpdate
+      ? Math.max.apply(
+          Math,
+          this.existingVersions.map((o) => parseInt(o))
+        ) + 1
+      : 1;
 
     let { id, keySSI, uid } = this.history.location.state;
 
@@ -80,7 +87,11 @@ export default class AddNewTrialConsentModalController extends WebcController {
           id: { ...this.id, value: this.isUpdate.id, disabled: true },
           name: { ...this.name, value: this.isUpdate.name, disabled: true },
           type: { ...this.type, value: this.isUpdate.type, disabled: true },
-          version: this.version,
+          version: {
+            ...this.version,
+            value: this.selectedVersion,
+            disabled: true,
+          },
           attachment: this.attachment,
           file: this.file,
         },
@@ -92,7 +103,11 @@ export default class AddNewTrialConsentModalController extends WebcController {
           id: this.id,
           name: this.name,
           type: this.type,
-          version: this.version,
+          version: {
+            ...this.version,
+            value: this.selectedVersion,
+            disabled: true,
+          },
           attachment: this.attachment,
           file: this.file,
         },

@@ -47,7 +47,19 @@ export default class AddNewSiteConsentModalController extends WebcController {
     this.site = props[0].site || null;
     this.consents = props[0].consents || [];
     this.selectedConsent = props[0].selectedConsent || [];
+    this.siteSelectedConsent =
+      this.site.consents &&
+      this.site.consents.length &&
+      this.site.consents.find((x) => x.trialConsentId === this.selectedConsent.id);
+    this.selectedVersion = this.siteSelectedConsent
+      ? Math.max.apply(
+          Math,
+          this.siteSelectedConsent.versions.map((o) => parseInt(o.version))
+        ) + 1
+      : 1;
     console.log(this.consents);
+
+    debugger;
 
     let { trialKeySSI } = this.history.location.state;
 
@@ -68,10 +80,7 @@ export default class AddNewSiteConsentModalController extends WebcController {
         name: this.name,
         version: {
           ...this.version,
-          value: Math.max.apply(
-            Math,
-            this.selectedConsent.versions.map((o) => parseInt(o.version))
-              ) + 1,
+          value: this.selectedVersion,
           disabled: true,
         },
         attachment: this.attachment,
@@ -115,18 +124,18 @@ export default class AddNewSiteConsentModalController extends WebcController {
           }
         }
 
-        const existingVersions = this.selectedConsent.versions.map((o) => parseInt(o.version));
-        const selectedValue = parseInt(this.model.consent.version.value);
-        const smallerThan = selectedValue < Math.max.apply(Math, existingVersions);
-        const versionExists = existingVersions.indexOf(selectedValue) > -1;
+        // const existingVersions = this.selectedConsent.versions.map((o) => parseInt(o.version));
+        // const selectedValue = parseInt(this.model.consent.version.value);
+        // const smallerThan = selectedValue < Math.max.apply(Math, existingVersions);
+        // const versionExists = existingVersions.indexOf(selectedValue) > -1;
 
-        if (smallerThan || versionExists) {
-          Object.assign(this.model.consent.version, { invalidValue: true });
-          setTimeout(() => {
-            Object.assign(this.model.consent.version, { invalidValue: null });
-          }, 1000);
-          valid = false;
-        }
+        // if (smallerThan || versionExists) {
+        //   Object.assign(this.model.consent.version, { invalidValue: true });
+        //   setTimeout(() => {
+        //     Object.assign(this.model.consent.version, { invalidValue: null });
+        //   }, 1000);
+        //   valid = false;
+        // }
 
         console.log(JSON.parse(JSON.stringify(this.model.consent)));
         if (!valid) return;
