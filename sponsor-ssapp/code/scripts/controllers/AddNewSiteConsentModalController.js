@@ -70,8 +70,8 @@ export default class AddNewSiteConsentModalController extends WebcController {
           ...this.version,
           value: Math.max.apply(
             Math,
-            this.selectedConsent.versions.map((o) => parseInt(o.version) + 1)
-          ),
+            this.selectedConsent.versions.map((o) => parseInt(o.version))
+              ) + 1,
           disabled: true,
         },
         attachment: this.attachment,
