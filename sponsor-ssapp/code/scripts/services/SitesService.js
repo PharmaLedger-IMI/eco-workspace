@@ -107,7 +107,7 @@ export default class SitesService extends DSUService {
     return updatedSite;
   }
 
-  async updateSiteStage(siteKeySSI, stage) {
+  async updateSiteStage(siteKeySSI) {
     const siteDSU = await this.getSite(siteKeySSI);
     const trialDB = await this.trialsService.getTrialFromDB(siteDSU.trialId);
     const site = await this.getSiteFromDB(siteDSU.did, trialDB.keySSI);

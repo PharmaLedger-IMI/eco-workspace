@@ -138,8 +138,8 @@ export default class ListTrialsController extends WebcController {
         }
         case 'update-site-status': {
           debugger;
-          if (data.stageInfo.siteSSI && data.stageInfo.status) {
-            await this.sitesService.updateSiteStage(data.stageInfo.siteSSI, data.stageInfo.status);
+          if (data.stageInfo.siteSSI) {
+            await this.sitesService.updateSiteStage(data.stageInfo.siteSSI);
           }
         }
       }
