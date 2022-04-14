@@ -116,6 +116,8 @@ export default class ListTrialsController extends WebcController {
         return console.error(err);
       }
       console.log('DATA MESSAGE:', data);
+      data = JSON.parse(data);
+      debugger;
       switch (data.operation) {
         case Constants.MESSAGES.SPONSOR.SIGN_ECOSENT:
         case Constants.MESSAGES.SPONSOR.UPDATE_ECOSENT: {
@@ -135,8 +137,9 @@ export default class ListTrialsController extends WebcController {
           break;
         }
         case 'update-site-status': {
-          if (data.stageInfo.siteSSI && data.stageInfo.status && data.ssi) {
-            await this.sitesService.updateSiteStage(data.ssi, data.stageInfo.siteSSI, data.stageInfo.status);
+          debugger;
+          if (data.stageInfo.siteSSI && data.stageInfo.status) {
+            await this.sitesService.updateSiteStage(data.stageInfo.siteSSI, data.stageInfo.status);
           }
         }
       }
