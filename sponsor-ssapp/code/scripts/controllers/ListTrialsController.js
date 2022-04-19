@@ -116,6 +116,8 @@ export default class ListTrialsController extends WebcController {
         return console.error(err);
       }
       console.log('DATA MESSAGE:', data);
+      data = JSON.parse(data);
+      debugger;
       switch (data.operation) {
         case Constants.MESSAGES.SPONSOR.SIGN_ECOSENT:
         case Constants.MESSAGES.SPONSOR.UPDATE_ECOSENT: {
@@ -135,8 +137,9 @@ export default class ListTrialsController extends WebcController {
           break;
         }
         case 'update-site-status': {
-          if (data.stageInfo.siteSSI && data.stageInfo.status && data.ssi) {
-            await this.sitesService.updateSiteStage(data.ssi, data.stageInfo.siteSSI, data.stageInfo.status);
+          debugger;
+          if (data.stageInfo.siteSSI) {
+            await this.sitesService.updateSiteStage(data.stageInfo.siteSSI);
           }
         }
       }
@@ -291,9 +294,10 @@ export default class ListTrialsController extends WebcController {
     this.onTagClick('view-trial-status', async (model) => {
       this.showModalFromTemplate(
         'add-new-trial-status',
-        () => {
-          // this.getTrials();
-          // this.showFeedbackToast('Result', 'Trial added successfully', 'toast');
+        async (event) => {
+          await this.updateSiteStatuses(event.detail);
+          await this.getTrials();
+          this.showFeedbackToast('Result', 'Trial status changed successfully', 'toast');
         },
         (event) => {
           const error = event.detail || null;
@@ -306,7 +310,7 @@ export default class ListTrialsController extends WebcController {
           controller: 'AddNewTrialStatusModalController',
           disableExpanding: false,
           disableBackdropClosing: true,
-          // existingIds: this.trials.map((x) => x.id) || [],
+          trial: model,
         }
       );
     });
@@ -336,5 +340,15 @@ export default class ListTrialsController extends WebcController {
       ssi: ssi,
       shortDescription: shortMessage,
     });
+  }
+
+  async updateSiteStatuses(trial) {
+    const sites = await this.sitesService.getSites(trial.keySSI);
+
+    for (const site of sites) {
+      await this.sitesService.changeSiteStatus(trial.status, site.did, trial.keySSI);
+      this.sendMessageToHco(Constants.MESSAGES.SPONSOR.UPDATE_SITE_STATUS, site.uid, 'Status updated', site.did);
+    }
+    return;
   }
 }

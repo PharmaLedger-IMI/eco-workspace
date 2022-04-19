@@ -89,4 +89,29 @@ export default class TrialsService extends DSUService {
     const updatedTrialDSU = await this.updateEntityAsync({ ...trialDSU, consents: trial.consents });
     return updatedTrialDSU;
   }
+
+  async changeTrialStatus(status, trial) {
+    const trialDb = await this.getTrialFromDB(trial.id);
+    const updatedTrial = await this.storageService.updateRecordAsync(this.TRIALS_TABLE, trial.id, {
+      ...trialDb,
+      status,
+    });
+
+    const trialDSU = await await this.getEntityAsync(trial.uid);
+    await this.updateEntityAsync({ ...trialDSU, status });
+    return updatedTrial;
+  }
+
+  async changeTrialStage(stage, trial) {
+    const trialDb = await this.getTrialFromDB(trial.id);
+    const updatedTrial = await this.storageService.updateRecordAsync(this.TRIALS_TABLE, trial.id, {
+      ...trialDb,
+      stage,
+    });
+
+    const trialDSU = await await this.getEntityAsync(trial.uid);
+    await this.updateEntityAsync({ ...trialDSU, stage });
+
+    return updatedTrial;
+  }
 }

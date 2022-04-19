@@ -33,7 +33,7 @@ export default class ConsentService extends DSUService {
   }
 
   async addSiteConsent(model, trialKeySSI, siteDSU) {
-    const site = await this.siteService.getSite(siteDSU.uid);
+    const site = await this.siteService.getSiteFromDB(siteDSU.did, trialKeySSI);
     const path = this.getConsentPath(site.uid);
     const consent = await this.saveEntityAsync(model, path);
     const attachment = await this.uploadFile(
@@ -71,12 +71,12 @@ export default class ConsentService extends DSUService {
   }
 
   async addSiteConsentVersion(model, trialKeySSI, siteDSU) {
-    const site = await this.siteService.getSite(siteDSU.uid);
+    const site = await this.siteService.getSiteFromDB(siteDSU.did, trialKeySSI);
     const selectedSiteConsent = site.consents.find((x) => x.trialConsentId === model.trialConsentId);
     const path = this.getConsentPath(site.uid);
     const consentDSU = await this.getEntityAsync(selectedSiteConsent.uid, path);
     const attachment = await this.uploadFile(
-      `${path}${consentDSU.uid}/versions/${model.trialConsentVersion.toString()}/${model.file.name}`,
+      `${path}${consentDSU.uid}/versions/${model.versions[0].version.toString()}/${model.file.name}`,
       model.file
     );
     model.versions[0].attachment = model.file.name;

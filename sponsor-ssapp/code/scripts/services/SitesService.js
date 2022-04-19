@@ -3,6 +3,7 @@ const commonServices = require('common-services');
 const SharedStorage = commonServices.SharedStorage;
 const DSUService = commonServices.DSUService;
 import { siteStagesEnum, siteStatusesEnum } from '../constants/site.js';
+import { trialStagesEnum } from '../constants/trial.js';
 import VisitsService from './VisitsService.js';
 import TrialsService from './TrialsService.js';
 export default class SitesService extends DSUService {
@@ -106,19 +107,23 @@ export default class SitesService extends DSUService {
     return updatedSite;
   }
 
-  // async updateSiteStage(trialKeySSI, siteKeySSI, stage) {
-  //   const siteDSU = await this.getSite(siteKeySSI);
-  //   const site = await this.getSiteFromDB(siteDSU.did, trialKeySSI);
-  //   const updatedSite = await this.storageService.updateRecordAsync(this.getTableName(trialKeySSI), site.did, {
-  //     ...site,
-  //     stage,
-  //   });
+  async updateSiteStage(siteKeySSI) {
+    const siteDSU = await this.getSite(siteKeySSI);
+    const trialDB = await this.trialsService.getTrialFromDB(siteDSU.trialId);
+    const site = await this.getSiteFromDB(siteDSU.did, trialDB.keySSI);
+    const statusDSU = await this.getEntityAsync(site.statusUid, this.getStatusPath(site.uid));
+    debugger;
+    const updatedSite = await this.storageService.updateRecordAsync(this.getTableName(trialDB.keySSI), site.did, {
+      ...site,
+      stage: statusDSU.stage,
+    });
 
-  //   const statusDSU = await this.getEntityAsync(site.statusKeySSI, this.getStatusPath(site.keySSI));
-  //   await this.updateEntityAsync({ ...statusDSU, stage }, this.getStatusPath(site.keySSI));
+    if (trialDB.stage === trialStagesEnum.Created) {
+      await this.trialsService.changeTrialStage(trialStagesEnum.Recruiting, trialDB);
+    }
 
-  //   return updatedSite;
-  // }
+    return updatedSite;
+  }
 
   async changeSiteStage(stage, did, trialKeySSI) {
     const site = await this.getSiteFromDB(did, trialKeySSI);
@@ -135,7 +140,7 @@ export default class SitesService extends DSUService {
 
   async updateSiteConsents(data, did, trialKeySSI) {
     const site = await this.getSiteFromDB(did, trialKeySSI);
-    const existingConsent = site.consents.find((x) => x.keySSI === data.keySSI);
+    const existingConsent = site.consents.find((x) => x.trialConsentId === data.trialConsentId);
     if (existingConsent) {
       existingConsent.versions.push(data.versions[data.versions.length - 1]);
       // existingConsent.visits = data.visits || [];
