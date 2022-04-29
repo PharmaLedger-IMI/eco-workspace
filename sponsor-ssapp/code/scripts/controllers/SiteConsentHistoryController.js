@@ -1,7 +1,5 @@
 // eslint-disable-next-line no-undef
-const commonServices = require('common-services');
 import { siteConsentTableHeaders } from '../constants/consent.js';
-const { getDidServiceInstance } = commonServices.DidService;
 
 // import eventBusService from '../services/EventBusService.js';
 // import { Topics } from '../constants/topics.js';
@@ -28,11 +26,6 @@ export default class SiteConsentHistoryController extends WebcController {
       data,
       headers: this.headers,
     };
-
-    this.didService = getDidServiceInstance();
-    this.didService.getDID().then((did) => {
-      this.model.did = did;
-    });
 
     this.feedbackEmitter = null;
 

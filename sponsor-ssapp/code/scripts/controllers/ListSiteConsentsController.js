@@ -64,11 +64,6 @@ export default class ListTrialConsentsController extends WebcController {
       tableLength: 7,
     };
 
-    this.didService = getDidServiceInstance();
-    this.didService.getDID().then((did) => {
-      this.model.did = did;
-    });
-
     this.feedbackEmitter = null;
 
     this.attachEvents();

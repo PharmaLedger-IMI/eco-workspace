@@ -46,10 +46,11 @@
   </body>
 </html> -->
 
-  <webc-app-root>
+  <webc-app-root preload="scripts/preload.js">
     <webc-app-container>
       <header class="d-flex flex-row align-content-center justify-content-between" slot="before">
         <img alt="PharmaLedger logo" src="themes/clinical-site-theme/images/pharmaledger-logo.jpg" class="img-s" />
+        <share-did class="w-50"></share-did>
         <div class="d-flex flex-row justify-content-center align-items-center">
           <button class="button-menu button-transparent" data-tag="header:help">Help</button>
           <button class="button-menu" data-tag="header:logout">Logout</button>

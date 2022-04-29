@@ -3,7 +3,6 @@ const commonServices = require('common-services');
 import TrialsService from '../services/TrialsService.js';
 import { siteStatusesEnum, siteStagesEnum, siteTableHeaders } from '../constants/site.js';
 const { getCommunicationServiceInstance } = commonServices.CommunicationService;
-const { getDidServiceInstance } = commonServices.DidService;
 const Constants = commonServices.Constants;
 import SitesService from '../services/SitesService.js';
 
@@ -95,12 +94,6 @@ export default class ListSitesController extends WebcController {
       type: 'sites',
       tableLength: 7,
     };
-
-    this.didService = getDidServiceInstance();
-    this.didService.getDID().then((did) => {
-      this.model.did = did;
-    });
-
     this.feedbackEmitter = null;
 
     this.attachEvents();

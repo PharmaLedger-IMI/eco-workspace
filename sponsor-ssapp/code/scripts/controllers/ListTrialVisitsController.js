@@ -1,6 +1,5 @@
 // eslint-disable-next-line no-undef
 const commonServices = require('common-services');
-const { getDidServiceInstance } = commonServices.DidService;
 import ConsentService from '../services/ConsentService.js';
 import VisitsService from '../services/VisitsService.js';
 import SitesService from '../services/SitesService.js';
@@ -26,11 +25,6 @@ export default class ListTrialVisitsController extends WebcController {
       keySSI,
       uid,
     };
-
-    this.didService = getDidServiceInstance();
-    this.didService.getDID().then((did) => {
-      this.model.did = did;
-    });
 
     this.feedbackEmitter = null;
 

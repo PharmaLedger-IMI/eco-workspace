@@ -1,7 +1,6 @@
 // eslint-disable-next-line no-undef
 const commonServices = require('common-services');
 import { consentTableHeaders } from '../constants/consent.js';
-const { getDidServiceInstance } = commonServices.DidService;
 
 // import eventBusService from '../services/EventBusService.js';
 // import { Topics } from '../constants/topics.js';
@@ -48,11 +47,6 @@ export default class ConsentHistoryConsentsController extends WebcController {
       type: 'consents',
       tableLength: 7,
     };
-
-    this.didService = getDidServiceInstance();
-    this.didService.getDID().then((did) => {
-      this.model.did = did;
-    });
 
     this.feedbackEmitter = null;
 

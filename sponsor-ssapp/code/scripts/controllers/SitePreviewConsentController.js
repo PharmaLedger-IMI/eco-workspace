@@ -1,6 +1,5 @@
 // eslint-disable-next-line no-undef
 const commonServices = require('common-services');
-const { getDidServiceInstance } = commonServices.DidService;
 const FileDownloaderService = commonServices.FileDownloaderService;
 // import eventBusService from '../services/EventBusService.js';
 // import { Topics } from '../constants/topics.js';
@@ -32,11 +31,6 @@ export default class SitePreviewConsentController extends WebcController {
     };
 
     this.fileDownloaderService = new FileDownloaderService(this.DSUStorage);
-    this.didService = getDidServiceInstance();
-    this.didService.getDID().then((did) => {
-      this.model.did = did;
-    });
-
     this.feedbackEmitter = null;
 
     this.attachEvents();

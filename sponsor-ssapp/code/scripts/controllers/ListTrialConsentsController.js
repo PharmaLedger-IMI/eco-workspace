@@ -3,7 +3,6 @@ const commonServices = require('common-services');
 import TrialsService from '../services/TrialsService.js';
 import { consentTableHeaders } from '../constants/consent.js';
 const { getCommunicationServiceInstance } = commonServices.CommunicationService;
-const { getDidServiceInstance } = commonServices.DidService;
 import SitesService from '../services/SitesService.js';
 import ConsentService from '../services/ConsentService.js';
 
@@ -56,11 +55,6 @@ export default class ListTrialConsentsController extends WebcController {
       type: 'consents',
       tableLength: 7,
     };
-
-    this.didService = getDidServiceInstance();
-    this.didService.getDID().then((did) => {
-      this.model.did = did;
-    });
 
     this.feedbackEmitter = null;
 
