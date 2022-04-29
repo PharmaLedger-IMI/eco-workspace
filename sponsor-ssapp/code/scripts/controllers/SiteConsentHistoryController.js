@@ -27,8 +27,6 @@ export default class SiteConsentHistoryController extends WebcController {
       headers: this.headers,
     };
 
-    this.feedbackEmitter = null;
-
     this.attachEvents();
 
     this.init();

@@ -45,8 +45,6 @@ export default class TrialDetailsController extends WebcController {
       menu: menu,
     };
 
-    this.feedbackEmitter = null;
-
     this.attachEvents();
     this.init();
   }
@@ -194,10 +192,6 @@ export default class TrialDetailsController extends WebcController {
       await this.getSites();
       this.showFeedbackToast('Result', 'Site status changed successfully', 'toast');
       eventBusService.emitEventListeners(Topics.RefreshTrialDetails, null);
-    });
-
-    this.on('openFeedback', (e) => {
-      this.feedbackEmitter = e.detail;
     });
 
     this.onTagClick('add-site', async () => {
@@ -609,9 +603,7 @@ export default class TrialDetailsController extends WebcController {
   // }
 
   showFeedbackToast(title, message, alertType) {
-    if (typeof this.feedbackEmitter === 'function') {
-      this.feedbackEmitter(message, title, alertType);
-    }
+    this.showErrorModal(message, title, () => {});
   }
 
   sendMessageToHco(operation, ssi, shortMessage, receiverDid) {

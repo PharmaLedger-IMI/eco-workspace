@@ -56,8 +56,6 @@ export default class ListTrialConsentsController extends WebcController {
       tableLength: 7,
     };
 
-    this.feedbackEmitter = null;
-
     this.attachEvents();
 
     this.init();
@@ -87,9 +85,7 @@ export default class ListTrialConsentsController extends WebcController {
   }
 
   showFeedbackToast(title, message, alertType) {
-    if (typeof this.feedbackEmitter === 'function') {
-      this.feedbackEmitter(message, title, alertType);
-    }
+    this.showErrorModal(message, title, () => {});
   }
 
   attachEvents() {
@@ -98,10 +94,6 @@ export default class ListTrialConsentsController extends WebcController {
       () => !!(this.model.consents && Array.isArray(this.model.consents) && this.model.consents.length > 0),
       'consents'
     );
-
-    this.on('openFeedback', (e) => {
-      this.feedbackEmitter = e.detail;
-    });
 
     this.onTagClick('add-consent', async () => {
       this.showModalFromTemplate(

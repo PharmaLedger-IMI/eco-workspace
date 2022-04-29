@@ -26,8 +26,6 @@ export default class ListTrialVisitsController extends WebcController {
       uid,
     };
 
-    this.feedbackEmitter = null;
-
     this.attachEvents();
 
     this.init();
@@ -81,7 +79,7 @@ export default class ListTrialVisitsController extends WebcController {
           const error = event.detail || null;
           if (error instanceof Error) {
             console.log(error);
-            this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new consent', 'toast');
+            this.showErrorModal('ERROR: There was an issue creating the new consent', 'Result', () => {});
           }
         },
         {

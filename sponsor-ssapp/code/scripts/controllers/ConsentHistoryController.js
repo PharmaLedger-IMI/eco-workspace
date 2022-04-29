@@ -48,8 +48,6 @@ export default class ConsentHistoryConsentsController extends WebcController {
       tableLength: 7,
     };
 
-    this.feedbackEmitter = null;
-
     this.attachEvents();
 
     this.init();

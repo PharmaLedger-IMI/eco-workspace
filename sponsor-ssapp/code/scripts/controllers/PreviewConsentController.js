@@ -31,8 +31,6 @@ export default class PreviewConsentController extends WebcController {
 
     this.fileDownloaderService = new FileDownloaderService(this.DSUStorage);
 
-    this.feedbackEmitter = null;
-
     this.attachEvents();
 
     this.init();

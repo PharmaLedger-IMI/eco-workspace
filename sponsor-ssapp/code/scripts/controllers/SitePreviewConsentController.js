@@ -31,7 +31,6 @@ export default class SitePreviewConsentController extends WebcController {
     };
 
     this.fileDownloaderService = new FileDownloaderService(this.DSUStorage);
-    this.feedbackEmitter = null;
 
     this.attachEvents();
 

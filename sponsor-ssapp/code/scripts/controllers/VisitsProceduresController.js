@@ -21,7 +21,6 @@ export default class VisitsProceduresController extends WebcController {
     this.trialsService = new TrialsService(this.DSUStorage);
     this.sitesService = new SitesService(this.DSUStorage);
     this.visitsService = new VisitsService(this.DSUStorage);
-    this.feedbackEmitter = null;
 
     this.model = {
       consents: [],
@@ -184,9 +183,7 @@ export default class VisitsProceduresController extends WebcController {
   }
 
   showFeedbackToast(title, message, alertType) {
-    if (typeof this.feedbackEmitter === 'function') {
-      this.feedbackEmitter(message, title, alertType);
-    }
+    this.showErrorModal(message, title, () => {});
   }
 
   filter() {
@@ -213,10 +210,6 @@ export default class VisitsProceduresController extends WebcController {
       },
       'consents'
     );
-
-    this.on('openFeedback', (e) => {
-      this.feedbackEmitter = e.detail;
-    });
 
     this.onTagEvent('randomizationOnChange', 'click', (model, target, event) => {
       if (this.model.visits && this.model.visits.length > 0) {
@@ -528,11 +521,10 @@ export default class VisitsProceduresController extends WebcController {
   }
 
   sendMessageToHco(operation, ssi, shortMessage, did) {
-
-      this.CommunicationService.sendMessage(did, {
-        operation: operation,
-        ssi: ssi,
-        shortDescription: shortMessage,
-      });
+    this.CommunicationService.sendMessage(did, {
+      operation: operation,
+      ssi: ssi,
+      shortDescription: shortMessage,
+    });
   }
 }

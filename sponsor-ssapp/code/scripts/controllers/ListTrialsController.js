@@ -97,8 +97,6 @@ export default class ListTrialsController extends WebcController {
 
     this.listenForMessages();
 
-    this.feedbackEmitter = null;
-
     this.attachEvents();
 
     this.init();
@@ -188,9 +186,7 @@ export default class ListTrialsController extends WebcController {
   }
 
   showFeedbackToast(title, message, alertType) {
-    if (typeof this.feedbackEmitter === 'function') {
-      this.feedbackEmitter(message, title, alertType);
-    }
+    this.showErrorModal(message, title, () => {});
   }
 
   attachEvents() {
@@ -214,10 +210,6 @@ export default class ListTrialsController extends WebcController {
       () => !!(this.model.trials && Array.isArray(this.model.trials) && this.model.trials.length > 0),
       'trials'
     );
-
-    this.on('openFeedback', (e) => {
-      this.feedbackEmitter = e.detail;
-    });
 
     this.on('run-filters', () => {
       this.filterData();

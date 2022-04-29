@@ -48,8 +48,6 @@ export default class TrialParticipantsController extends WebcController {
       this.getParticipants();
     });
 
-    this.feedbackEmitter = null;
-
     this.setModel({
       participants: [],
       pagination: this.pagination,
@@ -74,7 +72,7 @@ export default class TrialParticipantsController extends WebcController {
       this.setDataModel(this.participants);
     } catch (error) {
       console.log(error);
-      this.showFeedbackToast('ERROR: There was an issue accessing consents object', 'Result', 'toast');
+      this.showErrorModal('ERROR: There was an issue accessing consents object', 'Result', () => {});
     }
   }
 
@@ -102,10 +100,6 @@ export default class TrialParticipantsController extends WebcController {
       () => this.model.participants && Array.isArray(this.model.participants) && this.model.participants.length > 0,
       'participants'
     );
-
-    this.on('openFeedback', (e) => {
-      this.feedbackEmitter = e.detail;
-    });
 
     this.on('filters-changed', async (event) => {
       this.filterData();

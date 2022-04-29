@@ -94,7 +94,6 @@ export default class ListSitesController extends WebcController {
       type: 'sites',
       tableLength: 7,
     };
-    this.feedbackEmitter = null;
 
     this.attachEvents();
 
@@ -155,9 +154,7 @@ export default class ListSitesController extends WebcController {
   }
 
   showFeedbackToast(title, message, alertType) {
-    if (typeof this.feedbackEmitter === 'function') {
-      this.feedbackEmitter(message, title, alertType);
-    }
+    this.showErrorModal(message, title, () => {});
   }
 
   attachEvents() {
@@ -181,10 +178,6 @@ export default class ListSitesController extends WebcController {
       () => !!(this.model.sites && Array.isArray(this.model.sites) && this.model.sites.length > 0),
       'sites'
     );
-
-    this.on('openFeedback', (e) => {
-      this.feedbackEmitter = e.detail;
-    });
 
     this.on('run-filters', () => {
       this.filterData();
