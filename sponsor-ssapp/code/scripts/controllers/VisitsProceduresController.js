@@ -5,7 +5,6 @@ import TrialsService from '../services/TrialsService.js';
 import eventBusService from '../services/EventBusService.js';
 import SitesService from '../services/SitesService.js';
 import { Topics } from '../constants/topics.js';
-import { countryListAlpha2 } from '../constants/countries.js';
 import VisitsService from '../services/VisitsService.js';
 // eslint-disable-next-line no-undef
 const { WebcController } = WebCardinal.controllers;

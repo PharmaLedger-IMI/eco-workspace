@@ -6,9 +6,20 @@
     <input class="form-control" value="@consent.type" disabled="true"></input>
   </div>
 
-  <div style="margin-left: 10px">
+  <div style="margin-left: 10px" data-if="@existingConsent">
     <label>Trial Consent Name</label>
     <input class="form-control" value="@consent.trialConsentName" disabled="true"></input>
+  </div>
+  
+  <div style="margin: 10px" data-if="@newConsent">
+    <label>Trial Consent Name</label>
+    <select data-tag="selected-consent-changed" class="form-control" data-for="@consent.trialConsentName.selectOptions" required="required" value="@consent.trialConsentName.value" disabled="@consent.trialConsentName.disabled">
+      <option value="@value">{{@label}}</option>
+    </select>
+    <div data-if="@consent.trialConsentName.invalidValue" class="d-flex flex-row">
+      <i class="red-invalid fas fa-times mr-2"></i>
+      <small class="form-text text-danger">Please select a consent type</small>
+    </div>
   </div>
 
   <div style="margin-left: 10px">
@@ -24,6 +35,7 @@
       <small class="form-text text-danger">A consent with this name already exits</small>
     </span>
   </div>
+
   <div style="margin: 10px">
     <label>{{ @consent.version.label }}</label><br>
     <input class="form-control" id="version-field" data-view-model="@consent.version" event-name="version-changed"></input>

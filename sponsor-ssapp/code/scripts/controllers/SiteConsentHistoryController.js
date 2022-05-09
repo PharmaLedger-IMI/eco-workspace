@@ -16,6 +16,12 @@ export default class SiteConsentHistoryController extends WebcController {
     super(...props);
     let { trialId, trialKeySSI, trialUid, siteId, siteKeySSI, siteUid, data } = this.history.location.state;
 
+    data = data.map((x) => ({
+      ...x,
+      siteConsentNameVer: `${x.name}, ver. ${x.version}`,
+      trialConsentNameVer: `${x.trialConsentName}, ver. ${x.trialConsentVersion}`,
+    }));
+
     this.model = {
       trialId,
       trialKeySSI,

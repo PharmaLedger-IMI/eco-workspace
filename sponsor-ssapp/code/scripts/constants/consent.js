@@ -48,27 +48,35 @@ export const consentTableHeaders = [
 
 export const siteConsentTableHeaders = [
   {
-    column: 'trialConsentName',
+    column: 'siteConsentNameVer',
+    label: 'Site Cons. Name',
+    notSortable: false,
+    type: 'string',
+    asc: null,
+    desc: null,
+  },
+  {
+    column: 'trialConsentNameVer',
     label: 'Main Cons. Name',
     notSortable: false,
     type: 'string',
     asc: null,
     desc: null,
   },
-  {
-    column: 'trialConsentVersion',
-    label: 'Main Cons. Version',
-    notSortable: false,
-    type: 'string',
-    asc: null,
-    desc: null,
-  },
-  {
-    column: 'attachment',
-    label: 'Attachment',
-    notSortable: false,
-    desc: null,
-  },
+  // {
+  //   column: 'trialConsentVersion',
+  //   label: 'Main Cons. Version',
+  //   notSortable: false,
+  //   type: 'string',
+  //   asc: null,
+  //   desc: null,
+  // },
+  // {
+  //   column: 'attachment',
+  //   label: 'Attachment',
+  //   notSortable: false,
+  //   desc: null,
+  // },
   {
     column: 'versionDate',
     label: 'Date',
@@ -81,14 +89,14 @@ export const siteConsentTableHeaders = [
     notSortable: false,
     desc: null,
   },
-  {
-    column: 'version',
-    label: 'Version',
-    notSortable: false,
-    type: 'string',
-    asc: null,
-    desc: null,
-  },
+  // {
+  //   column: 'version',
+  //   label: 'Version',
+  //   notSortable: false,
+  //   type: 'string',
+  //   asc: null,
+  //   desc: null,
+  // },
   {
     column: null,
     label: 'Options',

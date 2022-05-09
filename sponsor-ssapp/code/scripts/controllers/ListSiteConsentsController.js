@@ -62,6 +62,7 @@ export default class ListTrialConsentsController extends WebcController {
       clearButtonDisabled: true,
       type: 'consents',
       tableLength: 7,
+      addConsentButtonDisabled: true,
     };
 
     this.attachEvents();
@@ -81,61 +82,50 @@ export default class ListTrialConsentsController extends WebcController {
     console.log(JSON.parse(JSON.stringify(site)));
     const model = this.getSiteConsents(site);
     this.model.site = site;
-    this.model.data = model;
+    this.model.data = model.map((x) => ({
+      ...x,
+      siteConsentNameVer: `${x.name}, ver. ${this.getMaxVersionNumber(x)} ${
+        this.checkConsentVersion(x) ? 'OUTDATED' : ''
+      }`,
+      trialConsentNameVer: `${x.trialConsentName}, ver. ${this.getMaxVersionNumber(
+        this.model.trialConsents.find((y) => y.id === x.trialConsentId)
+      )} ${this.checkConsentVersion(x) ? 'NEW' : ''}`,
+    }));
     this.model.consents = model;
+    this.checkAddConsentButton();
+  }
+
+  checkConsentVersion(x) {
+    console.log(x);
+    console.log(this.model.trialConsents);
+    const maxVersion = this.getMaxVersionNumber(this.model.trialConsents.find((y) => y.id === x.trialConsentId));
+    if (maxVersion === x.version) return false;
+    else return true;
+  }
+
+  checkAddConsentButton() {
+    if (this.model.trialConsents.length === 0) {
+      this.model.addConsentButtonDisabled = true;
+    } else if (this.model.trialConsents.length > this.model.site.consents.length) {
+      this.model.addConsentButtonDisabled = false;
+    } else this.model.addConsentButtonDisabled = true;
+
+    console.log(this.model.trialConsents.length, this.model.site.consents.length, this.model.addConsentButtonDisabled);
   }
 
   getSiteConsents(site) {
-    const consents = JSON.parse(JSON.stringify(this.model.trialConsents));
+    console.log(JSON.parse(JSON.stringify(this.model.trialConsents)));
+    console.log(JSON.parse(JSON.stringify(site.consents)));
     if (!site.consents || site.consents.length === 0) {
-      const result = consents.map((x) => ({
-        type: x.type,
-        trialConsentId: x.id,
-        trialConsentName: x.name,
-        versions: [],
-        trialConsentVersion: Math.max.apply(
-          Math,
-          x.versions.map((o) => parseInt(o.version))
-        ),
-        version: null,
-        versionDate: null,
-        attachment: null,
-        id: x.id,
-        name: null,
-      }));
-      return result;
+      return [];
     } else {
-      const result = consents.map((x) => {
-        const exists = site.consents.find((y) => y.trialConsentId === x.id);
-        if (exists) {
-          return {
-            ...exists,
-            ...exists.versions.map((x) => ({ ...x, versionDate: new Date(x.versionDate).toLocaleDateString('en-UK') }))[
-              exists.versions.length - 1
-            ],
-            trialConsentVersion: Math.max.apply(
-              Math,
-              x.versions.map((o) => parseInt(o.version))
-            ),
-          };
-        } else {
-          return {
-            type: x.type,
-            trialConsentId: x.id,
-            trialConsentName: x.name,
-            versions: [],
-            trialConsentVersion: Math.max.apply(
-              Math,
-              x.versions.map((o) => parseInt(o.version))
-            ),
-            id: x.id,
-            name: null,
-            version: null,
-            versionDate: null,
-            attachment: null,
-          };
-        }
-      });
+      const result = site.consents.map((x) => ({
+        ...x,
+        ...x.versions.map((x) => ({ ...x, versionDate: new Date(x.versionDate).toLocaleDateString('en-UK') }))[
+          x.versions.length - 1
+        ],
+        trialConsentVersion: 1,
+      }));
       return result;
     }
   }
@@ -151,6 +141,33 @@ export default class ListTrialConsentsController extends WebcController {
       'data'
     );
 
+    this.onTagClick('add-consent', async (model) => {
+      this.showModalFromTemplate(
+        'add-new-site-consent',
+        async (_event) => {
+          await this.getConsents();
+          this.checkAddConsentButton();
+          this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
+        },
+        (event) => {
+          const error = event.detail || null;
+          if (error instanceof Error) {
+            console.log(error);
+            this.showFeedbackToast('Result', 'ERROR: There was an issue creating the new consent', 'toast');
+          }
+        },
+        {
+          controller: 'AddNewSiteConsentModalController',
+          disableExpanding: false,
+          disableBackdropClosing: true,
+          site: JSON.parse(JSON.stringify(this.model.site)),
+          selectedConsent: null,
+          siteConsent: null,
+          consents: JSON.parse(JSON.stringify(this.model.trialConsents)),
+        }
+      );
+    });
+
     this.onTagClick('add-site-consent', async (model) => {
       console.log(model);
 
@@ -164,6 +181,7 @@ export default class ListTrialConsentsController extends WebcController {
         async (_event) => {
           // const response = event.detail;
           await this.getConsents();
+          this.checkAddConsentButton();
           this.showFeedbackToast('Result', 'Consent added successfully', 'toast');
           // this.sendMessageToHco(
           //   Constants.MESSAGES.HCO.ADD_CONSENT,
@@ -185,6 +203,7 @@ export default class ListTrialConsentsController extends WebcController {
           disableBackdropClosing: true,
           site: JSON.parse(JSON.stringify(this.model.site)),
           selectedConsent,
+          siteConsent: model,
           consents: JSON.parse(JSON.stringify(this.model.trialConsents)),
         }
       );
@@ -239,5 +258,12 @@ export default class ListTrialConsentsController extends WebcController {
       ssi: ssi,
       shortDescription: shortMessage,
     });
+  }
+
+  getMaxVersionNumber(data) {
+    return Math.max.apply(
+      Math,
+      data.versions.map((o) => parseInt(o.version))
+    );
   }
 }

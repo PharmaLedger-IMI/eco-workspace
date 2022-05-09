@@ -148,6 +148,29 @@ header {
   background: rgba(0, 52, 91, 0.3);
 }
 
+.sites-consents-data-table .webc-datatable--container > div:nth-child(10n + 2),
+.sites-consents-data-table .webc-datatable--container > div:nth-child(10n + 3),
+.sites-consents-data-table .webc-datatable--container > div:nth-child(10n + 4),
+.sites-consents-data-table .webc-datatable--container > div:nth-child(10n + 5),
+.sites-consents-data-table .webc-datatable--container > div:nth-child(10n + 6) {
+  background: rgba(0, 135, 152, 0.19);
+}
+
+.sites-consents-data-table .webc-datatable--container > div:nth-child(10n + 7),
+.sites-consents-data-table .webc-datatable--container > div:nth-child(10n + 8),
+.sites-consents-data-table .webc-datatable--container > div:nth-child(10n + 9),
+.sites-consents-data-table .webc-datatable--container > div:nth-child(10n + 10),
+.sites-consents-data-table .webc-datatable--container > div:nth-child(10n + 11) {
+  background: rgba(0, 52, 91, 0.3);
+}
+
+.sites-consents-data-table .webc-datatable--container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 2fr;
+  align-items: baseline;
+  gap: 0;
+}
+
 button.btn.btn-bare.btn-link {
   margin: 0 !important;
   padding: 0 !important;

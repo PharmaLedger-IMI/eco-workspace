@@ -12,6 +12,7 @@ export default class AddNewSiteConsentModalController extends WebcController {
     name: 'name',
     required: true,
     placeholder: 'Please insert a name...',
+    value: '',
   };
 
   version = {
@@ -46,20 +47,8 @@ export default class AddNewSiteConsentModalController extends WebcController {
 
     this.site = props[0].site || null;
     this.consents = props[0].consents || [];
+    this.siteConsent = props[0].siteConsent || null;
     this.selectedConsent = props[0].selectedConsent || [];
-    this.siteSelectedConsent =
-      this.site.consents &&
-      this.site.consents.length &&
-      this.site.consents.find((x) => x.trialConsentId === this.selectedConsent.id);
-    this.selectedVersion = this.siteSelectedConsent
-      ? Math.max.apply(
-          Math,
-          this.siteSelectedConsent.versions.map((o) => parseInt(o.version))
-        ) + 1
-      : 1;
-    console.log(this.consents);
-
-    debugger;
 
     let { trialKeySSI } = this.history.location.state;
 
@@ -67,26 +56,86 @@ export default class AddNewSiteConsentModalController extends WebcController {
 
     this.consentsService = new ConsentService(this.DSUStorage);
 
-    this.setModel({
-      consent: {
-        file: this.file,
-        type: this.selectedConsent.type,
-        trialConsentName: this.selectedConsent.name,
-        trialConsentId: this.selectedConsent.id,
-        trialConsentVersion: Math.max.apply(
-          Math,
-          this.selectedConsent.versions.map((o) => parseInt(o.version))
-        ),
-        name: this.name,
-        version: {
-          ...this.version,
-          value: this.selectedVersion,
-          disabled: true,
+    if (this.selectedConsent && this.siteConsent) {
+      this.siteSelectedConsent =
+        this.site.consents &&
+        this.site.consents.length &&
+        this.site.consents.find((x) => x.trialConsentId === this.selectedConsent.id);
+
+      this.selectedVersion = this.siteSelectedConsent
+        ? Math.max.apply(
+            Math,
+            this.siteSelectedConsent.versions.map((o) => parseInt(o.version))
+          ) + 1
+        : 1;
+
+      this.setModel({
+        newConsent: !(this.selectedConsent && this.siteConsent),
+        existingConsent: this.selectedConsent && this.siteConsent,
+        consent: {
+          file: this.file,
+          type: this.selectedConsent.type,
+          trialConsentName: this.selectedConsent.name,
+          trialConsentId: this.selectedConsent.id,
+          trialConsentVersion: Math.max.apply(
+            Math,
+            this.selectedConsent.versions.map((o) => parseInt(o.version))
+          ),
+          name: {
+            ...this.name,
+            value: (this.siteConsent && this.siteConsent.name) || this.name,
+            readOnly: !!(this.siteConsent && this.siteConsent.name),
+          },
+          version: {
+            ...this.version,
+            value: this.selectedVersion,
+            disabled: true,
+          },
+          attachment: this.attachment,
         },
-        attachment: this.attachment,
-      },
-      submitButtonDisabled: true,
-    });
+        submitButtonDisabled: true,
+      });
+    } else {
+      const filteredConsents = this.consents.filter(
+        (x) => this.site.consents.findIndex((y) => y.trialConsentId === x.id) === -1
+      );
+      console.log(filteredConsents);
+      this.setModel({
+        newConsent: !(this.selectedConsent && this.siteConsent),
+        existingConsent: this.selectedConsent && this.siteConsent,
+        consent: {
+          file: this.file,
+          type: filteredConsents[0].type,
+          trialConsentName: {
+            label: 'Select type',
+            placeholder: 'Please select an option',
+            required: true,
+            selectOptions: filteredConsents.map((x) => ({
+              value: x.name,
+              label: x.name,
+            })),
+            disabled: false,
+          },
+          trialConsentId: filteredConsents[0].id,
+          trialConsentVersion: Math.max.apply(
+            Math,
+            filteredConsents[0].versions.map((o) => parseInt(o.version))
+          ),
+          name: {
+            ...this.name,
+            value: (this.siteConsent && this.siteConsent.name) || this.name.value,
+            readOnly: !!(this.siteConsent && this.siteConsent.name),
+          },
+          version: {
+            ...this.version,
+            value: 1,
+            disabled: true,
+          },
+          attachment: this.attachment,
+        },
+        submitButtonDisabled: true,
+      });
+    }
     this.attachAll();
   }
 
@@ -99,6 +148,17 @@ export default class AddNewSiteConsentModalController extends WebcController {
       if (!event.data || event.data.length === 0) {
         this.model.consent.file.value = null;
       }
+    });
+
+    this.onTagEvent('selected-consent-changed', 'change', (model, target, event) => {
+      const selectedConsent = this.consents.find((x) => x.name === this.model.consent.trialConsentName.value);
+
+      this.model.consent.type = selectedConsent.type;
+      this.model.consent.trialConsentId = selectedConsent.id;
+      this.model.consent.trialConsentVersion = Math.max.apply(
+        Math,
+        selectedConsent.versions.map((o) => parseInt(o.version))
+      );
     });
 
     this.onTagClick('create-consent', async () => {
@@ -124,26 +184,12 @@ export default class AddNewSiteConsentModalController extends WebcController {
           }
         }
 
-        // const existingVersions = this.selectedConsent.versions.map((o) => parseInt(o.version));
-        // const selectedValue = parseInt(this.model.consent.version.value);
-        // const smallerThan = selectedValue < Math.max.apply(Math, existingVersions);
-        // const versionExists = existingVersions.indexOf(selectedValue) > -1;
-
-        // if (smallerThan || versionExists) {
-        //   Object.assign(this.model.consent.version, { invalidValue: true });
-        //   setTimeout(() => {
-        //     Object.assign(this.model.consent.version, { invalidValue: null });
-        //   }, 1000);
-        //   valid = false;
-        // }
-
-        console.log(JSON.parse(JSON.stringify(this.model.consent)));
         if (!valid) return;
 
         const result = {
           trialConsentVersion: this.model.consent.trialConsentVersion,
           trialConsentId: this.model.consent.trialConsentId,
-          trialConsentName: this.model.consent.trialConsentName,
+          trialConsentName: this.model.consent.trialConsentName.value || this.model.consent.trialConsentName,
           file: this.model.consent.file.value[0],
           type: this.model.consent.type,
           versions: [
@@ -151,6 +197,7 @@ export default class AddNewSiteConsentModalController extends WebcController {
               version: this.model.consent.version.value,
               versionDate: new Date().toISOString(),
               file: this.model.consent.file.value[0],
+              trialConsentVersion: this.model.consent.trialConsentVersion,
             },
           ],
           name: this.model.consent.name.value,
