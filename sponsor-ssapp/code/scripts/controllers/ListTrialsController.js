@@ -113,18 +113,7 @@ export default class ListTrialsController extends WebcController {
       switch (data.operation) {
         case Constants.MESSAGES.SPONSOR.SIGN_ECOSENT:
         case Constants.MESSAGES.SPONSOR.UPDATE_ECOSENT: {
-          await this.participantsService.updateParticipant(
-            {
-              participantId: data.useCaseSpecifics.tpNumber,
-              action: data.useCaseSpecifics.action,
-              trialSSI: data.useCaseSpecifics.trialSSI,
-              consentSSI: data.ssi,
-              version: data.useCaseSpecifics.version,
-              type: data.sender === 'hcoIdentity' ? senderType.HCP : senderType.Patient,
-              operationDate: data.useCaseSpecifics.operationDate || null,
-            },
-            data.useCaseSpecifics.trialSSI
-          );
+          await this.participantsService.updateParticipant(data.useCaseSpecifics, data.ssi, data.senderIdentity);
           eventBusService.emitEventListeners(Topics.RefreshParticipants + data.useCaseSpecifics.trialSSI, data);
           break;
         }
