@@ -6,7 +6,6 @@
   "scripts": {
     "prebuild": "node ./node_modules/octopus/scripts/run prebuild devmode",
     "build": "node ./node_modules/octopus/scripts/buildDSU.js",
-    "postbuild": "node ./node_modules/octopus/scripts/run postbuild devmode",
     "update": "npm install",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --ext .js --ignore-path .gitignore ."

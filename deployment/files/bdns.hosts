@@ -1,0 +1,49 @@
+{
+   "default":{
+      "replicas":[
+
+      ],
+      "brickStorages":[
+         "$ORIGIN"
+      ],
+      "anchoringServices":[
+         "$ORIGIN"
+      ]
+   },
+   "vault":{
+      "replicas":[
+
+      ],
+      "brickStorages":[
+         "$ORIGIN"
+      ],
+      "anchoringServices":[
+         "$ORIGIN"
+      ]
+   },
+   "iot":{
+      "replicas":[
+
+      ],
+      "brickStorages":[
+         "http://localhost:8080"
+      ],
+      "anchoringServices":[
+         "http://localhost:8080"
+      ],
+      "mqEndpoints":[
+         "http://localhost:8080"
+      ]
+   },
+   "eco":{
+      "replicas":[
+
+      ],
+      "brickStorages":[
+         "$ORIGIN"
+      ],
+      "anchoringServices":[
+         "$ORIGIN"
+      ]
+   }
+}
