@@ -85,7 +85,25 @@ export default class ParticipantsService extends DSUService {
     }
   }
 
-  getTableName(trialKeySSI) {
-    return this.PARTICIPANTS_TABLE + '_' + trialKeySSI;
+  async addParticipant(ssi, sender) {
+    try {
+      const participantDSU = await this.mountEntityAsync(ssi);
+      const trial = await this.trialsService.getTrialFromDB(participantDSU.trialId);
+      const site = await this.sitesService.getSiteFromUid(trial.keySSI, sender);
+      const newParticipant = await this.storageService.insertRecordAsync(
+        this.getTableName(trial.keySSI, site.keySSI),
+        participantDSU.did,
+        participantDSU
+      );
+      console.log(newParticipant);
+
+      return newParticipant;
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  getTableName(trialKeySSI, siteKeySSI) {
+    return this.PARTICIPANTS_TABLE + '_' + trialKeySSI + '_' + siteKeySSI;
   }
 }
