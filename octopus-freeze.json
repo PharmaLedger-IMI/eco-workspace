@@ -165,7 +165,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "85b9e4462b6cb4853b09e6d040202b5778c2d089"
+                    "commit": "fd47b9b40eef1568cb5c99c49ec106e580f42cde"
                 },
                 {
                     "type": "execute",
@@ -249,7 +249,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "970cb77f84ca07a7c6b4e84253d0103b537af40f"
+                    "commit": "0512da9de9c4584131f4d37f9720fc0adc37e443"
                 },
                 {
                     "type": "execute",
@@ -265,7 +265,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "a2b556a11e63017d8513d40dd8354e653770f931"
+                    "commit": "023a31c7c305304a9d0fafb6e3a1217c172e705d"
                 },
                 {
                     "type": "execute",
@@ -280,7 +280,7 @@
             "actions": [
                 {
                     "type": "execute",
-                    "cmd": "cd webcardinal && npm run build-dossier"
+                    "cmd": "cd webcardinal && npm run build"
                 }
             ]
         },
