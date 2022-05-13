@@ -123,6 +123,12 @@ export default class ListTrialsController extends WebcController {
             await this.sitesService.updateSiteStage(data.stageInfo.siteSSI);
           }
         }
+        case 'tp-added': {
+          debugger;
+          if (data.ssi) {
+            await this.participantsService.addParticipant(data.ssi, data.senderIdentity);
+          }
+        }
       }
     });
   }

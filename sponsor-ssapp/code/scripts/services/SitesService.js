@@ -29,6 +29,11 @@ export default class SitesService extends DSUService {
     return result;
   }
 
+  async getSiteFromUid(trialKeySSI, siteUid) {
+    const site = await this.storageService.filterAsync(this.getTableName(trialKeySSI), `did == ${siteUid}`);
+    return site;
+  }
+
   async getSiteFromDB(did, trialKeySSI) {
     const result = await this.storageService.getRecordAsync(this.getTableName(trialKeySSI), did);
     return result;
