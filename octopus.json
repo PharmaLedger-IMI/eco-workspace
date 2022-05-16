@@ -42,8 +42,7 @@
         {
           "type": "smartClone",
           "target": ".",
-          "collectLog": false,
-          "commit": "e7c923dbaf6cbe75041bcfb1dd8600b8ddb0508d"
+          "collectLog": false
         },
         {
           "type": "execute",
