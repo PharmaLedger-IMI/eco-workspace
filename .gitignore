@@ -15,6 +15,7 @@ apihub-root/messaging/queues.json
 apihub-root/seedsBackup
 dossier-explorer-ssapp
 trial-participant-ssapp
+sponsor-ssapp
 node_modules
 package-lock.json
 env.json.devel
@@ -26,5 +27,6 @@ env.json.devel
 /themes/blue-fluorite-theme
 /themes/trial-participant-theme
 /themes/clinical-site-theme
+/themes/sponsor-theme
 /clinical-site-ssapp
 .eslintrc.js
