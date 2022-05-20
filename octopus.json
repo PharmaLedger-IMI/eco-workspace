@@ -210,8 +210,13 @@
     },
     {
       "name": "themes/sponsor-theme",
-      "src": "",
+      "src": "https://github.com/PharmaLedger-IMI/eco-sponsor-theme.git",
       "actions": [
+        {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
         {
           "type": "execute",
           "cmd": "cd themes/sponsor-theme && npm install"
@@ -220,8 +225,13 @@
     },
     {
       "name": "sponsor-ssapp",
-      "src": "",
+      "src": "https://github.com/PharmaLedger-IMI/eco-sponsor-ssapp.git",
       "actions": [
+        {
+          "type": "smartClone",
+          "target": ".",
+          "collectLog": false
+        },
         {
           "type": "execute",
           "cmd": "cd sponsor-ssapp && npm install"
