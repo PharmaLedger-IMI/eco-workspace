@@ -103,10 +103,7 @@ export default class ListTrialsController extends WebcController {
   }
 
   listenForMessages() {
-    MessageHandlerService.init(async (err, data) => {
-      if (err) {
-        return console.error(err);
-      }
+    MessageHandlerService.init(async (data) => {
       console.log('DATA MESSAGE:', data);
       data = JSON.parse(data);
       debugger;
