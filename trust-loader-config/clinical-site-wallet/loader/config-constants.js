@@ -1,4 +1,5 @@
 let LOADER_GLOBALS = {
+  DEBUG:false,
   SHOW_ACTION_BUTTON:false,
   DEFAULT_CREDENTIALS:{
     email:"clinical-site@pharmaledger.com",

@@ -1,4 +1,5 @@
 let LOADER_GLOBALS = {
+	DEBUG:false,
 	DEFAULT_CREDENTIALS:{
 		email:"dsu-explorer@pharmaledger.com",
 		password:"secret",
