@@ -1,0 +1,11 @@
+{
+  "short_name": "Clinical Site",
+  "name": "Clinical Site SSAPP",
+  "description": "Clinical Site - Doctor App",
+  "theme_color": "rgb(0,52,91)",
+  "background_color": "rgb(0,52,91)",
+  "icons": [],
+  "start_url": "/hco-wallet/loader/",
+  "display": "standalone",
+  "scope": "/hco-wallet/loader/"
+}
